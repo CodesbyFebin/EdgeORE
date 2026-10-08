@@ -41,10 +41,12 @@ import com.edgeore.app.ui.screens.NodesScreen
 import com.edgeore.app.ui.screens.ReceiptDetailScreen
 import com.edgeore.app.ui.screens.ReceiptsScreen
 import com.edgeore.app.ui.screens.ReviewScreen
+import com.edgeore.app.ui.screens.BrowserScreen
+import com.edgeore.app.ui.screens.StorageScreen
 import com.edgeore.app.ui.theme.EdgeColors
 
 enum class Destination(val label: String, val icon: ImageVector) {
-    Mine("Mine", EdgeIcons.Mine), AI("AI", EdgeIcons.Ai), Nodes("Nodes", EdgeIcons.Nodes), Receipts("Receipts", EdgeIcons.Receipts)
+    Mine("Mine", EdgeIcons.Mine), AI("AI", EdgeIcons.Ai), Storage("Storage", EdgeIcons.Storage), Nodes("Nodes", EdgeIcons.Nodes), Receipts("Receipts", EdgeIcons.Receipts)
 }
 
 /** Platform actions the UI needs from the Activity (wallet sender and share sheet). */
@@ -52,7 +54,7 @@ interface PlatformActions {
     fun connectWallet()
     fun disconnectWallet()
     fun signReviewed()
-    fun export(receipt: StoredReceipt?)
+    fun export(receipt: StoredReceipt?, hideDeviceKey: Boolean = false)
 }
 
 @Composable
@@ -99,6 +101,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                 when {
                     r == "review" -> ReviewScreen(vm, onSign = actions::signReviewed, onConnect = actions::connectWallet)
                     r == "preview" -> ConceptPreviewScreen()
+                    r == "browser" -> BrowserScreen()
                     r != null && r.startsWith("receipt:") -> {
                         val rec = receipts.firstOrNull { it.id == r.removePrefix("receipt:") }
                         if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }
@@ -106,6 +109,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                     tab == Destination.Mine -> MineScreen(vm, actions::connectWallet, actions::disconnectWallet,
                         onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" })
                     tab == Destination.AI -> AiScreen(vm)
+                    tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)
                     tab == Destination.Receipts -> ReceiptsScreen(vm, onOpen = { route = "receipt:" + it.id }, onExport = actions::export)
                 }

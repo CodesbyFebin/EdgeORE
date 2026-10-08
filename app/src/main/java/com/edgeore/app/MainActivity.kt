@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
             override fun connectWallet() { vm.connectWallet(sender) }
             override fun disconnectWallet() { vm.disconnectWallet(sender) }
             override fun signReviewed() { vm.approveAndSign(sender) }
-            override fun export(receipt: StoredReceipt?) { exportReceipts(receipt) }
+            override fun export(receipt: StoredReceipt?, hideDeviceKey: Boolean) { exportReceipts(receipt, hideDeviceKey) }
         }
         setContent { EdgeOreTheme { EdgeOreApp(vm, actions) } }
     }
@@ -38,10 +38,10 @@ class MainActivity : ComponentActivity() {
         vm.refreshDevice()
     }
 
-    private fun exportReceipts(only: StoredReceipt?) {
+    private fun exportReceipts(only: StoredReceipt?, hideDeviceKey: Boolean) {
         lifecycleScope.launch {
             try {
-                val file = vm.exportReceipts(only)
+                val file = vm.exportReceipts(only, hideDeviceKey)
                 val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", file)
                 val send = Intent(Intent.ACTION_SEND).setType("application/json").putExtra(Intent.EXTRA_STREAM, uri)
                     .putExtra(Intent.EXTRA_SUBJECT, file.name).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

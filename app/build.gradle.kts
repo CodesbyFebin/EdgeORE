@@ -12,15 +12,26 @@ android {
         applicationId = "com.edgeore.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2.0-hackathon"
+        versionCode = 8
+        versionName = "0.2.6-review"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    val storePass = System.getenv("EDGEORE_STORE_PASS").orEmpty()
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("release.jks")
+            storePassword = storePass
+            keyAlias = "edgeore"
+            keyPassword = storePass
+        }
     }
 
     buildTypes {
         release {
-            // Release signing is intentionally not configured in source control.
+            // Password stays in the environment. The keystore is not committed.
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

@@ -153,18 +153,24 @@ class ReceiptLog(private val file: File, private val signer: ReceiptSigner, priv
     private fun ev(e: Evidence) = JSONObject().put("state", e.state).put("checked", e.checked)
 
     /** Builds the export document. `subset` exports selected receipts; default is the full chain. */
-    fun export(subset: List<StoredReceipt>? = null): String {
+    fun export(subset: List<StoredReceipt>? = null, hideDeviceKey: Boolean = false): String {
         val list = subset ?: all()
-        val arr = JSONArray().also { a -> list.forEach { a.put(it.toLine()) } }
-        return JSONObject()
+        val exclusions = EXCLUSIONS.toMutableList()
+        if (hideDeviceKey) exclusions += "Device public key omitted by the export-privacy control. This file cannot be signature-checked until that key is supplied separately."
+        val doc = JSONObject()
             .put("schema", EXPORT_SCHEMA)
             .put("exportedAt", clock().toString())
-            .put("deviceKey", JSONObject().put("algorithm", signer.algorithm).put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(signer.publicKeySpki())))
             .put("note", "Device-key signatures show these bytes were written by this app install. They are not independent verification, provider acknowledgement or payment.")
-            .put("exclusions", JSONArray(EXCLUSIONS))
-            .put("receipts", arr)
+            .put("exclusions", JSONArray(exclusions))
+            .put("receipts", JSONArray().also { a -> list.forEach { a.put(it.toLine()) } })
             .put("bundleSha256", bundleDigest(list.map { it.sha256 }))
-            .toString(2)
+            .put("payment", "NOT_OBSERVED")
+            .put("location", JSONObject.NULL)
+        if (hideDeviceKey) doc.put("deviceKey", JSONObject.NULL) else doc.put(
+            "deviceKey",
+            JSONObject().put("algorithm", signer.algorithm).put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(signer.publicKeySpki())),
+        )
+        return doc.toString(2)
     }
 }
 

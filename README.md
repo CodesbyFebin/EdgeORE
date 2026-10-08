@@ -4,9 +4,11 @@
 
 A native Kotlin / Jetpack Compose Android workspace for Solana Mobile: pair a host you own, run private AI on it, review Solana actions byte-for-byte before your wallet signs, and keep tamper-evident receipts.
 
-Built by **CodesbyFebin**. Status: **hackathon build `0.2.0-hackathon` — debug APK, not store-ready, Solana devnet only.**
+Built by **CodesbyFebin**. Candidate: **`0.2.6-review` (versionCode 8), signed release APK, Solana devnet only.**
 
-> **What this app does not do:** it does not mine, earn or promise ORE rewards. It does not issue a token (`$EdgeORE` is a product name). It does not make SKR payments. It never sees your wallet keys. Illustrative content is labelled **CONCEPT · SAMPLE DATA**, and missing observations are shown as missing (for example "Not paired", "Not observed" or "Capacity unavailable"), never as zero.
+> **Decision: NO-GO for “fully functional” or “ORE earning.”** The source and signed artifact are recorded. Wallet authorization, a confirmed devnet transfer, on-device AI, and a phone walkthrough are **NOT_RUN**. ORE rewards are **Not observed**. Do not treat this repository as a completed mining product.
+
+> **What this app does not do:** it does not mine, earn or promise ORE rewards. It does not issue a token (`$EdgeORE` is a product name). It does not make SKR payments. It never sees your wallet keys. Missing observations are shown as missing, never as zero.
 
 ---
 
@@ -31,9 +33,10 @@ What the code does today. "Verified" names the environment where each step was a
 | 4 | **Export receipt** | **Implemented** | Append-only JSONL receipt log. Each receipt stores its exact body bytes, the body's SHA-256, a hash-chain link and an Android Keystore P-256 signature. Export goes through `FileProvider` as JSON with a bundle digest. The preview lists what is included and what is excluded. | Unit tests (JVM software key). Keystore signing and the share sheet are **not device-run**. |
 | 5 | **Reject tampering** | **Implemented** | The verifier rejects edited bodies, recomputed digests (the signature then fails), a different signing key, removed or reordered receipts (bundle digest and chain), and mismatches with the local copy. The "Run tamper test" button edits a real export and shows the rejection. | 11 unit tests. |
 | 6 | **Revoke node access** | **Implemented** | A signed `revoke` command. After revocation the node refuses the session (`SESSION_REVOKED_OR_UNKNOWN`) and the local key is destroyed. If the node is offline, the app shows "Revocation pending" and offers "Forget locally" with an explicit caveat. | JVM integration test against the real agent. |
-| – | ORE participation | **Not implemented** | Shown as "protocol qualification required". No board, no deploy, no rewards. | – |
-| – | SKR payment | **Not implemented** | Out of scope for this build. SKR is not the `$EdgeORE` brand. | – |
-| – | Storage / bandwidth | **Not implemented** | "Capacity unavailable"; bandwidth is OFF and cannot be enabled. | – |
+| – | Storage vault | **Implemented, unverified on a phone** | AES-256-GCM with an Android Keystore key. Device storage totals come from `StatFs`. Traffic since boot is not shared bandwidth. | Unit test of CPU/disk parsers only. Encrypt/decrypt **NOT_RUN** on a device. |
+| – | ORE participation | **Not qualified** | Shown as "Not observed". No deploy, no claim, no reward multiplier. | – |
+| – | SKR payment | **Not implemented** | Out of scope. SKR is not CPU-mineable in this app. | – |
+| – | VPN, cloud sync, bandwidth earning | **Unavailable** | Controls do not start a tunnel, upload, or share traffic. | – |
 
 Build, test and lint results, plus what was **not** run, are recorded in [`evidence/qualification.md`](evidence/qualification.md). No step has been run on a physical device or with a wallet app yet.
 

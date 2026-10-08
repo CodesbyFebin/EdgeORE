@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -36,11 +36,8 @@ import com.edgeore.app.device.EdgePolicy
 import com.edgeore.app.device.EdgeState
 import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.ui.Format
-import com.edgeore.app.ui.components.Capability
-import com.edgeore.app.ui.components.CapabilityBadge
 import com.edgeore.app.ui.components.EdgeCard
 import com.edgeore.app.ui.components.EdgeIcons
-import com.edgeore.app.ui.components.Notice
 import com.edgeore.app.ui.components.ObservationCard
 import com.edgeore.app.ui.components.PrimaryAction
 import com.edgeore.app.ui.components.ResourceControl
@@ -54,18 +51,56 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
     val wallet by vm.walletState.collectAsStateWithLifecycle()
     val balance by vm.balance.collectAsStateWithLifecycle()
     val eval = EdgePolicy.evaluate(settings, device)
+    val fresh = balance as? RpcObservation.Fresh
 
     EdgeCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Icon(EdgeIcons.Wallet, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.size(28.dp))
             Column(Modifier.weight(1f)) {
-                Text("Edge Mode", style = MaterialTheme.typography.titleMedium)
-                Text("Review ORE. Control your edge.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+                Text("Connect Solana Wallets", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    wallet.address?.let { Format.short(it) } ?: "Authorize securely through your wallet",
+                    color = EdgeColors.textMuted,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
-            CapabilityBadge(if (eval.state == EdgeState.PAUSED) Capability.PAUSED else Capability.NOT_OBSERVED, eval.state.label)
+            if (wallet.address == null) {
+                SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", enabled = !wallet.busy, onClick = onConnect)
+            }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text(if (wallet.address == null) "Not connected" else wallet.status, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+            Text("Compatible MWA wallet required", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        }
+        wallet.address?.let {
+            Text(
+                when (val b = balance) {
+                    is RpcObservation.Fresh -> "Devnet ${Format.sol(b.lamports)} · slot ${b.slot} · ${Format.ago(b.observedAt)}"
+                    is RpcObservation.Unavailable -> "Balance unavailable"
+                    null -> "Balance not requested"
+                },
+                color = if (fresh == null) EdgeColors.copper else EdgeColors.textPrimary,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SecondaryAction("Refresh", onClick = { vm.refreshBalance() })
+                SecondaryAction("Review", onClick = onReview)
+                SecondaryAction("Disconnect", danger = true, onClick = onDisconnect)
+            }
         }
     }
 
-    // Pause / resume ring. Static: an animated ring would imply real activity.
+    EdgeCard(onClick = onPreview) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Icon(EdgeIcons.Nodes, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(28.dp))
+            Column(Modifier.weight(1f)) {
+                Text("Edge Mode", style = MaterialTheme.typography.titleMedium)
+                Text("Your device. Your resources. Your control.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+            }
+            Icon(EdgeIcons.Chevron, contentDescription = null, tint = EdgeColors.textMuted)
+        }
+    }
+
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
             Modifier.size(200.dp).clip(CircleShape)
@@ -86,64 +121,50 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(if (eval.state == EdgeState.PAUSED) EdgeIcons.Pause else EdgeIcons.Play, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(40.dp))
                 Text(eval.state.label.uppercase(), fontWeight = FontWeight.Bold, color = EdgeColors.textPrimary)
-                Text(if (settings.edgeModeResumed) "Tap to pause" else "Tap to resume", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
             }
         }
-        Text(eval.headline, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Notice("ORE participation: protocol qualification required. Local hash benchmarks are not ORE board participation and earn nothing.")
+        Text("Protocol qualification required", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(eval.headline, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     }
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        val walletValue = wallet.address?.let { addr ->
-            Format.short(addr) + when (val b = balance) { is RpcObservation.Fresh -> "\n" + Format.sol(b.lamports); is RpcObservation.Unavailable -> "\nBalance unavailable"; null -> "" }
-        }
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Wallet, "Wallet", walletValue, "Not connected",
-            (balance as? RpcObservation.Fresh)?.let { "devnet · slot ${it.slot} · ${Format.ago(it.observedAt)}" })
         ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")
-        val d = device
-        val load = if (d == null) null else listOfNotNull(
-            d.batteryPercent?.let { "Battery $it%" },
-            d.charging?.let { if (it) "Charging" else "On battery" },
-            d.thermal?.let { "Thermal ${it.label}" },
-        ).joinToString("\n").ifEmpty { null }
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Pulse, "Device load", load, "Not observed", d?.let { "Android sensors · ${Format.ago(it.observedAt)}" })
+        ObservationCard(Modifier.weight(1f), EdgeIcons.Cpu, "Compute", if (eval.state == EdgeState.PAUSED) "Paused" else eval.state.label, "Not measured", "No workload is running")
     }
-
-    EdgeCard(inset = true) {
-        Text("Workload", style = MaterialTheme.typography.titleMedium)
-        Notice("No measured samples. No workload has run on this device, so there is nothing to chart.")
-    }
-
-    PrimaryAction("Review a supported action", icon = EdgeIcons.Shield, onClick = onReview)
-    SecondaryAction("Preview session (concept)", Modifier.fillMaxWidth(), onClick = onPreview)
 
     EdgeCard {
-        Text("Wallet", style = MaterialTheme.typography.titleMedium)
-        Text(wallet.status, color = EdgeColors.textMuted)
-        wallet.address?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-        Text("Mobile Wallet Adapter · devnet. Keys stay in your wallet app.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Workload & resources", style = MaterialTheme.typography.titleMedium)
+            Text("No live telemetry", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        }
+        Text("CPU, memory, storage and network are not sampled in this build. Missing readings are not shown as zero.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (wallet.address == null) SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", enabled = !wallet.busy, onClick = onConnect)
-            else {
-                SecondaryAction("Refresh balance", onClick = { vm.refreshBalance() })
-                SecondaryAction("Disconnect", danger = true, onClick = onDisconnect)
-            }
+            MetricTile(EdgeIcons.Cpu, "CPU")
+            MetricTile(EdgeIcons.Pulse, "Memory")
+            MetricTile(EdgeIcons.Storage, "Storage")
+            MetricTile(EdgeIcons.Wifi, "Network")
         }
     }
+
+    PrimaryAction("Preview session", icon = EdgeIcons.Play, onClick = onPreview)
+    SecondaryAction("Review a supported action", Modifier.fillMaxWidth(), onClick = onReview)
 
     EdgeCard {
         Text("Safety & resource controls", style = MaterialTheme.typography.titleMedium)
-        Text("Policy gates are evaluated against live Android readings and fail closed when a reading is missing.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        ResourceControl(EdgeIcons.Bolt, "Charge-only mode", "Run only while charging", settings.chargeOnly, gateText(eval, "Charge-only")) { v -> vm.updateSettings { it.copy(chargeOnly = v) } }
-        ResourceControl(EdgeIcons.Thermo, "Thermal guard", "Pause at moderate thermal status or above", settings.thermalGuard, gateText(eval, "Thermal guard")) { v -> vm.updateSettings { it.copy(thermalGuard = v) } }
+        Text("These gates use battery and thermal readings. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        ResourceControl(EdgeIcons.Bolt, "Charge-only mode", "Run only when charging", settings.chargeOnly, gateText(eval, "Charge-only")) { v -> vm.updateSettings { it.copy(chargeOnly = v) } }
+        ResourceControl(EdgeIcons.Thermo, "Thermal guard", "Pause at high temperature", settings.thermalGuard, gateText(eval, "Thermal guard")) { v -> vm.updateSettings { it.copy(thermalGuard = v) } }
         LabeledSlider(EdgeIcons.Battery, "Battery reserve", "Keep ${settings.batteryReservePercent}% minimum", gateText(eval, "Battery reserve"), settings.batteryReservePercent, 5f..90f) { v -> vm.updateSettings { it.copy(batteryReservePercent = v) } }
-        LabeledSlider(EdgeIcons.Cpu, "CPU limit", "Limit to ${settings.cpuLimitPercent}% of device CPU", "Stored · no workload in this build to apply it to", settings.cpuLimitPercent, 10f..100f) { v -> vm.updateSettings { it.copy(cpuLimitPercent = v) } }
-        Text("Daily devnet review budget: ${Format.sol(settings.dailyLimitLamports)} · spent today ${Format.sol(vm.spentTodayLamports())}", style = MaterialTheme.typography.bodyMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(10_000_000L, 50_000_000L, 100_000_000L).forEach { l ->
-                FilterChip(selected = settings.dailyLimitLamports == l, onClick = { vm.updateSettings { it.copy(dailyLimitLamports = l) } }, label = { Text(Format.sol(l)) })
-            }
-        }
+        LabeledSlider(EdgeIcons.Cpu, "CPU limit", "Stored limit ${settings.cpuLimitPercent}%", "Stored only. No workload applies it.", settings.cpuLimitPercent, 10f..100f) { v -> vm.updateSettings { it.copy(cpuLimitPercent = v) } }
+    }
+}
+
+@Composable
+private fun RowScope.MetricTile(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
+    EdgeCard(Modifier.weight(1f)) {
+        Icon(icon, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(18.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall)
+        Text("Not measured", color = EdgeColors.copper, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
     }
 }
 

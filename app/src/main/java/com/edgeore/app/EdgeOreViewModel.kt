@@ -1,6 +1,8 @@
 package com.edgeore.app
 
 import android.app.Application
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.lifecycle.AndroidViewModel
@@ -10,6 +12,8 @@ import com.edgeore.app.ai.OwnedHostModelClient
 import com.edgeore.app.crypto.Base58
 import com.edgeore.app.crypto.Sha256
 import com.edgeore.app.device.DeviceObservations
+import com.edgeore.app.device.DeviceResources
+import com.edgeore.app.device.DeviceResourcesReader
 import com.edgeore.app.device.DeviceSnapshot
 import com.edgeore.app.device.KeystoreReceiptSigner
 import com.edgeore.app.device.NodeKeyVault
@@ -29,6 +33,8 @@ import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.solana.TransferReview
+import com.edgeore.app.storage.LocalVault
+import com.edgeore.app.storage.StorageAudit
 import com.edgeore.app.wallet.WalletCoordinator
 import com.solana.mobilewalletadapter.clientlib.ActivityResultSender
 import kotlinx.coroutines.CancellationException
@@ -82,6 +88,12 @@ data class AiState(
     val documentSha256: String? = null,
     val documentChars: Int = 0,
     val documentTruncated: Boolean = false,
+    val memoryLimitMb: Int = 2048,
+    val pauseComputeDuringChat: Boolean = false,
+    val allocationChars: Int = 8000,
+    val galleryNote: String? = null,
+    val checksumResult: String? = null,
+    val airplaneResult: String? = null,
 )
 
 enum class ReviewPhase { EDITING, PREPARING, READY, SIGNING, SIGNED, SUBMITTING, SUBMITTED, REFUSED }
@@ -99,6 +111,21 @@ data class ReviewState(
 )
 
 data class VerifyOutcome(val accepted: Boolean, val summary: String, val findings: List<String>)
+
+data class StorageState(
+    val files: List<String> = emptyList(),
+    val usedBytes: Long = 0,
+    val allocationMb: Int = 0,
+    val sharingConsent: Boolean = false,
+    val quotaMb: Int = 500,
+    val pauseOnMetered: Boolean = true,
+    val blockOnDisconnect: Boolean = false,
+    val provider: String = "",
+    val note: String = "Vault is empty until you encrypt a file.",
+    val auditCount: Int = 0,
+    val auditOk: Boolean? = null,
+    val device: DeviceResources? = null,
+)
 
 class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     private val prefs = app.getSharedPreferences("edgeore.settings", 0)
@@ -120,8 +147,17 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val balance: StateFlow<RpcObservation?> = _balance.asStateFlow()
     private val _node = MutableStateFlow(NodeState(record = loadNode(), ops = loadOps()))
     val node: StateFlow<NodeState> = _node.asStateFlow()
-    private val _ai = MutableStateFlow(AiState(endpoint = prefs.getString("ai.endpoint", "") ?: ""))
+    private val _ai = MutableStateFlow(AiState(
+        endpoint = prefs.getString("ai.endpoint", "") ?: "",
+        memoryLimitMb = prefs.getInt("ai.memoryMb", 2048),
+        pauseComputeDuringChat = prefs.getBoolean("ai.pauseCompute", false),
+        allocationChars = prefs.getInt("ai.allocChars", 8000),
+    ))
     val ai: StateFlow<AiState> = _ai.asStateFlow()
+    private val fileVault = LocalVault(app)
+    private val storageAudit = StorageAudit(File(app.filesDir, "storage/audit.jsonl"))
+    private val _storage = MutableStateFlow(loadStorage())
+    val storage: StateFlow<StorageState> = _storage.asStateFlow()
     private val _review = MutableStateFlow(ReviewState())
     val review: StateFlow<ReviewState> = _review.asStateFlow()
     private val _receipts = MutableStateFlow<List<StoredReceipt>>(emptyList())
@@ -172,8 +208,8 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** Writes an export JSON into cache/exports and returns the file for FileProvider sharing. */
-    suspend fun exportReceipts(only: StoredReceipt? = null): File = withContext(Dispatchers.IO) {
-        val text = log.export(only?.let { listOf(it) })
+    suspend fun exportReceipts(only: StoredReceipt? = null, hideDeviceKey: Boolean = false): File = withContext(Dispatchers.IO) {
+        val text = log.export(only?.let { listOf(it) }, hideDeviceKey)
         val dir = File(getApplication<Application>().cacheDir, "exports").apply { mkdirs() }
         val name = "edgeore-receipts-" + Instant.now().toString().replace(":", "").replace(".", "") + ".json"
         File(dir, name).apply { writeText(text, Charsets.UTF_8) }
@@ -211,6 +247,22 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun clearVerify() { _verify.value = null }
+
+    data class ObservationAttempt(val at: Long, val ok: Boolean, val detail: String)
+    private val _observation = MutableStateFlow<ObservationAttempt?>(null)
+    val observation: StateFlow<ObservationAttempt?> = _observation.asStateFlow()
+
+    fun retryObservation(address: String?) = viewModelScope.launch {
+        val at = System.currentTimeMillis()
+        if (address.isNullOrBlank()) {
+            _observation.value = ObservationAttempt(at, false, "No wallet address to observe. Nothing was broadcast.")
+            return@launch
+        }
+        when (val result = SolanaRpc().balance(address)) {
+            is RpcObservation.Fresh -> _observation.value = ObservationAttempt(at, true, "Devnet balance observed at slot ${result.slot}. This is not a payment and was not broadcast.")
+            is RpcObservation.Unavailable -> _observation.value = ObservationAttempt(at, false, "RPC unavailable: ${result.reason}. Nothing was broadcast.")
+        }
+    }
 
     // ---------- wallet / RPC ----------
     fun connectWallet(sender: ActivityResultSender) = viewModelScope.launch {
@@ -446,7 +498,54 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun selectModel(name: String) = _ai.update { if (name in it.models) it.copy(selectedModel = name, status = AiStatus.READY, statusDetail = "Prompts go to $name on ${it.location}") else it }
+    fun selectModel(name: String) = _ai.update { if (name in it.models) it.copy(selectedModel = name, status = AiStatus.READY, statusDetail = "Prompts go to $name on ${it.location}. This phone does not run the weights.") else it }
+
+    fun inspectGallery(kind: String) {
+        val models = _ai.value.models
+        val note = if (models.isEmpty()) "$kind: no model is installed on a connected host, and none is bundled in this app."
+        else "$kind: the host listed ${models.size} name(s). That is not a license, size, or device-fit check."
+        _ai.update { it.copy(galleryNote = note) }
+    }
+
+    fun verifyChecksum(uri: Uri, expected: String) = viewModelScope.launch {
+        val hex = withContext(Dispatchers.IO) {
+            runCatching { getApplication<Application>().contentResolver.openInputStream(uri)?.use { Sha256.hex(it.readBytes()) } }.getOrNull()
+        }
+        if (hex == null) { _ai.update { it.copy(checksumResult = "Could not read that file.") }; return@launch }
+        val want = expected.trim().lowercase()
+        val result = when {
+            want.isEmpty() -> "SHA-256 $hex. No expected digest was entered, so nothing was matched."
+            want == hex -> "SHA-256 matches the digest you entered."
+            else -> "SHA-256 does not match. File is $hex."
+        }
+        _ai.update { it.copy(checksumResult = result) }
+    }
+
+    fun setMemoryLimit(mb: Int) {
+        val clamped = mb.coerceIn(256, 8192)
+        prefs.edit().putInt("ai.memoryMb", clamped).apply()
+        _ai.update { it.copy(memoryLimitMb = clamped) }
+    }
+
+    fun setPauseComputeDuringChat(on: Boolean) {
+        prefs.edit().putBoolean("ai.pauseCompute", on).apply()
+        _ai.update { it.copy(pauseComputeDuringChat = on) }
+    }
+
+    fun setAllocationChars(chars: Int) {
+        val clamped = chars.coerceIn(1000, 32000)
+        prefs.edit().putInt("ai.allocChars", clamped).apply()
+        _ai.update { it.copy(allocationChars = clamped) }
+    }
+
+    fun runAirplaneCheck() {
+        val cm = getApplication<Application>().getSystemService(ConnectivityManager::class.java)
+        val caps = cm?.activeNetwork?.let { cm.getNetworkCapabilities(it) }
+        val online = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        val result = if (online) "A network is up. No prompt was sent. This is not an offline inference result."
+        else "No active network. No prompt was sent. This app does not contain model weights, so offline chat is still unavailable."
+        _ai.update { it.copy(airplaneResult = result) }
+    }
 
     fun attachDocument(uri: Uri) = viewModelScope.launch {
         val app = getApplication<Application>()
@@ -471,7 +570,8 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val model = st.selectedModel ?: return
         if (prompt.isBlank() || st.status == AiStatus.LOADING) return
         val decision = EndpointPolicy.check(st.endpoint).let { it as? EndpointPolicy.Decision.Allowed } ?: return
-        val doc = documentText
+        if (st.pauseComputeDuringChat) updateSettings { it.copy(edgeModeResumed = false) }
+        val doc = documentText?.take(st.allocationChars)
         val userContent = if (doc != null) "Private document \"${st.documentName}\":\n<<<\n$doc\n>>>\n\nQuestion: $prompt" else prompt
         _ai.update { it.copy(status = AiStatus.LOADING, statusDetail = "Running on ${it.location}…", messages = it.messages + ChatMessage(true, prompt, System.currentTimeMillis())) }
         aiJob = viewModelScope.launch {
@@ -491,4 +591,119 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     fun cancelPrompt() { aiJob?.cancel() }
     fun clearConversation() = _ai.update { it.copy(messages = emptyList(), status = if (it.selectedModel != null) AiStatus.READY else it.status) }
+
+    private fun loadStorage() = StorageState(
+        allocationMb = prefs.getInt("store.allocMb", 0),
+        sharingConsent = prefs.getBoolean("store.consent", false),
+        quotaMb = prefs.getInt("store.quotaMb", 500),
+        pauseOnMetered = prefs.getBoolean("store.metered", true),
+        blockOnDisconnect = prefs.getBoolean("store.kill", false),
+        provider = prefs.getString("store.provider", "") ?: "",
+        auditCount = storageAudit.count(),
+    )
+
+    fun refreshStorage() {
+        val device = runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull()
+        _storage.update {
+            it.copy(
+                files = fileVault.names(),
+                usedBytes = fileVault.usedBytes(),
+                auditCount = storageAudit.count(),
+                device = device ?: it.device,
+            )
+        }
+    }
+
+    fun setAllocationMb(mb: Int) {
+        val v = mb.coerceIn(0, 8192)
+        prefs.edit().putInt("store.allocMb", v).apply()
+        _storage.update { it.copy(allocationMb = v) }
+        storageAudit.append("allocation set to $v MB")
+        refreshStorage()
+    }
+
+    fun importVault(uri: Uri) = viewModelScope.launch {
+        val outcome = withContext(Dispatchers.IO) {
+            runCatching {
+                val name = getApplication<Application>().contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+                    if (c.moveToFirst()) c.getString(0) else null
+                } ?: "file"
+                val bytes = getApplication<Application>().contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: error("unreadable")
+                if (bytes.size > 8_000_000) error("larger than 8 MB")
+                fileVault.put(name, bytes)
+            }
+        }
+        outcome.onSuccess {
+            storageAudit.append("encrypted file $it")
+            refreshStorage()
+            _storage.update { s -> s.copy(note = "Encrypted $it with AES-256-GCM. The plaintext was not kept.") }
+        }.onFailure { e ->
+            _storage.update { it.copy(note = "Import failed: ${e.message ?: "unreadable"}") }
+        }
+    }
+
+    fun deleteVault(name: String) {
+        val ok = fileVault.delete(name)
+        storageAudit.append(if (ok) "deleted $name" else "delete missed $name")
+        refreshStorage()
+        _storage.update { it.copy(note = if (ok) "Deleted $name from this phone." else "That file was not in the vault.") }
+    }
+
+    fun readVault(name: String): ByteArray? = fileVault.read(name)
+
+    fun setSharingConsent(on: Boolean) {
+        if (on && _storage.value.pauseOnMetered && metered()) {
+            _storage.update { it.copy(note = "Sharing stayed off. This network is metered.") }
+            return
+        }
+        prefs.edit().putBoolean("store.consent", on).apply()
+        storageAudit.append(if (on) "sharing consent on" else "sharing stopped")
+        refreshStorage()
+        _storage.update {
+            it.copy(sharingConsent = on, note = if (on) "Consent recorded. No sharing protocol is running, so no bytes were sent." else "Sharing is off. Nothing is being sent.")
+        }
+    }
+
+    fun setQuotaMb(mb: Int) {
+        val v = mb.coerceIn(1, 10000)
+        prefs.edit().putInt("store.quotaMb", v).apply()
+        _storage.update { it.copy(quotaMb = v, note = "Daily quota stored as $v MB. Usage is not metered in this build.") }
+    }
+
+    fun setProvider(name: String) {
+        prefs.edit().putString("store.provider", name).apply()
+        storageAudit.append("provider label set")
+        _storage.update { it.copy(provider = name, note = "Label saved. No cloud upload ran.") }
+    }
+
+    fun setPauseOnMetered(on: Boolean) {
+        prefs.edit().putBoolean("store.metered", on).apply()
+        _storage.update { it.copy(pauseOnMetered = on) }
+    }
+
+    fun setBlockOnDisconnect(on: Boolean) {
+        prefs.edit().putBoolean("store.kill", on).apply()
+        _storage.update { it.copy(blockOnDisconnect = on, note = if (on) "Kill switch preference saved. No VPN tunnel exists, so traffic is not being blocked." else "Kill switch preference off. No tunnel is running.") }
+    }
+
+    fun verifyStorageAudit() {
+        val ok = storageAudit.verify()
+        _storage.update { it.copy(auditOk = ok, note = if (ok) "Audit chain matches." else "Audit chain does not match.") }
+    }
+
+    fun storageAuditText(): String = storageAudit.text()
+
+    fun restoreStorageDefaults() {
+        prefs.edit().putBoolean("store.consent", false).putInt("store.quotaMb", 500).putBoolean("store.metered", true).putBoolean("store.kill", false).putString("store.provider", "").apply()
+        storageAudit.append("secure defaults restored")
+        _storage.value = loadStorage().copy(files = fileVault.names(), usedBytes = fileVault.usedBytes(), note = "Consent, quota, provider and kill switch reset. Vault files were kept.")
+    }
+
+    private fun metered(): Boolean {
+        val cm = getApplication<Application>().getSystemService(ConnectivityManager::class.java) ?: return false
+        val caps = cm.activeNetwork?.let { cm.getNetworkCapabilities(it) } ?: return false
+        val online = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val unmetered = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+        return online && !unmetered
+    }
 }
