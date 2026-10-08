@@ -1,0 +1,10 @@
+[package]
+name = "edgeore_drillx_spike"
+version = "0.1.0"
+edition = "2021"
+publish = false
+[lib]
+crate-type = ["cdylib", "rlib"]
+[dependencies]
+drillx = "=2.2.0"
+jni = "=0.21.1"

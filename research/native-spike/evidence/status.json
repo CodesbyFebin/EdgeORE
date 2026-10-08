@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-08T01:28:21.776756+00:00",
+  "newArchiveSha256": "f561a3cfb4d5d2262f34e1ed17bdacf39a3c776026f5071e75e83f90898f7c40",
+  "archiveEntryComparison": "Identical bytes to original archive",
+  "RustToolchain": "UNAVAILABLE",
+  "cargoTest": "NOT_RUN",
+  "cargoTree": "NOT_RUN",
+  "CargoLock": "NOT_GENERATED",
+  "AndroidNDKBuild": "NOT_RUN",
+  "KotlinBuild": "NOT_RUN",
+  "deviceJNI": "NOT_RUN",
+  "OREacceptedWork": "NOT_RUN",
+  "ORErewardClaim": "NOT_RUN",
+  "sourceLinks": [
+    "https://github.com/0xrsydn/ore-miner",
+    "https://docs.rs/drillx/2.2.0/drillx/",
+    "https://github.com/regolith-labs/ore/blob/master/program/src/deploy.rs"
+  ],
+  "NoPushOrDeployment": true
+}

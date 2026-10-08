@@ -1,0 +1,7 @@
+com.edgeore.app.EdgeOreCoreTest tests=17 skipped=0 failures=0 errors=0
+com.edgeore.app.NodeAgentIntegrationTest tests=1 skipped=1 failures=0 errors=0
+com.edgeore.app.NodeAgentProtocolTest tests=7 skipped=0 failures=0 errors=0
+com.edgeore.app.PolicyAndEndpointTest tests=6 skipped=0 failures=0 errors=0
+com.edgeore.app.ReceiptTamperTest tests=11 skipped=0 failures=0 errors=0
+com.edgeore.app.SolanaMessageTest tests=11 skipped=0 failures=0 errors=0
+com.edgeore.app.TrustTest tests=6 skipped=0 failures=0 errors=0

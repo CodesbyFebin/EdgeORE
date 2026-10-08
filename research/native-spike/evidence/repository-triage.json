@@ -1,0 +1,168 @@
+{
+  "retrievedAt": "2026-10-08T01:28:20.387Z",
+  "depth": "GitHub repository metadata triage, plus targeted official DrillX and ORE source inspection. This is not a full audit of every repository.",
+  "repositories": [
+    {
+      "repo": "firebase/firebase-android-sdk",
+      "error": false,
+      "data": {
+        "description": "Firebase Android SDK",
+        "license": "Apache-2.0",
+        "archived": false,
+        "branch": "main",
+        "pushed": "2026-10-07T23:24:34Z"
+      },
+      "decision": "Optional only if an explicit feature requires it; not included in private/offline core."
+    },
+    {
+      "repo": "facebook/facebook-android-sdk",
+      "error": false,
+      "data": {
+        "description": "Used to integrate Android apps with Facebook Platform.",
+        "license": "NOASSERTION",
+        "archived": false,
+        "branch": "main",
+        "pushed": "2026-10-02T18:48:13Z"
+      },
+      "decision": "Exclude from core; unrelated social platform integration and additional data boundary."
+    },
+    {
+      "repo": "dyad-sh/dyad",
+      "error": false,
+      "data": {
+        "description": "Local, open-source AI app builder for power users ✨ v0 / Lovable / Replit / Bolt alternative 🌟 Star if you like it!",
+        "license": "NOASSERTION",
+        "archived": false,
+        "branch": "main",
+        "pushed": "2026-10-07T02:41:14Z"
+      },
+      "decision": "Development-tool reference, not mobile runtime. Review actual license; NOASSERTION is not a permission grant."
+    },
+    {
+      "repo": "jchodev/spring-boot-koltin-api",
+      "error": false,
+      "data": {
+        "description": "Spring bot (Koltin)+ gradle + docker + render + cron-job",
+        "archived": false,
+        "branch": "main",
+        "pushed": "2024-06-26T08:09:36Z"
+      },
+      "decision": "Unrelated or low priority for mining/wallet/edge core; reference only. No source copied."
+    },
+    {
+      "repo": "1ud0v1c/deezer-open-api",
+      "error": false,
+      "data": {
+        "description": "Use of Deezer's Open API to realize a music player using MVP architecture",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2020-09-18T10:53:54Z"
+      },
+      "decision": "Unrelated or low priority for mining/wallet/edge core; reference only. No source copied."
+    },
+    {
+      "repo": "androiddevnotes/awesome-android-kotlin-apps",
+      "error": false,
+      "data": {
+        "description": "👓 A curated list of awesome android kotlin apps by open-source contributors.",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2024-07-01T22:14:17Z"
+      },
+      "decision": "Discovery index; each linked application requires independent source/license review."
+    },
+    {
+      "repo": "zhujiang521/PlayAndroid",
+      "error": false,
+      "data": {
+        "description": "🔥🔥🔥 Kotlin + MVVM + LCE版玩安卓，暗黑模式、横竖屏、无网、弱网、无数据、加载失败等等各种情况，协程、Room、Hilt、DataStore、LiveData、Retrofit、屏幕适配、本地缓存、多语言切换、多 lib，你想要的我都有！！！",
+        "license": "MIT",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2026-01-23T09:42:26Z"
+      },
+      "decision": "Candidate state/error/persistence UX reference; MIT detected, selected code not audited or copied."
+    },
+    {
+      "repo": "arthurlopesr/koltin-burger",
+      "error": false,
+      "data": {
+        "description": "Kotlin API for study",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2025-04-12T19:22:30Z"
+      },
+      "decision": "Unrelated or low priority for mining/wallet/edge core; reference only. No source copied."
+    },
+    {
+      "repo": "gauravsonii/AURA",
+      "error": false,
+      "data": {
+        "description": "A portfolio grade Web3 dashboard showcasing blockchain data analytics, on chain activity visualization, and token tracking.",
+        "license": "Apache-2.0",
+        "archived": false,
+        "branch": "main",
+        "pushed": "2025-10-19T02:39:44Z"
+      },
+      "decision": "Dashboard reference, not verified wallet/node infrastructure."
+    },
+    {
+      "repo": "KaushalVasava/KMP_ApiHandling",
+      "error": false,
+      "data": {
+        "description": "It is project of Consuming Rest API using Ktor Client, Navigation using PreCompose, ViewModel using Moko Viewmodel and Jetpack compose for UI development in Koltin Multi Platform.",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2024-02-14T05:00:39Z"
+      },
+      "decision": "Optional KMP API reference; no detected license, read-only until verified."
+    },
+    {
+      "repo": "chrismiceli/daap-client",
+      "error": false,
+      "data": {
+        "description": "Automatically exported from code.google.com/p/daap-client",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2025-08-21T02:01:05Z"
+      },
+      "decision": "Unrelated or low priority for mining/wallet/edge core; reference only. No source copied."
+    },
+    {
+      "repo": "thesysdev/genui-widget",
+      "data": {
+        "description": "Embeddable Generative UI Chat widget",
+        "archived": false,
+        "branch": "main",
+        "pushed": "2026-01-16T18:43:57Z"
+      },
+      "decision": "Optional web UI research; no detected license in metadata, no vendoring approval. Hosted/generative UI must not authorize spending."
+    },
+    {
+      "repo": "PatilShreyas/NotyKT",
+      "data": {
+        "description": "📒 NotyKT is a complete 💎Kotlin-stack (Backend + Android) 📱 application built to demonstrate the use of Modern development tools with best practices implementation🦸.",
+        "license": "Apache-2.0",
+        "archived": false,
+        "branch": "master",
+        "pushed": "2026-04-23T02:23:34Z"
+      },
+      "decision": "Candidate architectural reference for Kotlin/Android/Ktor; verify selected file license and current dependencies before adaptation."
+    },
+    {
+      "repo": "google/iosched",
+      "data": {
+        "description": "The Google I/O Android App",
+        "license": "Apache-2.0",
+        "archived": true,
+        "branch": "main",
+        "pushed": "2023-01-05T18:35:51Z"
+      },
+      "decision": "Archived Android architecture reference; no current dependency baseline copied."
+    }
+  ],
+  "organizations": {
+    "Kotlin": "Prefer official coroutine/serialization dependencies; do not import an entire organization.",
+    "dji": "No drone feature in current scope; organization is not a runtime dependency."
+  }
+}

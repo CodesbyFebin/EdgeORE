@@ -1,0 +1,4 @@
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+    NODE_IT observe: {"proofBackend":"UNCONFIGURED","proofOperation":"","bandwidth":{"endpoint":"","measuredBytes":"0","capBytes":"0","bytesPerSecond":"0","deadline":"","enabled":false,"reservedBytes":"0"},"hostOS":"linux","hosting":"BLOCKED_RUNTIME_ISOLATION_UNQUALIFIED","observedAt":"2026-10-08T05:08:03.125471681Z","proofState":"IDLE","logicalCPUs":8,"keyProtection":"PERMISSION_RESTRICTED_FILE; SOFTWARE","proofCapabilities":{"reason":"PROOF_BACKEND_UNAVAILABLE","availability":"UNAVAILABLE"},"serviceCount":0,"activeOperations":[],"fingerprint":"7b796c2879489944df201d137ccf3191d5812663377984d49b7711fdafd10812","architecture":"amd64"}
+    NODE_IT: pair → observe → revoke → refused-after-revoke PASSED
+BUILD SUCCESSFUL in 10s
