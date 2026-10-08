@@ -30,6 +30,7 @@ import com.edgeore.app.receipts.ReceiptVerifier
 import com.edgeore.app.receipts.SoftwareReceiptSigner
 import com.edgeore.app.receipts.StoredReceipt
 import com.edgeore.app.solana.RpcObservation
+import com.edgeore.app.solana.SpendLedger
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.solana.TransferReview
@@ -108,6 +109,7 @@ data class ReviewState(
     val submittedSignature: String? = null,
     val confirmation: String? = null,
     val message: String? = null,
+    val operationId: String? = null,
 )
 
 data class VerifyOutcome(val accepted: Boolean, val summary: String, val findings: List<String>)
@@ -135,6 +137,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     private val log = ReceiptLog(File(app.filesDir, "receipts/receipts.jsonl"), signer)
     private val vault = NodeKeyVault(app)
     private val rpc = SolanaRpc()
+    private val ledger = SpendLedger()
     val wallet = WalletCoordinator()
 
     private val _settings = MutableStateFlow(loadSettings())
@@ -301,7 +304,17 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             val bh = rpc.latestBlockhash()
             val draft = TransferReview.prepare(from, _review.value.destination, _review.value.amount, bh.blockhash, spentTodayLamports(), _settings.value.dailyLimitLamports)
             val fee = if (draft.message.isNotEmpty()) rpc.feeForMessage(draft.message) else null
-            _review.update { it.copy(phase = if (draft.approvable) ReviewPhase.READY else ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = draft.refusal) }
+            if (!draft.approvable) {
+                _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = draft.refusal, operationId = null) }
+                return@launch
+            }
+            val operationId = draft.messageSha256
+            val reserved = ledger.reserve(operationId, draft.lamports, SolanaRpc.CLUSTER, draft.fromAddress, draft.messageSha256, spentTodayLamports(), _settings.value.dailyLimitLamports)
+            if (reserved is SpendLedger.ReserveResult.Refused) {
+                _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = reserved.reason, operationId = null) }
+                return@launch
+            }
+            _review.update { it.copy(phase = ReviewPhase.READY, draft = draft, feeLamports = fee, feeKnown = fee != null, message = null, operationId = operationId) }
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
             _review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a devnet blockhash: ${e.message}") }
         }
@@ -309,6 +322,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refuseReview(reason: String = "Refused by you during review") = viewModelScope.launch {
         val d = _review.value.draft
+        _review.value.operationId?.let { ledger.release(it) }
         record(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Review refused", reason, "EdgeORE review route", SolanaRpc.CLUSTER,
             digests = d?.messageSha256?.takeIf { it.isNotEmpty() }?.let { mapOf("messageSha256" to it) } ?: emptyMap(),
             localObservation = Evidence("CHECKED", "Message decoded on device; no signature requested"), lamports = d?.lamports))
@@ -324,6 +338,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val result = try { wallet.signTransaction(sender, SolanaMessage.unsignedTransaction(d.message)) } catch (e: CancellationException) { throw e } catch (e: Exception) { WalletCoordinator.SignResult.Refused("Wallet unavailable") }
         when (result) {
             is WalletCoordinator.SignResult.Refused -> {
+                _review.value.operationId?.let { ledger.release(it) }
                 record(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Wallet did not sign", result.reason, "Mobile Wallet Adapter", SolanaRpc.CLUSTER, digests = mapOf("messageSha256" to d.messageSha256), lamports = d.lamports,
                     localObservation = Evidence("CHECKED", "Reviewed message digest recorded; wallet returned no signature")))
                 _review.update { it.copy(phase = ReviewPhase.REFUSED, message = result.reason) }
@@ -353,12 +368,14 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         try {
             val sig = rpc.sendTransaction(v.signedTransaction)
             if (sig != v.signature) throw IllegalStateException("RPC reported a different signature")
+            _review.value.operationId?.let { ledger.markUnknown(it) }
             record(ReceiptDraft(ReceiptKind.REVIEW, "SUBMITTED", "Submitted to devnet", "RPC accepted the verified bytes. Settlement not yet observed.", SolanaRpc.DEVNET, SolanaRpc.CLUSTER,
                 solanaSignature = sig, digests = mapOf("messageSha256" to d.messageSha256), lamports = d.lamports, payment = "SUBMITTED_NOT_CONFIRMED",
                 localObservation = Evidence("CHECKED", "RPC returned the same signature as the verified wallet signature")))
             _review.update { it.copy(phase = ReviewPhase.SUBMITTED, submittedSignature = sig) }
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
-            _review.update { it.copy(phase = ReviewPhase.SIGNED, message = "Submission failed: ${e.message}") }
+            _review.value.operationId?.let { ledger.markUnknown(it) }
+            _review.update { it.copy(phase = ReviewPhase.SIGNED, message = "Submission failed: ${e.message}. Budget reservation kept until the outcome is known.") }
         }
     }
 
@@ -366,6 +383,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val sig = _review.value.submittedSignature ?: return@launch
         val status = try { rpc.signatureStatus(sig) } catch (e: CancellationException) { throw e } catch (e: Exception) { "UNAVAILABLE: ${e.message}" }
         _review.update { it.copy(confirmation = status) }
+        if (status == "CONFIRMED" || status == "FINALIZED") _review.value.operationId?.let { ledger.settle(it) }
         val related = _receipts.value.firstOrNull { it.solanaSignature == sig && it.outcome == "SUBMITTED" }?.id
         record(ReceiptDraft(ReceiptKind.REVIEW, "STATUS_OBSERVED", "Devnet status observed", "Signature status: $status", SolanaRpc.DEVNET, SolanaRpc.CLUSTER, solanaSignature = sig, relatesTo = related,
             payment = if (status == "CONFIRMED" || status == "FINALIZED") "OBSERVED_$status" else "NOT_OBSERVED",

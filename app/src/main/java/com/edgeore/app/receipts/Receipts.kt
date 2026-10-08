@@ -176,6 +176,12 @@ class ReceiptLog(private val file: File, private val signer: ReceiptSigner, priv
 
 fun bundleDigest(shas: List<String>): String = Sha256.hex(shas.joinToString("\n"))
 
+/** A chain or broadcast claim with no signature is a false outcome, not a missing observation. */
+fun chainClaimContradictsSignature(payment: String, broadcast: Boolean, solanaSignature: String): Boolean {
+    val claimsChain = broadcast || payment in setOf("OBSERVED", "CONFIRMED", "FINALIZED", "PAID", "SUBMITTED")
+    return claimsChain && solanaSignature.isBlank()
+}
+
 /** Verifies an exported receipt document and rejects any tampering it can detect. */
 object ReceiptVerifier {
     data class Report(val accepted: Boolean, val verifiedReceipts: Int, val findings: List<String>)
@@ -209,6 +215,9 @@ object ReceiptVerifier {
             if (!sigOk) { findings += "$label: device signature invalid"; previous = r; continue }
             val body = try { r.json } catch (_: Exception) { findings += "$label: body is not JSON"; previous = r; continue }
             if (body.optString("schema") != ReceiptLog.SCHEMA) { findings += "$label: unknown receipt schema"; previous = r; continue }
+            if (chainClaimContradictsSignature(body.optString("payment"), body.optBoolean("broadcast"), body.optString("solanaSignature"))) {
+                findings += "$label: claims a chain outcome without a signature"; previous = r; continue
+            }
             if (previous != null && previous.integrityOk) {
                 val prevSeq = runCatching { previous.sequence }.getOrNull()
                 if (prevSeq != null && body.optLong("sequence") == prevSeq + 1 && body.optString("previousSha256") != previous.sha256) {
