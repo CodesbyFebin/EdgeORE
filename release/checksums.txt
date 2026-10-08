@@ -1,4 +1,6 @@
-com.edgeore.app 0.2.6-review versionCode 8
-apk_sha256 6f1f73a9eeb58a5dd8f9b305cfa901761a5a8ec9773f2bf5863e7c1b8ee35968
+recorded_before_doc_commit apk_sha256 6f1f73a9eeb58a5dd8f9b305cfa901761a5a8ec9773f2bf5863e7c1b8ee35968
+rebuild_at_3929edb apk_sha256 d64d5b92f28ac8856a9904528f464125a3b6333a9b52e1f7b0e622e46196dd0b
+classes_dex_sha256 0a190a196064f12fd0849eae5b3930c5445115eb0441491326ed49fd51e75876
 cert_sha256 5baab0630958af7a3a5faabc3f3525f8fd5e2bb6a1b98e19bd6e16b1f6e834a1
-note The APK file is not committed. The hash was measured on the local artifact built before the documentation commit.
+note Outer APK hashes differ only in META-INF/version-control-info.textproto. Dex and manifest match. See docs/qualification-report.md.
+
