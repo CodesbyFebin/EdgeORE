@@ -43,6 +43,12 @@ import com.edgeore.app.storage.VaultException
 import com.edgeore.app.io.BoundedInput
 import com.edgeore.app.io.InputTooLargeException
 import com.edgeore.app.ai.InferenceClaim
+import com.edgeore.app.ai.ExecutionLocation
+import com.edgeore.app.ai.ondevice.LiteRtLmRuntime
+import com.edgeore.app.ai.ondevice.ModelStore
+import com.edgeore.app.ai.ondevice.OnDeviceAiController
+import com.edgeore.app.ai.ondevice.OnDeviceCatalog
+import com.edgeore.app.ai.ondevice.OnDeviceState
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.edgeore.app.solana.RpcObservation
@@ -98,7 +104,7 @@ data class AiState(
     val models: List<String> = emptyList(),
     val selectedModel: String? = null,
     val status: AiStatus = AiStatus.NO_ENDPOINT,
-    val statusDetail: String = "No local model installed. On-device inference is not bundled in this build.",
+    val statusDetail: String = "No owned host connected. No model weights ship in this APK.",
     val messages: List<ChatMessage> = emptyList(),
     val documentName: String? = null,
     val documentSha256: String? = null,
@@ -197,6 +203,36 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val verify: StateFlow<VerifyOutcome?> = _verify.asStateFlow()
 
     private var documentText: String? = null
+    // On-device LLM (LiteRT-LM, the Google AI Edge Gallery runtime). Weights are downloaded only after consent.
+    private val onDeviceAi = OnDeviceAiController(
+        store = ModelStore(File(app.filesDir, "models")),
+        catalog = { app.assets.open(OnDeviceCatalog.ASSET).bufferedReader().use { OnDeviceCatalog.parse(it.readText()) } },
+        scope = viewModelScope,
+        runtimeLoader = { file, model -> LiteRtLmRuntime(file, model) },
+        networkUp = { networkUp() },
+        metered = { metered() },
+        ramBytes = { app.getSystemService(android.app.ActivityManager::class.java)?.let { am -> android.app.ActivityManager.MemoryInfo().also { am.getMemoryInfo(it) }.totalMem } ?: 0L },
+        onCompleted = { model, prompt, answer, location ->
+            val offline = location == ExecutionLocation.ON_DEVICE
+            record(ReceiptDraft(ReceiptKind.LOCAL_AI, if (offline) "COMPLETED_ON_DEVICE_OFFLINE" else "COMPLETED_IN_APP_NETWORK_UP", "On-device AI run",
+                "Model ${model.name} (${model.repo}@${model.commit.take(10)}) via LiteRT-LM in this app. Contents not stored; digests only.", "in-app LiteRT-LM",
+                digests = mapOf("promptSha256" to Sha256.hex(prompt), "responseSha256" to Sha256.hex(answer), "modelSha256" to (model.sha256 ?: "unpinned")),
+                localObservation = Evidence("CHECKED", if (offline) "Runtime answered in-process; no active network before or after the run" else "Runtime answered in-process; a network was active, so offline is not claimed")))
+        },
+    )
+    val onDevice: StateFlow<OnDeviceState> = onDeviceAi.state
+    fun refreshOnDevice() = onDeviceAi.refresh()
+    fun selectOnDeviceModel(id: String) = onDeviceAi.select(id)
+    fun requestOnDeviceDownload(id: String) = onDeviceAi.requestDownload(id)
+    fun confirmOnDeviceDownload() = onDeviceAi.confirmDownload()
+    fun declineOnDeviceDownload() = onDeviceAi.declineDownload()
+    fun cancelOnDeviceDownload() = onDeviceAi.cancelDownload()
+    fun deleteOnDeviceModel(id: String) { onDeviceAi.delete(id) }
+    fun sendOnDevicePrompt(prompt: String) = onDeviceAi.send(prompt)
+    fun cancelOnDeviceGeneration() { onDeviceAi.cancelGeneration() }
+    fun clearOnDeviceConversation() = onDeviceAi.clearConversation()
+    override fun onCleared() { onDeviceAi.close(); super.onCleared() }
+
     private var aiJob: Job? = null
     @Volatile private var aiClient: OwnedHostModelClient? = null
 
@@ -914,6 +950,12 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         prefs.edit().putBoolean("store.consent", false).putInt("store.quotaMb", 500).putBoolean("store.metered", true).putBoolean("store.kill", false).putString("store.provider", "").apply()
         storageAudit.append("secure defaults restored")
         _storage.value = loadStorage().copy(files = fileVault.entries(), usedBytes = fileVault.usedBytes(), note = "Consent, quota, provider and kill switch reset. Vault files were kept.")
+    }
+
+    private fun networkUp(): Boolean {
+        val cm = getApplication<Application>().getSystemService(ConnectivityManager::class.java) ?: return false
+        val caps = cm.activeNetwork?.let { cm.getNetworkCapabilities(it) } ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun metered(): Boolean {

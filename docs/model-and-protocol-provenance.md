@@ -16,6 +16,7 @@
 
 - Client: Ollama-compatible `/api/tags` and `/api/chat` in `OwnedHostModelClient`.
 - No model weights are in the APK.
+- On-device runtime: LiteRT-LM `com.google.ai.edge.litertlm:litertlm-android:0.8.0` (Apache-2.0) behind the Java-only `:ondevice-llm` module. Allowlist entries come from Google AI Edge Gallery `model_allowlists/1_0_20.json` at `a8e7956`, pinned to Hugging Face commits with SHA-256. Not run on a device. See `docs/on-device-ai.md`.
 - No model name, digest, or license was qualified against a running server in this session.
 
 ## Node agent

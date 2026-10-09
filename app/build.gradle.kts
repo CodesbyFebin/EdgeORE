@@ -99,6 +99,8 @@ dependencies {
     implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.0.3")
     // Ed25519 for node-agent pairing keys and for verifying wallet-returned signatures.
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    // On-device LLM runtime (LiteRT-LM, as used by Google AI Edge Gallery) behind a Java-only bridge module; see ondevice-llm/build.gradle.kts.
+    implementation(project(":ondevice-llm"))
 
     testImplementation("junit:junit:4.13.2")
     // Real org.json on the JVM test classpath (android.jar only ships stubs).
