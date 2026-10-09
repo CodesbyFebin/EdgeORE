@@ -1,5 +1,6 @@
 package com.edgeore.app.ai.ondevice
 
+import android.annotation.SuppressLint
 import org.json.JSONObject
 import java.io.File
 
@@ -80,5 +81,7 @@ class ModelStore(val root: File) {
 
     fun delete(m: OnDeviceModel): Boolean = dirFor(m).let { d -> !d.exists() || d.deleteRecursively() }
 
+    /** Deliberately conservative: cache Android could clear is not counted, so a download never relies on it. */
+    @SuppressLint("UsableSpace")
     fun usableBytes(): Long = (root.takeIf { it.exists() } ?: root.parentFile ?: root).usableSpace
 }
