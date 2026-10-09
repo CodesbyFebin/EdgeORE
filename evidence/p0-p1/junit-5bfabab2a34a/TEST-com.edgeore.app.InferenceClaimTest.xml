@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.InferenceClaimTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-09T15:40:29" hostname="grok-bot-vm-446931431" time="0.0">
+  <properties/>
+  <testcase name="remoteAnswerIsOwnedHost" classname="com.edgeore.app.InferenceClaimTest" time="0.0"/>
+  <testcase name="refusalWins" classname="com.edgeore.app.InferenceClaimTest" time="0.0"/>
+  <testcase name="airplaneModeWithoutRuntimeIsNotOnDevice" classname="com.edgeore.app.InferenceClaimTest" time="0.0"/>
+  <testcase name="clientCloseIsNotHostStop" classname="com.edgeore.app.InferenceClaimTest" time="0.0"/>
+  <testcase name="privateAddressWithoutAnswerIsNotASession" classname="com.edgeore.app.InferenceClaimTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

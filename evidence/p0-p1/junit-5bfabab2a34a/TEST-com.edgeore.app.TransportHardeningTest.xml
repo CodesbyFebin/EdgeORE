@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.TransportHardeningTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-09T15:40:29" hostname="grok-bot-vm-446931431" time="2.15">
+  <properties/>
+  <testcase name="modelHostRedirectIsRefused" classname="com.edgeore.app.TransportHardeningTest" time="0.016"/>
+  <testcase name="counterResetAndClockStallAreUnavailableNotZero" classname="com.edgeore.app.TransportHardeningTest" time="0.0"/>
+  <testcase name="localCancelClosesTheSocketPromptly" classname="com.edgeore.app.TransportHardeningTest" time="0.204"/>
+  <testcase name="missingDiskSampleDoesNotInflateTheRate" classname="com.edgeore.app.TransportHardeningTest" time="0.0"/>
+  <testcase name="wrongPinIsUnreachableNotTrusted" classname="com.edgeore.app.TransportHardeningTest" time="0.665"/>
+  <testcase name="connectionTargetsTheValidatedAddressNotASecondLookup" classname="com.edgeore.app.TransportHardeningTest" time="0.001"/>
+  <testcase name="fragmentsAndUnresolvableHostsRefused" classname="com.edgeore.app.TransportHardeningTest" time="0.001"/>
+  <testcase name="everyResolvedAddressMustPass" classname="com.edgeore.app.TransportHardeningTest" time="0.001"/>
+  <testcase name="signatureStatusMapping" classname="com.edgeore.app.TransportHardeningTest" time="0.0"/>
+  <testcase name="nodeRedirectIsRefusedNotFollowed" classname="com.edgeore.app.TransportHardeningTest" time="0.673"/>
+  <testcase name="pinnedTlsStillWorksForANormalAnswer" classname="com.edgeore.app.TransportHardeningTest" time="0.586"/>
+  <testcase name="cancelledClientRefusesNewRequests" classname="com.edgeore.app.TransportHardeningTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
