@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ReceiptCheckerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-09T18:11:25" hostname="grok-bot-vm-446931431" time="0.154">
+  <properties/>
+  <testcase name="rejectsWrongArguments" classname="ReceiptCheckerTest" time="0.022"/>
+  <testcase name="acceptsExportAndReportsUnpinnedOfflineLimits" classname="ReceiptCheckerTest" time="0.094"/>
+  <testcase name="rejectsWellFormedBodyTamperAndPreservesOriginal" classname="ReceiptCheckerTest" time="0.019"/>
+  <testcase name="reportsMissingInputAsToolError" classname="ReceiptCheckerTest" time="0.002"/>
+  <testcase name="acceptsPinnedKeyAndRejectsDifferentKey" classname="ReceiptCheckerTest" time="0.015"/>
+  <testcase name="rejectsMalformedJson" classname="ReceiptCheckerTest" time="0.001"/>
+  <testcase name="rejectsMalformedUtf8" classname="ReceiptCheckerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

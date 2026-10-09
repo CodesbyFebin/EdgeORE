@@ -1,0 +1,49 @@
+{
+  "schema": "edgeore.receipt-export.v2",
+  "mode": "FULL_CHAIN",
+  "receipts": [
+    {
+      "deviceSignature": "MEUCIQCbddj9vssRxruM7Utg3WvBL8vHq8uAOE+4vu/41yTcAwIgMFwSQDVQcaw30vjUKNS8wox7fbd7cuc4+JhF9Z7DMJs=",
+      "sha256": "6a4668007415bf48adb71c2ba317c34ec3cb399a540a391dedb31adf9fe3f7e6",
+      "body": "{\"schema\":\"edgeore.receipt.v2\",\"lamports\":null,\"cluster\":null,\"wallet\":null,\"evidence\":{\"independentVerification\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"nodeSignature\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"providerAcknowledgement\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"localObservation\":{\"checked\":\"pinned TLS certificate SHA-256\",\"state\":\"CHECKED\"}},\"signerKeyId\":\"e7c0052f38380506b2b1b940cf904b2ee057c80502e0b979ed3050e9e2651b02\",\"kind\":\"NODE\",\"source\":\"https://127.0.0.1:9843\",\"title\":\"Node paired\",\"solanaSignature\":null,\"sequence\":1,\"createdAt\":\"2026-10-09T17:39:49.074914263Z\",\"previousSha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"digests\":{},\"operationId\":null,\"payment\":\"NOT_OBSERVED\",\"id\":\"4eb08821-bdb3-47ca-ac14-03a98d7f5c2e\",\"detail\":\"READ_NODE\",\"relatesTo\":null,\"outcome\":\"PAIRED\"}"
+    },
+    {
+      "deviceSignature": "MEQCIH2JntbSvj7GkMszZCU7zH0/Hq+xELrxKmaoe/4yQfGrAiBEtY+Q5KHmHv4Ey1+FS5Osv1tEVlkZRq9NTmz3C/jA0Q==",
+      "sha256": "dd6cfd557ffe96d23e1c0195a308e7d9f8d5386a3390fbc533ec0d7cc1b1f0ce",
+      "body": "{\"schema\":\"edgeore.receipt.v2\",\"lamports\":1000001,\"cluster\":\"devnet\",\"wallet\":{\"messageBase64\":\"AQABA+pKbGPinFIKvvVQexMuxfmVR3auvr57kkIe6mkURtIs7UkoxijRwsbq6QM4kFmVYSlZJzpcY/k2NsFGFKyHN9EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJAQICAAEMAgAAAEBCDwAAAAAA\",\"signature\":\"4YyPS4RapAztsW7P4USe7RBXEYD8g2XymyM1GNi6QtVgZCkNAVufYBTnbRZjk3ySxEoFDci9YVDpb9WVsNbiHmFa\",\"signer\":\"GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB\"},\"evidence\":{\"independentVerification\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"nodeSignature\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"providerAcknowledgement\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"localObservation\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"}},\"signerKeyId\":\"e7c0052f38380506b2b1b940cf904b2ee057c80502e0b979ed3050e9e2651b02\",\"kind\":\"REVIEW\",\"source\":\"MWA\",\"title\":\"Signed transfer\",\"solanaSignature\":\"4YyPS4RapAztsW7P4USe7RBXEYD8g2XymyM1GNi6QtVgZCkNAVufYBTnbRZjk3ySxEoFDci9YVDpb9WVsNbiHmFa\",\"sequence\":2,\"createdAt\":\"2026-10-09T17:39:49.089410462Z\",\"previousSha256\":\"6a4668007415bf48adb71c2ba317c34ec3cb399a540a391dedb31adf9fe3f7e6\",\"digests\":{\"messageSha256\":\"70cca3b7b1b6fad3f5e9d47fa11990a00fc0489651188d62acddefc6dfcf7ec9\"},\"operationId\":\"op-fixture-1\",\"payment\":\"NOT_OBSERVED\",\"id\":\"4800505f-6def-48f7-9f4a-c450d8c33673\",\"detail\":\"0.001 SOL to a test address\",\"relatesTo\":null,\"outcome\":\"SIGNED_NOT_BROADCAST\"}"
+    }
+  ],
+  "checkpoint": {
+    "lastSha256": "dd6cfd557ffe96d23e1c0195a308e7d9f8d5386a3390fbc533ec0d7cc1b1f0ce",
+    "firstSequence": 1,
+    "lastSequence": 2,
+    "bundleSha256": "32191d2e1b1e8a22a17ac87c5230e2c8b4045e4068b2ac29c72b0b1f13961f34",
+    "signature": "MEUCIHkhi1xFZMcDDOrAmTOD45Kxj19knjsOcLw6W5ps4T5pAiEA7qE2BGvZWn8jEoZ//kVkgTfT42OKQ4MHQvVTS/nlxmk=",
+    "exportedAt": "2026-10-09T17:39:49.102247202Z",
+    "keyId": "e7c0052f38380506b2b1b940cf904b2ee057c80502e0b979ed3050e9e2651b02",
+    "receiptCount": 2
+  },
+  "note": "Device-key signatures show these bytes were written by an install holding these keys. They are not independent verification, provider acknowledgement or payment. Wallet signatures, where present, can be checked separately.",
+  "deviceKeys": [
+    {
+      "firstUsedAt": "2026-10-09T17:39:49.041331383Z",
+      "publicKeySpkiBase64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEus5lpsaJj0SEjj9DzzgcWfIzxpFu5qXuL7pCu+M2B/4j8hpcmudi9s5RfLtkLkm1ClI36cGNnd/Rm8UBD7swEg==",
+      "keyId": "e7c0052f38380506b2b1b940cf904b2ee057c80502e0b979ed3050e9e2651b02",
+      "protection": "Software key in app storage (Keystore unavailable; weaker)",
+      "algorithm": "SHA256withECDSA"
+    }
+  ],
+  "bundleSha256": "32191d2e1b1e8a22a17ac87c5230e2c8b4045e4068b2ac29c72b0b1f13961f34",
+  "exportedAt": "2026-10-09T17:39:49.102247202Z",
+  "deviceKey": {
+    "publicKeySpkiBase64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEus5lpsaJj0SEjj9DzzgcWfIzxpFu5qXuL7pCu+M2B/4j8hpcmudi9s5RfLtkLkm1ClI36cGNnd/Rm8UBD7swEg==",
+    "algorithm": "SHA256withECDSA"
+  },
+  "exclusions": [
+    "Private keys (wallet keys stay in the wallet; node and device keys stay in Android Keystore)",
+    "Document contents and AI prompts/responses (only SHA-256 digests are included)",
+    "Node endpoints' credentials and pairing codes"
+  ],
+  "payment": "NOT_OBSERVED",
+  "location": null
+}

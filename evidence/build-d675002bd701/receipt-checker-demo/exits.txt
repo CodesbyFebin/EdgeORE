@@ -1,0 +1,3 @@
+# Synthetic demo — not a real transfer
+original.json  (receipt.json)          VERIFIED: PASS  exit=0
+receipt-tampered.json (lamports += 1)  VERIFIED: FAIL  exit=1
