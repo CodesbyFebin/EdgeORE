@@ -20,6 +20,7 @@ private const val ANDROID_KEYSTORE = "AndroidKeyStore"
 /** P-256 receipt-signing key that never leaves Android Keystore. */
 class KeystoreReceiptSigner(private val alias: String = "edgeore.receipts.v1") : ReceiptSigner {
     override val algorithm = "SHA256withECDSA"
+    override val protection = "Android Keystore P-256"
     private val ks: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
 
     init {
@@ -46,7 +47,7 @@ class KeystoreReceiptSigner(private val alias: String = "edgeore.receipts.v1") :
  */
 class NodeKeyVault(context: Context, private val alias: String = "edgeore.nodekey.wrap.v1") {
     private val prefs = context.getSharedPreferences("edgeore.nodekey", Context.MODE_PRIVATE)
-    private val ks: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+    private val ks: KeyStore by lazy { KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) } }
 
     private fun wrapKey(): SecretKey {
         (ks.getKey(alias, null) as? SecretKey)?.let { return it }

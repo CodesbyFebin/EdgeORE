@@ -1,5 +1,7 @@
 # Qualification record: feature/kotlin-dapp
 
+> **Historical (feature/kotlin-dapp, 2026-10-08).** Current results: [`docs/qualification-status.md`](../docs/qualification-status.md).
+
 Recorded 2026-10-08 05:08 IST on a Debian 13 x86_64 build box using Temurin JDK 17.0.20.1, Gradle 8.9 (official wrapper), AGP 8.7.3, Kotlin 2.0.21 and Android SDK platform 35.
 
 ## Run and passed

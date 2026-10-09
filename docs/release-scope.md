@@ -1,5 +1,7 @@
 # Release scope
 
+> **Historical (0.2.6-review).** This page describes the frozen `0.2.6-review` candidate and is kept for the record. The current candidate is `0.2.8-review`; see [qualification-status.md](qualification-status.md).
+
 Primary journey, not yet executed on a phone:
 
 Authorize a real wallet → observe its devnet account → review a System Program transfer → sign the exact reviewed message → submit on purpose → observe confirmed or finalized → export a receipt and verify it on a second process.

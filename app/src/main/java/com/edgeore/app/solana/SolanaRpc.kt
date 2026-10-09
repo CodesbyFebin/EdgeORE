@@ -21,7 +21,7 @@ class RpcException(message: String) : Exception(message)
 /**
  * Minimal JSON-RPC client. Devnet only in this build: the app never targets mainnet.
  */
-class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000) {
+class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000) : ChainGateway {
     companion object {
         const val DEVNET = "https://api.devnet.solana.com"
         const val CLUSTER = "devnet"
@@ -69,13 +69,18 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
         r.getString("result")
     }
 
-    /** Returns confirmation status string, "NOT_FOUND", or throws. */
-    suspend fun signatureStatus(signature: String): String = withContext(Dispatchers.IO) {
+    override suspend fun send(signedTx: ByteArray): String = sendTransaction(signedTx)
+
+    override suspend fun status(signature: String): ChainStatus = withContext(Dispatchers.IO) {
         val r = call("getSignatureStatuses", JSONArray().put(JSONArray().put(signature)).put(JSONObject().put("searchTransactionHistory", true)))
-        val v = r.getJSONObject("result").getJSONArray("value").opt(0)
-        if (v !is JSONObject) "NOT_FOUND"
-        else if (!v.isNull("err")) "FAILED: ${v.get("err")}"
-        else v.optString("confirmationStatus", "UNKNOWN").uppercase()
+        parseStatus(r)
+    }
+
+    /** Finalized block height, used only to decide whether a blockhash can still land. */
+    override suspend fun blockHeight(): Long = withContext(Dispatchers.IO) {
+        val h = call("getBlockHeight", JSONArray().put(JSONObject().put("commitment", "finalized"))).getLong("result")
+        if (h < 0) throw RpcException("Malformed block height")
+        h
     }
 
     private fun call(method: String, params: JSONArray): JSONObject {
@@ -83,6 +88,7 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
         val conn = URL(endpoint).openConnection() as HttpURLConnection
         try {
             conn.requestMethod = "POST"
+            conn.instanceFollowRedirects = false
             conn.connectTimeout = timeoutMs
             conn.readTimeout = timeoutMs
             conn.doOutput = true
@@ -109,5 +115,30 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
             out.write(buf, 0, n)
         }
         return out.toByteArray()
+    }
+
+}
+
+/**
+ * Maps a getSignatureStatuses response for exactly one signature. Exposed for tests.
+ * Only an explicit JSON null element is NOT_FOUND. A missing result/value, a value that is not a
+ * one-element array, a non-object element, a missing `err`, or a missing/unknown confirmationStatus is
+ * [ChainStatus.Unavailable]: the outcome stays uncertain and nothing is released.
+ */
+fun parseStatus(response: JSONObject): ChainStatus {
+    val result = response.opt("result") as? JSONObject ?: return ChainStatus.Unavailable("Malformed status response: missing result")
+    val value = result.opt("value") as? JSONArray ?: return ChainStatus.Unavailable("Malformed status response: missing value array")
+    if (value.length() != 1) return ChainStatus.Unavailable("Malformed status response: expected 1 status, got ${value.length()}")
+    val v = value.opt(0)
+    if (v == JSONObject.NULL) return ChainStatus.NotFound
+    if (v !is JSONObject) return ChainStatus.Unavailable("Malformed status response: status is ${v?.javaClass?.simpleName ?: "absent"}")
+    if (!v.has("err")) return ChainStatus.Unavailable("Malformed status response: err field missing")
+    if (!v.isNull("err")) return ChainStatus.Failed(v.get("err").toString())
+    val cs = v.opt("confirmationStatus") as? String ?: return ChainStatus.Unavailable("Malformed status response: confirmationStatus missing")
+    return when (cs) {
+        "finalized" -> ChainStatus.Finalized
+        "confirmed" -> ChainStatus.Confirmed
+        "processed" -> ChainStatus.Processed
+        else -> ChainStatus.Unavailable("Unknown confirmationStatus \"${cs.take(40)}\"")
     }
 }

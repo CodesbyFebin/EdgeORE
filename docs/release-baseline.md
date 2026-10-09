@@ -1,5 +1,7 @@
 # Release baseline
 
+> **Historical (0.2.6-review).** This page describes the frozen `0.2.6-review` candidate and is kept for the record. The current candidate is `0.2.8-review`; see [qualification-status.md](qualification-status.md).
+
 Checked 2026-10-08. Pasted status reports are historical until this file.
 
 | Item | Value |

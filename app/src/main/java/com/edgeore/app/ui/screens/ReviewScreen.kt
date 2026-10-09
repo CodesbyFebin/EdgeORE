@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.EdgeOreViewModel
 import com.edgeore.app.ReviewPhase
+import com.edgeore.app.solana.OpState
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.ui.Format
@@ -37,6 +38,7 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
     val st by vm.review.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
     val settings by vm.settings.collectAsStateWithLifecycle()
+    val ops by vm.operations.collectAsStateWithLifecycle()
     val editing = st.phase == ReviewPhase.EDITING || st.phase == ReviewPhase.PREPARING
 
     SectionTitle("Review action", "Supported: System Program transfer on Solana devnet.")
@@ -45,6 +47,27 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         KeyValue("Account", wallet.address ?: "Not connected", mono = true)
         KeyValue("Daily budget", "${Format.sol(settings.dailyLimitLamports)} · spent today ${Format.sol(vm.spentTodayLamports())}")
         if (wallet.address == null) SecondaryAction("Connect wallet", onClick = onConnect)
+        Text("Each operation counts once from review until it is refused, abandoned, failed, or expired without ever being sent. Anything that may have been sent stays counted until the chain reports it.",
+            style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+    }
+    // Read on every recomposition: a failed store write latches this and the Review state update recomposes the screen.
+    vm.operationsUnavailable?.let { Notice(it, error = true) }
+
+    // Operations that may have left this phone and still need an observed outcome (survives restarts).
+    val open = ops.filter { (it.state.needsObservation || it.state == OpState.SIGNED) && it.id != st.operationId }
+    if (open.isNotEmpty()) EdgeCard {
+        Text("Operations awaiting an outcome", style = MaterialTheme.typography.titleMedium)
+        open.forEach { op ->
+            KeyValue(op.state.name.replace('_', ' '), "${Format.sol(op.lamports)} → ${op.recipient.take(6)}…${op.recipient.takeLast(4)}")
+            op.signature?.let { KeyValue("Signature", it, mono = true) }
+            op.lastObservation?.let { KeyValue("Last observation", it + (op.lastObservedAt?.let { t -> " · $t" } ?: "")) }
+            op.reason?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SecondaryAction("Observe status (read-only)", Modifier.weight(1f)) { vm.observeOperation(op.id) }
+                if (op.state == OpState.SIGNED) SecondaryAction("Discard unsent bytes", Modifier.weight(1f), danger = true) { vm.discardSigned(op.id) }
+            }
+        }
+        Text("Observation never re-sends. Only never-sent bytes expire; a sent transfer that is not found stays uncertain and counted.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
     }
 
     if (editing) EdgeCard {
@@ -95,10 +118,10 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         ReviewPhase.SIGNED, ReviewPhase.SUBMITTING -> {
             EdgeCard {
                 CapabilityBadge(Capability.IMPLEMENTED, "Signature verified over reviewed bytes")
-                KeyValue("Signature", st.verified?.signature ?: "", mono = true)
+                KeyValue("Signature", st.verified?.signature ?: st.operation?.signature ?: "", mono = true)
                 Text("Signed but not broadcast. Submitting spends devnet SOL only.", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
             }
-            PrimaryAction("Submit to devnet", icon = EdgeIcons.Send, loading = st.phase == ReviewPhase.SUBMITTING) { vm.submitSigned() }
+            PrimaryAction("Submit to devnet", icon = EdgeIcons.Send, enabled = st.phase == ReviewPhase.SIGNED, loading = st.phase == ReviewPhase.SUBMITTING) { vm.submitSigned() }
             SecondaryAction("Keep unsent · new review", Modifier.fillMaxWidth()) { vm.resetReview() }
         }
         ReviewPhase.SUBMITTED -> {
@@ -107,6 +130,17 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                 KeyValue("Confirmation", st.confirmation ?: "Not observed yet")
             }
             PrimaryAction("Check devnet status", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }
+            SecondaryAction("New review", Modifier.fillMaxWidth()) { vm.resetReview() }
+        }
+        ReviewPhase.UNKNOWN -> {
+            EdgeCard {
+                CapabilityBadge(Capability.UNAVAILABLE, "Outcome unknown")
+                KeyValue("Known signature", st.operation?.signature ?: "", mono = true)
+                KeyValue("Last observation", st.confirmation ?: "Not observed yet")
+                Text("The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until devnet reports it confirmed or failed. Not being found, even after the blockhash expires, does not prove it never landed, so the amount stays counted in today's budget.",
+                    style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+            }
+            PrimaryAction("Observe status (read-only)", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }
             SecondaryAction("New review", Modifier.fillMaxWidth()) { vm.resetReview() }
         }
         ReviewPhase.REFUSED -> SecondaryAction("Start a new review", Modifier.fillMaxWidth()) { vm.resetReview() }

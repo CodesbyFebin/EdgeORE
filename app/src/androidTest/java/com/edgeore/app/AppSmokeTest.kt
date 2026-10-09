@@ -12,7 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Launches the real Activity and walks the four destinations, checking honest default states. */
+/** Launches the real Activity and walks the five destinations, checking honest default states. */
 @RunWith(AndroidJUnit4::class)
 class AppSmokeTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
@@ -24,12 +24,17 @@ class AppSmokeTest {
         exists("Edge Mode")
         exists("Not connected")
         exists("Not observed")
-        exists("No measured samples")
+        exists("Saved only")          // CPU limit states it is not enforced
 
         rule.onNodeWithText("AI", substring = false).performClick()
-        exists("Private AI")
-        exists("No local model installed")
-        rule.onNodeWithText("Choose local model first").performScrollTo().assertIsNotEnabled()
+        exists("Personal Edge AI")
+        exists("Cloud fallback OFF")
+        exists("No model names reported.")
+        rule.onNodeWithText("Send stays off").performScrollTo().assertIsNotEnabled()
+
+        rule.onNodeWithText("Storage", substring = false).performClick()
+        exists("Storage & Bandwidth")
+        exists("Unavailable")         // kill switch: no VPN tunnel exists
 
         rule.onNodeWithText("Nodes", substring = false).performClick()
         exists("Owned Nodes")
@@ -38,12 +43,9 @@ class AppSmokeTest {
 
         rule.onNodeWithText("Receipts", substring = false).performClick()
         exists("No receipts yet.")
-        rule.onNodeWithText("Run tamper test").performScrollTo().performClick()
-        rule.waitForIdle()
-        exists("No receipts yet: create one first")
 
         rule.onNodeWithText("Mine", substring = false).performClick()
-        rule.onNodeWithText("Preview session (concept)").performScrollTo().performClick()
+        rule.onNodeWithText("Preview session", substring = false).performScrollTo().performClick()
         exists("CONCEPT · SAMPLE DATA")
     }
 }

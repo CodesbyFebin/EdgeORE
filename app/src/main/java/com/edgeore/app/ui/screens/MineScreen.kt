@@ -1,5 +1,7 @@
 package com.edgeore.app.ui.screens
 
+import com.edgeore.app.ui.components.EffectNote
+import com.edgeore.app.settings.Control
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -151,11 +153,15 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
 
     EdgeCard {
         Text("Safety & resource controls", style = MaterialTheme.typography.titleMedium)
-        Text("These gates use battery and thermal readings. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text("Each control states its effect: Enforced, Saved only or Unavailable. The gates use battery and thermal readings; nothing here caps CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         ResourceControl(EdgeIcons.Bolt, "Charge-only mode", "Run only when charging", settings.chargeOnly, gateText(eval, "Charge-only")) { v -> vm.updateSettings { it.copy(chargeOnly = v) } }
+        EffectNote(Control.CHARGE_ONLY)
         ResourceControl(EdgeIcons.Thermo, "Thermal guard", "Pause at high temperature", settings.thermalGuard, gateText(eval, "Thermal guard")) { v -> vm.updateSettings { it.copy(thermalGuard = v) } }
+        EffectNote(Control.THERMAL_GUARD)
         LabeledSlider(EdgeIcons.Battery, "Battery reserve", "Keep ${settings.batteryReservePercent}% minimum", gateText(eval, "Battery reserve"), settings.batteryReservePercent, 5f..90f) { v -> vm.updateSettings { it.copy(batteryReservePercent = v) } }
-        LabeledSlider(EdgeIcons.Cpu, "CPU limit", "Stored limit ${settings.cpuLimitPercent}%", "Stored only. No workload applies it.", settings.cpuLimitPercent, 10f..100f) { v -> vm.updateSettings { it.copy(cpuLimitPercent = v) } }
+        EffectNote(Control.BATTERY_RESERVE)
+        LabeledSlider(EdgeIcons.Cpu, "CPU limit", "Stored limit ${settings.cpuLimitPercent}%", "Now: not applied", settings.cpuLimitPercent, 10f..100f) { v -> vm.updateSettings { it.copy(cpuLimitPercent = v) } }
+        EffectNote(Control.CPU_LIMIT, Control.cpuDetail(settings.cpuLimitPercent))
     }
 }
 
@@ -169,7 +175,7 @@ private fun RowScope.MetricTile(icon: androidx.compose.ui.graphics.vector.ImageV
 }
 
 private fun gateText(eval: com.edgeore.app.device.EdgeEvaluation, name: String): String =
-    eval.gates.firstOrNull { it.name == name }?.let { (if (it.allowed) "Enforced · pass: " else "Enforced · blocking: ") + it.explanation } ?: "Off"
+    eval.gates.firstOrNull { it.name == name }?.let { (if (it.allowed) "Now: pass · " else "Now: blocking · ") + it.explanation } ?: "Now: off"
 
 @Composable
 private fun LabeledSlider(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange<Float>, onChange: (Int) -> Unit) {

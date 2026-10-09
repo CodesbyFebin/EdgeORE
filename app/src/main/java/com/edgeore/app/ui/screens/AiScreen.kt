@@ -1,5 +1,7 @@
 package com.edgeore.app.ui.screens
 
+import com.edgeore.app.ui.components.EffectNote
+import com.edgeore.app.settings.Control
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -122,12 +124,14 @@ fun AiScreen(vm: EdgeOreViewModel) {
 
     EdgeCard {
         Text("5. Memory and thermal budget", style = MaterialTheme.typography.titleMedium)
-        Text("Model memory limit ${ai.memoryLimitMb} MB. Stored only. This build does not measure model RSS, so it does not enforce the number.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text("Model memory limit ${ai.memoryLimitMb} MB.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Slider(ai.memoryLimitMb.toFloat(), { vm.setMemoryLimit(it.toInt()) }, valueRange = 256f..8192f, modifier = Modifier.fillMaxWidth().height(48.dp).semantics { contentDescription = "Model memory limit" }, colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
+        EffectNote(Control.AI_MEMORY_LIMIT)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("Thermal auto-pause")
             Switch(settings.thermalGuard, { v -> vm.updateSettings { it.copy(thermalGuard = v) } }, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
         }
+        EffectNote(Control.AI_THERMAL_GUARD)
         Text("Thermal guard uses the Android thermal status already read on Mine. It does not invent a chip temperature.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     }
 
@@ -138,7 +142,8 @@ fun AiScreen(vm: EdgeOreViewModel) {
             Text("Pause compute during chat", modifier = Modifier.weight(1f))
             Switch(ai.pauseComputeDuringChat, vm::setPauseComputeDuringChat, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
         }
-        Text(if (ai.pauseComputeDuringChat) "Sending a prompt sets Edge Mode back to paused." else "Off. Chat does not change Edge Mode.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        EffectNote(Control.PAUSE_COMPUTE_DURING_CHAT)
+        Text(if (ai.pauseComputeDuringChat) "On." else "Off. Chat does not change Edge Mode.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     }
 
     EdgeCard {
@@ -153,6 +158,7 @@ fun AiScreen(vm: EdgeOreViewModel) {
             SecondaryAction("Delete memory", danger = true) { vm.detachDocument() }
         }
         Slider(ai.allocationChars.toFloat(), { vm.setAllocationChars(it.toInt()) }, valueRange = 1000f..32000f, modifier = Modifier.fillMaxWidth().height(48.dp).semantics { contentDescription = "Memory allocation characters" }, colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
+        EffectNote(Control.AI_ALLOCATION_CHARS)
     }
 
     EdgeCard {

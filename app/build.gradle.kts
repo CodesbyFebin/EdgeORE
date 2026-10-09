@@ -2,7 +2,15 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("io.github.takahirom.roborazzi")
 }
+
+fun git(vararg args: String): String = try {
+    val p = ProcessBuilder(listOf("git") + args).directory(rootDir).redirectErrorStream(true).start()
+    p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
+} catch (_: Exception) { "" }
+val gitCommit: String = git("rev-parse", "--short=12", "HEAD").ifEmpty { "unknown" } +
+    (if (git("status", "--porcelain", "--untracked-files=no").isNotEmpty()) "-dirty" else "")
 
 android {
     namespace = "com.edgeore.app"
@@ -12,8 +20,10 @@ android {
         applicationId = "com.edgeore.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "0.2.6-review"
+        versionCode = 10
+        versionName = "0.2.8-review"
+        // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
+        buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,7 +45,7 @@ android {
         }
     }
 
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -54,8 +64,23 @@ android {
         disable += setOf("GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion", "OldTargetApi")
     }
 
-    testOptions { unitTests.isReturnDefaultValues = false }
+    testOptions { unitTests.isReturnDefaultValues = false; unitTests.isIncludeAndroidResources = true }
 }
+
+// Screenshot suite (Robolectric + Roborazzi, API 28, Pixel 7). It is slow, so it only runs when asked:
+//   ./gradlew :app:recordRoborazziDebug -Pscreens   (writes docs/screenshots/)
+//   ./gradlew :app:verifyRoborazziDebug -Pscreens   (fails if a screen changed)
+val screens = project.hasProperty("screens")
+tasks.withType<Test>().configureEach {
+    if (screens) {
+        filter { includeTestsMatching("com.edgeore.app.screens.*") }
+        systemProperty("screens.out", rootProject.file("docs/screenshots").absolutePath)
+        maxHeapSize = "1536m"
+    } else {
+        exclude("com/edgeore/app/screens/**")
+    }
+}
+
 
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.12.01"))
@@ -79,6 +104,14 @@ dependencies {
     // Real org.json on the JVM test classpath (android.jar only ships stubs).
     testImplementation("org.json:json:20240303")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    // Screenshot suite only (see -Pscreens above).
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.36.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.36.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.36.0")
+    testImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("androidx.test.ext:junit:1.1.5")
 
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

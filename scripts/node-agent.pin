@@ -1,0 +1,7 @@
+# Pinned DeProof node agent used by scripts/build-node-agent.sh and scripts/node-agent-it.sh.
+DEPROOF_REPO=https://github.com/CodesbyFebin/DeProof--EdgeORE.git
+DEPROOF_REV=7431f0896f4fb5409970f3aa3f64c42f6f877757
+# node-agent/go.mod requires this toolchain; GOTOOLCHAIN fetches it if the local Go is older.
+GO_TOOLCHAIN=go1.26.4
+# SHA-256 of the binary produced by build-node-agent.sh (linux/amd64, CGO off, -trimpath, empty build id).
+DEPROOF_NODE_SHA256_LINUX_AMD64=c90125f35508c7ddf59040c2a6c22a533e92c57a7f7262bfb36862d2ded3e921

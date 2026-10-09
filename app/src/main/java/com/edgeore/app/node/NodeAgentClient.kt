@@ -108,12 +108,15 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
             conn.sslSocketFactory = sslContext.socketFactory
             conn.hostnameVerifier = pinVerifier
             conn.requestMethod = "POST"
+            // An authenticated command has one intended destination; redirects are refused, not followed.
+            conn.instanceFollowRedirects = false
             conn.connectTimeout = timeoutMs
             conn.readTimeout = timeoutMs
             conn.doOutput = true
             conn.setRequestProperty("Content-Type", "application/json")
             conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
             val status = conn.responseCode
+            if (status in 300..399) return HttpOutcome.Error("REDIRECT_REFUSED")
             val stream = if (status in 200..299) conn.inputStream else conn.errorStream
             val text = stream?.use { String(readBounded(it), Charsets.UTF_8) } ?: ""
             if (status in 200..299) {

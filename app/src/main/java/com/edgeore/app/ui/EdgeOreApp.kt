@@ -124,7 +124,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         title = { Text("About this build") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("EdgeORE ${BuildConfigInfo.VERSION} · Solana devnet only.")
+                Text("EdgeORE ${BuildConfigInfo.VERSION} (${BuildConfigInfo.COMMIT}) · Solana devnet only.")
                 Text("Receipts signed with: ${vm.receiptSignerProtection}.")
                 Text("Not store-ready. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")
             }
