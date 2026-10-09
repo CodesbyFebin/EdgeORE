@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ReceiptTamperTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-09T18:10:09" hostname="grok-bot-vm-446931431" time="0.19">
+  <properties/>
+  <testcase name="localCopyMismatchRejected" classname="com.edgeore.app.ReceiptTamperTest" time="0.045"/>
+  <testcase name="untouchedExportAccepted" classname="com.edgeore.app.ReceiptTamperTest" time="0.021"/>
+  <testcase name="reSignedWithAnotherKeyRejected" classname="com.edgeore.app.ReceiptTamperTest" time="0.023"/>
+  <testcase name="reorderedReceiptsRejected" classname="com.edgeore.app.ReceiptTamperTest" time="0.019"/>
+  <testcase name="singleReceiptExportVerifies" classname="com.edgeore.app.ReceiptTamperTest" time="0.012"/>
+  <testcase name="chainLinksAndSequence" classname="com.edgeore.app.ReceiptTamperTest" time="0.008"/>
+  <testcase name="exportListsExclusionsAndNoContents" classname="com.edgeore.app.ReceiptTamperTest" time="0.01"/>
+  <testcase name="removedReceiptRejectedByBundleDigest" classname="com.edgeore.app.ReceiptTamperTest" time="0.02"/>
+  <testcase name="garbageAndEmptyRejected" classname="com.edgeore.app.ReceiptTamperTest" time="0.004"/>
+  <testcase name="editedBodyWithRecomputedDigestRejectedBySignature" classname="com.edgeore.app.ReceiptTamperTest" time="0.014"/>
+  <testcase name="editedBodyRejected" classname="com.edgeore.app.ReceiptTamperTest" time="0.013"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
