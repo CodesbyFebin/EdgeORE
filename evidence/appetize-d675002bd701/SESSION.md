@@ -20,6 +20,12 @@ This session is a **launch and navigation** check of the installed APK in a host
 | SHA-256 | `6ee17a3cac0c363b130caa2523118e068b3449f9f1d1ac49b449f3dae3f6a4e6` |
 | Upload time | 2026-10-09T20:00:05Z (01:30 IST, 10 Oct 2026) |
 
+## Capture provenance
+
+Captured by **Grok Bot via browser automation**, as reported by the session operator. The operator ran the Appetize session in its own browser; ChatGPT/Codex did not execute that runtime session. ChatGPT/Codex subsequently reviewed the committed screenshots and documentation before merging PR #7.
+
+The capture commit used the git identity configured on the operator's computer. Commit authorship alone does not identify who performed the runtime check. The low-resolution About stamp remains the operator's observation; the later screenshot review could not independently resolve every character.
+
 ## Execution timestamp
 
 Screenshots captured **2026-10-09T20:01Z** (≈01:31 IST, 10 Oct 2026) via a browser session against the public Appetize link above. Files in this directory: `01-launch.png` … `07-about.png`, `all-tabs.png`.
