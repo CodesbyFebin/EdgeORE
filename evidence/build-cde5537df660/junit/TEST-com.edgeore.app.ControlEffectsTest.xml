@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ControlEffectsTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-09T17:37:40" hostname="grok-bot-vm-446931431" time="0.052">
+  <properties/>
+  <testcase name="enforcedGatesReallyBlock" classname="com.edgeore.app.ControlEffectsTest" time="0.007"/>
+  <testcase name="everyControlIsShownOnItsScreen" classname="com.edgeore.app.ControlEffectsTest" time="0.02"/>
+  <testcase name="mechanismsThatDoNotExistAreNotLabelledEnforced" classname="com.edgeore.app.ControlEffectsTest" time="0.0"/>
+  <testcase name="everySwitchAndSliderHasAnEffectNote" classname="com.edgeore.app.ControlEffectsTest" time="0.021"/>
+  <testcase name="cpuLimitIsSavedOnlyAndSaysSo" classname="com.edgeore.app.ControlEffectsTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
