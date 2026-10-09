@@ -1,4 +1,8 @@
-package com.edgeore.app
+package com.edgeore.app.screens
+
+import com.edgeore.app.MainActivity
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,9 +16,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Launches the real Activity and walks the five destinations, checking honest default states. */
+/** JVM twin of androidTest AppSmokeTest (Robolectric API 28), so the walk is executed even without a phone. */
 @RunWith(AndroidJUnit4::class)
-class AppSmokeTest {
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [28])
+class DefaultStateWalkTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
 
     private fun exists(text: String, substring: Boolean = true) =
