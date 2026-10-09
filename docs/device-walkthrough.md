@@ -1,5 +1,7 @@
 # Device walkthrough
 
+> **Historical (0.2.6-review).** This page describes the frozen `0.2.6-review` candidate and is kept for the record. The current candidate is `0.2.7-review`; see [qualification-status.md](qualification-status.md).
+
 Status: **NOT_RUN**.
 
 No Android device or emulator completed boot in this environment. The earlier API 35 emulator was killed because the host did not have enough memory. That attempt is not a device session.

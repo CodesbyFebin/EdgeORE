@@ -1,5 +1,7 @@
 # Qualification evidence
 
+> **Historical (0.2.6-review).** Current results: [`docs/qualification-status.md`](../../docs/qualification-status.md).
+
 No device log, wallet signature, or model transcript was captured.
 
 APK SHA-256: `6f1f73a9eeb58a5dd8f9b305cfa901761a5a8ec9773f2bf5863e7c1b8ee35968`

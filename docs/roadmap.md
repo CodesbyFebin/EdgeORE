@@ -1,5 +1,7 @@
 # Roadmap
 
+> **Historical (0.2.6-review).** This page describes the frozen `0.2.6-review` candidate and is kept for the record. The current candidate is `0.2.7-review`; see [qualification-status.md](qualification-status.md).
+
 This is not a 10/10 score. Milestones are not marked complete unless a gate status is PASS.
 
 | Milestone | State | Status of the check |

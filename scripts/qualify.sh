@@ -33,7 +33,7 @@ bt=$(ls -d "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"/build-tools/* 2>/dev/null | sort
   echo
   echo "## Lint (debug)"
   echo '```'
-  grep -E "No issues found|errors?, [0-9]+ warnings?|Lint found" "$log" | head -3 || echo "lint result line not found in log"
+  if [ -f app/build/reports/lint-results-debug.txt ]; then cp app/build/reports/lint-results-debug.txt "$out/lint-debug.txt"; head -5 "$out/lint-debug.txt"; else echo "no lint report (lint did not run)"; fi
   echo '```'
   if [ -f "$apk" ]; then
     echo
@@ -42,7 +42,8 @@ bt=$(ls -d "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"/build-tools/* 2>/dev/null | sort
     [ -n "$bt" ] && "$bt/aapt" dump badging "$apk" | head -1
     echo "sha256 $(sha256sum "$apk" | cut -d' ' -f1)"
     echo "size   $(stat -c %s "$apk") bytes"
-    echo "BuildConfig.GIT_COMMIT = $(unzip -p "$apk" 'classes*.dex' | strings | grep -m1 -E '^[0-9a-f]{12}(-dirty)?$' || echo 'not found')"
+    stamp=$(unzip -p "$apk" 'classes*.dex' | strings | grep -E '^[0-9a-f]{12}(-dirty)?$' | sort -u | tr '\n' ' ')
+    echo "BuildConfig.GIT_COMMIT = ${stamp:-not found}"
     [ -n "$bt" ] && echo "signer $("$bt/apksigner" verify --print-certs "$apk" | sed -n 's/.*certificate SHA-256 digest: //p' | head -1) (Android debug key unless you configured release signing)"
     echo '```'
   fi
