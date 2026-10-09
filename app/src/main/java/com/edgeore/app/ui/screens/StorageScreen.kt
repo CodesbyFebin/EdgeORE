@@ -52,12 +52,8 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     var exportName by rememberSaveable { mutableStateOf<String?>(null) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) vm.importVault(uri) }
     val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
-        val name = exportName
-        if (uri != null && name != null) {
-            val bytes = vm.readVault(name)
-            if (bytes == null) Toast.makeText(context, "Could not decrypt $name", Toast.LENGTH_LONG).show()
-            else context.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
-        }
+        val id = exportName
+        if (uri != null && id != null) vm.exportVault(id, uri)
     }
     LaunchedEffect(Unit) {
         vm.refreshStorage()
@@ -82,19 +78,24 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
                 Text(if (total == null) "Total not observed" else "${formatBytes(total)} on this device", color = EdgeColors.textMuted)
             }
         }
-        Text("Used ${shown(usedDisk)}  ·  Available ${shown(free)}  ·  Reserved ${if (st.allocationMb == 0) "none" else "${st.allocationMb} MB"}", style = MaterialTheme.typography.bodyMedium)
+        Text("Phone storage: used ${shown(usedDisk)}  ·  available ${shown(free)}", style = MaterialTheme.typography.bodyMedium)
+        Text(if (st.allocationMb == 0) "Vault allowance: not set. Enforced limits: 8 MB per file and phone free space."
+            else "Vault allowance: ${st.allocationMb} MB. Enforced on every import (allowance − used − in-progress).", style = MaterialTheme.typography.bodyMedium)
         Text("Vault ciphertext ${formatBytes(st.usedBytes)}. That is only files this app encrypted.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text("Recovery: only this installation's Keystore key can decrypt these files. Uninstalling, resetting the phone or losing the key makes them unrecoverable. This is not a backup.",
+            color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         Slider(st.allocationMb.toFloat(), { vm.setAllocationMb(it.toInt()) }, valueRange = 0f..2048f, modifier = Modifier.fillMaxWidth().height(48.dp), colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SecondaryAction("Restore", Modifier.weight(1f)) { pick.launch(arrayOf("*/*")) }
             SecondaryAction("Manage files", Modifier.weight(1f)) { pick.launch(arrayOf("*/*")) }
         }
         if (st.files.isEmpty()) Text("No vault files yet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        st.files.forEach { name ->
+        st.files.forEach { e ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                TextButton(onClick = { exportName = name; save.launch(name.removeSuffix(".vault")) }) { Text("Export") }
-                TextButton(onClick = { pendingDelete = name }) { Text("Delete", color = EdgeColors.danger) }
+                Text(e.displayName + (if (e.plainBytes >= 0) " · ${formatBytes(e.plainBytes)}" else "") + (if (e.legacy) " · legacy format" else ""),
+                    modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                TextButton(onClick = { exportName = e.id; save.launch(e.displayName) }) { Text("Export") }
+                TextButton(onClick = { pendingDelete = e.id }) { Text("Delete", color = EdgeColors.danger) }
             }
         }
     }
@@ -205,9 +206,10 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     Text(st.note, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
 
     pendingDelete?.let { name ->
+        val label = st.files.firstOrNull { it.id == name }?.displayName ?: name
         AlertDialog(
             onDismissRequest = { pendingDelete = null },
-            title = { Text("Delete $name?") },
+            title = { Text("Delete $label?") },
             text = { Text("This removes the encrypted file from this phone.") },
             confirmButton = { TextButton(onClick = { vm.deleteVault(name); pendingDelete = null }) { Text("Delete") } },
             dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text("Cancel") } },

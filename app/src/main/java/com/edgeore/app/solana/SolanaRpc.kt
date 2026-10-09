@@ -21,7 +21,7 @@ class RpcException(message: String) : Exception(message)
 /**
  * Minimal JSON-RPC client. Devnet only in this build: the app never targets mainnet.
  */
-class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000) {
+class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000) : ChainGateway {
     companion object {
         const val DEVNET = "https://api.devnet.solana.com"
         const val CLUSTER = "devnet"
@@ -78,11 +78,26 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
         else v.optString("confirmationStatus", "UNKNOWN").uppercase()
     }
 
+    override suspend fun send(signedTx: ByteArray): String = sendTransaction(signedTx)
+
+    override suspend fun status(signature: String): ChainStatus = withContext(Dispatchers.IO) {
+        val r = call("getSignatureStatuses", JSONArray().put(JSONArray().put(signature)).put(JSONObject().put("searchTransactionHistory", true)))
+        parseStatus(r)
+    }
+
+    /** Finalized block height, used only to decide whether a blockhash can still land. */
+    override suspend fun blockHeight(): Long = withContext(Dispatchers.IO) {
+        val h = call("getBlockHeight", JSONArray().put(JSONObject().put("commitment", "finalized"))).getLong("result")
+        if (h < 0) throw RpcException("Malformed block height")
+        h
+    }
+
     private fun call(method: String, params: JSONArray): JSONObject {
         val body = JSONObject().put("jsonrpc", "2.0").put("id", 1).put("method", method).put("params", params).toString()
         val conn = URL(endpoint).openConnection() as HttpURLConnection
         try {
             conn.requestMethod = "POST"
+            conn.instanceFollowRedirects = false
             conn.connectTimeout = timeoutMs
             conn.readTimeout = timeoutMs
             conn.doOutput = true
@@ -109,5 +124,18 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
             out.write(buf, 0, n)
         }
         return out.toByteArray()
+    }
+
+}
+
+/** Maps a getSignatureStatuses response. Exposed for tests. */
+fun parseStatus(response: JSONObject): ChainStatus {
+    val v = response.getJSONObject("result").getJSONArray("value").opt(0)
+    if (v !is JSONObject) return ChainStatus.NotFound
+    if (!v.isNull("err")) return ChainStatus.Failed(v.get("err").toString())
+    return when (v.optString("confirmationStatus").lowercase()) {
+        "finalized" -> ChainStatus.Finalized
+        "confirmed" -> ChainStatus.Confirmed
+        else -> ChainStatus.Processed
     }
 }

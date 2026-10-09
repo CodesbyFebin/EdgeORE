@@ -23,23 +23,17 @@ data class DeviceResources(
 )
 
 object DeviceResourcesReader {
-    private var lastCpu: CpuSample? = null
-    private var lastDisk: DiskSample? = null
-    private var lastDiskAt: Long = 0L
+    private val cpuTracker = CpuRateTracker()
+    private val diskTracker = DiskRateTracker()
 
     fun read(context: Context): DeviceResources {
         val stat = runCatching { StatFs(context.filesDir.absolutePath) }.getOrNull()
         val rx = TrafficStats.getTotalRxBytes().takeIf { it >= 0 }
         val tx = TrafficStats.getTotalTxBytes().takeIf { it >= 0 }
         val battery = DeviceObservations.read(context)
-        val cpuNow = CpuSample.read()
-        val cpu = cpuNow?.let { now -> lastCpu?.let { CpuSample.percent(it, now) } }
-        lastCpu = cpuNow
-        val diskNow = DiskSample.read()
-        val now = System.currentTimeMillis()
-        val io = if (diskNow != null && lastDisk != null) ioBytesPerSecond(lastDisk!!, diskNow, now - lastDiskAt) else null
-        lastDisk = diskNow ?: lastDisk
-        lastDiskAt = now
+        val cpu = cpuTracker.observe(CpuSample.read())
+        // Monotonic clock: wall-clock changes cannot stretch or shrink the interval.
+        val io = diskTracker.observe(DiskSample.read(), android.os.SystemClock.elapsedRealtime())
         val cm = context.getSystemService(ConnectivityManager::class.java)
         val vpn = cm?.allNetworks?.any { network ->
             cm.getNetworkCapabilities(network)?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true

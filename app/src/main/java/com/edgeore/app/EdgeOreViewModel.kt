@@ -29,6 +29,21 @@ import com.edgeore.app.receipts.ReceiptSigner
 import com.edgeore.app.receipts.ReceiptVerifier
 import com.edgeore.app.receipts.SoftwareReceiptSigner
 import com.edgeore.app.receipts.StoredReceipt
+import com.edgeore.app.receipts.DamagedLine
+import com.edgeore.app.receipts.KeyRegistry
+import com.edgeore.app.receipts.WalletEvidence
+import com.edgeore.app.receipts.keyId
+import com.edgeore.app.solana.OpState
+import com.edgeore.app.solana.OperationStore
+import com.edgeore.app.solana.PendingOperation
+import com.edgeore.app.solana.TransferCoordinator
+import com.edgeore.app.storage.VaultEntry
+import com.edgeore.app.storage.VaultException
+import com.edgeore.app.io.BoundedInput
+import com.edgeore.app.io.InputTooLargeException
+import com.edgeore.app.ai.InferenceClaim
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
@@ -96,7 +111,7 @@ data class AiState(
     val airplaneResult: String? = null,
 )
 
-enum class ReviewPhase { EDITING, PREPARING, READY, SIGNING, SIGNED, SUBMITTING, SUBMITTED, REFUSED }
+enum class ReviewPhase { EDITING, PREPARING, READY, SIGNING, SIGNED, SUBMITTING, SUBMITTED, UNKNOWN, REFUSED }
 data class ReviewState(
     val destination: String = "",
     val amount: String = "0.001",
@@ -108,12 +123,14 @@ data class ReviewState(
     val submittedSignature: String? = null,
     val confirmation: String? = null,
     val message: String? = null,
+    val operationId: String? = null,
+    val operation: PendingOperation? = null,
 )
 
 data class VerifyOutcome(val accepted: Boolean, val summary: String, val findings: List<String>)
 
 data class StorageState(
-    val files: List<String> = emptyList(),
+    val files: List<VaultEntry> = emptyList(),
     val usedBytes: Long = 0,
     val allocationMb: Int = 0,
     val sharingConsent: Boolean = false,
@@ -130,11 +147,20 @@ data class StorageState(
 class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     private val prefs = app.getSharedPreferences("edgeore.settings", 0)
     private val nodePrefs = app.getSharedPreferences("edgeore.node", 0)
-    private val signer: ReceiptSigner = try { KeystoreReceiptSigner() } catch (_: Exception) { SoftwareReceiptSigner() }
-    val receiptSignerProtection: String = if (signer is KeystoreReceiptSigner) "Android Keystore P-256" else "Software key (Keystore unavailable)"
-    private val log = ReceiptLog(File(app.filesDir, "receipts/receipts.jsonl"), signer)
+    private val keyRegistry = KeyRegistry(File(app.filesDir, "receipts/keys.json"))
+    // Keystore first. If it is unavailable, a persisted (weaker, labelled) software key keeps the same identity across restarts.
+    private val signer: ReceiptSigner = try { KeystoreReceiptSigner() } catch (_: Exception) { SoftwareReceiptSigner.persisted(File(app.filesDir, "receipts/software-signer.json")) }
+    val receiptSignerProtection: String = signer.protection + " · key " + signer.keyId().take(16)
+    private val log = ReceiptLog(File(app.filesDir, "receipts/receipts.jsonl"), signer, keys = keyRegistry)
     private val vault = NodeKeyVault(app)
     private val rpc = SolanaRpc()
+    // Durable wallet operations. A damaged store fails closed: transfers are disabled, never reset to "nothing pending".
+    private val opStore: OperationStore? = try { OperationStore(File(app.filesDir, "operations/operations.json")) } catch (_: Exception) { null }
+    val operationsUnavailable: String? = if (opStore == null) "The wallet operation store could not be read. Transfers are disabled so unknown outcomes are not hidden." else null
+    private val coordinator: TransferCoordinator? = opStore?.let { TransferCoordinator(it, rpc) }
+    private val _operations = MutableStateFlow(opStore?.all().orEmpty())
+    val operations: StateFlow<List<PendingOperation>> = _operations.asStateFlow()
+    private val receiptMutex = Mutex()
     val wallet = WalletCoordinator()
 
     private val _settings = MutableStateFlow(loadSettings())
@@ -154,7 +180,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         allocationChars = prefs.getInt("ai.allocChars", 8000),
     ))
     val ai: StateFlow<AiState> = _ai.asStateFlow()
-    private val fileVault = LocalVault(app)
+    private val fileVault = LocalVault.forApp(app)
     private val storageAudit = StorageAudit(File(app.filesDir, "storage/audit.jsonl"))
     private val _storage = MutableStateFlow(loadStorage())
     val storage: StateFlow<StorageState> = _storage.asStateFlow()
@@ -162,14 +188,28 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val review: StateFlow<ReviewState> = _review.asStateFlow()
     private val _receipts = MutableStateFlow<List<StoredReceipt>>(emptyList())
     val receipts: StateFlow<List<StoredReceipt>> = _receipts.asStateFlow()
+    private val _receiptDamage = MutableStateFlow<List<DamagedLine>>(emptyList())
+    /** Unreadable receipt lines. Shown as evidence damage, never as an empty history. */
+    val receiptDamage: StateFlow<List<DamagedLine>> = _receiptDamage.asStateFlow()
     private val _verify = MutableStateFlow<VerifyOutcome?>(null)
     val verify: StateFlow<VerifyOutcome?> = _verify.asStateFlow()
 
     private var documentText: String? = null
     private var aiJob: Job? = null
+    @Volatile private var aiClient: OwnedHostModelClient? = null
 
     init {
         refreshReceipts()
+        val abandonedWrites = fileVault.recoverAbandonedWrites()
+        if (abandonedWrites > 0) storageAudit.append("reclaimed $abandonedWrites interrupted vault write(s)")
+        // Restart recovery: local state first (no network), then receipts for any transition the
+        // previous process committed but did not record, then read-only chain observation.
+        coordinator?.recoverAfterRestart()
+        viewModelScope.launch {
+            flushOperationReceipts()
+            coordinator?.let { runCatching { it.reconcileAll() } }
+            flushOperationReceipts()
+        }
         viewModelScope.launch {
             while (true) { _device.value = DeviceObservations.read(getApplication()); delay(15_000) }
         }
@@ -198,13 +238,28 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun refreshDevice() { _device.value = DeviceObservations.read(getApplication()) }
 
     // ---------- receipts ----------
-    private fun refreshReceipts() = viewModelScope.launch(Dispatchers.IO) { _receipts.value = runCatching { log.all() }.getOrDefault(emptyList()).reversed() }
+    private fun refreshReceipts() = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            val r = log.read()
+            _receipts.value = r.receipts.reversed()
+            _receiptDamage.value = r.damaged
+        } catch (e: Exception) {
+            _receiptDamage.value = listOf(DamagedLine(0, "Receipt log could not be read: ${e.message ?: e.javaClass.simpleName}"))
+        }
+    }
 
     private suspend fun record(d: ReceiptDraft): StoredReceipt = withContext(Dispatchers.IO) { log.append(d) }.also { refreshReceipts() }
 
-    fun spentTodayLamports(): Long {
+    /** Pre-0.2.7 submissions were tracked only as receipts without an operation id; they still count today. */
+    private fun legacySpentToday(): Long {
         val today = Instant.now().atZone(ZoneOffset.UTC).toLocalDate().toString()
-        return _receipts.value.filter { it.kind == "REVIEW" && it.outcome == "SUBMITTED" && it.createdAt.startsWith(today) }.sumOf { it.lamports ?: 0L }
+        return _receipts.value.filter { it.kind == "REVIEW" && it.outcome == "SUBMITTED" && it.operationId == null && it.createdAt.startsWith(today) }.sumOf { it.lamports ?: 0L }
+    }
+
+    /** Lamports counted against today's budget (UTC day) for the connected account: each operation once, plus legacy receipts. */
+    fun spentTodayLamports(): Long {
+        val signer = _wallet.value.address ?: return legacySpentToday()
+        return (opStore?.exposure(signer, SolanaRpc.CLUSTER) ?: 0L) + legacySpentToday()
     }
 
     /** Writes an export JSON into cache/exports and returns the file for FileProvider sharing. */
@@ -217,7 +272,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     fun verifyImported(uri: Uri) = viewModelScope.launch {
         val text = withContext(Dispatchers.IO) {
-            runCatching { getApplication<Application>().contentResolver.openInputStream(uri)?.use { s -> s.readBytes().takeIf { it.size <= 4_000_000 }?.toString(Charsets.UTF_8) } }.getOrNull()
+            runCatching { getApplication<Application>().contentResolver.openInputStream(uri)?.use { s -> BoundedInput.readAtMost(s, 4_000_000).toString(Charsets.UTF_8) } }.getOrNull()
         }
         if (text == null) { _verify.value = VerifyOutcome(false, "Could not read file (missing or larger than 4 MB)", emptyList()); return@launch }
         runVerification(text, "Imported file")
@@ -238,8 +293,9 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun runVerification(text: String, label: String) {
         val local = withContext(Dispatchers.IO) { log.all() }
-        val report = ReceiptVerifier.verify(text, signer.publicKeySpki(), local)
-        _verify.value = VerifyOutcome(report.accepted, if (report.accepted) "$label: accepted · ${report.verifiedReceipts} receipt(s) verified" else "$label: REJECTED", report.findings)
+        val pinned = keyRegistry.all().map { java.util.Base64.getDecoder().decode(it.spkiBase64) }
+        val report = ReceiptVerifier.verify(text, pinned, local)
+        _verify.value = VerifyOutcome(report.accepted, "$label: ${report.summary}", report.findings)
         record(ReceiptDraft(ReceiptKind.POLICY, if (report.accepted) "EXPORT_VERIFIED" else "TAMPER_REJECTED", if (report.accepted) "Receipt file verified" else "Tampered receipt file rejected",
             "$label. " + (report.findings.firstOrNull() ?: "Digest, device signature, chain and local copy matched."), "On-device verifier",
             digests = mapOf("documentSha256" to Sha256.hex(text)),
@@ -288,88 +344,193 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     // ---------- review route ----------
-    fun editReview(destination: String? = null, amount: String? = null) = _review.update {
-        ReviewState(destination = destination ?: it.destination, amount = amount ?: it.amount)
+    // Every wallet action is a durable operation (OperationStore). The UI state below is derived from it.
+    fun editReview(destination: String? = null, amount: String? = null) {
+        abandonCurrentDraft()
+        _review.update { ReviewState(destination = destination ?: it.destination, amount = amount ?: it.amount) }
     }
 
-    fun resetReview() { _review.value = ReviewState(destination = _wallet.value.address ?: "") }
+    fun resetReview() {
+        abandonCurrentDraft()
+        _review.value = ReviewState(destination = _wallet.value.address ?: "")
+    }
+
+    /** An unsigned draft that is edited or reset releases its reservation. Signed bytes are kept until observed or discarded. */
+    private fun abandonCurrentDraft() {
+        val id = _review.value.operationId ?: return
+        opStore?.transition(id, setOf(OpState.REVIEWED), OpState.ABANDONED) { it.copy(reason = "Draft edited or reset before signing") }?.let {
+            viewModelScope.launch { flushOperationReceipts() }
+        }
+    }
 
     fun prepareReview() = viewModelScope.launch {
         val from = _wallet.value.publicKey ?: run { _review.update { it.copy(message = "Connect a wallet first") }; return@launch }
-        _review.update { it.copy(phase = ReviewPhase.PREPARING, message = null, draft = null, verified = null) }
+        val store = opStore ?: run { _review.update { it.copy(message = operationsUnavailable) }; return@launch }
+        if (_review.value.phase == ReviewPhase.PREPARING) return@launch
+        abandonCurrentDraft()
+        _review.update { it.copy(phase = ReviewPhase.PREPARING, message = null, draft = null, verified = null, operationId = null, operation = null) }
         try {
             val bh = rpc.latestBlockhash()
-            val draft = TransferReview.prepare(from, _review.value.destination, _review.value.amount, bh.blockhash, spentTodayLamports(), _settings.value.dailyLimitLamports)
+            val signer = Base58.encode(from)
+            val counted = spentTodayLamports()
+            val draft = TransferReview.prepare(from, _review.value.destination, _review.value.amount, bh.blockhash, counted, _settings.value.dailyLimitLamports)
             val fee = if (draft.message.isNotEmpty()) rpc.feeForMessage(draft.message) else null
-            _review.update { it.copy(phase = if (draft.approvable) ReviewPhase.READY else ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = draft.refusal) }
+            if (!draft.approvable) {
+                _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = draft.refusal) }
+                return@launch
+            }
+            val reserved = withContext(Dispatchers.IO) {
+                store.reserve(SolanaRpc.CLUSTER, signer, draft.toAddress, draft.lamports, draft.message, draft.messageSha256,
+                    draft.blockhash, bh.lastValidBlockHeight, _settings.value.dailyLimitLamports, externalLamports = legacySpentToday())
+            }
+            when (reserved) {
+                is OperationStore.ReserveResult.Refused ->
+                    _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = reserved.reason) }
+                is OperationStore.ReserveResult.Reserved ->
+                    _review.update { it.copy(phase = ReviewPhase.READY, draft = draft, feeLamports = fee, feeKnown = fee != null, message = null, operationId = reserved.op.id, operation = reserved.op) }
+            }
+            flushOperationReceipts()
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
             _review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a devnet blockhash: ${e.message}") }
         }
     }
 
     fun refuseReview(reason: String = "Refused by you during review") = viewModelScope.launch {
-        val d = _review.value.draft
-        record(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Review refused", reason, "EdgeORE review route", SolanaRpc.CLUSTER,
-            digests = d?.messageSha256?.takeIf { it.isNotEmpty() }?.let { mapOf("messageSha256" to it) } ?: emptyMap(),
-            localObservation = Evidence("CHECKED", "Message decoded on device; no signature requested"), lamports = d?.lamports))
+        val id = _review.value.operationId
+        if (id != null) coordinator?.recordRefused(id, reason)
         _review.update { it.copy(phase = ReviewPhase.REFUSED, message = reason) }
+        flushOperationReceipts()
+        id?.let(::syncReview)
     }
 
     fun approveAndSign(sender: ActivityResultSender) = viewModelScope.launch {
         val st = _review.value
         val d = st.draft ?: return@launch
+        val id = st.operationId ?: return@launch
+        val c = coordinator ?: return@launch
         val signerKey = _wallet.value.publicKey ?: return@launch
-        if (!d.approvable || st.phase != ReviewPhase.READY) return@launch
-        _review.update { it.copy(phase = ReviewPhase.SIGNING, message = "Waiting for wallet signature…") }
-        val result = try { wallet.signTransaction(sender, SolanaMessage.unsignedTransaction(d.message)) } catch (e: CancellationException) { throw e } catch (e: Exception) { WalletCoordinator.SignResult.Refused("Wallet unavailable") }
+        if (!d.approvable) return@launch
+        if (Base58.encode(signerKey) != d.fromAddress) {
+            c.recordRefused(id, "Connected account changed after review")
+            flushOperationReceipts(); syncReview(id); return@launch
+        }
+        // Single flight: only one tap can move REVIEWED -> SIGNING; later taps are ignored.
+        if (c.beginSigning(id) !is TransferCoordinator.Outcome.Done) return@launch
+        syncReview(id)
+        _review.update { it.copy(message = "Waiting for wallet signature…") }
+        val result = try { wallet.signTransaction(sender, SolanaMessage.unsignedTransaction(d.message)) } catch (e: CancellationException) {
+            c.recordRefused(id, "Signing was interrupted; no bytes were received"); throw e
+        } catch (e: Exception) { WalletCoordinator.SignResult.Refused("Wallet unavailable") }
         when (result) {
-            is WalletCoordinator.SignResult.Refused -> {
-                record(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Wallet did not sign", result.reason, "Mobile Wallet Adapter", SolanaRpc.CLUSTER, digests = mapOf("messageSha256" to d.messageSha256), lamports = d.lamports,
-                    localObservation = Evidence("CHECKED", "Reviewed message digest recorded; wallet returned no signature")))
-                _review.update { it.copy(phase = ReviewPhase.REFUSED, message = result.reason) }
-            }
+            is WalletCoordinator.SignResult.Refused -> c.recordRefused(id, "Wallet did not sign: ${result.reason}")
             is WalletCoordinator.SignResult.Signed -> when (val v = TransferReview.verifyWalletReturn(d.message, signerKey, result.signedTransaction)) {
-                is TransferReview.WalletReturn.Refused -> {
-                    record(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Wallet bytes rejected", v.reason, "Exact-message policy", SolanaRpc.CLUSTER,
-                        digests = mapOf("messageSha256" to d.messageSha256, "returnedTransactionSha256" to Sha256.hex(result.signedTransaction)), lamports = d.lamports,
-                        localObservation = Evidence("CHECKED", "Compared wallet-returned message bytes with reviewed bytes and verified Ed25519 signature")))
-                    _review.update { it.copy(phase = ReviewPhase.REFUSED, message = v.reason) }
-                }
+                is TransferReview.WalletReturn.Refused ->
+                    c.recordRefused(id, "Wallet bytes rejected: ${v.reason} (returned transaction SHA-256 ${Sha256.hex(result.signedTransaction)})")
                 is TransferReview.WalletReturn.Verified -> {
-                    record(ReceiptDraft(ReceiptKind.REVIEW, "SIGNED_NOT_BROADCAST", "Signed after exact-message review", "Wallet signature verified over the reviewed bytes. Not broadcast.", "Mobile Wallet Adapter", SolanaRpc.CLUSTER,
-                        solanaSignature = v.signature, digests = mapOf("messageSha256" to d.messageSha256), lamports = d.lamports,
-                        localObservation = Evidence("CHECKED", "Returned message bytes identical to reviewed bytes; Ed25519 signature valid for connected account")))
-                    _review.update { it.copy(phase = ReviewPhase.SIGNED, verified = v, message = null) }
+                    c.recordSigned(id, v.signature, v.signedTransaction)
+                    _review.update { it.copy(verified = v) }
                 }
             }
         }
+        flushOperationReceipts()
+        syncReview(id)
     }
 
     fun submitSigned() = viewModelScope.launch {
-        val st = _review.value
-        val v = st.verified ?: return@launch
-        val d = st.draft ?: return@launch
+        val id = _review.value.operationId ?: return@launch
+        val c = coordinator ?: return@launch
+        if (opStore?.get(id)?.state != OpState.SIGNED) return@launch
         _review.update { it.copy(phase = ReviewPhase.SUBMITTING) }
-        try {
-            val sig = rpc.sendTransaction(v.signedTransaction)
-            if (sig != v.signature) throw IllegalStateException("RPC reported a different signature")
-            record(ReceiptDraft(ReceiptKind.REVIEW, "SUBMITTED", "Submitted to devnet", "RPC accepted the verified bytes. Settlement not yet observed.", SolanaRpc.DEVNET, SolanaRpc.CLUSTER,
-                solanaSignature = sig, digests = mapOf("messageSha256" to d.messageSha256), lamports = d.lamports, payment = "SUBMITTED_NOT_CONFIRMED",
-                localObservation = Evidence("CHECKED", "RPC returned the same signature as the verified wallet signature")))
-            _review.update { it.copy(phase = ReviewPhase.SUBMITTED, submittedSignature = sig) }
-        } catch (e: CancellationException) { throw e } catch (e: Exception) {
-            _review.update { it.copy(phase = ReviewPhase.SIGNED, message = "Submission failed: ${e.message}") }
+        val out = c.submit(id)
+        if (out is TransferCoordinator.Outcome.Busy) return@launch
+        flushOperationReceipts()
+        syncReview(id)
+    }
+
+    /** Read-only status observation by the known signature. Never resends. */
+    fun checkConfirmation() { _review.value.operationId?.let(::observeOperation) }
+
+    fun observeOperation(id: String) = viewModelScope.launch {
+        val c = coordinator ?: return@launch
+        c.observe(id)
+        flushOperationReceipts()
+        if (_review.value.operationId == id) syncReview(id)
+    }
+
+    /** Signed bytes that were never sent can be discarded; the budget reservation is released. */
+    fun discardSigned(id: String) = viewModelScope.launch {
+        coordinator?.discardSigned(id)
+        flushOperationReceipts()
+        if (_review.value.operationId == id) syncReview(id)
+    }
+
+    private fun phaseFor(op: PendingOperation): ReviewPhase = when (op.state) {
+        OpState.REVIEWED -> ReviewPhase.READY
+        OpState.SIGNING -> ReviewPhase.SIGNING
+        OpState.SIGNED -> ReviewPhase.SIGNED
+        OpState.SUBMIT_ATTEMPTED -> ReviewPhase.SUBMITTING
+        OpState.SUBMITTED, OpState.CONFIRMED, OpState.FINALIZED, OpState.FAILED -> ReviewPhase.SUBMITTED
+        OpState.OUTCOME_UNKNOWN -> ReviewPhase.UNKNOWN
+        OpState.REFUSED, OpState.ABANDONED, OpState.EXPIRED -> ReviewPhase.REFUSED
+    }
+
+    private fun syncReview(id: String) {
+        val op = opStore?.get(id) ?: return
+        _review.update {
+            if (it.operationId != id) it else it.copy(
+                phase = phaseFor(op), operation = op,
+                submittedSignature = op.signature?.takeIf { op.state.needsObservation || op.state == OpState.FINALIZED || op.state == OpState.FAILED },
+                confirmation = op.lastObservation, message = op.reason,
+            )
         }
     }
 
-    fun checkConfirmation() = viewModelScope.launch {
-        val sig = _review.value.submittedSignature ?: return@launch
-        val status = try { rpc.signatureStatus(sig) } catch (e: CancellationException) { throw e } catch (e: Exception) { "UNAVAILABLE: ${e.message}" }
-        _review.update { it.copy(confirmation = status) }
-        val related = _receipts.value.firstOrNull { it.solanaSignature == sig && it.outcome == "SUBMITTED" }?.id
-        record(ReceiptDraft(ReceiptKind.REVIEW, "STATUS_OBSERVED", "Devnet status observed", "Signature status: $status", SolanaRpc.DEVNET, SolanaRpc.CLUSTER, solanaSignature = sig, relatesTo = related,
-            payment = if (status == "CONFIRMED" || status == "FINALIZED") "OBSERVED_$status" else "NOT_OBSERVED",
-            providerAcknowledgement = Evidence(if (status == "CONFIRMED" || status == "FINALIZED") "OBSERVED" else "NOT_AVAILABLE", "getSignatureStatuses from ${SolanaRpc.DEVNET}")))
+    /** Appends a receipt for every committed transition that has none yet (including after a crash). */
+    private suspend fun flushOperationReceipts() {
+        val store = opStore ?: return
+        receiptMutex.withLock {
+            withContext(Dispatchers.IO) {
+                for (op in store.unreceipted()) {
+                    receiptFor(op)?.let { draft ->
+                        val related = log.all().lastOrNull { it.operationId == op.id }?.id
+                        log.append(draft.copy(relatesTo = related))
+                    }
+                    store.markReceipted(op.id, op.state)
+                }
+            }
+            _operations.value = store.all()
+        }
+        refreshReceipts()
+    }
+
+    private fun receiptFor(op: PendingOperation): ReceiptDraft? {
+        val wallet = op.signature?.let { WalletEvidence(op.messageBase64, op.signer, it) }
+        val digests = mapOf("messageSha256" to op.messageSha256)
+        fun d(outcome: String, title: String, detail: String, source: String = "EdgeORE review route", payment: String = "NOT_OBSERVED",
+              local: Evidence = Evidence("CHECKED", "Durable operation ${op.state}; exact reviewed message digest recorded"),
+              provider: Evidence = Evidence.NOT_AVAILABLE, withWallet: Boolean = true) =
+            ReceiptDraft(ReceiptKind.REVIEW, outcome, title, detail, source, op.cluster, operationId = op.id,
+                solanaSignature = if (withWallet) op.signature else null, digests = digests, lamports = op.lamports, payment = payment,
+                localObservation = local, providerAcknowledgement = provider, wallet = if (withWallet) wallet else null)
+        return when (op.state) {
+            OpState.REVIEWED, OpState.SIGNING, OpState.SUBMIT_ATTEMPTED -> null
+            OpState.REFUSED -> d("REFUSED", "Review refused", op.reason ?: "Refused before sending", withWallet = false,
+                local = Evidence("CHECKED", "Message decoded on device; no bytes were sent"))
+            OpState.ABANDONED -> d("ABANDONED", "Review abandoned", op.reason ?: "Ended before sending", withWallet = false,
+                local = Evidence("CHECKED", "No bytes were sent; reservation released"))
+            OpState.SIGNED -> d("SIGNED_NOT_BROADCAST", "Signed after exact-message review", "Wallet signature verified over the reviewed bytes. Not broadcast.", "Mobile Wallet Adapter",
+                local = Evidence("CHECKED", "Returned message bytes identical to reviewed bytes; Ed25519 signature valid for connected account"))
+            OpState.SUBMITTED -> d("SUBMITTED", "Submitted to devnet", "RPC accepted the verified bytes (attempt ${op.submitAttempts}). Settlement not yet observed.", SolanaRpc.DEVNET,
+                payment = "SUBMITTED_NOT_CONFIRMED", local = Evidence("CHECKED", "RPC returned the same signature as the verified wallet signature"))
+            OpState.OUTCOME_UNKNOWN -> d("OUTCOME_UNKNOWN", "Submission outcome unknown", op.reason ?: "The bytes may have reached the cluster", SolanaRpc.DEVNET,
+                local = Evidence("CHECKED", "Send attempt recorded before the network call; no acknowledgement observed"))
+            OpState.CONFIRMED, OpState.FINALIZED -> d("STATUS_OBSERVED", "Devnet status observed", "Signature status: ${op.state}", SolanaRpc.DEVNET,
+                payment = "OBSERVED_${op.state}", provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.DEVNET}"))
+            OpState.FAILED -> d("STATUS_OBSERVED", "Devnet reported failure", op.lastObservation ?: "FAILED", SolanaRpc.DEVNET,
+                provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.DEVNET} reported an error"))
+            OpState.EXPIRED -> d("EXPIRED", "Blockhash expired", op.reason ?: "Can no longer land", SolanaRpc.DEVNET,
+                provider = Evidence("NOT_AVAILABLE", op.lastObservation ?: "Not observed before expiry"))
+        }
     }
 
     // ---------- node agent ----------
@@ -489,7 +650,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         when (decision) {
             is EndpointPolicy.Decision.Refused -> _ai.update { it.copy(status = AiStatus.NO_ENDPOINT, statusDetail = decision.reason) }
             is EndpointPolicy.Decision.Allowed -> try {
-                val models = OwnedHostModelClient(decision.url).listModels()
+                val models = OwnedHostModelClient(decision, timeoutMs = 15_000).listModels()
                 _ai.update { it.copy(location = decision.location, models = models, status = AiStatus.NO_MODEL,
                     statusDetail = if (models.isEmpty()) "Host reachable but reports no installed models" else "${models.size} model(s) on your host. Choose one explicitly.") }
             } catch (e: CancellationException) { throw e } catch (e: Exception) {
@@ -509,7 +670,8 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     fun verifyChecksum(uri: Uri, expected: String) = viewModelScope.launch {
         val hex = withContext(Dispatchers.IO) {
-            runCatching { getApplication<Application>().contentResolver.openInputStream(uri)?.use { Sha256.hex(it.readBytes()) } }.getOrNull()
+            // Streamed: a multi-GB model file is hashed without loading it into memory.
+            runCatching { getApplication<Application>().contentResolver.openInputStream(uri)?.use { BoundedInput.sha256Hex(it) } }.getOrNull()
         }
         if (hex == null) { _ai.update { it.copy(checksumResult = "Could not read that file.") }; return@launch }
         val want = expected.trim().lowercase()
@@ -552,15 +714,21 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val result = withContext(Dispatchers.IO) {
             runCatching {
                 val name = app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null } ?: "document"
-                val bytes = app.contentResolver.openInputStream(uri)?.use { s -> s.readBytes() } ?: error("unreadable")
-                Triple(name, bytes, String(bytes, Charsets.UTF_8))
+                // Byte limit while reading, strict UTF-8, then a separate character limit.
+                name to (app.contentResolver.openInputStream(uri)?.use { s ->
+                    BoundedInput.readUtf8Text(s, OwnedHostModelClient.MAX_DOCUMENT_BYTES, OwnedHostModelClient.MAX_DOCUMENT_CHARS)
+                } ?: error("unreadable"))
             }.getOrNull()
         }
         if (result == null) { _ai.update { it.copy(statusDetail = "Could not read that document") }; return@launch }
-        val (name, bytes, text) = result
-        val truncated = text.length > OwnedHostModelClient.MAX_DOCUMENT_CHARS
-        documentText = text.take(OwnedHostModelClient.MAX_DOCUMENT_CHARS)
-        _ai.update { it.copy(documentName = name, documentSha256 = Sha256.hex(bytes), documentChars = documentText!!.length, documentTruncated = truncated) }
+        val (name, read) = result
+        when (read) {
+            is BoundedInput.TextResult.Refused -> _ai.update { it.copy(statusDetail = "Document not attached: ${read.reason}") }
+            is BoundedInput.TextResult.Ok -> {
+                documentText = read.text
+                _ai.update { it.copy(documentName = name, documentSha256 = Sha256.hex(read.bytes), documentChars = read.text.length, documentTruncated = read.truncatedChars) }
+            }
+        }
     }
 
     fun detachDocument() { documentText = null; _ai.update { it.copy(documentName = null, documentSha256 = null, documentChars = 0, documentTruncated = false) } }
@@ -569,27 +737,48 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val st = _ai.value
         val model = st.selectedModel ?: return
         if (prompt.isBlank() || st.status == AiStatus.LOADING) return
-        val decision = EndpointPolicy.check(st.endpoint).let { it as? EndpointPolicy.Decision.Allowed } ?: return
         if (st.pauseComputeDuringChat) updateSettings { it.copy(edgeModeResumed = false) }
         val doc = documentText?.take(st.allocationChars)
         val userContent = if (doc != null) "Private document \"${st.documentName}\":\n<<<\n$doc\n>>>\n\nQuestion: $prompt" else prompt
-        _ai.update { it.copy(status = AiStatus.LOADING, statusDetail = "Running on ${it.location}…", messages = it.messages + ChatMessage(true, prompt, System.currentTimeMillis())) }
+        _ai.update { it.copy(status = AiStatus.LOADING, statusDetail = "Checking endpoint, then running on ${it.location}…", messages = it.messages + ChatMessage(true, prompt, System.currentTimeMillis())) }
         aiJob = viewModelScope.launch {
             try {
-                val answer = OwnedHostModelClient(decision.url).chat(model, OwnedHostModelClient.SYSTEM_PROMPT, userContent)
+                // Re-validated off the main thread at send time; the request goes to the validated address.
+                val decision = withContext(Dispatchers.IO) { EndpointPolicy.check(st.endpoint) }
+                if (decision !is EndpointPolicy.Decision.Allowed) {
+                    _ai.update { it.copy(status = AiStatus.FAILED, statusDetail = "Endpoint refused at send time: ${(decision as EndpointPolicy.Decision.Refused).reason}. Nothing was sent.") }
+                    return@launch
+                }
+                val client = OwnedHostModelClient(decision)
+                aiClient = client
+                val answer = runInterruptibleChat(client, model, userContent)
                 _ai.update { it.copy(status = AiStatus.COMPLETED, statusDetail = "Completed on ${it.location}", messages = it.messages + ChatMessage(false, answer, System.currentTimeMillis())) }
                 record(ReceiptDraft(ReceiptKind.LOCAL_AI, "COMPLETED_ON_OWNED_HOST", "Private AI run", "Model $model on ${st.location}. Contents not stored; digests only.", decision.url,
                     digests = buildMap { put("promptSha256", Sha256.hex(userContent)); put("responseSha256", Sha256.hex(answer)); st.documentSha256?.let { put("documentSha256", it) } },
                     localObservation = Evidence("CHECKED", "Response received from owned host endpoint; this is not independent verification")))
             } catch (e: CancellationException) {
-                _ai.update { it.copy(status = AiStatus.CANCELED, statusDetail = "Canceled. The host may finish computing; the result will be discarded.") }
+                if (_ai.value.status == AiStatus.LOADING) _ai.update { it.copy(status = AiStatus.CANCELED) }
             } catch (e: Exception) {
+                if (aiClient?.cancelled == true) return@launch
                 _ai.update { it.copy(status = AiStatus.FAILED, statusDetail = "Failed: ${e.message ?: e.javaClass.simpleName}") }
+            } finally {
+                aiClient = null
             }
         }
     }
 
-    fun cancelPrompt() { aiJob?.cancel() }
+    private suspend fun runInterruptibleChat(client: OwnedHostModelClient, model: String, userContent: String): String =
+        withContext(Dispatchers.IO) { client.chatBlocking(model, OwnedHostModelClient.SYSTEM_PROMPT, userContent) }
+
+    /** Closes the socket so this phone stops waiting at once. The host is not asked to stop and does not acknowledge. */
+    fun cancelPrompt() {
+        val closed = aiClient?.cancelActive() ?: false
+        aiJob?.cancel()
+        _ai.update {
+            it.copy(status = AiStatus.CANCELED, statusDetail = InferenceClaim.cancellationLabel(clientClosed = closed, hostAcknowledgedStop = false) +
+                " The host may keep generating; no stop acknowledgement exists in this API. Any late result is discarded.")
+        }
+    }
     fun clearConversation() = _ai.update { it.copy(messages = emptyList(), status = if (it.selectedModel != null) AiStatus.READY else it.status) }
 
     private fun loadStorage() = StorageState(
@@ -606,7 +795,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val device = runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull()
         _storage.update {
             it.copy(
-                files = fileVault.names(),
+                files = fileVault.entries(),
                 usedBytes = fileVault.usedBytes(),
                 auditCount = storageAudit.count(),
                 device = device ?: it.device,
@@ -628,28 +817,41 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
                 val name = getApplication<Application>().contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
                     if (c.moveToFirst()) c.getString(0) else null
                 } ?: "file"
-                val bytes = getApplication<Application>().contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: error("unreadable")
-                if (bytes.size > 8_000_000) error("larger than 8 MB")
-                fileVault.put(name, bytes)
+                // Hard limit enforced while reading: an oversized or unknown-size stream is cut off at 8 MB + 1 byte.
+                val bytes = getApplication<Application>().contentResolver.openInputStream(uri)?.use {
+                    try { BoundedInput.readAtMost(it, LocalVault.MAX_PLAIN_BYTES) } catch (_: InputTooLargeException) { throw VaultException.TooLarge(LocalVault.MAX_PLAIN_BYTES) }
+                } ?: error("unreadable")
+                fileVault.put(name, bytes, allowanceBytes = _storage.value.allocationMb * 1024L * 1024L)
             }
         }
         outcome.onSuccess {
-            storageAudit.append("encrypted file $it")
+            storageAudit.append("encrypted object ${it.id}")
             refreshStorage()
-            _storage.update { s -> s.copy(note = "Encrypted $it with AES-256-GCM. The plaintext was not kept.") }
+            _storage.update { s -> s.copy(note = "Encrypted ${it.displayName} with AES-256-GCM. The plaintext was not kept. Only this phone's Keystore key can decrypt it.") }
         }.onFailure { e ->
-            _storage.update { it.copy(note = "Import failed: ${e.message ?: "unreadable"}") }
+            refreshStorage()
+            _storage.update { it.copy(note = "Import failed, nothing was saved: ${e.message ?: "unreadable"}") }
         }
     }
 
-    fun deleteVault(name: String) {
-        val ok = fileVault.delete(name)
-        storageAudit.append(if (ok) "deleted $name" else "delete missed $name")
+    fun deleteVault(id: String) {
+        val ok = fileVault.delete(id)
+        storageAudit.append(if (ok) "deleted object $id" else "delete missed $id")
         refreshStorage()
-        _storage.update { it.copy(note = if (ok) "Deleted $name from this phone." else "That file was not in the vault.") }
+        _storage.update { it.copy(note = if (ok) "Deleted from this phone." else "That file was not in the vault.") }
     }
 
-    fun readVault(name: String): ByteArray? = fileVault.read(name)
+    /** Decrypts off the main thread and writes to the chosen document. Every failure is reported specifically. */
+    fun exportVault(id: String, uri: Uri) = viewModelScope.launch {
+        val r = withContext(Dispatchers.IO) {
+            runCatching {
+                val bytes = fileVault.read(id)
+                getApplication<Application>().contentResolver.openOutputStream(uri)?.use { it.write(bytes) } ?: error("destination unavailable")
+                bytes.size
+            }
+        }
+        _storage.update { it.copy(note = r.fold({ n -> "Exported $n bytes of plaintext to the file you chose." }, { e -> "Export failed: ${e.message ?: e.javaClass.simpleName}" })) }
+    }
 
     fun setSharingConsent(on: Boolean) {
         if (on && _storage.value.pauseOnMetered && metered()) {
@@ -696,7 +898,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun restoreStorageDefaults() {
         prefs.edit().putBoolean("store.consent", false).putInt("store.quotaMb", 500).putBoolean("store.metered", true).putBoolean("store.kill", false).putString("store.provider", "").apply()
         storageAudit.append("secure defaults restored")
-        _storage.value = loadStorage().copy(files = fileVault.names(), usedBytes = fileVault.usedBytes(), note = "Consent, quota, provider and kill switch reset. Vault files were kept.")
+        _storage.value = loadStorage().copy(files = fileVault.entries(), usedBytes = fileVault.usedBytes(), note = "Consent, quota, provider and kill switch reset. Vault files were kept.")
     }
 
     private fun metered(): Boolean {

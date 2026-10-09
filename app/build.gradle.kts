@@ -4,6 +4,13 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+fun git(vararg args: String): String = try {
+    val p = ProcessBuilder(listOf("git") + args).directory(rootDir).redirectErrorStream(true).start()
+    p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
+} catch (_: Exception) { "" }
+val gitCommit: String = git("rev-parse", "--short=12", "HEAD").ifEmpty { "unknown" } +
+    (if (git("status", "--porcelain", "--untracked-files=no").isNotEmpty()) "-dirty" else "")
+
 android {
     namespace = "com.edgeore.app"
     compileSdk = 35
@@ -12,8 +19,10 @@ android {
         applicationId = "com.edgeore.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "0.2.6-review"
+        versionCode = 9
+        versionName = "0.2.7-review"
+        // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
+        buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,7 +44,7 @@ android {
         }
     }
 
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

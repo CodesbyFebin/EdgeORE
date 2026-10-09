@@ -20,6 +20,7 @@ private const val ANDROID_KEYSTORE = "AndroidKeyStore"
 /** P-256 receipt-signing key that never leaves Android Keystore. */
 class KeystoreReceiptSigner(private val alias: String = "edgeore.receipts.v1") : ReceiptSigner {
     override val algorithm = "SHA256withECDSA"
+    override val protection = "Android Keystore P-256"
     private val ks: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
 
     init {

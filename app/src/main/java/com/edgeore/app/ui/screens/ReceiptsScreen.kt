@@ -61,6 +61,7 @@ private val clock = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm").withZone(Zo
 fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExport: (StoredReceipt?, Boolean) -> Unit) {
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val verify by vm.verify.collectAsStateWithLifecycle()
+    val damage by vm.receiptDamage.collectAsStateWithLifecycle()
     val observation by vm.observation.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
     var filter by rememberSaveable { mutableStateOf("All") }
@@ -109,7 +110,11 @@ fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExpo
             else -> list
         }
     }
-    if (shown.isEmpty()) EdgeCard { Notice(if (receipts.isEmpty()) "No receipts yet." else "No receipts match this search or filter.") }
+    if (damage.isNotEmpty()) EdgeCard {
+        Notice("Evidence damage: ${damage.size} receipt line(s) could not be read. Valid records are still shown below; the damaged lines were kept, not deleted.", error = true)
+        damage.take(5).forEach { Text("Line ${it.lineNumber}: ${it.reason}", style = MaterialTheme.typography.bodyMedium) }
+    }
+    if (shown.isEmpty()) EdgeCard { Notice(if (receipts.isEmpty() && damage.isEmpty()) "No receipts yet." else if (receipts.isEmpty()) "No readable receipts. See the damage report above." else "No receipts match this search or filter.") }
     shown.forEach { r ->
         val open = openId == r.id
         ReceiptCard(r) { openId = if (open) null else r.id }
@@ -198,7 +203,7 @@ fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExpo
         title = { Text("Export preview") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Includes ${receipts.size} receipt(s): exact body bytes, SHA-256 of each body, chain links and a bundle digest.")
+                Text("Includes ${receipts.size} receipt(s): exact body bytes, SHA-256 of each body, chain links, the signing key of each record, wallet signatures over reviewed messages where present, and a checkpoint signed by this install's current key. A selected-receipt export does not claim the history is complete.")
                 Text(if (hideDevice) "Device public key is omitted. Offline signature checks of this file will fail until you export again with the key included." else "Device public key is included so a later check can verify these signatures.")
                 Text(if (includeLocation) "Location was requested, but none was collected." else "Location is excluded.")
                 Text("Payment status in the file: Not observed.", color = EdgeColors.copper)

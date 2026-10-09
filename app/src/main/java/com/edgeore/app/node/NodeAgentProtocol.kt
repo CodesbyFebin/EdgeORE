@@ -79,6 +79,7 @@ object NodeAgentProtocol {
         "BAD_COMMAND_SIGNATURE" -> "Node rejected the command signature."
         "INVALID_DEADLINE" -> "Node rejected the command deadline. Check the phone and host clocks."
         "REPLAYED_OPERATION" -> "Node refused a replayed operation."
+        "REDIRECT_REFUSED" -> "The node answered with a redirect. EdgeORE does not follow redirects for signed commands; nothing was sent elsewhere."
         else -> "Node refused: $code"
     }
 }
