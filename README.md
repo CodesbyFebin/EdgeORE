@@ -54,6 +54,7 @@ Only link artifacts that actually exist. Missing entries below are submission wo
 | Pitch deck | **Not supplied.** Keep demonstrated capabilities separate from roadmap. |
 | On-chain action | **Not supplied.** Add the actual devnet signature, RPC confirmation result and Explorer link after the session. |
 | Real-transfer receipt | **Not supplied.** Export from that transaction and preserve original-PASS / signed-content-tamper-FAIL output. |
+| Hosted Android emulator — interactive APK preview | **Launch / navigation PASS** on Appetize (Pixel 7, Android 13 / **API 33**). Public link: [appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla](https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla). Session notes and screenshots: [`evidence/appetize-d675002bd701/SESSION.md`](evidence/appetize-d675002bd701/SESSION.md). **Launch and tab navigation only** — not wallet, transfer, recovery, or real-receipt evidence. |
 | Repository | [CodesbyFebin/EdgeORE](https://github.com/CodesbyFebin/EdgeORE) |
 
 ### Automated and manual checks
@@ -65,7 +66,18 @@ The following latest results are **maintainer-reported**. Preserve their logs an
 | Android qualification suite | **164 tests: 163 passed, 0 failed, 1 skipped**; lint clean | JVM/build checks. Skipped test requires a live node agent. |
 | Standalone JVM checker | **7 tests, 7 passed** | Separate Gradle project; these tests are not included in the Android count. |
 | Export verification on `d675002` | Original **PASS**; copy with signed-body `lamports + 1` **FAIL**, exit `1` | Export content check; not yet an export from a demonstrated real transfer. |
+| Hosted Android emulator (Appetize) | Launch **PASS**; Mine/AI/Storage/Nodes/Receipts navigation **PASS**; About stamp observed `d675002bd701` | Pixel 7, Android 13 / **API 33**. Interactive APK preview only. See [`evidence/appetize-d675002bd701/SESSION.md`](evidence/appetize-d675002bd701/SESSION.md). |
 | Runtime wallet / recovery / video | **NOT_RUN** | Requires Android runtime, wallet and recorded session. |
+
+### Hosted Android emulator — interactive APK preview
+
+Judges (and anyone else) can open the verified `d675002bd701` APK in a browser through Appetize:
+
+- **Public link:** [https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla](https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla)
+- **Runtime label:** Hosted Android emulator (Pixel 7, Android 13 / **API 33**)
+- **What passed:** launch (no crash) and navigation of all five tabs; About text observed as `EdgeORE 0.2.8-review (d675002bd701). Solana devnet only.`
+- **What did not run:** wallet authorization (MWA), review → sign → separate submit, restart recovery, and real-transfer receipt verification remain **NOT_RUN**.
+- **Evidence:** [`evidence/appetize-d675002bd701/SESSION.md`](evidence/appetize-d675002bd701/SESSION.md) and the screenshots in that directory.
 
 The previously reported single-byte mutation experiment has no preserved script and output in the repository and is **not cited as evidence**.
 

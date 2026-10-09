@@ -33,7 +33,8 @@ Nothing below marked NOT_RUN may be described as done. Fill a row only with the 
 | Toolchain | OpenJDK 17.0.20.1, Gradle 8.9 wrapper, Android SDK 35 |
 | Node agent | `deproof-node` built from `CodesbyFebin/DeProof--EdgeORE` (MIT upstream) at `7431f0896f4f…` per `scripts/node-agent.pin` |
 | Gate time | 2026-10-09 18:09:12–18:10:45 UTC (23:39–23:40 IST) |
-| Emulator | **NOT_RUN** — host KVM fault (`kernel BUG at arch/x86/kvm/x86.c:702`); software-only boot did not complete in ~9 min. Diagnostics kept on the build box (not committed). |
+| Emulator (local build box) | **NOT_RUN** — host KVM fault (`kernel BUG at arch/x86/kvm/x86.c:702`); software-only boot did not complete in ~9 min. Diagnostics kept on the build box (not committed). |
+| Hosted Android emulator (Appetize) | **PRESENT** — Pixel 7, Android 13 / **API 33**; public link https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla ; screenshots and session notes in [`appetize-d675002bd701/`](appetize-d675002bd701/) ([`SESSION.md`](appetize-d675002bd701/SESSION.md)). Captured 2026-10-09T20:01Z (≈01:31 IST, 10 Oct 2026). Launch **PASS**; five-tab navigation **PASS**; About stamp observed `d675002bd701`. |
 
 ## 4. Gate evidence (PRESENT)
 
@@ -54,13 +55,18 @@ Checker claim: it verifies the integrity of **signed receipt contents**, not eve
 
 | Artifact | Status | Value |
 |---|---|---|
+| Hosted Android emulator runtime | **PRESENT** | Appetize · Pixel 7 · Android 13 / **API 33** · https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla |
+| Appetize screenshots | **PRESENT** | [`appetize-d675002bd701/`](appetize-d675002bd701/) (`01-launch.png` … `07-about.png`, `all-tabs.png`) · captured 2026-10-09T20:01Z (≈01:31 IST, 10 Oct 2026) |
+| Appetize launch | **PASS** | App opened on Mine; no crash or error dialog |
+| Appetize navigation (five tabs) | **PASS** | Mine / AI / Storage / Nodes / Receipts each opened; contents observed (see [`SESSION.md`](appetize-d675002bd701/SESSION.md)) |
+| Appetize About stamp | **PASS** (low-res stream) | Observed `EdgeORE 0.2.8-review (d675002bd701). Solana devnet only.` Characters partially blurry in capture |
 | Wallet authorization (MWA) on Android | **NOT_RUN** | — |
 | Devnet transfer — operation ID | **NOT_RUN** | — |
 | Devnet transfer — transaction signature | **NOT_RUN** | — |
 | RPC confirmation response (`getSignatureStatuses`) | **NOT_RUN** | — |
 | Solana Explorer URL (devnet) | **NOT_RUN** | — |
 | Restart-recovery observation | **NOT_RUN** | — |
-| Device screenshots (installed app) | **NOT_RUN** | — (the images in `docs/screenshots/` are rendered UI tests, not device captures) |
+| Device screenshots (installed app / local emulator) | **NOT_RUN** | — (the images in `docs/screenshots/` are rendered UI tests, not device captures; Appetize captures are listed separately above) |
 | Real-transfer receipt export | **NOT_RUN** | — |
 | Checker logs on real receipt (original PASS / signed-content tamper FAIL) | **NOT_RUN** | — |
 | Demo video | **NOT_RUN** | — |
