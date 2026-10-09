@@ -1,5 +1,7 @@
 package com.edgeore.app.ui.screens
 
+import com.edgeore.app.ui.components.EffectNote
+import com.edgeore.app.settings.Control
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
@@ -161,7 +163,9 @@ fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExpo
         Text("Export privacy", style = MaterialTheme.typography.titleMedium)
         Text("Control what gets included in exports.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         PrivacySwitch("Hide device identifiers", hideDevice) { hideDevice = it }
+        EffectNote(Control.HIDE_DEVICE_IDS)
         PrivacySwitch("Include location", includeLocation) { includeLocation = it }
+        EffectNote(Control.INCLUDE_LOCATION)
         Text(
             if (includeLocation) "No location has been collected, so the export still omits it." else "Location stays out of the file.",
             color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium,

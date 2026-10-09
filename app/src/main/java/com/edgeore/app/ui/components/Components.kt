@@ -236,3 +236,17 @@ fun LineChart(series: List<Pair<List<Float>, Color>>, modifier: Modifier) {
 
 @Composable
 fun RowScope.Tile(content: @Composable ColumnScope.() -> Unit) { Column(Modifier.weight(1f), content = content) }
+
+/** States the real effect of a control: Enforced / Saved only / Unavailable, with text and icon. */
+@Composable
+fun EffectNote(control: com.edgeore.app.settings.Control, detail: String = control.detail) {
+    val cap = when (control.effect) {
+        com.edgeore.app.settings.Effect.ENFORCED -> Capability.IMPLEMENTED
+        com.edgeore.app.settings.Effect.SAVED_ONLY -> Capability.NOT_OBSERVED
+        com.edgeore.app.settings.Effect.UNAVAILABLE -> Capability.UNAVAILABLE
+    }
+    Column(Modifier.fillMaxWidth().semantics { contentDescription = "${control.title}: ${control.effect.label}. $detail" }) {
+        CapabilityBadge(cap, control.effect.label)
+        Text(detail, style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+    }
+}

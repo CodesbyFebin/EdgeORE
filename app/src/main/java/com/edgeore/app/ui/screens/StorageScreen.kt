@@ -1,5 +1,7 @@
 package com.edgeore.app.ui.screens
 
+import com.edgeore.app.ui.components.EffectNote
+import com.edgeore.app.settings.Control
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.widget.Toast
@@ -85,6 +87,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
         Text("Recovery: only this installation's Keystore key can decrypt these files. Uninstalling, resetting the phone or losing the key makes them unrecoverable. This is not a backup.",
             color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         Slider(st.allocationMb.toFloat(), { vm.setAllocationMb(it.toInt()) }, valueRange = 0f..2048f, modifier = Modifier.fillMaxWidth().height(48.dp), colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
+        EffectNote(Control.VAULT_ALLOWANCE)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SecondaryAction("Restore", Modifier.weight(1f)) { pick.launch(arrayOf("*/*")) }
             SecondaryAction("Manage files", Modifier.weight(1f)) { pick.launch(arrayOf("*/*")) }
@@ -108,11 +111,13 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
             }
             Switch(st.sharingConsent, vm::setSharingConsent, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
         }
+        EffectNote(Control.SHARING_CONSENT)
         Text("Received since boot ${shown(device?.rxSinceBoot)}", style = MaterialTheme.typography.bodyMedium)
         Text("Sent since boot ${shown(device?.txSinceBoot)}", style = MaterialTheme.typography.bodyMedium)
         Text("Shared by EdgeORE: 0 B. Consent does not start a sharing protocol.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         Text("Daily quota you set: ${st.quotaMb} MB. It is not a measured total.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Slider(st.quotaMb.toFloat(), { vm.setQuotaMb(it.toInt()) }, valueRange = 50f..2000f, modifier = Modifier.fillMaxWidth().height(48.dp), colors = SliderDefaults.colors(thumbColor = EdgeColors.copper, activeTrackColor = EdgeColors.copper))
+        EffectNote(Control.SHARING_QUOTA)
         PrimaryAction("Stop all sharing", icon = EdgeIcons.Pause, enabled = st.sharingConsent) { vm.setSharingConsent(false) }
     }
 
@@ -153,6 +158,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
             Text("Block traffic on disconnect", modifier = Modifier.weight(1f))
             Switch(st.blockOnDisconnect, vm::setBlockOnDisconnect, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
         }
+        EffectNote(Control.KILL_SWITCH)
     }
 
     EdgeCard {
@@ -178,6 +184,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
             Text("Pause sharing consent on metered")
             Switch(st.pauseOnMetered, vm::setPauseOnMetered, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
         }
+        EffectNote(Control.PAUSE_ON_METERED)
     }
 
     EdgeCard {
