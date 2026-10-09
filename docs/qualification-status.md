@@ -1,4 +1,4 @@
-# Qualification status: `0.2.8-review` (`main`)
+# Qualification status: `0.2.8-review` (branch `fix/audit-p0`)
 
 This is the **current** ledger. Every claim names the source that implements it and the evidence that checked it.
 Older documents (`final-qualification.md`, `qualification-report.md`, `release-baseline.md`, `submission-checklist.md`,
@@ -30,9 +30,7 @@ Results are written to `evidence/build-<commit>/`. `SCREENS=1` also verifies the
 | `main` `ab009ff` (baseline) | 0 | 63 tests: 62 passed, 0 failed, 0 errors, 1 skipped | No issues found | `evidence/phase-a/` |
 | `5bfabab` (P0/P1 source) | 0 | 143 tests: 142 passed, 0 failed, 0 errors, 1 skipped | No issues found | `evidence/p0-p1/` |
 | `f6907e7` (final gate: P0–P2) | 0 | 148 tests: 147 passed, 0 failed, 0 errors, 1 skipped. Also `verifyRoborazziDebug -Pscreens` exit 0; `node-agent-it.sh` exit 0 (1 test, 0 skipped) | No issues found | `evidence/build-f6907e75941f/` |
-| `cde5537` (`main` after PR #2: store/status/signing/expiry fixes) | 0 | 164 tests: 163 passed, 0 failed, 0 errors, 1 skipped. `NODE_IT=1`: `node-agent-it.sh` exit 0 (1 test, 0 skipped). Fresh clone; debug APK sha256 `46b443f7…9407a`, `GIT_COMMIT` `cde5537df660` | No issues found | `evidence/build-cde5537df660/` (committed later; `SOURCE.md` names the tested commit) |
-
-The PR #3 head gate (receipt verifier CLI, no app code change) is recorded in the PR and in its own `evidence/build-<commit>/` when preserved; until then the app count above is the latest preserved one.
+| `0.2.8-review` (store/status/signing/expiry fixes) | the gate for this commit writes `evidence/build-<commit>/summary.md` in its clone; the numbers are recorded in PR #2 | | | — |
 
 In the normal suite, the skipped test is always `NodeAgentIntegrationTest`, which needs a live agent. That test runs separately in `scripts/node-agent-it.sh`, which fails if the test is skipped.
 
@@ -53,7 +51,6 @@ In the normal suite, the skipped test is always `NodeAgentIntegrationTest`, whic
 | P0 | Real device transfer | **NOT_RUN** | — | needs a phone, an MWA wallet and devnet SOL |
 | P1 | Durable spend reservations | PASS (JVM) | `OperationStore.reserve/exposure` | `DurableSpendTest` |
 | P1 | Wallet-aware receipt verifier | PASS (JVM) on generated fixtures; a real export is NOT_RUN | `ReceiptVerifier` | `ReceiptV2Test` |
-| P1 | Second-machine verifier entry point | PASS (JVM) on generated exports: `scripts/verify-receipt.sh` runs the same `ReceiptVerifier` with no device. Checks integrity and signatures of exported records only; no RPC, so not chain verification. Unsigned descriptive export fields are not covered (see README). A real-transfer export on a second machine is NOT_RUN. | `verifier-cli/` (compiles `receipts/Receipts.kt`, `crypto/`, `io/SafeFiles.kt` by reference), `scripts/verify-receipt.sh` | `VerifyReceiptCliTest`; `verifier-e2e.log` in the gate evidence |
 | P1 | Receipt key epochs | PASS (JVM); Keystore continuity on a phone NOT_RUN | `KeyRegistry` | `ReceiptV2Test` |
 | P1 | Corruption-aware receipt reads | PASS (JVM) | `ReceiptLog.read` | `ReceiptV2Test` |
 | P1 | Vault version/AAD | PASS (JVM); Android Keystore NOT_RUN | `LocalVault` EOV2 | `BoundedIoAndVaultTest` |
@@ -83,12 +80,6 @@ If the operation store cannot write a transition, memory is left equal to disk, 
 
 ## Runbook corrections
 
-- **Emulator:** a passing build does not show the emulator will boot. Virtualization (KVM / VT-x / SVM), RAM, graphics mode and the system image are separate prerequisites. Bound every boot wait, for example `timeout 300 bash -c 'adb wait-for-device; until [ "$(adb shell getprop sys.boot_completed | tr -d "\r")" = 1 ]; do sleep 3; done'`, and treat a timeout as a result (try `-gpu swiftshader_indirect -no-snapshot`, then `-wipe-data`, then check `emulator -accel check` and free disk), not as something to wait out.
-- **Node agent:** the bundled agent is `deproof-node`, not `edgeore-node`. Build it with `bash scripts/build-node-agent.sh` (pinned revision and binary SHA-256), run `build/node-agent/deproof-node -pair-scopes READ_NODE` (defaults `-listen 127.0.0.1:9843`, `-state .deproof-node`), and pair with the live challenge, single-use code and TLS certificate SHA-256 that this run prints.
-- **Signature check:** use the signature EdgeORE recorded (Review screen, or `solanaSignature` in the receipt), not wallet history; a sign-only wallet flow may never list it. Query with history search: `getSignatureStatuses` params `[["<sig>"],{"searchTransactionHistory":true}]`, then `https://explorer.solana.com/tx/<sig>?cluster=devnet`.
-- **Receipt tamper:** keep the original export untouched, tamper a **copy**, and change a byte inside a receipt body (`scripts/verify-receipt.sh` / *Verify offline*: original PASS, copy FAIL). Use the file's actual export location. A byte in the unsigned descriptive fields (`note`, `exclusions`, …) is not detected, so a fixed offset such as `seek=50` is not a valid tamper test.
-- **Second machine:** `bash scripts/verify-receipt.sh receipt.json` on a fresh clone (JDK 17; first run builds the CLI, later runs are offline). It is not chain verification.
-- **Release naming:** publish as `0.2.8-review` (the APK's versionName), not `v1.0.0`. Qualification is incomplete.
 - Do not uninstall `0.2.6-review` to install a debug build: its Keystore-bound vault, receipt and node keys are destroyed on uninstall. Use another phone or an emulator.
 - `scripts/node-agent-it.sh` runs its agent on `127.0.0.1:19843` (`NODE_IT_PORT`). Manual pairing uses the agent default `9843` with `adb reverse tcp:9843 tcp:9843`.
 - Ollama on the host: `adb reverse tcp:11434 tcp:11434`, then `http://127.0.0.1:11434`. Do not use `10.0.2.2`: it is not loopback, so cleartext to it is refused.
@@ -110,7 +101,7 @@ If the operation store cannot write a transition, memory is left equal to disk, 
 | Install on a physical phone, cold launch, five tabs, rotation, large text, TalkBack | no phone attached to the build box |
 | MWA authorize, then sign, submit and confirm a devnet transfer | needs a wallet app and devnet SOL |
 | Process death during sign or submit on a device, then recovery on restart | JVM simulation passes; device NOT_RUN |
-| Receipt from a real transfer, verified on a second machine | no real transfer exists. The entry point now exists (`scripts/verify-receipt.sh`); only generated exports have been checked |
+| Receipt from a real transfer, verified on a second machine | no real transfer exists |
 | Android Keystore: vault, receipt and node keys | Robolectric does not provide AndroidKeyStore |
 | Android TLS accepting the agent's Ed25519 certificate | the instrumented test compiles; it has not run |
 | `androidTest` (AppSmokeTest, DeviceIntegrationTest) | compiled by the gate; no device. `DefaultStateWalkTest` runs the same walk under Robolectric. |

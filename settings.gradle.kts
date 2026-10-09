@@ -5,4 +5,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "EdgeORE"
 include(":app")
-include(":verifier-cli")
