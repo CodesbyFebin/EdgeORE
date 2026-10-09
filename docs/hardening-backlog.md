@@ -1,0 +1,15 @@
+# Hardening backlog (post-submission)
+
+Source: static review of the tested APK `EdgeORE-0.2.8-review-d675002bd701-debug.apk`
+(sha256 `6ee17a3c…f3dae3f6a4e6`) with `aapt2 dump badging`, `aapt2 dump xmltree AndroidManifest.xml`
+and `apksigner verify --print-certs` (build-tools 35.0.0), plus `app/src/main/java/com/edgeore/app/receipts/Receipts.kt`
+at `d675002bd701`. These are known properties of the **debug review candidate**; none is fixed in `0.2.8-review`.
+
+| # | Item | Observed | Planned action |
+|---|---|---|---|
+| H1 | `android:debuggable=true` | Manifest `application-debuggable`; expected for a `debug` build type. | Ship submissions/production from a `release` build type (debuggable false, R8/minify reviewed). |
+| H2 | Exported debug/test activities in the debug manifest | `androidx.compose.ui.tooling.PreviewActivity` (exported=true), `androidx.activity.ComponentActivity` (exported=true), and three `androidx.test.core.app.InstrumentationActivityInvoker` activities — `$BootstrapActivity`, `$EmptyActivity`, `$EmptyFloatingActivity` (exported=true, LAUNCHER category). Merged in from `debugImplementation` tooling/test dependencies. | Confirm they are absent from the release manifest; keep `ui-tooling` / `androidx.test` on `debugImplementation`/`androidTestImplementation` only; add a manifest check to the gate. |
+| H3 | Release signing with the owner's key | APK is v2-signed by `CN=Android Debug` (cert sha256 `c9b46665…7ae4b93`). A debug-signed install cannot be updated by a differently signed APK. | Owner creates and holds a release key (not in the repo), configures signing outside source control, records the release cert SHA-256 in `release/checksums.txt`, and documents the migration path for debug installs (vault data is device-bound). |
+| H4 | Unsigned descriptive export fields | In `ReceiptLog.export`, top-level `note`, `exclusions`, `payment`, `location`, `exportedAt`, and the key-epoch labels (`protection`, `firstUsedAt` in `deviceKeys`) are written into the export but are **not covered by any signature**. Receipt bodies are digest- and device-signed; FULL_CHAIN exports additionally sign a checkpoint (count, sequence range, last digest, bundle digest, checkpoint `exportedAt`). | Either sign an envelope over these fields or have the verifier/UI label them explicitly as unsigned descriptive text. Until then, the checker claim stays: it verifies the integrity of **signed receipt contents**, not the whole export. |
+
+Not in this list: the runtime qualification items (wallet, devnet transfer, restart recovery, device Keystore, video). Those are tracked as NOT_RUN in `evidence/SUBMISSION-MANIFEST.md` and `docs/qualification-status.md`.

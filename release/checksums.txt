@@ -1,6 +1,18 @@
-recorded_before_doc_commit apk_sha256 6f1f73a9eeb58a5dd8f9b305cfa901761a5a8ec9773f2bf5863e7c1b8ee35968
-rebuild_at_3929edb apk_sha256 d64d5b92f28ac8856a9904528f464125a3b6333a9b52e1f7b0e622e46196dd0b
-classes_dex_sha256 0a190a196064f12fd0849eae5b3930c5445115eb0441491326ed49fd51e75876
-cert_sha256 5baab0630958af7a3a5faabc3f3525f8fd5e2bb6a1b98e19bd6e16b1f6e834a1
-note Outer APK hashes differ only in META-INF/version-control-info.textproto. Dex and manifest match. See docs/qualification-report.md.
-
+# EdgeORE 0.2.8-review — tested APK identity
+# Replaces the earlier entries (older APK builds, debug cert 5baab063…), which do not describe this candidate.
+file                EdgeORE-0.2.8-review-d675002bd701-debug.apk
+sha256              6ee17a3cac0c363b130caa2523118e068b3449f9f1d1ac49b449f3dae3f6a4e6
+size_bytes          15080965
+package             com.edgeore.app
+version_name        0.2.8-review
+version_code        10
+min_sdk             26
+target_sdk          35
+debuggable          true
+signing_scheme      APK Signature Scheme v2 (v1/v3 not used)
+signer_cert_dn      C=US, O=Android, CN=Android Debug
+signer_cert_sha256  c9b4666505b1de4c34b18bb4a0c2a5795931a20e77035af2cc9e9c37b7ae4b93
+tested_source       d675002bd701f94809cf776aaa0580b3cb9e83ef
+buildconfig_commit  d675002bd701
+gate_evidence       evidence/build-d675002bd701/
+note                Debug-signed review build for Solana devnet only. Not a production or release-key build.
