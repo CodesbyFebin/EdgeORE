@@ -109,4 +109,6 @@ If the operation store cannot write a transition, memory is left equal to disk, 
 | On-device inference | UNAVAILABLE: no runtime or weights in the APK |
 | ORE, SKR, VPN, cloud sync, bandwidth sharing | UNAVAILABLE on purpose |
 
+**Next gate: wallet and device qualification.** The fixes in `0.2.8-review` are proven on the JVM only. A green build gate, a merged PR or a built APK does not close this gate. It closes only when the rows above marked NOT_RUN (install on the owner's phone, MWA authorize/sign/submit/confirm on devnet, process death during sign/submit, Keystore, receipt from a real transfer) have device results recorded here.
+
 Decision: **NO-GO** for "fully functional", ORE earning or a store release. This candidate is suitable for a supervised devnet test on the owner's phone.
