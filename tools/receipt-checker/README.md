@@ -28,4 +28,6 @@ tools/receipt-checker/build/install/edgeore-receipt-checker/bin/edgeore-receipt-
 
 Keep the original export. Change an authenticated body field in a copy, preserving valid JSON, then verify both files. The seven CLI tests use synthetic policy receipts and do not substitute for a real transfer export or second-machine run.
 
-Qualification status at authoring: shell syntax checked; JVM tests/build blocked before compilation by Gradle download `Network is unreachable`. No JVM PASS or test count is claimed. The Android fresh-clone gate is also required before merge. App sources are unchanged.
+Qualification status at authoring: shell syntax checked; JVM tests/build blocked before compilation by Gradle download `Network is unreachable`.
+
+Later run (fresh clone of the PR #3 head, JDK 17.0.20.1, Gradle 8.9): `bash gradlew -p tools/receipt-checker --no-daemon test installDist` built and ran 7 tests, 7 passed. End to end on a generated full-chain export (2 receipts, one carrying a wallet Ed25519 signature): original `VERIFIED: PASS` exit 0; copy with one body byte changed `VERIFIED: FAIL` (`SHA-256 does not match body`) exit 1; truncated copy exit 1. After the build, `scripts/verify-receipt.sh` also passed with networking removed. One file per call. Limits: the export's descriptive fields (`note`, `exclusions`, `payment`, `location`, top-level `exportedAt`) are not signed, so edits there are not detected; no real-transfer export has been checked. App sources are unchanged.
