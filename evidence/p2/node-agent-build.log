@@ -1,0 +1,5 @@
+agent revision: 7431f0896f4fb5409970f3aa3f64c42f6f877757
+go toolchain:   go version go1.26.4 linux/amd64
+binary:         build/node-agent/deproof-node
+sha256:         c90125f35508c7ddf59040c2a6c22a533e92c57a7f7262bfb36862d2ded3e921
+EXIT=0
