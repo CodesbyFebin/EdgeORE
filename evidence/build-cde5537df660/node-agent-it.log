@@ -1,0 +1,12 @@
+agent revision: 7431f0896f4fb5409970f3aa3f64c42f6f877757
+go toolchain:   go version go1.26.4 linux/amd64
+binary:         build/node-agent/deproof-node
+sha256:         c90125f35508c7ddf59040c2a6c22a533e92c57a7f7262bfb36862d2ded3e921
+agent binary sha256: c90125f35508c7ddf59040c2a6c22a533e92c57a7f7262bfb36862d2ded3e921
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+    NODE_IT observe: {"proofBackend":"UNCONFIGURED","proofOperation":"","bandwidth":{"endpoint":"","measuredBytes":"0","capBytes":"0","bytesPerSecond":"0","deadline":"","enabled":false,"reservedBytes":"0"},"hostOS":"linux","hosting":"BLOCKED_RUNTIME_ISOLATION_UNQUALIFIED","observedAt":"2026-10-09T17:38:39.214861491Z","proofState":"IDLE","logicalCPUs":8,"keyProtection":"PERMISSION_RESTRICTED_FILE; SOFTWARE","proofCapabilities":{"reason":"PROOF_BACKEND_UNAVAILABLE","availability":"UNAVAILABLE"},"serviceCount":0,"activeOperations":[],"fingerprint":"3c0de0276ad3237f97c60f31bbad0e7710aee48e39b334d9e7f5838e6cc6624a","architecture":"amd64"}
+    NODE_IT: pair → observe → revoke → refused-after-revoke PASSED
+> Task :app:finalizeTestRoborazziDebug SKIPPED
+BUILD SUCCESSFUL in 10s
+gradle exit: 0
+NodeAgentIntegrationTest: tests=1 failures=0 errors=0 skipped=0
