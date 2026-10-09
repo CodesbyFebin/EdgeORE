@@ -29,7 +29,7 @@ Results are written to `evidence/build-<commit>/`. `SCREENS=1` also verifies the
 |---|---|---|---|---|
 | `main` `ab009ff` (baseline) | 0 | 63 tests: 62 passed, 0 failed, 0 errors, 1 skipped | No issues found | `evidence/phase-a/` |
 | `5bfabab` (P0/P1 source) | 0 | 143 tests: 142 passed, 0 failed, 0 errors, 1 skipped | No issues found | `evidence/p0-p1/` |
-| Final gate on this branch | see `evidence/build-*/summary.md` | recorded there | recorded there | `evidence/build-*/` |
+| `f6907e7` (final gate: P0–P2) | 0 | 148 tests: 147 passed, 0 failed, 0 errors, 1 skipped. Also `verifyRoborazziDebug -Pscreens` exit 0; `node-agent-it.sh` exit 0 (1 test, 0 skipped) | No issues found | `evidence/build-f6907e75941f/` |
 
 In the normal suite, the skipped test is always `NodeAgentIntegrationTest`, which needs a live agent. That test runs separately in `scripts/node-agent-it.sh`, which fails if the test is skipped.
 
