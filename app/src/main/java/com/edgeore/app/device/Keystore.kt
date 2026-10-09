@@ -47,7 +47,7 @@ class KeystoreReceiptSigner(private val alias: String = "edgeore.receipts.v1") :
  */
 class NodeKeyVault(context: Context, private val alias: String = "edgeore.nodekey.wrap.v1") {
     private val prefs = context.getSharedPreferences("edgeore.nodekey", Context.MODE_PRIVATE)
-    private val ks: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+    private val ks: KeyStore by lazy { KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) } }
 
     private fun wrapKey(): SecretKey {
         (ks.getKey(alias, null) as? SecretKey)?.let { return it }
