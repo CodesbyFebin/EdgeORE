@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.DeviceMetersTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-09T22:49:56" hostname="grok-bot-vm-446931431" time="0.007">
+  <properties/>
+  <testcase name="diskSkipsPartitions" classname="com.edgeore.app.DeviceMetersTest" time="0.005"/>
+  <testcase name="ioRateUsesElapsedTime" classname="com.edgeore.app.DeviceMetersTest" time="0.001"/>
+  <testcase name="cpuBusyPercentIgnoresIdle" classname="com.edgeore.app.DeviceMetersTest" time="0.001"/>
+  <testcase name="cpuStandsStill" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -87,6 +87,7 @@ only network use is the weights download the user confirmed.
   no WorkManager.
 - No Hugging Face sign-in, so Gemma (gated) cannot be downloaded in-app.
 - Single-turn prompts only; no streaming, no multimodal, no document attachment on this path.
-- The APK now carries `liblitertlm_jni.so` for arm64-v8a and x86_64 (see build gate for the size change).
+- APK size: debug APK 15,080,965 bytes on `main` (gate evidence for `d675002bd701`; `app/` is unchanged since) → 56,742,870 bytes on this branch (+41.7 MB). Almost all of it is `liblitertlm_jni.so`, stored uncompressed for arm64-v8a (18.7 MB) and x86_64 (21.8 MB). There is no armeabi-v7a/x86 build of LiteRT-LM; on those phones loading fails and the app reports "Not run". Restricting ABIs or compressing native libs would shrink it; neither was done.
+- Build gate for `f4651f83532f`: [`evidence/build-f4651f83532f/summary.md`](../evidence/build-f4651f83532f/summary.md) — 175 tests, 174 passed, 1 skipped (the live node-agent test), lint clean.
 - Screenshot baselines (`docs/screenshots/`) were not re-recorded; the Private AI screen changed.
 - Nothing here is a production-readiness claim, and AI use earns nothing (no ORE, no income).
