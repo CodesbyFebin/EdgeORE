@@ -69,15 +69,6 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
         r.getString("result")
     }
 
-    /** Returns confirmation status string, "NOT_FOUND", or throws. */
-    suspend fun signatureStatus(signature: String): String = withContext(Dispatchers.IO) {
-        val r = call("getSignatureStatuses", JSONArray().put(JSONArray().put(signature)).put(JSONObject().put("searchTransactionHistory", true)))
-        val v = r.getJSONObject("result").getJSONArray("value").opt(0)
-        if (v !is JSONObject) "NOT_FOUND"
-        else if (!v.isNull("err")) "FAILED: ${v.get("err")}"
-        else v.optString("confirmationStatus", "UNKNOWN").uppercase()
-    }
-
     override suspend fun send(signedTx: ByteArray): String = sendTransaction(signedTx)
 
     override suspend fun status(signature: String): ChainStatus = withContext(Dispatchers.IO) {
@@ -128,14 +119,26 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
 
 }
 
-/** Maps a getSignatureStatuses response. Exposed for tests. */
+/**
+ * Maps a getSignatureStatuses response for exactly one signature. Exposed for tests.
+ * Only an explicit JSON null element is NOT_FOUND. A missing result/value, a value that is not a
+ * one-element array, a non-object element, a missing `err`, or a missing/unknown confirmationStatus is
+ * [ChainStatus.Unavailable]: the outcome stays uncertain and nothing is released.
+ */
 fun parseStatus(response: JSONObject): ChainStatus {
-    val v = response.getJSONObject("result").getJSONArray("value").opt(0)
-    if (v !is JSONObject) return ChainStatus.NotFound
+    val result = response.opt("result") as? JSONObject ?: return ChainStatus.Unavailable("Malformed status response: missing result")
+    val value = result.opt("value") as? JSONArray ?: return ChainStatus.Unavailable("Malformed status response: missing value array")
+    if (value.length() != 1) return ChainStatus.Unavailable("Malformed status response: expected 1 status, got ${value.length()}")
+    val v = value.opt(0)
+    if (v == JSONObject.NULL) return ChainStatus.NotFound
+    if (v !is JSONObject) return ChainStatus.Unavailable("Malformed status response: status is ${v?.javaClass?.simpleName ?: "absent"}")
+    if (!v.has("err")) return ChainStatus.Unavailable("Malformed status response: err field missing")
     if (!v.isNull("err")) return ChainStatus.Failed(v.get("err").toString())
-    return when (v.optString("confirmationStatus").lowercase()) {
+    val cs = v.opt("confirmationStatus") as? String ?: return ChainStatus.Unavailable("Malformed status response: confirmationStatus missing")
+    return when (cs) {
         "finalized" -> ChainStatus.Finalized
         "confirmed" -> ChainStatus.Confirmed
-        else -> ChainStatus.Processed
+        "processed" -> ChainStatus.Processed
+        else -> ChainStatus.Unavailable("Unknown confirmationStatus \"${cs.take(40)}\"")
     }
 }

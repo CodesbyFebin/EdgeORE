@@ -187,4 +187,23 @@ class TransportHardeningTest {
         assertEquals(ChainStatus.Processed, parseStatus(r("{\"err\":null,\"confirmationStatus\":\"processed\"}")))
         assertTrue(parseStatus(r("{\"err\":{\"InstructionError\":[0,1]},\"confirmationStatus\":\"finalized\"}")) is ChainStatus.Failed)
     }
+
+    @Test fun malformedStatusIsUnavailableNeverNotFound() {
+        fun r(v: String) = JSONObject("{\"result\":{\"value\":[$v]}}")
+        fun un(o: JSONObject) = assertTrue("expected Unavailable for $o", parseStatus(o) is ChainStatus.Unavailable)
+        un(JSONObject("{\"result\":{\"value\":[]}}"))            // empty array
+        un(JSONObject("{\"result\":{\"value\":[null,null]}}"))   // wrong length
+        un(r("\"finalized\"")); un(r("42")); un(r("true")); un(r("[]")) // wrong element type
+        un(JSONObject("{}"))                                          // missing result
+        un(JSONObject("{\"result\":{}}"))                           // missing value
+        un(JSONObject("{\"result\":{\"value\":null}}"))           // value not an array
+        un(JSONObject("{\"result\":{\"value\":{}}}"))
+        un(JSONObject("{\"result\":\"x\"}"))
+        un(r("{\"confirmationStatus\":\"finalized\"}"))             // err missing
+        un(r("{\"err\":null}"))                                        // status missing
+        un(r("{\"err\":null,\"confirmationStatus\":\"rooted\"}"))   // unknown status
+        un(r("{\"err\":null,\"confirmationStatus\":7}"))
+        // Only an explicit, well-formed null is NOT_FOUND.
+        assertEquals(ChainStatus.NotFound, parseStatus(r("null")))
+    }
 }

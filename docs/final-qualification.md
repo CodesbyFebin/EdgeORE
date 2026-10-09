@@ -1,6 +1,6 @@
 # Final qualification
 
-> **Historical (0.2.6-review).** This page describes the frozen `0.2.6-review` candidate and is kept for the record. The current candidate is `0.2.7-review`; see [qualification-status.md](qualification-status.md).
+> **Historical (0.2.6-review).** This page describes the frozen `0.2.6-review` candidate and is kept for the record. The current candidate is `0.2.8-review`; see [qualification-status.md](qualification-status.md).
 
 Decision: **NO-GO** for a fully functional production release or an ORE-earning submission.
 

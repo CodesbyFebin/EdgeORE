@@ -1,16 +1,17 @@
-# Known limitations (`0.2.7-review`)
+# Known limitations (`0.2.8-review`)
 
 Current status is in [`qualification-status.md`](qualification-status.md). Nothing below is a device result.
 
 **Device and wallet**
 - No phone was attached. Install, rotation, process death on a device, TalkBack and wallet return are NOT_RUN.
 - No wallet authorized this build. No devnet transaction was broadcast, so no signature is recorded.
-- The `0.2.7-review` APK is debug-signed. If the installed EdgeORE was signed with a different certificate (for example the `0.2.6-review` release build, certificate `5baab063…`), Android refuses the upgrade (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`). Uninstall first; this deletes that install's local data.
+- The `0.2.8-review` APK is debug-signed. If the installed EdgeORE was signed with a different certificate (for example the `0.2.6-review` release build, certificate `5baab063…`), Android refuses the upgrade (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`). **Do not uninstall `0.2.6-review` to get past this.** Its vault, receipt and node keys are bound to that install's Android Keystore; uninstalling destroys them and the data cannot be recovered. Use a different phone or an emulator for this build. A debug build installed over an earlier debug build of the same key upgrades in place.
 
 **Transfers**
-- Recovery after a restart only reads chain state. It never resends. A transfer whose outcome is unknown stays visible until the chain reports it, or until its blockhash expires and you review a new transfer.
+- Recovery after a restart only reads chain state. It never resends. A transfer whose outcome is unknown stays visible, and its amount stays counted, until the chain reports it confirmed, finalized or failed. Blockhash expiry alone does not settle it (see "Expiry policy" in `qualification-status.md`).
+- If a write to the operation store fails, memory is kept equal to disk and wallet actions (review, sign, send, discard) are refused until EdgeORE restarts. The Review screen shows the storage error.
 - If the operation store is damaged, transfers are disabled. The app does not treat a damaged store as empty.
-- Signed bytes that were never sent can be discarded, but the wallet's signature still exists. Expiry of the blockhash is what makes them harmless.
+- Signed bytes that were never sent can be discarded, but the wallet's signature still exists. Expiry of the blockhash is what makes them harmless. Signing re-reads the block height first: if it cannot be read, signing is refused; if the blockhash is expired or within 20 blocks of expiry, a fresh review is required.
 
 **AI**
 - Cancel closes the local socket. Ollama's non-streaming API does not acknowledge the cancel, so the host may finish the work anyway. The app labels the result "Stopped receiving".

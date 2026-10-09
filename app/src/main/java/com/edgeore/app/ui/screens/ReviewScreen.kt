@@ -47,9 +47,10 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         KeyValue("Account", wallet.address ?: "Not connected", mono = true)
         KeyValue("Daily budget", "${Format.sol(settings.dailyLimitLamports)} · spent today ${Format.sol(vm.spentTodayLamports())}")
         if (wallet.address == null) SecondaryAction("Connect wallet", onClick = onConnect)
-        Text("Each operation counts once from review until it is refused, abandoned, expired or failed. Unknown outcomes stay counted.",
+        Text("Each operation counts once from review until it is refused, abandoned, failed, or expired without ever being sent. Anything that may have been sent stays counted until the chain reports it.",
             style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
     }
+    // Read on every recomposition: a failed store write latches this and the Review state update recomposes the screen.
     vm.operationsUnavailable?.let { Notice(it, error = true) }
 
     // Operations that may have left this phone and still need an observed outcome (survives restarts).
@@ -66,7 +67,7 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                 if (op.state == OpState.SIGNED) SecondaryAction("Discard unsent bytes", Modifier.weight(1f), danger = true) { vm.discardSigned(op.id) }
             }
         }
-        Text("Observation never re-sends. An expired operation needs a new review.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+        Text("Observation never re-sends. Only never-sent bytes expire; a sent transfer that is not found stays uncertain and counted.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
     }
 
     if (editing) EdgeCard {
@@ -136,7 +137,7 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                 CapabilityBadge(Capability.UNAVAILABLE, "Outcome unknown")
                 KeyValue("Known signature", st.operation?.signature ?: "", mono = true)
                 KeyValue("Last observation", st.confirmation ?: "Not observed yet")
-                Text("The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until it is confirmed, failed or expired. The amount stays counted in today's budget meanwhile.",
+                Text("The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until devnet reports it confirmed or failed. Not being found, even after the blockhash expires, does not prove it never landed, so the amount stays counted in today's budget.",
                     style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
             }
             PrimaryAction("Observe status (read-only)", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }

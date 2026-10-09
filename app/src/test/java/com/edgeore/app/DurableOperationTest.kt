@@ -205,7 +205,7 @@ class DurableOperationTest {
         assertEquals(fx.lamports, s.exposure(fx.signer, "devnet"))
     }
 
-    @Test fun notFoundBeforeExpiryStaysUnknownAfterExpiryNeedsFreshReview() = runBlocking {
+    @Test fun notFoundAfterExpiryOfASentOperationStaysUncertainAndKeepsItsReservation() = runBlocking {
         val gw = FakeGateway(); gw.sendBehavior = { throw java.io.IOException("reset") }
         val s = store(); val c = TransferCoordinator(s, gw, clock)
         val op = signed(s, c, lastValid = 150); c.submit(op.id)
@@ -216,14 +216,18 @@ class DurableOperationTest {
         gw.height = 151
         gw.calls.clear()
         c.observe(op.id)
-        val expired = s.get(op.id)!!
-        assertEquals(OpState.EXPIRED, expired.state)
-        assertTrue(expired.reason!!.contains("Review again"))
-        // Height is read before status, so NOT_FOUND after a past-expiry height is final.
+        val after = s.get(op.id)!!
+        // The bytes may have left the phone: NOT_FOUND after expiry is not proof, so it stays uncertain.
+        assertEquals(OpState.OUTCOME_UNKNOWN, after.state)
+        assertTrue(after.lastObservation!!.startsWith("NOT_FOUND at block height 151"))
+        assertTrue(after.reason!!.contains("not proof"))
+        assertTrue(!after.reason!!.contains("can no longer land", ignoreCase = true))
         assertEquals(listOf("height", "status:${fx.signature}"), gw.calls.toList())
-        assertEquals(0L, s.exposure(fx.signer, "devnet"))
-        // Expired operations cannot be submitted again; a new message needs a new review.
+        assertEquals("reservation kept", fx.lamports, s.exposure(fx.signer, "devnet"))
+        // Still never resent, and a later observation can still settle it.
         assertTrue(c.submit(op.id) is TransferCoordinator.Outcome.NotAllowed)
+        gw.statusBehavior = { ChainStatus.Finalized }; c.observe(op.id)
+        assertEquals(OpState.FINALIZED, s.get(op.id)!!.state)
         assertEquals("no send after the first attempt", 0, gw.sendCount)
     }
 
@@ -260,6 +264,8 @@ class DurableOperationTest {
         val op = signed(s, c, lastValid = 400)
         c.reconcileAll()
         assertEquals(OpState.EXPIRED, s.get(op.id)!!.state)
+        assertTrue(s.get(op.id)!!.reason!!.contains("never sent"))
+        assertEquals("never-sent bytes release their reservation", 0L, s.exposure(fx.signer, "devnet"))
         assertEquals(0, gw.sendCount)
     }
 

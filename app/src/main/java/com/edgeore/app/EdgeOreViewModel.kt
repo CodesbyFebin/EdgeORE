@@ -35,6 +35,7 @@ import com.edgeore.app.receipts.WalletEvidence
 import com.edgeore.app.receipts.keyId
 import com.edgeore.app.solana.OpState
 import com.edgeore.app.solana.OperationStore
+import com.edgeore.app.solana.OperationStoreUnavailable
 import com.edgeore.app.solana.PendingOperation
 import com.edgeore.app.solana.TransferCoordinator
 import com.edgeore.app.storage.VaultEntry
@@ -156,7 +157,8 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     private val rpc = SolanaRpc()
     // Durable wallet operations. A damaged store fails closed: transfers are disabled, never reset to "nothing pending".
     private val opStore: OperationStore? = try { OperationStore(File(app.filesDir, "operations/operations.json")) } catch (_: Exception) { null }
-    val operationsUnavailable: String? = if (opStore == null) "The wallet operation store could not be read. Transfers are disabled so unknown outcomes are not hidden." else null
+    /** Non-null when financial actions must be refused: the store could not be read, or a write failed (latched). */
+    val operationsUnavailable: String? get() = if (opStore == null) "The wallet operation store could not be read. Transfers are disabled so unknown outcomes are not hidden." else opStore.unavailableReason
     private val coordinator: TransferCoordinator? = opStore?.let { TransferCoordinator(it, rpc) }
     private val _operations = MutableStateFlow(opStore?.all().orEmpty())
     val operations: StateFlow<List<PendingOperation>> = _operations.asStateFlow()
@@ -358,14 +360,16 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     /** An unsigned draft that is edited or reset releases its reservation. Signed bytes are kept until observed or discarded. */
     private fun abandonCurrentDraft() {
         val id = _review.value.operationId ?: return
-        opStore?.transition(id, setOf(OpState.REVIEWED), OpState.ABANDONED) { it.copy(reason = "Draft edited or reset before signing") }?.let {
-            viewModelScope.launch { flushOperationReceipts() }
-        }
+        val done = try {
+            opStore?.transition(id, setOf(OpState.REVIEWED), OpState.ABANDONED) { it.copy(reason = "Draft edited or reset before signing") }
+        } catch (e: OperationStoreUnavailable) { _review.update { it.copy(message = e.message) }; null }
+        done?.let { viewModelScope.launch { flushOperationReceipts() } }
     }
 
     fun prepareReview() = viewModelScope.launch {
         val from = _wallet.value.publicKey ?: run { _review.update { it.copy(message = "Connect a wallet first") }; return@launch }
         val store = opStore ?: run { _review.update { it.copy(message = operationsUnavailable) }; return@launch }
+        operationsUnavailable?.let { why -> _review.update { it.copy(message = why) }; return@launch }
         if (_review.value.phase == ReviewPhase.PREPARING) return@launch
         abandonCurrentDraft()
         _review.update { it.copy(phase = ReviewPhase.PREPARING, message = null, draft = null, verified = null, operationId = null, operation = null) }
@@ -414,8 +418,17 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             c.recordRefused(id, "Connected account changed after review")
             flushOperationReceipts(); syncReview(id); return@launch
         }
-        // Single flight: only one tap can move REVIEWED -> SIGNING; later taps are ignored.
-        if (c.beginSigning(id) !is TransferCoordinator.Outcome.Done) return@launch
+        // Single flight: only one tap can move REVIEWED -> SIGNING; later taps are ignored. Inside that flight the
+        // block height is re-read before the wallet opens: unavailable refuses, expired needs a fresh review.
+        when (val begun = c.beginSigningChecked(id)) {
+            is TransferCoordinator.Outcome.Done -> Unit
+            is TransferCoordinator.Outcome.Busy -> return@launch
+            is TransferCoordinator.Outcome.NotAllowed -> {
+                flushOperationReceipts(); syncReview(id)
+                _review.update { it.copy(message = operationsUnavailable ?: begun.reason) }
+                return@launch
+            }
+        }
         syncReview(id)
         _review.update { it.copy(message = "Waiting for wallet signature…") }
         val result = try { wallet.signTransaction(sender, SolanaMessage.unsignedTransaction(d.message)) } catch (e: CancellationException) {
@@ -445,6 +458,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         if (out is TransferCoordinator.Outcome.Busy) return@launch
         flushOperationReceipts()
         syncReview(id)
+        if (out is TransferCoordinator.Outcome.NotAllowed) _review.update { it.copy(message = out.reason) }
     }
 
     /** Read-only status observation by the known signature. Never resends. */
@@ -480,7 +494,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             if (it.operationId != id) it else it.copy(
                 phase = phaseFor(op), operation = op,
                 submittedSignature = op.signature?.takeIf { op.state.needsObservation || op.state == OpState.FINALIZED || op.state == OpState.FAILED },
-                confirmation = op.lastObservation, message = op.reason,
+                confirmation = op.lastObservation, message = opStore?.unavailableReason ?: op.reason,
             )
         }
     }
@@ -490,12 +504,13 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val store = opStore ?: return
         receiptMutex.withLock {
             withContext(Dispatchers.IO) {
-                for (op in store.unreceipted()) {
+                // A latched store cannot mark receipts, so appending would duplicate them on every flush.
+                if (store.unavailableReason == null) for (op in store.unreceipted()) {
                     receiptFor(op)?.let { draft ->
                         val related = log.all().lastOrNull { it.operationId == op.id }?.id
                         log.append(draft.copy(relatesTo = related))
                     }
-                    store.markReceipted(op.id, op.state)
+                    try { store.markReceipted(op.id, op.state) } catch (_: OperationStoreUnavailable) { break }
                 }
             }
             _operations.value = store.all()
@@ -528,7 +543,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
                 payment = "OBSERVED_${op.state}", provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.DEVNET}"))
             OpState.FAILED -> d("STATUS_OBSERVED", "Devnet reported failure", op.lastObservation ?: "FAILED", SolanaRpc.DEVNET,
                 provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.DEVNET} reported an error"))
-            OpState.EXPIRED -> d("EXPIRED", "Blockhash expired", op.reason ?: "Can no longer land", SolanaRpc.DEVNET,
+            OpState.EXPIRED -> d("EXPIRED", "Blockhash expired", op.reason ?: "Never sent; blockhash expired. Reservation released.", SolanaRpc.DEVNET,
                 provider = Evidence("NOT_AVAILABLE", op.lastObservation ?: "Not observed before expiry"))
         }
     }

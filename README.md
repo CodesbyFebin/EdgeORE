@@ -4,7 +4,7 @@
 
 A native Kotlin / Jetpack Compose Android workspace for Solana Mobile: pair a host you own, run private AI on it, review Solana actions byte-for-byte before your wallet signs, and keep tamper-evident receipts.
 
-Built by **CodesbyFebin**. Candidate: **`0.2.7-review` (versionCode 9), debug-signed APK, Solana devnet only.** The current status of every claim is in [`docs/qualification-status.md`](docs/qualification-status.md).
+Built by **CodesbyFebin**. Candidate: **`0.2.8-review` (versionCode 10), debug-signed APK, Solana devnet only.** The current status of every claim is in [`docs/qualification-status.md`](docs/qualification-status.md).
 
 > **Decision: NO-GO for “fully functional” or “ORE earning.”** Build, test and lint results are recorded. Wallet authorization, a confirmed devnet transfer, on-device AI, and a phone walkthrough are **NOT_RUN**. ORE rewards are **Not observed**. Do not treat this repository as a completed mining product.
 
@@ -80,11 +80,11 @@ adb reverse tcp:9843 tcp:9843
 
 In **Nodes**, enter `https://127.0.0.1:9843`, the certificate SHA-256, the challenge JSON and the code. Confirm the fingerprint, then pair. Challenges expire after 2 minutes.
 
-Real-agent integration test (JVM): `bash scripts/node-agent-it.sh`. It builds the pinned agent, and exits non-zero unless the test actually ran and passed. A skipped test counts as a failure.
+Real-agent integration test (JVM): `bash scripts/node-agent-it.sh`. It starts its own agent on `127.0.0.1:19843` (override with `NODE_IT_PORT`), not the pairing port 9843, so it does not collide with an agent you paired by hand. It builds the pinned agent, and exits non-zero unless the test actually ran and passed. A skipped test counts as a failure.
 
 ### Private AI on your host
 
-Run an Ollama-compatible server on your host, then `adb reverse tcp:11434 tcp:11434` and connect to `http://127.0.0.1:11434`. Cleartext is allowed only to loopback (`network_security_config.xml`). LAN hosts need https, and public hosts are refused.
+Run an Ollama-compatible server on your host, then `adb reverse tcp:11434 tcp:11434` and connect to `http://127.0.0.1:11434` (not the emulator alias `10.0.2.2`, which is not loopback and is refused for cleartext). Cleartext is allowed only to loopback (`network_security_config.xml`). LAN hosts need https, and public hosts are refused.
 
 ## Tests
 
