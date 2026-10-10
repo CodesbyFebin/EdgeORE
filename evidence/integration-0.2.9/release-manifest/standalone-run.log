@@ -1,19 +1,7 @@
-$ python3 scripts/test_check_manifest.py
-test_debuggable_fails (__main__.CheckManifestTest.test_debuggable_fails) ... ok
-test_exported_receiver_without_permission_fails (__main__.CheckManifestTest.test_exported_receiver_without_permission_fails) ... ok
-test_exported_service_with_app_defined_permission_fails (__main__.CheckManifestTest.test_exported_service_with_app_defined_permission_fails) ... ok
-test_exported_test_activity_fails (__main__.CheckManifestTest.test_exported_test_activity_fails) ... ok
-test_release_shape_passes (__main__.CheckManifestTest.test_release_shape_passes) ... ok
-test_unexported_tooling_activity_still_fails (__main__.CheckManifestTest.test_unexported_tooling_activity_still_fails) ... ok
-test_unknown_exported_component_fails (__main__.CheckManifestTest.test_unknown_exported_component_fails) ... ok
-test_unreadable_input_is_tool_error (__main__.CheckManifestTest.test_unreadable_input_is_tool_error) ... ok
-test_workmanager_components_guarded_by_system_permissions_pass (__main__.CheckManifestTest.test_workmanager_components_guarded_by_system_permissions_pass) ... ok
-
-----------------------------------------------------------------------
+commit 28acd193fc7c
+MANIFEST CHECK: PASS (app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml)
+check-manifest EXIT=0
 Ran 9 tests in 0.002s
 
 OK
-exit_code: 0
-$ python3 scripts/check-manifest.py app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml
-MANIFEST CHECK: PASS (app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml)
-exit_code: 0
+test_check_manifest EXIT=0

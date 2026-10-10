@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.TrustTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-10T11:00:20" hostname="grok-bot-vm-446931431" time="0.0">
+  <properties/>
+  <testcase name="mutationRefused" classname="com.edgeore.app.TrustTest" time="0.0"/>
+  <testcase name="valid" classname="com.edgeore.app.TrustTest" time="0.0"/>
+  <testcase name="overflow" classname="com.edgeore.app.TrustTest" time="0.0"/>
+  <testcase name="sameBytes" classname="com.edgeore.app.TrustTest" time="0.0"/>
+  <testcase name="dailyLimit" classname="com.edgeore.app.TrustTest" time="0.0"/>
+  <testcase name="squareCost" classname="com.edgeore.app.TrustTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

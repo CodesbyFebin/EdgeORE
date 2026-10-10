@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.DeviceMetersTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-10T11:00:17" hostname="grok-bot-vm-446931431" time="0.011">
+  <properties/>
+  <testcase name="diskSkipsPartitions" classname="com.edgeore.app.DeviceMetersTest" time="0.006"/>
+  <testcase name="ioRateUsesElapsedTime" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <testcase name="freshnessDistinguishesNotReadFreshStaleAndFailed" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <testcase name="batteryDrainUnavailableInputsStayNull" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <testcase name="batteryDrainOnlyWhileKnownDischarging" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <testcase name="freshnessLabelsNeverPresentOldNumbersAsCurrent" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <testcase name="cpuBusyPercentIgnoresIdle" classname="com.edgeore.app.DeviceMetersTest" time="0.002"/>
+  <testcase name="cpuStandsStill" classname="com.edgeore.app.DeviceMetersTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

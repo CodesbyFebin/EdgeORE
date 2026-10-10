@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.NodeAgentProtocolTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-10T11:00:18" hostname="grok-bot-vm-446931431" time="0.028">
+  <properties/>
+  <testcase name="operationIdsAreUniqueHex" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.003"/>
+  <testcase name="refusesExpiredOrExtraKeys" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.001"/>
+  <testcase name="pairPayloadMatchesGoFieldOrder" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.004"/>
+  <testcase name="parsesAgentChallenge" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.0"/>
+  <testcase name="goStyleEscaping" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.0"/>
+  <testcase name="commandPayloadIsValidJsonWithPolicy" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.001"/>
+  <testcase name="clientRefusesInsecureEndpoints" classname="com.edgeore.app.NodeAgentProtocolTest" time="0.019"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

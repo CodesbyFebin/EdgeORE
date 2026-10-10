@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.screens.ScreenshotTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:45:04" hostname="grok-bot-vm-446931431" time="1.818">
+<testsuite name="com.edgeore.app.screens.ScreenshotTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-10T11:01:09" hostname="grok-bot-vm-446931431" time="1.809">
   <properties/>
-  <testcase name="storage" classname="com.edgeore.app.screens.ScreenshotTest" time="0.321"/>
-  <testcase name="review" classname="com.edgeore.app.screens.ScreenshotTest" time="0.318"/>
-  <testcase name="receipts" classname="com.edgeore.app.screens.ScreenshotTest" time="0.304"/>
-  <testcase name="ai" classname="com.edgeore.app.screens.ScreenshotTest" time="0.32"/>
-  <testcase name="mine" classname="com.edgeore.app.screens.ScreenshotTest" time="0.298"/>
-  <testcase name="nodes" classname="com.edgeore.app.screens.ScreenshotTest" time="0.256"/>
+  <testcase name="storage" classname="com.edgeore.app.screens.ScreenshotTest" time="0.338"/>
+  <testcase name="review" classname="com.edgeore.app.screens.ScreenshotTest" time="0.301"/>
+  <testcase name="receipts" classname="com.edgeore.app.screens.ScreenshotTest" time="0.345"/>
+  <testcase name="ai" classname="com.edgeore.app.screens.ScreenshotTest" time="0.315"/>
+  <testcase name="mine" classname="com.edgeore.app.screens.ScreenshotTest" time="0.242"/>
+  <testcase name="nodes" classname="com.edgeore.app.screens.ScreenshotTest" time="0.267"/>
   <system-out><![CDATA[Roborazzi: 03-storage.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
 Roborazzi: 06-review.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
 Roborazzi: 05-receipts.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
