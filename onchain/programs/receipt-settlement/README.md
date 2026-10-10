@@ -189,27 +189,65 @@ rebuild with `--arch v0`.
 From `onchain/`, with the Agave 4.3.0 binaries first on `PATH`:
 
 ```sh
-anchor build                 # SBPF v3
-anchor test --skip-build     # runs `cargo test` (LiteSVM, in-process)
+anchor build                                    # SBPF v3
+
+# 1) LiteSVM, in-process (29 scenarios)
+anchor test --skip-build --skip-local-validator --skip-deploy
+                                                # runs `cargo test --test settlement`
+
+# 2) Local solana-test-validator (28 scenarios)
+anchor test --skip-build --validator legacy --script validator \
+  --provider.wallet <throwaway local keypair outside the repo>
 ```
 
-No cluster is contacted and no wallet or funds are needed for the LiteSVM run.
+In mode 1, `--skip-deploy` is required. With `--skip-local-validator` alone,
+Anchor first tries to deploy to the configured localnet URL (127.0.0.1).
+
+Mode 2 starts `solana-test-validator` with the program loaded at genesis
+(`--bpf-program`), points `ANCHOR_PROVIDER_URL` at it and runs
+`cargo test --test validator -- --ignored`. The harness refuses any non-local
+RPC URL. All SOL comes from the local test faucet; no real funds are involved.
+Anchor needs a wallet file to start; any throwaway keypair outside the repo
+works (it is never committed and holds nothing).
+
+In validator mode, a transaction that is expected to fail is checked with
+`simulateTransaction` (signature verification on, `confirmed` commitment) to
+get its error and logs, and is not submitted. Transactions expected to succeed
+are submitted and confirmed. Slot-exact checks are relaxed there (see
+`tests/validator.rs`), because real slots cannot be pinned.
 
 The program id in `declare_id!` / `Anchor.toml` comes from a keypair generated
 locally by `anchor init` under `target/deploy/` (gitignored, never committed).
 There is deliberately no devnet/mainnet program entry or deploy script; a devnet
 deployment would need its own explicit decision and review.
 
-## Tests (`tests/settlement.rs`)
+## Tests
 
-Happy path (submit → claim → cancel with exact balance checks); bad signature;
-missing Ed25519 instruction; Ed25519 offsets using an explicit instruction
-index; wrong verifier; each receipt field tampered after signing (plus a
-different worker replaying the signed receipt); over budget; charge above quote
-and zero charge; section out of range; duplicate receipt id; duplicate section;
-duplicate output hash; double claim; claim by the wrong worker; cancel with a
-pending claim; cancel by a non-creator; invalid `create_job` parameters.
+Scenarios live in `tests/common/mod.rs` and run against a backend:
+`tests/settlement.rs` (LiteSVM, all 29) and `tests/validator.rs` (local
+validator, 28; `close_job_rejected_in_creation_slot` needs two transactions in
+the job's creation slot, which only LiteSVM can arrange).
 
-Signatures are real Ed25519 signatures from test keypairs; the digest is
-recomputed in the test with `sha2`, independently of the program's code. These
-are in-process LiteSVM tests, not tests against a live cluster.
+- Core: happy path (submit -> claim -> cancel with exact balances); bad
+  signature; missing Ed25519 instruction; Ed25519 offsets with an explicit
+  instruction index; wrong verifier; each receipt field tampered after signing
+  (plus another worker replaying it); over budget; charge above quote / zero
+  charge; section out of range; duplicate receipt id; duplicate section;
+  duplicate output hash; double claim; claim by the wrong worker; cancel with a
+  pending claim; cancel by a non-creator; invalid `create_job` parameters.
+- Claim window: deadline recorded; early cancel rejected (in LiteSVM, up to and
+  including the deadline slot); cancel after the deadline reclaims the unclaimed
+  funds exactly; claim at the deadline allowed (LiteSVM) and after it rejected;
+  a later receipt extends the job-level deadline.
+- Verifier rotation: old key rejected and new key accepted after rotation, with
+  previously accepted receipts still claimable; non-creator, default key, same
+  key and inactive job rejected.
+- Rent reclaim: worker closes a settled receipt while the job is active, with an
+  exact refund, and a replay is still blocked by the section marker; markers
+  locked while active; full completed-job lifecycle with exact refunds for
+  receipts, markers and job; creator cleans up an expired receipt (rent to
+  worker), stranger rejected; `close_job` rejected in the creation slot
+  (LiteSVM only); re-created job rejects replay of an old signed receipt.
+
+Signatures are real Ed25519 signatures from test keypairs. The digest is
+recomputed in the test with `sha2`, separately from the program's code.

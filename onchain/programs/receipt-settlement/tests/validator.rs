@@ -1,9 +1,18 @@
-//! LiteSVM (in-process) run of every scenario in `tests/common/mod.rs`.
+//! The same scenarios against a running local solana-test-validator.
+//!
+//! Ignored by default. Run with:
+//!   anchor test --skip-build --validator legacy --script validator
+//! (which starts solana-test-validator with the program at genesis and runs
+//! `cargo test --test validator -- --ignored`).
+//!
+//! Omitted here: `close_job_rejected_in_creation_slot`, which needs two
+//! transactions to land in the job's creation slot. Only LiteSVM can pin the
+//! slot like that.
 
 #[macro_use]
 mod common;
 
-scenario_tests!(svm;
+scenario_tests!(validator;
     happy_path_submit_claim_cancel,
     bad_signature_is_rejected_by_ed25519_program,
     missing_ed25519_instruction_is_rejected,
@@ -31,6 +40,5 @@ scenario_tests!(svm;
     worker_closes_settled_receipt_while_job_active_and_replay_still_blocked,
     completed_job_full_rent_reclaim_lifecycle,
     creator_cleans_up_expired_receipt_rent_goes_to_worker,
-    close_job_rejected_in_creation_slot,
     recreated_job_rejects_replay_of_old_signed_receipt,
 );
