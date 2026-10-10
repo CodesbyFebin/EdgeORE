@@ -20,6 +20,8 @@ data class DeviceResources(
     val ioBytesPerSec: Long?,
     val vpnActive: Boolean?,
     val metered: Boolean?,
+    /** SystemClock.elapsedRealtime() when this set of readings was taken (monotonic; wall-clock changes do not age it). */
+    val observedAtElapsedMs: Long? = null,
 )
 
 object DeviceResourcesReader {
@@ -54,6 +56,7 @@ object DeviceResourcesReader {
             ioBytesPerSec = io,
             vpnActive = vpn,
             metered = metered,
+            observedAtElapsedMs = android.os.SystemClock.elapsedRealtime(),
         )
     }
 
@@ -82,4 +85,34 @@ object BatteryDrain {
         if (fullUah <= 0) return null
         return (abs(currentMicroamps.toLong()) * 100 / fullUah).toInt().coerceIn(0, 500)
     }
+}
+
+/**
+ * Freshness of a displayed set of device readings (audit s.11: loading, unavailable, stale and valid are different).
+ * A failed re-read never silently keeps showing the old numbers as current.
+ */
+object ReadingFreshness {
+    const val STALE_AFTER_MS = 60_000L
+
+    enum class State { NOT_READ, FRESH, STALE, LAST_READ_FAILED }
+
+    fun state(observedAtElapsedMs: Long?, nowElapsedMs: Long, lastReadFailed: Boolean): State = when {
+        observedAtElapsedMs == null -> State.NOT_READ
+        lastReadFailed -> State.LAST_READ_FAILED
+        // A sample "from the future" (clock source mismatch) is not trusted as fresh.
+        nowElapsedMs < observedAtElapsedMs -> State.STALE
+        nowElapsedMs - observedAtElapsedMs > STALE_AFTER_MS -> State.STALE
+        else -> State.FRESH
+    }
+
+    fun label(observedAtElapsedMs: Long?, nowElapsedMs: Long, lastReadFailed: Boolean): String =
+        when (state(observedAtElapsedMs, nowElapsedMs, lastReadFailed)) {
+            State.NOT_READ -> if (lastReadFailed) "Device readings unavailable: the read failed" else "Device readings not taken yet"
+            State.LAST_READ_FAILED -> "Stale: the last read failed, so these are the previous readings"
+            State.STALE -> {
+                val minutes = observedAtElapsedMs?.let { (nowElapsedMs - it).coerceAtLeast(0) / 60_000 }
+                if (minutes != null && minutes > 0) "Stale: read $minutes min ago" else "Stale: reading age unknown"
+            }
+            State.FRESH -> "Read under a minute ago"
+        }
 }

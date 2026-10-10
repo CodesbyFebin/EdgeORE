@@ -179,6 +179,8 @@ data class StorageState(
     val auditCount: Int = 0,
     val auditOk: Boolean? = null,
     val device: DeviceResources? = null,
+    /** True when the most recent device read failed; [device] then holds the previous (stale) readings. */
+    val deviceReadFailed: Boolean = false,
 )
 
 class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
@@ -916,7 +918,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun refreshStorage() {
         viewModelScope.launch {
             val device = withContext(Dispatchers.IO) { runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull() }
-            _storage.update { it.copy(device = device ?: it.device) }
+            _storage.update { it.copy(device = device ?: it.device, deviceReadFailed = device == null) }
             storageController.refresh()
         }
     }

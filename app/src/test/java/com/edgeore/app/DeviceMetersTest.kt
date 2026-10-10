@@ -2,6 +2,8 @@ package com.edgeore.app
 
 import com.edgeore.app.device.BatteryDrain
 import com.edgeore.app.device.CpuSample
+import com.edgeore.app.device.ReadingFreshness
+import com.edgeore.app.device.ReadingFreshness.State
 import com.edgeore.app.device.DiskSample
 import com.edgeore.app.device.ioBytesPerSecond
 import org.junit.Assert.assertEquals
@@ -56,5 +58,26 @@ class DeviceMetersTest {
         assertNull(BatteryDrain.percentPerHour(-400_000, 2_000_000, 0, charging = false))
         assertNull(BatteryDrain.percentPerHour(0, 2_000_000, 50, charging = false))
         assertNull(BatteryDrain.percentPerHour(-400_000, 0, 50, charging = false))
+    }
+
+    // Audit section 11: a reading shown after a failed re-read or long after it was taken must say so.
+    @Test
+    fun freshnessDistinguishesNotReadFreshStaleAndFailed() {
+        assertEquals(State.NOT_READ, ReadingFreshness.state(null, 10_000, lastReadFailed = false))
+        assertEquals(State.FRESH, ReadingFreshness.state(10_000, 10_000 + ReadingFreshness.STALE_AFTER_MS, lastReadFailed = false))
+        assertEquals(State.STALE, ReadingFreshness.state(10_000, 10_001 + ReadingFreshness.STALE_AFTER_MS, lastReadFailed = false))
+        assertEquals(State.LAST_READ_FAILED, ReadingFreshness.state(10_000, 10_500, lastReadFailed = true))
+        // Monotonic time going backwards (e.g. a reading from another boot) is never presented as fresh.
+        assertEquals(State.STALE, ReadingFreshness.state(10_000, 5_000, lastReadFailed = false))
+    }
+
+    @Test
+    fun freshnessLabelsNeverPresentOldNumbersAsCurrent() {
+        assertEquals("Read under a minute ago", ReadingFreshness.label(1_000, 2_000, false))
+        assertEquals("Stale: read 3 min ago", ReadingFreshness.label(0, 3 * 60_000 + 5_000, false))
+        assertEquals("Stale: the last read failed, so these are the previous readings", ReadingFreshness.label(1_000, 2_000, true))
+        assertEquals("Device readings unavailable: the read failed", ReadingFreshness.label(null, 2_000, true))
+        assertEquals("Device readings not taken yet", ReadingFreshness.label(null, 2_000, false))
+        assertEquals("Stale: reading age unknown", ReadingFreshness.label(10_000, 5_000, false))
     }
 }

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.EdgeOreViewModel
+import com.edgeore.app.device.ReadingFreshness
 import com.edgeore.app.StorageState
 import com.edgeore.app.settings.Control
 import com.edgeore.app.storage.BackupStage
@@ -138,6 +139,9 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
 
     EdgeCard {
         Text("Resource telemetry", style = MaterialTheme.typography.titleMedium)
+        val freshness = ReadingFreshness.label(device?.observedAtElapsedMs, android.os.SystemClock.elapsedRealtime(), st.deviceReadFailed)
+        Text("$freshness. Applies to every device reading on this page.",
+            color = if (freshness.startsWith("Read under")) EdgeColors.textMuted else EdgeColors.copper, style = MaterialTheme.typography.labelSmall)
         Text("CPU ${device?.cpuPercent?.let { "$it% between readings" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)
         Text("Battery ${device?.batteryPercent?.let { "$it%" } ?: "not observed"} · drain ${device?.batteryPercentPerHour?.let { "$it% per hour at the current draw" } ?: "not reported"}", style = MaterialTheme.typography.bodyMedium)
         Text("Disk I/O ${device?.ioBytesPerSec?.let { "${formatBytes(it)}/s since the last reading" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)
