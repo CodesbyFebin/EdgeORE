@@ -50,8 +50,14 @@ import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.solana.TransferReview
+import com.edgeore.app.storage.BackupJobStore
 import com.edgeore.app.storage.LocalVault
+import com.edgeore.app.storage.NotConfiguredBackupProvider
+import com.edgeore.app.storage.ProviderAvailability
 import com.edgeore.app.storage.StorageAudit
+import com.edgeore.app.storage.StorageController
+import com.edgeore.app.storage.StorageEvent
+import com.edgeore.app.storage.VaultFileView
 import com.edgeore.app.wallet.ConnectFailure
 import com.edgeore.app.wallet.WalletConnection
 import com.edgeore.app.wallet.WalletCoordinator
@@ -145,6 +151,10 @@ data class VerifyOutcome(val accepted: Boolean, val summary: String, val finding
 
 data class StorageState(
     val files: List<VaultEntry> = emptyList(),
+    /** Per-file local and remote-backup state, kept separate. */
+    val views: List<VaultFileView> = emptyList(),
+    val backup: ProviderAvailability = ProviderAvailability.NotConfigured,
+    val busy: Boolean = false,
     val usedBytes: Long = 0,
     val allocationMb: Int = 0,
     val sharingConsent: Boolean = false,
@@ -198,6 +208,9 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val ai: StateFlow<AiState> = _ai.asStateFlow()
     private val fileVault = LocalVault.forApp(app)
     private val storageAudit = StorageAudit(File(app.filesDir, "storage/audit.jsonl"))
+    // No EdgeORE backend exists in this build: remote backup is honestly unavailable, never simulated.
+    private val backupJobs = BackupJobStore(File(app.filesDir, "storage/backup-jobs.json"))
+    private val storageController = StorageController(fileVault, backupJobs, NotConfiguredBackupProvider, storageAudit, onEvent = { recordStorage(it) })
     private val _storage = MutableStateFlow(loadStorage())
     val storage: StateFlow<StorageState> = _storage.asStateFlow()
     private val _review = MutableStateFlow(ReviewState())
@@ -216,8 +229,15 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         refreshReceipts()
-        val abandonedWrites = fileVault.recoverAbandonedWrites()
-        if (abandonedWrites > 0) storageAudit.append("reclaimed $abandonedWrites interrupted vault write(s)")
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val abandonedWrites = fileVault.recoverAbandonedWrites()
+                if (abandonedWrites > 0) storageAudit.append("reclaimed $abandonedWrites interrupted vault write(s)")
+            }
+            storageController.view.collect { v ->
+                _storage.update { it.copy(files = v.files.map { f -> f.entry }, views = v.files, usedBytes = v.usedBytes, backup = v.backup, busy = v.busy, auditCount = storageAudit.count(), note = v.message ?: it.note) }
+            }
+        }
         // Restart recovery: local state first (no network), then receipts for any transition the
         // previous process committed but did not record, then read-only chain observation.
         coordinator?.recoverAfterRestart()
@@ -816,14 +836,10 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     fun refreshStorage() {
-        val device = runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull()
-        _storage.update {
-            it.copy(
-                files = fileVault.entries(),
-                usedBytes = fileVault.usedBytes(),
-                auditCount = storageAudit.count(),
-                device = device ?: it.device,
-            )
+        viewModelScope.launch {
+            val device = withContext(Dispatchers.IO) { runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull() }
+            _storage.update { it.copy(device = device ?: it.device) }
+            storageController.refresh()
         }
     }
 
@@ -835,46 +851,32 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         refreshStorage()
     }
 
+    /** Storage Access Framework import. Reading, the byte limit and encryption run off the main thread. */
     fun importVault(uri: Uri) = viewModelScope.launch {
-        val outcome = withContext(Dispatchers.IO) {
-            runCatching {
-                val name = getApplication<Application>().contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
-                    if (c.moveToFirst()) c.getString(0) else null
-                } ?: "file"
-                // Hard limit enforced while reading: an oversized or unknown-size stream is cut off at 8 MB + 1 byte.
-                val bytes = getApplication<Application>().contentResolver.openInputStream(uri)?.use {
-                    try { BoundedInput.readAtMost(it, LocalVault.MAX_PLAIN_BYTES) } catch (_: InputTooLargeException) { throw VaultException.TooLarge(LocalVault.MAX_PLAIN_BYTES) }
-                } ?: error("unreadable")
-                fileVault.put(name, bytes, allowanceBytes = _storage.value.allocationMb * 1024L * 1024L)
-            }
+        val resolver = getApplication<Application>().contentResolver
+        val name = withContext(Dispatchers.IO) {
+            runCatching { resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null } }.getOrNull()
         }
-        outcome.onSuccess {
-            storageAudit.append("encrypted object ${it.id}")
-            refreshStorage()
-            _storage.update { s -> s.copy(note = "Encrypted ${it.displayName} with AES-256-GCM. The plaintext was not kept. Only this phone's Keystore key can decrypt it.") }
-        }.onFailure { e ->
-            refreshStorage()
-            _storage.update { it.copy(note = "Import failed, nothing was saved: ${e.message ?: "unreadable"}") }
-        }
+        storageController.import(name, _storage.value.allocationMb * 1024L * 1024L) { resolver.openInputStream(uri) }
     }
 
-    fun deleteVault(id: String) {
-        val ok = fileVault.delete(id)
-        storageAudit.append(if (ok) "deleted object $id" else "delete missed $id")
-        refreshStorage()
-        _storage.update { it.copy(note = if (ok) "Deleted from this phone." else "That file was not in the vault.") }
-    }
+    fun deleteVault(id: String) = viewModelScope.launch { storageController.deleteLocal(id) }
 
-    /** Decrypts off the main thread and writes to the chosen document. Every failure is reported specifically. */
+    /** Decrypts off the main thread and writes to the chosen document after the user confirmed the warning. */
     fun exportVault(id: String, uri: Uri) = viewModelScope.launch {
-        val r = withContext(Dispatchers.IO) {
-            runCatching {
-                val bytes = fileVault.read(id)
-                getApplication<Application>().contentResolver.openOutputStream(uri)?.use { it.write(bytes) } ?: error("destination unavailable")
-                bytes.size
-            }
+        storageController.exportDecrypted(id) { getApplication<Application>().contentResolver.openOutputStream(uri) }
+    }
+
+    /** App-record integrity evidence for a storage action: identifiers and encrypted-object digests only. */
+    private suspend fun recordStorage(e: StorageEvent) {
+        runCatching {
+            record(ReceiptDraft(ReceiptKind.STORAGE, e.action, e.action.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() },
+                e.observation + ". App-record integrity evidence; not proof of provider storage or physical deletion.", "EdgeORE local vault",
+                operationId = e.operationId,
+                digests = buildMap { e.encryptedSha256?.let { put("encryptedObjectSha256", it) }; e.objectId?.let { put("vaultObjectId", it) } },
+                localObservation = Evidence("OBSERVED", e.observation),
+                providerAcknowledgement = e.providerObservation?.let { Evidence("OBSERVED", it) } ?: Evidence.NOT_AVAILABLE))
         }
-        _storage.update { it.copy(note = r.fold({ n -> "Exported $n bytes of plaintext to the file you chose." }, { e -> "Export failed: ${e.message ?: e.javaClass.simpleName}" })) }
     }
 
     fun setSharingConsent(on: Boolean) {
@@ -894,12 +896,6 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val v = mb.coerceIn(1, 10000)
         prefs.edit().putInt("store.quotaMb", v).apply()
         _storage.update { it.copy(quotaMb = v, note = "Daily quota stored as $v MB. Usage is not metered in this build.") }
-    }
-
-    fun setProvider(name: String) {
-        prefs.edit().putString("store.provider", name).apply()
-        storageAudit.append("provider label set")
-        _storage.update { it.copy(provider = name, note = "Label saved. No cloud upload ran.") }
     }
 
     fun setPauseOnMetered(on: Boolean) {
@@ -922,7 +918,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun restoreStorageDefaults() {
         prefs.edit().putBoolean("store.consent", false).putInt("store.quotaMb", 500).putBoolean("store.metered", true).putBoolean("store.kill", false).putString("store.provider", "").apply()
         storageAudit.append("secure defaults restored")
-        _storage.value = loadStorage().copy(files = fileVault.entries(), usedBytes = fileVault.usedBytes(), note = "Consent, quota, provider and kill switch reset. Vault files were kept.")
+        _storage.update { loadStorage().copy(files = it.files, views = it.views, usedBytes = it.usedBytes, backup = it.backup, device = it.device, note = "Consent, quota and kill switch reset. Vault files were kept.") }
     }
 
     private fun metered(): Boolean {

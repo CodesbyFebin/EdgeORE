@@ -16,3 +16,10 @@ What these images are and are not:
 - On API 28 the Android thermal API does not exist, so thermal status renders as *not observed*; battery is *not observed*.
 - The CPU percentage on the Storage page comes from the **build machine's** `/proc/stat` through Robolectric, not from a phone.
 - They are **not device screenshots**. Phone qualification is still NOT_RUN (see `docs/known-limitations.md`).
+
+## `storage/` — Storage page JVM renders (feature/storage-vault)
+
+`StorageRenderTest` renders only the Storage vault section. Labelled `jvm-render-*` because they are **JVM renders, not device screenshots**:
+the two listed files are real EOV2 objects encrypted into a temporary vault by a **software** AES key on the build machine
+(Robolectric has no Android Keystore), remote backup is the shipped `NotConfiguredBackupProvider`, and device free space is not
+observable in that harness, so it reads *Not observed*. In the full-app renders (`03-storage*.png`) Robolectric's own storage stub reports 0 B.

@@ -39,7 +39,9 @@ class DefaultStateWalkTest {
         rule.onNodeWithText("Send stays off").performScrollTo().assertIsNotEnabled()
 
         rule.onNodeWithText("Storage", substring = false).performClick()
-        exists("Storage & Bandwidth")
+        exists("Encrypted on this device. Backup stays under your control.")
+        exists("Not configured")      // remote backup: no EdgeORE backend in this build
+        exists("No files in the vault yet.")
         exists("Unavailable")         // kill switch: no VPN tunnel exists
 
         rule.onNodeWithText("Nodes", substring = false).performClick()
