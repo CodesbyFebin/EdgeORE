@@ -25,6 +25,16 @@ class CheckManifestTest(unittest.TestCase):
     def test_release_shape_passes(self):
         self.assertEqual(0, run(MAIN + PROFILE + '<provider android:name="androidx.core.content.FileProvider" android:exported="false"/>'))
 
+    def test_workmanager_components_guarded_by_system_permissions_pass(self):
+        self.assertEqual(0, run(MAIN + '<service android:name="androidx.work.impl.background.systemjob.SystemJobService" android:exported="true" android:permission="android.permission.BIND_JOB_SERVICE"/>'
+                                + '<receiver android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver" android:exported="true" android:permission="android.permission.DUMP"/>'))
+
+    def test_exported_receiver_without_permission_fails(self):
+        self.assertEqual(1, run(MAIN + '<receiver android:name="androidx.profileinstaller.ProfileInstallReceiver" android:exported="true"/>'))
+
+    def test_exported_service_with_app_defined_permission_fails(self):
+        self.assertEqual(1, run(MAIN + '<service android:name="com.example.Svc" android:exported="true" android:permission="com.example.PERM"/>'))
+
     def test_debuggable_fails(self):
         self.assertEqual(1, run(MAIN, dbg=' android:debuggable="true"'))
 

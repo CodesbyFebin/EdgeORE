@@ -2,14 +2,16 @@
 """Release-manifest policy check (hardening backlog H2). Exit 0 = pass, 1 = violation, 2 = cannot read.
 
 Usage: check-manifest.py MERGED_AndroidManifest.xml
-Fails if the merged manifest is debuggable, or exports any component other than the app's launcher activity and
-androidx.profileinstaller's receiver (which Android protects with android.permission.DUMP), or declares any
+Fails if the merged manifest is debuggable, or exports any component other than the app's launcher activity unless
+that component is guarded by a permission only the system can hold (BIND_JOB_SERVICE for WorkManager's
+SystemJobService, DUMP for the profile-installer and WorkManager diagnostics receivers), or declares any
 androidx.test / compose ui-tooling / bare ComponentActivity component at all."""
 import sys
 import xml.etree.ElementTree as ET
 
 A = "{http://schemas.android.com/apk/res/android}"
-ALLOWED_EXPORTED = {"com.edgeore.app.MainActivity", "androidx.profileinstaller.ProfileInstallReceiver"}
+ALLOWED_EXPORTED = {"com.edgeore.app.MainActivity"}
+SYSTEM_ONLY_PERMISSIONS = {"android.permission.BIND_JOB_SERVICE", "android.permission.DUMP"}
 FORBIDDEN_PREFIXES = ("androidx.test.", "androidx.compose.ui.tooling.")
 FORBIDDEN_EXACT = {"androidx.activity.ComponentActivity"}
 
@@ -32,7 +34,7 @@ def main(argv):
             name = e.get(A + "name", "")
             if name.startswith(FORBIDDEN_PREFIXES) or name in FORBIDDEN_EXACT:
                 problems.append(f"{tag} {name} is declared (test/tooling component)")
-            elif e.get(A + "exported") == "true" and name not in ALLOWED_EXPORTED:
+            elif e.get(A + "exported") == "true" and name not in ALLOWED_EXPORTED and e.get(A + "permission") not in SYSTEM_ONLY_PERMISSIONS:
                 problems.append(f"{tag} {name} is exported")
     for p in problems:
         print(f"MANIFEST FINDING: {p}")
