@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Release-only manifest overlay (hardening backlog H2).
+     mobile-wallet-adapter-clientlib-ktx 2.0.3 publishes androidx.test.ext:junit-ktx on its runtime path, which merges
+     androidx.test.core's exported InstrumentationActivityInvoker activities into the RELEASE manifest. Nothing in the app
+     launches them; they are removed here so a release build exports only MainActivity. Debug and androidTest are unchanged.
+     scripts/check-manifest.py enforces this in scripts/qualify.sh. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application>
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity" tools:node="remove" />
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity" tools:node="remove" />
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity" tools:node="remove" />
+    </application>
+</manifest>
