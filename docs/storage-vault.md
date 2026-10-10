@@ -6,7 +6,7 @@ Branch `feature/storage-vault`. JVM-tested only. Android runtime, Android Keysto
 
 | Part | Status |
 |---|---|
-| Storage screen (`ui/screens/StorageVault.kt`, top of `StorageScreen.kt`): title, vault usage, configured allowance, available device space, Import file, file list with separate local and remote-backup states, export / backup status / delete, empty state, Remote backup card | Implemented. JVM renders only (`docs/screenshots/storage/`) |
+| Storage screen (`StorageVaultSection` in `ui/screens/StorageScreen.kt`): title, vault usage, configured allowance, available device space, Import file, file list with separate local and remote-backup states, export / backup status / delete, empty state, Remote backup card | Implemented. JVM renders only (`docs/screenshots/storage/`) |
 | Import through the Storage Access Framework (`OpenDocument`), with the byte limit enforced while reading (per-file cap, or the allowance remaining if smaller) whatever length the provider reports | Implemented, JVM-tested |
 | Existing EOV2 envelope, Android Keystore AES-256-GCM key, atomic publication (temp file, fsync, rename, directory fsync) | Unchanged format; `read` now goes through `LocalVault.openEnvelope`, the one authentication/decryption path also used by restore |
 | Export of a decrypted copy only after a confirmation that says the copy is no longer protected by the vault | Implemented |
