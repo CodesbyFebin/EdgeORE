@@ -9,6 +9,11 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.edgeore.app.ai.EndpointPolicy
+import com.edgeore.app.contribution.ContributionPolicy
+import com.edgeore.app.contribution.ContributionScheduling
+import com.edgeore.app.contribution.JobState
+import com.edgeore.app.contribution.LastRun
+import com.edgeore.app.contribution.LastRunStore
 import com.edgeore.app.ai.OwnedHostModelClient
 import com.edgeore.app.crypto.Base58
 import com.edgeore.app.crypto.Sha256
@@ -19,6 +24,7 @@ import com.edgeore.app.device.DeviceSnapshot
 import com.edgeore.app.device.KeystoreReceiptSigner
 import com.edgeore.app.device.NodeKeyVault
 import com.edgeore.app.device.ResourceSettings
+import com.edgeore.app.device.ResourceSettingsStore
 import com.edgeore.app.node.NodeAgentClient
 import com.edgeore.app.node.NodeAgentProtocol
 import com.edgeore.app.node.NodeResult
@@ -75,6 +81,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -175,7 +182,7 @@ data class StorageState(
 )
 
 class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
-    private val prefs = app.getSharedPreferences("edgeore.settings", 0)
+    private val prefs = ResourceSettingsStore.prefs(app)
     private val nodePrefs = app.getSharedPreferences("edgeore.node", 0)
     private val keyRegistry = KeyRegistry(File(app.filesDir, "receipts/keys.json"))
     // Keystore first. If it is unavailable, a persisted (weaker, labelled) software key keeps the same identity across restarts.
@@ -228,6 +235,17 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val receiptDamage: StateFlow<List<DamagedLine>> = _receiptDamage.asStateFlow()
     private val _verify = MutableStateFlow<VerifyOutcome?>(null)
     val verify: StateFlow<VerifyOutcome?> = _verify.asStateFlow()
+
+    // Contribution scheduler state. Declared before init, which reads it.
+    private val _contributionJob = MutableStateFlow(JobState.NONE)
+    /** WorkManager's state for the unique job. NONE while the user has not opted in (WorkManager is not touched). */
+    val contributionJob: StateFlow<JobState> = _contributionJob.asStateFlow()
+    private val _unmetered = MutableStateFlow<Boolean?>(null)
+    /** Active network has NET_CAPABILITY_NOT_METERED. Null when not observed. */
+    val unmetered: StateFlow<Boolean?> = _unmetered.asStateFlow()
+    private val _lastContributionRun = MutableStateFlow<LastRun?>(LastRunStore.read(prefs))
+    val lastContributionRun: StateFlow<LastRun?> = _lastContributionRun.asStateFlow()
+    private var jobWatch: Job? = null
 
     private var documentText: String? = null
     // On-device LLM (LiteRT-LM, the Google AI Edge Gallery runtime). Weights are downloaded only after consent.
@@ -283,31 +301,55 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             flushOperationReceipts()
         }
         viewModelScope.launch {
-            while (true) { _device.value = DeviceObservations.read(getApplication()); delay(15_000) }
+            while (true) { refreshDevice(); delay(15_000) }
         }
+        // Re-register the job after a restart only if the user opted in; never touch WorkManager otherwise.
+        if (ContributionPolicy.shouldSchedule(_settings.value)) applyContributionSchedule(_settings.value)
     }
 
     // ---------- settings ----------
-    private fun loadSettings() = ResourceSettings(
-        edgeModeResumed = prefs.getBoolean("edge.resumed", false),
-        chargeOnly = prefs.getBoolean("ctl.chargeOnly", true),
-        thermalGuard = prefs.getBoolean("ctl.thermal", true),
-        batteryReservePercent = prefs.getInt("ctl.reserve", 20),
-        cpuLimitPercent = prefs.getInt("ctl.cpu", 50),
-        dailyLimitLamports = prefs.getLong("budget.daily", 50_000_000L),
-    )
+    private fun loadSettings() = ResourceSettingsStore.load(prefs)
 
     fun updateSettings(transform: (ResourceSettings) -> ResourceSettings) {
-        val s = transform(_settings.value).let {
+        val old = _settings.value
+        val s = transform(old).let {
             it.copy(batteryReservePercent = it.batteryReservePercent.coerceIn(5, 90), cpuLimitPercent = it.cpuLimitPercent.coerceIn(10, 100), dailyLimitLamports = it.dailyLimitLamports.coerceAtLeast(0))
         }
-        prefs.edit().putBoolean("edge.resumed", s.edgeModeResumed).putBoolean("ctl.chargeOnly", s.chargeOnly)
-            .putBoolean("ctl.thermal", s.thermalGuard).putInt("ctl.reserve", s.batteryReservePercent)
-            .putInt("ctl.cpu", s.cpuLimitPercent).putLong("budget.daily", s.dailyLimitLamports).apply()
+        ResourceSettingsStore.save(prefs, s)
         _settings.value = s
+        if (ContributionPolicy.shouldSchedule(old) != ContributionPolicy.shouldSchedule(s)) applyContributionSchedule(s)
     }
 
-    fun refreshDevice() { _device.value = DeviceObservations.read(getApplication()) }
+    fun refreshDevice() {
+        _device.value = DeviceObservations.read(getApplication())
+        refreshContributionObservations()
+    }
+
+    // ---------- contribution scheduler (opt-in, WorkManager) ----------
+    private fun applyContributionSchedule(s: ResourceSettings) {
+        val want = ContributionPolicy.shouldSchedule(s)
+        jobWatch?.cancel(); jobWatch = null
+        if (!ContributionScheduling.apply(getApplication(), want)) { _contributionJob.value = JobState.UNAVAILABLE; return }
+        if (!want) { _contributionJob.value = JobState.NONE; return }
+        jobWatch = viewModelScope.launch {
+            val flow = runCatching { androidx.work.WorkManager.getInstance(getApplication()).getWorkInfosForUniqueWorkFlow(ContributionScheduling.UNIQUE_NAME) }.getOrNull()
+            if (flow == null) { _contributionJob.value = JobState.UNAVAILABLE; return@launch }
+            flow.catch { _contributionJob.value = JobState.UNAVAILABLE }.collect { infos ->
+                _contributionJob.value = ContributionScheduling.jobState(infos)
+                _lastContributionRun.value = LastRunStore.read(prefs)
+            }
+        }
+    }
+
+    private fun refreshContributionObservations() {
+        val cm = runCatching { getApplication<Application>().getSystemService(ConnectivityManager::class.java) }.getOrNull()
+        _unmetered.value = when {
+            cm == null -> null
+            cm.activeNetwork == null -> false // no network at all: the unmetered constraint is not met
+            else -> cm.getNetworkCapabilities(cm.activeNetwork)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+        }
+        _lastContributionRun.value = LastRunStore.read(prefs)
+    }
 
     // ---------- receipts ----------
     private fun refreshReceipts() = viewModelScope.launch(Dispatchers.IO) {

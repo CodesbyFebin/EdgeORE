@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.ScreenshotTest" tests="6" skipped="0" failures="1" errors="0" timestamp="2026-10-10T10:09:05" hostname="grok-bot-vm-446931431" time="2.388">
+  <properties/>
+  <testcase name="storage" classname="com.edgeore.app.screens.ScreenshotTest" time="0.387"/>
+  <testcase name="review" classname="com.edgeore.app.screens.ScreenshotTest" time="0.854">
+    <failure message="java.lang.AssertionError: Roborazzi: /workspace/edgeore-sched/docs/screenshots/06-review.png is changed.&#10;See the compare image at /workspace/edgeore-sched/app/build/outputs/roborazzi/06-review_compare.png" type="java.lang.AssertionError">java.lang.AssertionError: Roborazzi: /workspace/edgeore-sched/docs/screenshots/06-review.png is changed.
+See the compare image at /workspace/edgeore-sched/app/build/outputs/roborazzi/06-review_compare.png
+	at com.github.takahirom.roborazzi.RoborazziOptionsKt.getAssertErrorOrNull(RoborazziOptions.kt:331)
+	at com.github.takahirom.roborazzi.RoborazziOptionsKt.access$getAssertErrorOrNull(RoborazziOptions.kt:1)
+	at com.github.takahirom.roborazzi.RoborazziOptions$CaptureResultReporter$VerifyCaptureResultReporter.report(RoborazziOptions.kt:254)
+	at com.github.takahirom.roborazzi.RoborazziOptions$CaptureResultReporter$DefaultCaptureResultReporter.report(RoborazziOptions.kt:180)
+	at com.github.takahirom.roborazzi.ProcessOutputImageAndReportKt.processOutputImageAndReport(processOutputImageAndReport.kt:196)
+	at com.github.takahirom.roborazzi.RoborazziKt.processOutputImageAndReportWithDefaults(Roborazzi.kt:639)
+	at com.github.takahirom.roborazzi.RoborazziKt$captureRoboImage$2.invoke(Roborazzi.kt:288)
+	at com.github.takahirom.roborazzi.RoborazziKt$captureRoboImage$2.invoke(Roborazzi.kt:281)
+	at com.github.takahirom.roborazzi.RoborazziKt.capture(Roborazzi.kt:619)
+	at com.github.takahirom.roborazzi.RoborazziKt.captureRoboImage(Roborazzi.kt:281)
+	at com.github.takahirom.roborazzi.RoborazziKt.captureRoboImage(Roborazzi.kt:273)
+	at com.edgeore.app.screens.ScreenshotTestKt.shot(ScreenshotTest.kt:44)
+	at com.edgeore.app.screens.ScreenshotTestKt.access$shot(ScreenshotTest.kt:1)
+	at com.edgeore.app.screens.ScreenshotTest.review(ScreenshotTest.kt:57)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.rules.ExternalResource$1.evaluate(ExternalResource.java:54)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule$apply$1$evaluate$1.invoke(AndroidComposeTestRule.android.kt:272)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule$apply$1$evaluate$1.invoke(AndroidComposeTestRule.android.kt:271)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$AndroidComposeUiTestImpl.withDisposableContent(ComposeUiTest.android.kt:505)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$runTest$1$1$1$1$1$1.invoke(ComposeUiTest.android.kt:333)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.withComposeIdlingResource(ComposeUiTest.android.kt:385)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.access$withComposeIdlingResource(ComposeUiTest.android.kt:219)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$runTest$1$1$1$1$1.invoke(ComposeUiTest.android.kt:332)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.withWindowRecomposer(ComposeUiTest.android.kt:359)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.access$withWindowRecomposer(ComposeUiTest.android.kt:219)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$runTest$1$1$1$1.invoke(ComposeUiTest.android.kt:331)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.withTestCoroutines(ComposeUiTest.android.kt:372)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.access$withTestCoroutines(ComposeUiTest.android.kt:219)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$runTest$1$1$1.invoke(ComposeUiTest.android.kt:330)
+	at androidx.compose.ui.test.IdlingStrategy.withStrategy(IdlingStrategy.android.kt:52)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$runTest$1$1.invoke(ComposeUiTest.android.kt:329)
+	at androidx.compose.ui.test.IdlingResourceRegistry.withRegistry(IdlingResourceRegistry.jvm.kt:155)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment$runTest$1.invoke(ComposeUiTest.android.kt:328)
+	at androidx.compose.ui.test.ComposeRootRegistry.withRegistry(ComposeRootRegistry.android.kt:146)
+	at androidx.compose.ui.test.AndroidComposeUiTestEnvironment.runTest(ComposeUiTest.android.kt:327)
+	at androidx.compose.ui.test.junit4.AndroidComposeTestRule$apply$1.evaluate(AndroidComposeTestRule.android.kt:271)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.robolectric.RobolectricTestRunner$HelperTestRunner$1.evaluate(RobolectricTestRunner.java:502)
+	at org.robolectric.internal.SandboxTestRunner$2.lambda$evaluate$2(SandboxTestRunner.java:285)
+	at org.robolectric.internal.bytecode.Sandbox.lambda$runOnMainThread$0(Sandbox.java:104)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+</failure>
+  </testcase>
+  <testcase name="receipts" classname="com.edgeore.app.screens.ScreenshotTest" time="0.276"/>
+  <testcase name="ai" classname="com.edgeore.app.screens.ScreenshotTest" time="0.287"/>
+  <testcase name="mine" classname="com.edgeore.app.screens.ScreenshotTest" time="0.242"/>
+  <testcase name="nodes" classname="com.edgeore.app.screens.ScreenshotTest" time="0.341"/>
+  <system-out><![CDATA[Roborazzi: 03-storage.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
+Roborazzi: 06-review.png The differ result :ComparisonResult(pixelDifferences=328682, pixelCount=2586122, width=1078, height=2399) changed:true
+Roborazzi: 05-receipts.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
+Roborazzi: 02-ai.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
+Roborazzi: 01-mine.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
+Roborazzi: 04-nodes.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

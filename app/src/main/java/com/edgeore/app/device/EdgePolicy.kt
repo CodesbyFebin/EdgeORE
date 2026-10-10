@@ -8,6 +8,8 @@ data class ResourceSettings(
     val batteryReservePercent: Int = 20,
     val cpuLimitPercent: Int = 50,
     val dailyLimitLamports: Long = 50_000_000, // 0.05 SOL on devnet
+    /** Opt-in for the WorkManager contribution scheduler. Off by default. */
+    val contributionOptIn: Boolean = false,
 )
 
 /** Ring states from the design spec. ACTIVE is never reached without a real qualified workload. */
