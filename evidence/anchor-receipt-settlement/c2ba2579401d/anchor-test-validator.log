@@ -1,0 +1,41 @@
+
+Found a 'validator' script in the Anchor.toml. Running it as a test suite!
+
+Running test suite: "/workspace/edgeore-anchor/onchain/Anchor.toml"
+
+   Compiling receipt-settlement v0.1.0 (/workspace/edgeore-anchor/onchain/programs/receipt-settlement)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.19s
+     Running tests/validator.rs (target/debug/deps/validator-21f2382fd2b6761d)
+
+running 28 tests
+test bad_signature_is_rejected_by_ed25519_program ... ok
+test cancel_by_non_creator_is_rejected ... ok
+test claim_window_recorded_on_receipt_and_job ... ok
+test charge_above_quote_is_rejected ... ok
+test create_job_rejects_invalid_parameters ... ok
+test claim_by_wrong_worker_is_rejected ... ok
+test cancel_with_pending_claims_is_rejected_until_claimed ... ok
+test duplicate_output_hash_in_same_job_is_rejected ... ok
+test double_claim_is_rejected ... ok
+test duplicate_receipt_id_is_rejected ... ok
+test duplicate_section_is_rejected ... ok
+test ed25519_offsets_into_other_instruction_index_are_rejected ... ok
+test early_cancel_with_unclaimed_receipt_is_rejected_until_deadline_passes ... ok
+test missing_ed25519_instruction_is_rejected ... ok
+test completed_job_full_rent_reclaim_lifecycle ... ok
+test happy_path_submit_claim_cancel ... ok
+test over_budget_is_rejected ... ok
+test section_out_of_range_is_rejected ... ok
+test rotate_verifier_rejects_non_creator_default_same_and_inactive ... ok
+test rotated_verifier_old_key_rejected_new_key_accepted ... ok
+test tampered_receipt_fields_after_signing_are_rejected ... ok
+test recreated_job_rejects_replay_of_old_signed_receipt ... ok
+test worker_closes_settled_receipt_while_job_active_and_replay_still_blocked ... ok
+test wrong_verifier_is_rejected ... ok
+test claim_at_deadline_allowed_after_deadline_rejected ... ok
+test cancel_after_deadline_reclaims_unclaimed_funds ... ok
+test creator_cleans_up_expired_receipt_rent_goes_to_worker ... ok
+test later_receipt_extends_job_deadline ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.05s
+

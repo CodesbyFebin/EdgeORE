@@ -1,0 +1,14 @@
+commit: c2ba2579401d6b94f1e992964656fd24a24e9b16
+onchain_tree_clean_before_run: yes (cargo clean + .anchor removed first)
+started_utc: 2026-10-10T10:19:09Z
+host_rustc (onchain/rust-toolchain.toml): rustc 1.99.0 (b940084d7 2026-09-28)
+cargo: cargo 1.99.0 (5f94df478 2026-08-27)
+anchor: anchor-cli 1.2.1
+avm: avm 1.2.1
+solana: solana-cli 4.3.0 (src:825efd18; feat:c9ad34d2, client:Agave)
+solana-test-validator: solana-test-validator 4.3.0 (src:825efd18; feat:c9ad34d2, client:Agave)
+cargo-build-sbf: cargo-build-sbf 4.3.0 platform-tools v1.57 rustc 1.95.0 
+litesvm: version = "0.18.0"
+anchor-lang: version = "1.2.1"
+solana-rpc-client: version = "4.3.0"
+os: Debian GNU/Linux 13 (trixie)
