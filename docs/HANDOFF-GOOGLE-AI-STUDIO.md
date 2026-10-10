@@ -1,10 +1,11 @@
 # EdgeORE handoff for Google AI Studio
 
-**Written:** 2026-10-10 (IST, UTC+5:30), by the build agent, from repository files and recorded evidence only.
-**Repository:** https://github.com/CodesbyFebin/EdgeORE
-**Final `main`:** ``38fb71d5c25ef944152edecfd128ab12e0fce2e0` is the integration merge (PR #8); `0f58ed97303a` then merged PR #6; this handoff document, `evidence/settlement-status.md` and a staleness note for `docs/judges/` are added by the docs PR that follows (see the final report for that merge SHA)` (verified with `gh api repos/CodesbyFebin/EdgeORE/branches/main`).
-**Tested source commit for the gates below:** `250be029b35c`.
-**Status in one line:** a JVM-, build- and local-simulator-qualified Android review candidate (`0.2.9-review`, debug-signed) plus an unaudited, undeployed devnet Anchor prototype. Almost nothing has run on a real device. It is not production-ready, it earns nothing and it does not integrate ORE or SKR.
+- **Written:** 2026-10-10 (IST, UTC+5:30), by the build agent, from repository files and recorded evidence only.
+- **Repository:** https://github.com/CodesbyFebin/EdgeORE
+- **`main` history for this handoff:** integration merge `38fb71d5c25ef944152edecfd128ab12e0fce2e0` (PR #8) → PR #6 merge `0f58ed97303a` → docs merge `85efaeb2c3b4` (PR #9, this document + `evidence/settlement-status.md`) → this header fix. Check the current head with `gh api repos/CodesbyFebin/EdgeORE/branches/main --jq .commit.sha`.
+- **Tested source commit for the gates below:** `250be029b35c`.
+- **Master zip (build box):** `/workspace/EdgeORE-master-<shortsha>.zip` with its `.sha256` file; a full clone of `main` with all branches, the final APK, this document and the session evidence under `EXTRAS/`.
+- **Status in one line:** a JVM-, build- and local-simulator-qualified Android review candidate (`0.2.9-review`, debug-signed) plus an unaudited, undeployed devnet Anchor prototype. Almost nothing has run on a real device. It is not production-ready, it earns nothing and it does not integrate ORE or SKR.
 
 ---
 
