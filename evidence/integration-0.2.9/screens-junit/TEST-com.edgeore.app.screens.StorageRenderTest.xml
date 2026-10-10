@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.screens.StorageRenderTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:19:22" hostname="grok-bot-vm-446931431" time="2.775">
+<testsuite name="com.edgeore.app.screens.StorageRenderTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:45:06" hostname="grok-bot-vm-446931431" time="2.589">
   <properties/>
-  <testcase name="exportWarning" classname="com.edgeore.app.screens.StorageRenderTest" time="0.587"/>
-  <testcase name="backupStatus" classname="com.edgeore.app.screens.StorageRenderTest" time="0.455"/>
-  <testcase name="empty" classname="com.edgeore.app.screens.StorageRenderTest" time="0.451"/>
-  <testcase name="deleteConfirmation" classname="com.edgeore.app.screens.StorageRenderTest" time="0.461"/>
-  <testcase name="withFiles" classname="com.edgeore.app.screens.StorageRenderTest" time="0.424"/>
-  <testcase name="configureRemoteBackup" classname="com.edgeore.app.screens.StorageRenderTest" time="0.397"/>
+  <testcase name="exportWarning" classname="com.edgeore.app.screens.StorageRenderTest" time="0.559"/>
+  <testcase name="backupStatus" classname="com.edgeore.app.screens.StorageRenderTest" time="0.488"/>
+  <testcase name="empty" classname="com.edgeore.app.screens.StorageRenderTest" time="0.353"/>
+  <testcase name="deleteConfirmation" classname="com.edgeore.app.screens.StorageRenderTest" time="0.44"/>
+  <testcase name="withFiles" classname="com.edgeore.app.screens.StorageRenderTest" time="0.385"/>
+  <testcase name="configureRemoteBackup" classname="com.edgeore.app.screens.StorageRenderTest" time="0.363"/>
   <system-out><![CDATA[Roborazzi: jvm-render-storage-export-warning.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
 Roborazzi: jvm-render-storage-backup-status.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
 Roborazzi: jvm-render-storage-empty.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false

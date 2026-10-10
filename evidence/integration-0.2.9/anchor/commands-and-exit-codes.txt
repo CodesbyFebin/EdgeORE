@@ -1,7 +1,17 @@
-started_utc: 2026-10-10T09:58:58Z
-anchor-cli 1.2.1
-solana-cli 3.1.10 (src:7bc9c805; feat:1620780344, client:Agave)
-rustc 1.89.0 (29483883e 2025-08-04)
-anchor build --arch v0 exit_code: 0
-anchor test --skip-build exit_code: 0
-finished_utc: 2026-10-10T10:02:44Z
+commit: 3486dc71df9828d7e8c73a5bf3dfabba029adfb3 (onchain tree b30f882e6277bbd7b1dfd4759b98c6c7150ae4cb)
+started_utc: 2026-10-10T10:28:29Z
+active_release_before: /home/box/.local/share/solana/install/releases/3.1.10/solana-release
+solana_on_path: solana-cli 4.3.0 (src:825efd18; feat:c9ad34d2, client:Agave)
+anchor: anchor-cli 1.2.1
+rustc: rustc 1.99.0 (b940084d7 2026-09-28)
+cargo-build-sbf: cargo-build-sbf 4.3.0
+$ anchor build
+exit_code: 0
+$ anchor test --skip-build --skip-local-validator --skip-deploy
+exit_code: 0
+$ anchor test --skip-build --validator legacy --script validator --provider.wallet <throwaway keypair in mktemp dir, not in repo>
+exit_code: 0
+program_so_sha256: 330b19b881a4e7c801b9817ce081e995fbe5643b69eed675ed674652796235de
+program_so_bytes: 278344
+active_release_after: /home/box/.local/share/solana/install/releases/3.1.10/solana-release
+finished_utc: 2026-10-10T10:32:34Z

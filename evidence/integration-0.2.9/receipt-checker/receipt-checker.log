@@ -14,9 +14,9 @@ Daemon will be stopped at the end of the build
 
 > Task :test
 
-ReceiptCheckerTest > labelsUnsignedDescriptiveFieldsEvenWhenTheyWereEdited PASSED
-
 ReceiptCheckerTest > acceptsStorageReceiptAndRejectsItsTamperedCopy PASSED
+
+ReceiptCheckerTest > signedEnvelopeDetectsEditedDescriptiveFields PASSED
 
 ReceiptCheckerTest > rejectsWrongArguments PASSED
 
@@ -26,6 +26,8 @@ ReceiptCheckerTest > rejectsWellFormedBodyTamperAndPreservesOriginal PASSED
 
 ReceiptCheckerTest > reportsMissingInputAsToolError PASSED
 
+ReceiptCheckerTest > exportWithoutEnvelopeIsLabelledUnsigned PASSED
+
 ReceiptCheckerTest > acceptsPinnedKeyAndRejectsDifferentKey PASSED
 
 ReceiptCheckerTest > rejectsMalformedJson PASSED
@@ -34,5 +36,5 @@ ReceiptCheckerTest > rejectsMalformedUtf8 PASSED
 
 ReceiptCheckerTest > rejectsSignedStorageReceiptThatClaimsPayment PASSED
 
-BUILD SUCCESSFUL in 15s
+BUILD SUCCESSFUL in 13s
 5 actionable tasks: 5 executed
