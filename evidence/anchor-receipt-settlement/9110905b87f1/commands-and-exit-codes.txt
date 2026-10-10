@@ -1,0 +1,10 @@
+workdir: onchain/
+$ anchor build --arch v0
+exit_code: 0
+$ anchor test --skip-build   # runs scripts.test = cargo test
+exit_code: 0
+finished_utc: 2026-10-10T09:36:16Z
+program_so_sha256: 107118b34f0bdfc1ba718b44c837147f5da2908002bb6caf7c730861561642ff
+program_so_bytes: 244328
+program_so_elf_flags:  Flags: 0x0
+program_id: 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT
