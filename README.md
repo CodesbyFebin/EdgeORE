@@ -11,7 +11,7 @@ Built by **[CodesbyFebin](https://github.com/CodesbyFebin)** · **Solana Mobile 
 
 **Candidate:** `0.2.8-review` · versionCode `10` · debug APK  
 **Current `main`:** `111a3dba48c3` (evidence-only merge of PR #4) · **Tested source / APK stamp:** `d675002bd701` (`d675002bd701f94809cf776aaa0580b3cb9e83ef`).
-**Integration candidate (unmerged):** branch `integration/0.2.9-candidate` (`0.2.9-review`, versionCode `11`) combines the wallet-authorization fix, Storage vault, on-device AI path and the `onchain/` prototype; see [`evidence/integration-0.2.9/`](evidence/integration-0.2.9/). The submitted candidate above is unchanged.
+**Integration candidate (merged into `main` with its device gates still NOT_RUN):** branch `integration/0.2.9-candidate` (`0.2.9-review`, versionCode `11`) combines the wallet-authorization fix, Storage vault, on-device AI path and the `onchain/` prototype; see [`evidence/integration-0.2.9/`](evidence/integration-0.2.9/). The submitted candidate above is unchanged.
 
 > **Qualification:** source-side work has progressed; the wallet journey still needs runtime evidence. No confirmed transfer through EdgeORE, installed-app demo video or physical-device walkthrough is recorded here yet. This is a review candidate, not a production or ORE-earning release.
 
@@ -158,6 +158,8 @@ The Compose app coordinates four distinct paths: MWA wallet signing, devnet RPC 
 - **Owned host:** receives only explicitly requested AI or scoped node traffic; it is a separate trust boundary from the phone.
 
 Android Keystore protects device-held keys where available. Any software fallback is labeled as weaker protection. Vault keys are device-bound; an export is not a cross-device restore guarantee.
+
+The device-bound vault is a design decision, not a defect: local vault keys never leave the device; cross-device restore would need a separate passphrase-wrapped backup envelope, which is not built yet.
 
 ## Deliberate limits and next milestones
 
