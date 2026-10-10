@@ -1,4 +1,4 @@
-# EdgeORE device runbook (integration/0.2.9-candidate)
+# EdgeORE device runbook (main: 0.2.9-review with first-run introduction and QR address entry)
 
 You run this on **your own phone or your own local emulator**. Nothing here has been run on a device by the build agent; every gate below is `NOT_RUN` until you save its evidence. Report a gate as PASS only when its evidence matches the expectation written next to it. A mismatch is a FAIL, and a FAIL is a useful result: save the evidence the same way.
 
@@ -9,12 +9,33 @@ From `/workspace/device-kit/` (copy the whole folder to your computer):
 | File | What it is |
 |---|---|
 | `EdgeORE-0.2.9-review-<commit>-debug.apk` | The exact candidate APK. Its commit, sha256, size and About stamp are in `APK-IDENTITY.txt`. |
-| `mock-mwa-wallet-d444aff0c72d-testkey-debug.apk` | Mock MWA wallet (Solana Mobile reference wallet, debug). sha256 `ff543111555b073917cc4545f273d91e11073585a75f52482f95f15ace1e4c81`. |
 | `DEVICE-RUNBOOK.md` | This file. |
 | `APK-IDENTITY.txt` | Commit, sha256, size, versionName/versionCode and About stamp of the candidate APK. |
+| `qr/qr-recipient-address.png` | QR of the bare recipient address `73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n` (Gates 5a, 5b, 6). |
+| `qr/qr-solana-pay-0.01.png` | QR of `solana:73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n?amount=0.01` (fills destination and amount). |
+| `qr/qr-refused-spl-token.png` | Negative control: a Solana Pay link with `spl-token=…`, which EdgeORE must refuse. |
 | `SHA256SUMS` | Checksums of the files above. |
 
-**The mock wallet contains a throwaway devnet test key. Never send it real value, never use it on mainnet, never import its key anywhere else.** Its funded devnet address is `2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk`.
+The `qr/` images are the same files as `docs/device-qr/` in the repository (payloads listed in its README).
+
+The kit does **not** contain a wallet. **You build the mock wallet yourself** (Solana Mobile's reference test wallet; the build agent tested MWA against commit `d444aff0c72d`):
+
+```bash
+git clone https://github.com/solana-mobile/mock-mwa-wallet.git && cd mock-mwa-wallet
+git checkout d444aff0c72dadd0f5c442ea2bc3559b62916e01      # optional: the commit EdgeORE's MWA path was tested against
+echo "privateKey=<BASE58_THROWAWAY_DEVNET_KEY>" >> local.properties   # see its README, "Import a private key"
+./gradlew :app:assembleDebug                                  # APK under app/build/outputs/apk/debug/
+export MOCK_APK=$(ls "$PWD"/app/build/outputs/apk/debug/*.apk | head -1)
+```
+
+**Use a throwaway devnet-only key. Never send it real value, never use it on mainnet, never reuse it anywhere else.** If you skip `privateKey`, the wallet generates a random key on first start; read its address from the wallet screen instead. Record the wallet's address once and use it wherever this runbook says `$SENDER`:
+
+```bash
+export SENDER=<your mock wallet's devnet address>
+echo "$SENDER" > "$EV/00-sender-address.txt"    # after creating $EV below
+```
+
+Fund `$SENDER` from the devnet faucet only (Gate 6 needs a bit more than 0.01 SOL plus a fee).
 
 Also needed: `adb` (Android platform-tools), `curl`, `python3`, and a checkout of this repository at the commit in `APK-IDENTITY.txt` with JDK 17 on `PATH` (for `scripts/verify-receipt.sh`). Gate 9 needs an **arm64** phone (or arm64 emulator image) with at least 6 GB RAM and about 2 GB free storage; on an x86_64 emulator, record Gate 9 as `NOT_RUN (no arm64)`.
 
@@ -28,7 +49,9 @@ mkdir -p "$EV"
 cd /path/to/device-kit
 ```
 
-At the end, the folder holds `00-…` to `10-…` files plus `RESULTS.md` (template at the bottom).
+At the end, the folder holds `00-…` to `10-…` files (including `01a-…`, `05a-…`, `05b-…`) plus `RESULTS.md` (template at the bottom).
+
+Order: 0, 1, **1a**, 2, 3, 4, 5, **5a**, **5b**, 6, 7, 8, 9, 10. Gates 1a, 5a and 5b never prepare, sign or send anything.
 
 ---
 
@@ -47,16 +70,32 @@ PASS: every line in `00-sha256sums-check.txt` ends in `OK`. `00-device-props.txt
 ```bash
 APK=$(ls EdgeORE-0.2.9-review-*-debug.apk)
 adb install -r "$APK"                                         2>&1 | tee    "$EV/01-install.txt"
-adb install -r mock-mwa-wallet-d444aff0c72d-testkey-debug.apk 2>&1 | tee -a "$EV/01-install.txt"
+adb install -r "$MOCK_APK"                                    2>&1 | tee -a "$EV/01-install.txt"
+sha256sum "$MOCK_APK" | tee "$EV/01-mock-wallet-sha256.txt"   # your own build; recorded, not compared
 adb shell dumpsys package com.edgeore.app | grep -E "versionName|versionCode" | tee "$EV/01-edgeore-version.txt"
 adb shell pm list packages | grep -E "com.edgeore.app|com.solana.mwallet" | tee "$EV/01-packages.txt"
 ```
 
 If an older EdgeORE is installed with a different signing key, `adb install` fails with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`; then `adb uninstall com.edgeore.app` first (this deletes that install's local receipts and vault; export anything you need before).
 
-Open EdgeORE, open **About this build** and screenshot it to `$EV/01-about.png`.
+PASS: both installs print `Success`; `versionName=0.2.9-review`, `versionCode=11`. (The About stamp is checked in Gate 1a, after the introduction.)
 
-PASS: both installs print `Success`; `versionName=0.2.9-review`, `versionCode=11`; the About stamp shows the same commit as `APK-IDENTITY.txt` and no `-dirty` suffix.
+## Gate 1a. First-run introduction
+
+This build shows a one-time introduction before the tabs. Use a **fresh install** for this gate: if EdgeORE was installed before, `adb uninstall com.edgeore.app` first (this deletes that install's receipts and vault; export anything you need).
+
+1. Launch EdgeORE. The **Welcome** screen appears instead of the tabs. Scroll through it and screenshot every part: `$EV/01a-intro-1.png`, `01a-intro-2.png`, …
+   It must show four cards: **What EdgeORE does**, **What it does not do** (no mining income, ORE rewards, SKR payments or token; no mainnet; not store-ready; never sees your wallet keys), **Devnet only**, and **A wallet is required to sign**.
+2. Tap **I understand · continue**. The Mine tab opens with the **Now** card at the top (Wallet · Not connected · tap to connect, Awaiting an outcome, Receipt log, Vault). Screenshot `$EV/01a-now-card.png`.
+3. Force-stop and relaunch; the introduction must **not** reappear:
+   ```bash
+   adb shell am force-stop com.edgeore.app && adb shell monkey -p com.edgeore.app -c android.intent.category.LAUNCHER 1 >/dev/null
+   ```
+   Screenshot `$EV/01a-relaunch.png`.
+4. Open **About this build** (ⓘ, top right) and screenshot it: `$EV/01-about.png`. The dialog also has **Show introduction**; you may tap it to confirm the introduction comes back, then continue again.
+5. Optional (TalkBack): with TalkBack on, the card titles are announced as headings. Note it in `RESULTS.md` if you check it.
+
+PASS: the introduction appeared on first launch with the four cards above, did not reappear after relaunch, and the About stamp shows the same commit as `APK-IDENTITY.txt` and no `-dirty` suffix.
 
 ## Gate 2. Secure lock screen
 
@@ -100,10 +139,10 @@ PASS: `03-logcat-edgeore-wallet.txt` exists, has `EdgeORE.Wallet` lines for the 
 ## Gate 4. Authenticate in the wallet, then Connect
 
 1. Open **Mock MWA Wallet** (from the launcher). Tap **Authenticate** and pass the lock-screen prompt. Screenshot the `Authentication succeeded!` toast if you can: `$EV/04-wallet-authenticated.png`.
-2. Open EdgeORE → Mine → **Connect Solana Wallets** card → **Connect wallet**. The mock wallet shows "EdgeORE wants to connect"; tap **Authorize**.
+2. Open EdgeORE → Mine → **Connect Solana Wallets** card → **Connect wallet** (the **Now** card's *Wallet* row does the same). The mock wallet shows "EdgeORE wants to connect"; tap **Authorize**.
 3. Screenshot EdgeORE showing the connected address: `$EV/04-connected.png`.
 
-PASS: EdgeORE shows `2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk` (or its short form `2GUk3J…7Rxk`) as connected, no error text, and the wallet log has a matching authorize line. FAIL evidence: the exact error text EdgeORE shows (the authorization fix exposes it instead of failing silently) plus the screenshot.
+PASS: EdgeORE shows your `$SENDER` address (or its short form, first 4 and last 4 characters) as connected, no error text, and the wallet log has a matching authorize line. FAIL evidence: the exact error text EdgeORE shows (the authorization fix exposes it instead of failing silently) plus the screenshot.
 
 ## Gate 5. Disconnect
 
@@ -111,7 +150,40 @@ On Mine, tap **Disconnect**. Screenshot to `$EV/05-disconnected.png`.
 
 PASS: the status reads `Disconnected. The wallet confirmed deauthorization.` If it reads `Disconnected in EdgeORE. The wallet did not confirm deauthorization.`, that is a FAIL for wallet confirmation (record it; EdgeORE is still disconnected locally).
 
-Then connect again exactly as in Gate 4 (authenticate in the wallet first), for Gate 6. Screenshot `$EV/05-reconnected.png`.
+Then connect again exactly as in Gate 4 (authenticate in the wallet first), for Gates 5a–6. Screenshot `$EV/05-reconnected.png`.
+
+## Gate 5a. Live camera QR scan (form fill only)
+
+The camera permission must be requested **only** when you tap **Scan QR**, never at install or launch. Open `qr/qr-recipient-address.png` full-screen on your computer (or print it). An emulator's virtual camera usually cannot see it: on an emulator without a webcam passthrough, record `NOT_RUN (emulator camera)` and go to 5b.
+
+1. Before tapping anything, record that the permission is not yet granted:
+   ```bash
+   adb shell dumpsys package com.edgeore.app | grep -A1 "android.permission.CAMERA" | tee "$EV/05a-camera-before.txt"   # expect granted=false (or no runtime grant yet)
+   ```
+2. Mine → **Review a supported action**. The destination and amount fields are **empty**. Screenshot `$EV/05a-review-empty.png`.
+3. Tap **Scan QR**. Android asks for the camera permission now. First tap **Don't allow**: EdgeORE must stay on the form and show "Camera permission was not granted, so nothing was scanned…". Screenshot `$EV/05a-denied.png`.
+4. Tap **Scan QR** again and **Allow** (Android may require you to allow it from app settings after one denial; if so, grant it there and come back). Point the camera at the QR. The scanner closes by itself and the destination field holds `73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n`, with a note "Filled from QR: destination 73Cc84…JnR93n…". Screenshot `$EV/05a-filled.png`.
+5. Negative control: tap **Scan QR** and scan `qr/qr-refused-spl-token.png`. EdgeORE must show "QR not used: The link asks for an SPL token transfer…" and must not fill an SPL transfer. Screenshot `$EV/05a-refused.png`.
+6. Do **not** tap Prepare. Tap **Back**.
+   ```bash
+   adb shell dumpsys package com.edgeore.app | grep -A1 "android.permission.CAMERA" | tee "$EV/05a-camera-after.txt"   # granted=true
+   ```
+
+PASS: no camera prompt before the tap; a denial leaves the form usable with that message; an allowed scan fills exactly the address in the QR; the SPL-token QR is refused with a reason.
+
+## Gate 5b. QR from image (no permission)
+
+1. Push the QR images to the phone's Pictures folder and ask the media scanner to index them:
+   ```bash
+   adb push qr/qr-solana-pay-0.01.png /sdcard/Pictures/ && adb push qr/qr-recipient-address.png /sdcard/Pictures/
+   adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/qr-solana-pay-0.01.png >/dev/null
+   adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/qr-recipient-address.png >/dev/null
+   ```
+   (If the picker does not show them, open the Files or Photos app once, or reboot.)
+2. Mine → **Review a supported action** → **QR from image**. The system photo picker opens with **no** permission prompt. Pick `qr-solana-pay-0.01.png`. The destination becomes `73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n` and the amount `0.01`, with a "Filled from QR … and amount 0.01 SOL" note; the amount field's hint reads `10000000 lamports.` Screenshot `$EV/05b-filled.png`.
+3. Do **not** tap Prepare. Tap **Back**.
+
+PASS: the picker opened without a permission prompt and both fields were filled exactly from the QR.
 
 ## Gate 6. One approved 0.01 devnet SOL transfer (with the force-stop recovery check)
 
@@ -121,17 +193,19 @@ Before you start, record the balances (devnet RPC, read-only):
 
 ```bash
 RPC=https://api.devnet.solana.com
-for a in 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk 73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n; do
+for a in "$SENDER" 73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n; do
   curl -s $RPC -H 'content-type: application/json' -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getBalance\",\"params\":[\"$a\"]}"; echo " $a"
 done | tee "$EV/06-balances-before.txt"
 ```
 
 The sender needs more than 0.01 SOL plus a fee; if it does not have it, stop and record `NOT_RUN (unfunded)`. Do not fund it from a wallet holding real value; use the devnet faucet only.
 
-1. Review tab. **The form is prefilled and both fields must be replaced:** the destination is prefilled with your own connected address (a self-transfer) and the amount with `0.001`. Clear both and enter:
-   - Destination address: `73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n`
-   - Amount: `0.01`
-2. Tap **Prepare exact-message review**. **Check the review screen before signing:** the decoded section ("Decoded from the exact bytes") must show cluster devnet, fee payer and sender `2GUk3J…7Rxk`, recipient `73Cc84…R93n`, amount 0.01 SOL (10,000,000 lamports) and a fee. Screenshot every part of it (scroll): `$EV/06-review-1.png`, `06-review-2.png`, … If anything differs, tap **Refuse** and stop.
+1. Mine → **Review a supported action**. The destination and amount start **empty**. Enter them in one of these ways:
+   - type or paste: Destination address `73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n`, Amount `0.01`; or
+   - **Scan QR** on `qr/qr-solana-pay-0.01.png` (fills both), or **QR from image** with the same file (Gate 5b).
+
+   Either way, read both fields back before going on: the destination field's hint reads "Valid Solana address format…" and the amount's reads `10000000 lamports.`. Do not use **Use my own address (self-transfer)**. Screenshot `$EV/06-form.png`.
+2. Tap **Prepare exact-message review**. **Check the review screen before signing:** the **In plain words** card must read "Send 0.01 SOL to 73Cc…R93n" (it is derived from the bytes, but it is a summary). The exact section ("Decoded from the exact bytes") is the authority and must show cluster devnet, fee payer and sender `$SENDER`, recipient `73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n`, amount 0.01 SOL (10,000,000 lamports) and a fee. Screenshot every part of it (scroll): `$EV/06-review-1.png`, `06-review-2.png`, … If anything differs, tap **Refuse** and stop.
 3. Tap **Approve & sign in wallet**; approve in the mock wallet. EdgeORE must show "Signed but not broadcast". Screenshot `$EV/06-signed.png`.
 4. **Force-stop during submit.** Have this command typed in a terminal, unsent:
    ```bash
@@ -154,7 +228,7 @@ The sender needs more than 0.01 SOL plus a fee; if it does not have it, stop and
    Open the Explorer URL and save a screenshot: `$EV/06-explorer.png`. Re-run the balance loop into `$EV/06-balances-after.txt`.
 7. Screenshot EdgeORE's final state for the operation: `$EV/06-final.png`.
 
-PASS: `06-getSignatureStatuses.json` has a non-null value with `"err":null` and `confirmationStatus` `confirmed` or `finalized`; Explorer shows exactly one 0.01 SOL transfer from `2GUk3J…7Rxk` to `73Cc84…R93n` for this signature; the recipient balance rose by 10,000,000 lamports; after the force-stop, EdgeORE never offered to resend bytes that may have been sent, and the operation is counted once. If `value` is `[null]`, keep observing; "not found" is not proof it never landed.
+PASS: `06-getSignatureStatuses.json` has a non-null value with `"err":null` and `confirmationStatus` `confirmed` or `finalized`; Explorer shows exactly one 0.01 SOL transfer from `$SENDER` to `73Cc84…R93n` for this signature; the recipient balance rose by 10,000,000 lamports; after the force-stop, EdgeORE never offered to resend bytes that may have been sent, and the operation is counted once. If `value` is `[null]`, keep observing; "not found" is not proof it never landed.
 
 ## Gate 7. Export the real receipt and verify it offline (PASS original, FAIL lamports+1)
 
@@ -237,15 +311,19 @@ Do not include `03-logcat-full.raw.txt` when you share the folder.
 
 ```markdown
 APK commit / sha256 (from APK-IDENTITY.txt):
+Mock wallet: commit you built, sha256 (01-mock-wallet-sha256.txt), sender address ($SENDER):
 Device: model, Android version, ABI, phone or emulator:
 | Gate | Result (PASS / FAIL / NOT_RUN + reason) | Evidence files |
 |---|---|---|
 | 0 Kit integrity | | 00-* |
-| 1 Install + About stamp | | 01-* |
+| 1 Install | | 01-install.txt, 01-edgeore-version.txt, 01-packages.txt, 01-mock-wallet-sha256.txt |
+| 1a First-run introduction + About stamp | | 01a-*, 01-about.png |
 | 2 Secure lock screen | | 02-* |
 | 3 Logcat EdgeORE.Wallet (filtered) | | 03-logcat-edgeore-wallet.txt |
 | 4 Authenticate + Connect | | 04-* |
 | 5 Disconnect (wallet confirmed?) | | 05-* |
+| 5a Live camera QR scan (prompt only on tap, deny path, fill, SPL refusal) | | 05a-* |
+| 5b QR from image (no prompt, fills destination + amount) | | 05b-* |
 | 6 0.01 SOL transfer, signature, status, Explorer | | 06-* |
 | 6 Force-stop recovery (which case?) | | 06-force-stop-time.txt, 06-after-restart.png |
 | 7 Receipt verify: original exit / lamports+1 exit | | 07-* |

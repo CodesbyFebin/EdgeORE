@@ -142,5 +142,5 @@ sprint and site claims; and the AI Studio secrets scaffolding.
   only. The live camera path (`QrScanActivity`) has **not run on a phone**; the decode path is unit-tested with zxing-generated codes.
 - The navigation label "Mine" is kept because the design spec (`docs/design-spec.md`) and the device runbook use it. It
   arguably suggests mining; renaming it (for example to "Home") is the owner's call.
-- The device runbook (`docs/DEVICE-RUNBOOK.md`) still describes the 0.2.9-review APK, which has no onboarding. A build
-  from this branch shows the introduction first: tap **I understand · continue** before step 2 of that runbook.
+- The device runbook (`docs/DEVICE-RUNBOOK.md`) was updated after merge for this build: Gate 1a (first-run
+  introduction), Gate 5a (live camera QR scan) and Gate 5b (QR from image) were added, and Gate 6 now starts from empty fields.

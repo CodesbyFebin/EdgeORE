@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.OnboardingScreenshotTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-10T15:34:08" hostname="grok-bot-vm-446931431" time="0.277">
+  <properties/>
+  <testcase name="onboardingThenTabs" classname="com.edgeore.app.screens.OnboardingScreenshotTest" time="0.277"/>
+  <system-out><![CDATA[Roborazzi: 07-onboarding.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2586122, width=1078, height=2399) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
