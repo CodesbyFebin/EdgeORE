@@ -1,6 +1,6 @@
 # On-device AI (LiteRT-LM, after Google AI Edge Gallery)
 
-Branch: `feature/ai-edge-gallery`. Status: **built and JVM-tested, not run on a device.** No on-device
+Branch: `feature/ai-edge-gallery` (merged into `integration/0.2.9-candidate`, not into `main`). Status: **built and JVM-tested, not run on a device.** No on-device
 generation has been observed. Treat every on-device answer path as NOT_RUN until a phone session records one.
 
 ## What was taken from Google AI Edge Gallery

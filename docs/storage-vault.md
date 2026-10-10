@@ -1,6 +1,6 @@
 # Storage page: encrypted local vault and optional device-bound encrypted backup
 
-Branch `feature/storage-vault`. JVM-tested only. Android runtime, Android Keystore, remote upload and restore are **NOT_RUN**.
+Branch `feature/storage-vault` (merged into `integration/0.2.9-candidate`, not into `main`). JVM-tested only. Android runtime, Android Keystore, remote upload and restore are **NOT_RUN**.
 
 ## What ships
 

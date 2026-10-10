@@ -10,6 +10,7 @@ Built by **[CodesbyFebin](https://github.com/CodesbyFebin)** · **Solana Mobile 
 
 **Candidate:** `0.2.8-review` · versionCode `10` · debug APK  
 **Current `main`:** `111a3dba48c3` (evidence-only merge of PR #4) · **Tested source / APK stamp:** `d675002bd701` (`d675002bd701f94809cf776aaa0580b3cb9e83ef`).
+**Integration candidate (unmerged):** branch `integration/0.2.9-candidate` (`0.2.9-review`, versionCode `11`) combines the wallet-authorization fix, Storage vault, on-device AI path and the `onchain/` prototype; see [`evidence/integration-0.2.9/`](evidence/integration-0.2.9/). The submitted candidate above is unchanged.
 
 > **Qualification:** source-side work has progressed; the wallet journey still needs runtime evidence. No confirmed transfer through EdgeORE, installed-app demo video or physical-device walkthrough is recorded here yet. This is a review candidate, not a production or ORE-earning release.
 
@@ -86,8 +87,8 @@ The previously reported single-byte mutation experiment has no preserved script 
 | Destination | Purpose and current boundary |
 |---|---|
 | **Mine** | Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
-| **Private AI** | Ollama-compatible chat and document attachment to an owned host. On branch `feature/ai-edge-gallery`: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
-| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Android Keystore behavior still needs device qualification. |
+| **Private AI** | Ollama-compatible chat and document attachment to an owned host. On the integration candidate: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
+| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. |
 | **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
 | **Receipts** | Inspect, export and verify operation records with evidence dimensions kept separate. |
 
