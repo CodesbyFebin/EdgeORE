@@ -23,7 +23,7 @@ import java.time.Instant
 import java.util.Base64
 import java.util.UUID
 
-enum class ReceiptKind { REVIEW, NODE, LOCAL_AI, POLICY }
+enum class ReceiptKind { REVIEW, NODE, LOCAL_AI, POLICY, STORAGE }
 
 /** One evidence dimension: its state and exactly what was checked. Missing never means "passed". */
 data class Evidence(val state: String, val checked: String) {

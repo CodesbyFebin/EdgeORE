@@ -29,6 +29,7 @@ Current status is in [`qualification-status.md`](qualification-status.md). Nothi
 
 **Storage**
 - Vault export writes plaintext. The Keystore key never leaves the phone, so uninstalling or a reset makes the vault unrecoverable.
+- Remote backup is **Not configured**: no EdgeORE backend exists, so nothing is uploaded. The backup design is device-bound encrypted backup only; cross-device recovery is not implemented. See `docs/storage-vault.md`.
 
 **Receipts**
 - The device signature shows that this install wrote the record. The wallet's Ed25519 signature is verified separately.

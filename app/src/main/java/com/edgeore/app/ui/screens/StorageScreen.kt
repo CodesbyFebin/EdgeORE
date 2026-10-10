@@ -49,13 +49,13 @@ import kotlinx.coroutines.delay
 fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     val st by vm.storage.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var provider by rememberSaveable { mutableStateOf(st.provider) }
-    var pendingDelete by rememberSaveable { mutableStateOf<String?>(null) }
-    var exportName by rememberSaveable { mutableStateOf<String?>(null) }
+    var exportId by rememberSaveable { mutableStateOf<String?>(null) }
+    // Storage Access Framework: the user picks the document; the app never gets broad file access.
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) vm.importVault(uri) }
     val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
-        val id = exportName
+        val id = exportId
         if (uri != null && id != null) vm.exportVault(id, uri)
+        exportId = null
     }
     LaunchedEffect(Unit) {
         vm.refreshStorage()
@@ -63,50 +63,19 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
         vm.refreshStorage()
     }
     val device = st.device
-    val total = device?.storageTotal
-    val free = device?.storageFree
-    val usedDisk = if (total != null && free != null) (total - free).coerceAtLeast(0) else null
-    val ring = if (total != null && total > 0 && usedDisk != null) usedDisk.toFloat() / total else 0f
 
-    SectionTitle("Storage & Bandwidth", "Your files. Your connection. Your control.")
-
-    EdgeCard {
-        Text("1. Encrypted local storage", style = MaterialTheme.typography.titleMedium)
-        Text("AES-256-GCM. The key stays in Android Keystore.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            UsageRing(ring)
-            Column {
-                Text(if (usedDisk == null) "Storage not observed" else "${formatBytes(usedDisk)} used", color = EdgeColors.mint, style = MaterialTheme.typography.titleMedium)
-                Text(if (total == null) "Total not observed" else "${formatBytes(total)} on this device", color = EdgeColors.textMuted)
-            }
-        }
-        Text("Phone storage: used ${shown(usedDisk)}  ·  available ${shown(free)}", style = MaterialTheme.typography.bodyMedium)
-        Text(if (st.allocationMb == 0) "Vault allowance: not set. Enforced limits: 8 MB per file and phone free space."
-            else "Vault allowance: ${st.allocationMb} MB. Enforced on every import (allowance − used − in-progress).", style = MaterialTheme.typography.bodyMedium)
-        Text("Vault ciphertext ${formatBytes(st.usedBytes)}. That is only files this app encrypted.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Text("Recovery: only this installation's Keystore key can decrypt these files. Uninstalling, resetting the phone or losing the key makes them unrecoverable. This is not a backup.",
-            color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
-        Slider(st.allocationMb.toFloat(), { vm.setAllocationMb(it.toInt()) }, valueRange = 0f..2048f, modifier = Modifier.fillMaxWidth().height(48.dp), colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
-        EffectNote(Control.VAULT_ALLOWANCE)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SecondaryAction("Restore", Modifier.weight(1f)) { pick.launch(arrayOf("*/*")) }
-            SecondaryAction("Manage files", Modifier.weight(1f)) { pick.launch(arrayOf("*/*")) }
-        }
-        if (st.files.isEmpty()) Text("No vault files yet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        st.files.forEach { e ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(e.displayName + (if (e.plainBytes >= 0) " · ${formatBytes(e.plainBytes)}" else "") + (if (e.legacy) " · legacy format" else ""),
-                    modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                TextButton(onClick = { exportName = e.id; save.launch(e.displayName) }) { Text("Export") }
-                TextButton(onClick = { pendingDelete = e.id }) { Text("Delete", color = EdgeColors.danger) }
-            }
-        }
-    }
+    StorageVaultSection(
+        st,
+        onImport = { pick.launch(arrayOf("*/*")) },
+        onExport = { id, name -> exportId = id; save.launch(name) },
+        onDelete = vm::deleteVault,
+        onAllowance = vm::setAllocationMb,
+    )
 
     EdgeCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("2. Bandwidth sharing", style = MaterialTheme.typography.titleMedium)
+                Text("Bandwidth sharing", style = MaterialTheme.typography.titleMedium)
                 Text(if (st.sharingConsent) "Consent on. This app is not sending shared traffic." else "Sharing OFF", color = if (st.sharingConsent) EdgeColors.mint else EdgeColors.textMuted)
             }
             Switch(st.sharingConsent, vm::setSharingConsent, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
@@ -122,14 +91,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     }
 
     EdgeCard {
-        Text("3. Personal cloud", style = MaterialTheme.typography.titleMedium)
-        Text(if (st.provider.isBlank()) "No provider connected. Synced: 0 B." else "Label “${st.provider}” saved. Synced: 0 B. No upload ran.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(provider, { provider = it }, label = { Text("Provider label") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        SecondaryAction("Configure provider") { vm.setProvider(provider) }
-    }
-
-    EdgeCard {
-        Text("4. Bandwidth earning", style = MaterialTheme.typography.titleMedium)
+        Text("Bandwidth earning", style = MaterialTheme.typography.titleMedium)
         Text("Protocol not qualified", color = EdgeColors.copper)
         Text("ORE rewards: Not observed", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         Text("No bandwidth-to-ORE contract is verified. Claim stays off.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
@@ -137,13 +99,13 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     }
 
     EdgeCard {
-        Text("5. In-app browser", style = MaterialTheme.typography.titleMedium)
+        Text("In-app browser", style = MaterialTheme.typography.titleMedium)
         Text("Open tabs in this app: 0 until you load one https page. Cookies start off.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         SecondaryAction("Open browser") { onBrowser() }
     }
 
     EdgeCard {
-        Text("6. VPN", style = MaterialTheme.typography.titleMedium)
+        Text("VPN", style = MaterialTheme.typography.titleMedium)
         Text(
             when (device?.vpnActive) {
                 true -> "A VPN transport is active on this device. EdgeORE did not start it."
@@ -162,7 +124,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     }
 
     EdgeCard {
-        Text("7. Resource telemetry", style = MaterialTheme.typography.titleMedium)
+        Text("Resource telemetry", style = MaterialTheme.typography.titleMedium)
         Text("CPU ${device?.cpuPercent?.let { "$it% between readings" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)
         Text("Battery ${device?.batteryPercent?.let { "$it%" } ?: "not observed"} · drain ${device?.batteryPercentPerHour?.let { "$it% per hour at the current draw" } ?: "not reported"}", style = MaterialTheme.typography.bodyMedium)
         Text("Disk I/O ${device?.ioBytesPerSec?.let { "${formatBytes(it)}/s since the last reading" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)
@@ -170,7 +132,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     }
 
     EdgeCard {
-        Text("8. Scheduling", style = MaterialTheme.typography.titleMedium)
+        Text("Scheduling", style = MaterialTheme.typography.titleMedium)
         Text(
             when (device?.metered) {
                 true -> "This network is metered."
@@ -188,7 +150,7 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     }
 
     EdgeCard {
-        Text("9. Audit trail", style = MaterialTheme.typography.titleMedium)
+        Text("Storage audit trail", style = MaterialTheme.typography.titleMedium)
         Text("${st.auditCount} event(s) written on this phone.", style = MaterialTheme.typography.bodyMedium)
         Text(st.auditOk?.let { if (it) "Chain matches." else "Chain does not match." } ?: "Integrity not checked yet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -203,25 +165,14 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     }
 
     EdgeCard {
-        Text("10. Permissions", style = MaterialTheme.typography.titleMedium)
-        Text("Revoke clears sharing consent and the provider label. Encrypted files stay until you delete them.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text("Permissions", style = MaterialTheme.typography.titleMedium)
+        Text("Revoke clears sharing consent. Encrypted files stay until you delete them.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SecondaryAction("Revoke access", Modifier.weight(1f)) { vm.restoreStorageDefaults() }
             SecondaryAction("Restore secure defaults", Modifier.weight(1f)) { vm.restoreStorageDefaults() }
         }
     }
-    Text(st.note, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
 
-    pendingDelete?.let { name ->
-        val label = st.files.firstOrNull { it.id == name }?.displayName ?: name
-        AlertDialog(
-            onDismissRequest = { pendingDelete = null },
-            title = { Text("Delete $label?") },
-            text = { Text("This removes the encrypted file from this phone.") },
-            confirmButton = { TextButton(onClick = { vm.deleteVault(name); pendingDelete = null }) { Text("Delete") } },
-            dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text("Cancel") } },
-        )
-    }
 }
 
 @Composable
@@ -259,9 +210,9 @@ private fun UsageRing(fraction: Float) {
     }
 }
 
-private fun shown(n: Long?): String = if (n == null) "not observed" else formatBytes(n)
+internal fun shown(n: Long?): String = if (n == null) "not observed" else formatBytes(n)
 
-private fun formatBytes(n: Long): String = when {
+internal fun formatBytes(n: Long): String = when {
     n < 1024 -> "$n B"
     n < 1024 * 1024 -> "${n / 1024} KB"
     n < 1024L * 1024 * 1024 -> "%.1f MB".format(n / (1024.0 * 1024.0))
