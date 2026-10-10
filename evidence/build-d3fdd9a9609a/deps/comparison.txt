@@ -1,0 +1,3 @@
+debugRuntimeClasspath: identical (cmp exit 0)
+debugUnitTestRuntimeClasspath: identical (cmp exit 0)
+debugAndroidTestRuntimeClasspath: identical (cmp exit 0)

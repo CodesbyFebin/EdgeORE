@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.DurableOperationTest" tests="21" skipped="0" failures="0" errors="0" timestamp="2026-10-10T00:51:29" hostname="grok-bot-vm-446931431" time="0.307">
+  <properties/>
+  <testcase name="chainErrorIsFailedAndReleasesPrincipal" classname="com.edgeore.app.DurableOperationTest" time="0.134"/>
+  <testcase name="timeoutIsUnknownAndIsNeverRetransmitted" classname="com.edgeore.app.DurableOperationTest" time="0.007"/>
+  <testcase name="notFoundAfterExpiryOfASentOperationStaysUncertainAndKeepsItsReservation" classname="com.edgeore.app.DurableOperationTest" time="0.01"/>
+  <testcase name="repeatedSubmitTapsProduceExactlyOneSend" classname="com.edgeore.app.DurableOperationTest" time="0.062"/>
+  <testcase name="statusRpcFailureKeepsStateAndRecordsTheAttempt" classname="com.edgeore.app.DurableOperationTest" time="0.008"/>
+  <testcase name="rpcSignatureMismatchIsUnknownNotSuccess" classname="com.edgeore.app.DurableOperationTest" time="0.006"/>
+  <testcase name="submitAttemptIsDurableBeforeTheNetworkCall" classname="com.edgeore.app.DurableOperationTest" time="0.007"/>
+  <testcase name="repeatedApproveTapsOpenOneSigningSession" classname="com.edgeore.app.DurableOperationTest" time="0.006"/>
+  <testcase name="reviewedOperationRecordsEveryRequiredField" classname="com.edgeore.app.DurableOperationTest" time="0.002"/>
+  <testcase name="restartObservesTheKnownSignatureWithoutResending" classname="com.edgeore.app.DurableOperationTest" time="0.007"/>
+  <testcase name="signedButUnsentExpiresWithoutAnySend" classname="com.edgeore.app.DurableOperationTest" time="0.005"/>
+  <testcase name="damagedStoreFailsClosedInsteadOfLookingEmpty" classname="com.edgeore.app.DurableOperationTest" time="0.002"/>
+  <testcase name="deathBeforeSendKeepsSignedBytesAndNeverSendsOnRestart" classname="com.edgeore.app.DurableOperationTest" time="0.004"/>
+  <testcase name="cancellationDuringSendIsUnknown" classname="com.edgeore.app.DurableOperationTest" time="0.011"/>
+  <testcase name="refusedOrInvalidTransitionsAreRejected" classname="com.edgeore.app.DurableOperationTest" time="0.003"/>
+  <testcase name="walletRefusalAndRejectedBytesReleaseTheReservation" classname="com.edgeore.app.DurableOperationTest" time="0.003"/>
+  <testcase name="confirmedThenFinalizedCountsOnce" classname="com.edgeore.app.DurableOperationTest" time="0.007"/>
+  <testcase name="restartAbandonsUnsignedAndInterruptedSigningSessions" classname="com.edgeore.app.DurableOperationTest" time="0.005"/>
+  <testcase name="cancellationExceptionPropagates" classname="com.edgeore.app.DurableOperationTest" time="0.004"/>
+  <testcase name="unavailableHeightNeverExpires" classname="com.edgeore.app.DurableOperationTest" time="0.005"/>
+  <testcase name="deathAfterRpcAcceptanceBeforeReceiptLeavesUnreceiptedSubmitted" classname="com.edgeore.app.DurableOperationTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
