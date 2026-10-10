@@ -30,6 +30,44 @@ Clearance (prior work by CodesbyFebin)
   exact-message review. Its cloud transaction audit, SKR staking/claims, DePIN reward tasks, simulated wallet
   signatures and RPC fallbacks were not carried over. See docs/analysis/clearance-app-review.md.
 
+OptimAI Agentic for Android
+  https://github.com/CodesbyFebin/Agentic-android (upstream: OptimaiNetwork/optimai-agentic-android), commit 94b6db3
+  Copyright (c) 2026 OptimAI Agentic contributors. Licensed under the MIT License (text below).
+  Adapted (rewritten for EdgeORE's colours, design.md rules and coordinators; each file names its source):
+    ui/theme/DS.kt                      -> app/src/main/java/com/edgeore/app/ui/theme/Tokens.kt
+    ui/components/Components.kt         -> ui/components/DesignKit.kt (StatusPill, CountBadge, IconTile, EdgeDivider)
+    ui/agent/AgentChatScreen.kt         -> ui/components/DesignKit.kt (StatCell), ui/components/Chat.kt (bubbles)
+    ui/agent/TechnicalCards.kt          -> ui/components/DesignKit.kt (FactCard header/content/footer layout)
+    ui/components/Charts.kt             -> ui/components/Charts.kt (Domain, plotPoints, monotone path, area path)
+    ui/components/Markdown.kt           -> ui/components/Markdown.kt (links shown, not clickable)
+    data/UserFacingError.kt             -> ui/components/PlainError.kt (original text kept behind "Show details")
+    ui/AppRoot.kt (tab badge idea)      -> ui/NavBadges.kt
+  Not used: its trading, BNB Chain, PancakeSwap, Reown/WalletConnect, stock catalog, server agent, keyboard, share
+  target, splash and router code, and none of its bundled images or third-party logos (MetaMask, Trust Wallet,
+  BNB Chain, bStocks, OptimAI). See docs/analysis/agentic-android-review.md.
+
+  MIT License
+
+  Copyright (c) 2026 OptimAI Agentic contributors
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
 Model weights are NOT included in this repository or APK. A model is downloaded only when
 the user confirms it in the app, and stays under its own license (for example Qwen2.5-1.5B-Instruct:
 Apache-2.0; Gemma: Gemma Terms of Use, gated on Hugging Face and not downloadable in this build).
