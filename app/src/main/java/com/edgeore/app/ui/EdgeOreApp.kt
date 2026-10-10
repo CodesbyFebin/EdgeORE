@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.BuildConfigInfo
@@ -38,6 +39,7 @@ import com.edgeore.app.ui.screens.AiScreen
 import com.edgeore.app.ui.screens.ConceptPreviewScreen
 import com.edgeore.app.ui.screens.MineScreen
 import com.edgeore.app.ui.screens.NodesScreen
+import com.edgeore.app.ui.screens.OnboardingScreen
 import com.edgeore.app.ui.screens.ReceiptDetailScreen
 import com.edgeore.app.ui.screens.ReceiptsScreen
 import com.edgeore.app.ui.screens.ReviewScreen
@@ -55,6 +57,10 @@ interface PlatformActions {
     fun disconnectWallet()
     fun signReviewed()
     fun export(receipt: StoredReceipt?, hideDeviceKey: Boolean = false)
+    /** Opens the live QR scanner. The CAMERA permission is requested here, only after the user taps Scan. */
+    fun scanAddressQr() {}
+    /** Decodes a QR code from an image the user picks (system photo picker; no storage or camera permission). */
+    fun pickQrImage() {}
 }
 
 @Composable
@@ -63,6 +69,15 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     var route by rememberSaveable { mutableStateOf<String?>(null) } // "review", "preview", "receipt:<id>"
     var about by rememberSaveable { mutableStateOf(false) }
     val receipts by vm.receipts.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var onboarded by rememberSaveable { mutableStateOf(Onboarding.done(context)) }
+
+    if (!onboarded) {
+        Scaffold(containerColor = EdgeColors.background) { inner ->
+            Column(Modifier.fillMaxSize().padding(inner)) { OnboardingScreen(onDone = { Onboarding.set(context, true); onboarded = true }) }
+        }
+        return
+    }
 
     BackHandler(enabled = route != null) { route = null }
 
@@ -99,7 +114,8 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                 }
                 val r = route
                 when {
-                    r == "review" -> ReviewScreen(vm, onSign = actions::signReviewed, onConnect = actions::connectWallet)
+                    r == "review" -> ReviewScreen(vm, onSign = actions::signReviewed, onConnect = actions::connectWallet,
+                        onScanQr = actions::scanAddressQr, onPickQrImage = actions::pickQrImage)
                     r == "preview" -> ConceptPreviewScreen()
                     r == "browser" -> BrowserScreen()
                     r != null && r.startsWith("receipt:") -> {
@@ -107,7 +123,8 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }
                     }
                     tab == Destination.Mine -> MineScreen(vm, actions::connectWallet, actions::disconnectWallet,
-                        onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" })
+                        onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" },
+                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null })
                     tab == Destination.AI -> AiScreen(vm)
                     tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)
@@ -130,5 +147,6 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
             }
         },
         confirmButton = { TextButton(onClick = { about = false }) { Text("Close") } },
+        dismissButton = { TextButton(onClick = { about = false; Onboarding.set(context, false); onboarded = false }) { Text("Show introduction") } },
     )
 }

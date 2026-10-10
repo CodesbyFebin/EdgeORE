@@ -38,3 +38,19 @@ All other baselines verified unchanged after the merges. A record run also rewro
 ### Re-record: build-machine-independent readings (integration/0.2.9-candidate, round 3)
 
 The screenshot suite now installs `FixedDeviceReadings` (a test rule ordered before the Compose rule) through the test-only seam `DeviceResourcesReader.testSource`. Every device reading in a render is "not observed", so the CPU, disk I/O, storage and since-boot lines no longer carry the build machine's `/proc` counters. Nothing is invented: the screen shows exactly what it shows on a device that reports nothing. `03-storage.png` and `full/03-storage-full.png` were re-recorded for this; the per-shot 0.3% threshold on the tall Storage shot is gone and every shot compares at 0.1%. `storageRenderUsesNoHostReadings` asserts the fixture text is what is rendered. Two consecutive `verifyRoborazziDebug -Pscreens --rerun-tasks` runs passed against the new baselines.
+
+## Re-record log (feature/ux-from-clearance)
+
+The suite now orders an `OnboardingSeen` rule before the Compose rule, so the existing shots still start on the tabs (the first-run introduction is marked as read). Changed and new baselines, all intentional:
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| `01-mine.png`, `full/01-mine-full.png` | New **Now** overview card at the top of Mine (wallet, operations awaiting an outcome, receipt log, vault). | `MineScreen.kt` |
+| `06-review.png`, `full/06-review-full.png` | Destination and amount start empty with inline guidance; **Scan QR** / **QR from image** buttons; camera notice; "connect a wallet" hint. | `ReviewScreen.kt`, `ReviewInput.kt`, `UiState.kt` |
+| `04-nodes.png`, `full/04-nodes-full.png` | The optional export-scope checkbox row is now one full-width ≥ 48dp toggle (label read with the state). | `NodesScreen.kt` |
+| new `07-onboarding.png`, `full/07-onboarding-full.png` | First-run introduction (fresh install, `OnboardingSeen(false)`). | `OnboardingScreen.kt` |
+| new `full/07-onboarding-fontscale-1.5.png` | The same at `fontScale = 1.5`, to check that the text wraps rather than clipping. | `OnboardingScreen.kt` |
+| new `full/08-review-filled-full.png` | Review form after typing a valid address and `0.01` (no wallet, so Prepare stays off). | `ReviewScreen.kt` |
+| new `09-plain-language.png` | `PlainLanguageCard` over a real `TransferReview.prepare` draft built from a fixed test key, destination and blockhash (no wallet, no RPC, so the fee reads *unknown*), and over an unsupported draft. | `PlainLanguage.kt` |
+
+`02-ai`, `03-storage` and `05-receipts` (and their `full/` versions) are unchanged. These are JVM renders, not device screenshots.

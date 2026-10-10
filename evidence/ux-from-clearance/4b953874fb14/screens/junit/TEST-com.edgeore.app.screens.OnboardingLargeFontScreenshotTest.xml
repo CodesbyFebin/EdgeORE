@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.OnboardingLargeFontScreenshotTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-10T14:49:57" hostname="grok-bot-vm-446931431" time="0.856">
+  <properties/>
+  <testcase name="onboardingLargeFont" classname="com.edgeore.app.screens.OnboardingLargeFontScreenshotTest" time="0.856"/>
+  <system-out><![CDATA[Roborazzi: 07-onboarding-fontscale-1.5.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=9621150, width=1078, height=8925) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

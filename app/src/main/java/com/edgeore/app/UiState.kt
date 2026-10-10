@@ -68,7 +68,8 @@ data class AiState(
 enum class ReviewPhase { EDITING, PREPARING, READY, SIGNING, SIGNED, SUBMITTING, SUBMITTED, UNKNOWN, REFUSED }
 data class ReviewState(
     val destination: String = "",
-    val amount: String = "0.001",
+    /** Empty by default: the user types (or scans) the amount; nothing is prefilled. */
+    val amount: String = "",
     val phase: ReviewPhase = ReviewPhase.EDITING,
     val draft: TransferReview.Draft? = null,
     val feeLamports: Long? = null,
@@ -77,6 +78,8 @@ data class ReviewState(
     val submittedSignature: String? = null,
     val confirmation: String? = null,
     val message: String? = null,
+    /** Non-error guidance, e.g. what a scanned QR code filled in. Cleared by the next edit. */
+    val info: String? = null,
     val operationId: String? = null,
     val operation: PendingOperation? = null,
 )

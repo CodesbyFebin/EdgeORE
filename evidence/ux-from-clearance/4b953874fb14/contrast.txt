@@ -1,0 +1,15 @@
+EdgeORE palette (WCAG 2.x contrast ratio; AA body text needs 4.5, large/UI 3.0)
+  text    background=16.41  surface=14.14  inset=15.76  border=8.50
+  muted   background=8.47  surface=7.29  inset=8.13  border=4.39
+  mint    background=11.78  surface=10.15  inset=11.32  border=6.10
+  copper  background=9.43  surface=8.13  inset=9.06  border=4.89
+  danger  background=7.69  surface=6.62  inset=7.38  border=3.98
+  onAction #111514 on copper 9.36  on copper-gradient end #F58A4E 7.56
+  muted text on disabled-button fill (border) 4.39
+Clearance (previous app) palette
+  TextPrimary   bg=19.14  surfaceDark=17.64  surfaceCard=16.62
+  TextSecondary bg=8.41  surfaceDark=7.76  surfaceCard=7.30
+  TextMuted     bg=4.16  surfaceDark=3.83  surfaceCard=3.61
+  CyanNeon      bg=12.16  surfaceDark=11.21  surfaceCard=10.56
+  RedDanger     bg=6.50  surfaceDark=5.99  surfaceCard=5.64
+  ObsidianBackground text on CyanNeon button 12.16

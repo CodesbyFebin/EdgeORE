@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,7 +54,10 @@ import com.edgeore.app.ui.components.SecondaryAction
 import com.edgeore.app.ui.theme.EdgeColors
 
 @Composable
-fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit, onReview: () -> Unit, onPreview: () -> Unit) {
+fun MineScreen(
+    vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit, onReview: () -> Unit, onPreview: () -> Unit,
+    onOpenReview: () -> Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -> Unit = {},
+) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
@@ -62,6 +67,26 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
     val lastRun by vm.lastContributionRun.collectAsStateWithLifecycle()
     val eval = EdgePolicy.evaluate(settings, device)
     val fresh = balance as? RpcObservation.Fresh
+    val ops by vm.operations.collectAsStateWithLifecycle()
+    val receipts by vm.receipts.collectAsStateWithLifecycle()
+    val storage by vm.storage.collectAsStateWithLifecycle()
+
+    // "Now" overview: what needs attention, each row opening the place that handles it.
+    val waiting = ops.count { it.state.needsObservation || it.state == com.edgeore.app.solana.OpState.SIGNED }
+    EdgeCard {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text("Now", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })
+            Text("Solana devnet · test SOL only", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        }
+        StatusRow(EdgeIcons.Wallet, "Wallet", wallet.address?.let { "Connected · ${Format.short(it)}" } ?: "Not connected · tap to connect",
+            attention = wallet.address == null, onClick = if (wallet.address == null) onConnect else onOpenReview)
+        StatusRow(EdgeIcons.Clock, "Awaiting an outcome", if (waiting == 0) "Nothing waiting" else "$waiting operation${if (waiting == 1) "" else "s"} · observe status",
+            attention = waiting > 0, onClick = onOpenReview)
+        StatusRow(EdgeIcons.Receipts, "Receipt log", if (receipts.isEmpty()) "None yet" else "${receipts.size} stored on this phone",
+            attention = false, onClick = { onOpenTab(com.edgeore.app.ui.Destination.Receipts) })
+        StatusRow(EdgeIcons.Lock, "Vault", if (storage.files.isEmpty()) "Empty · encrypt a file in Storage" else "${storage.files.size} encrypted file${if (storage.files.size == 1) "" else "s"}",
+            attention = false, onClick = { onOpenTab(com.edgeore.app.ui.Destination.Storage) })
+    }
 
     EdgeCard {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -196,6 +221,23 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
             color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall,
         )
         Text("The scheduler runs no workload in this build and measures nothing. It does not produce progress or any token.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+private fun StatusRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String, attention: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).clip(com.edgeore.app.ui.components.CardShape)
+            .clickable(role = Role.Button, onClickLabel = "Open $title", onClick = onClick)
+            .semantics(mergeDescendants = true) {},
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(icon, contentDescription = null, tint = if (attention) EdgeColors.copper else EdgeColors.mint, modifier = Modifier.size(22.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
+            Text(value, style = MaterialTheme.typography.bodyMedium, color = if (attention) EdgeColors.copper else EdgeColors.textMuted)
+        }
+        Icon(EdgeIcons.Chevron, contentDescription = null, tint = EdgeColors.textMuted)
     }
 }
 

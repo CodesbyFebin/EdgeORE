@@ -79,7 +79,7 @@ fun EdgeOreHeader(onSettings: (() -> Unit)? = null) {
             fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.weight(1f),
         )
         if (onSettings != null) {
-            Box(Modifier.size(48.dp).clip(CardShape).clickable(role = Role.Button, onClickLabel = "Settings", onClick = onSettings), contentAlignment = Alignment.Center) {
+            Box(Modifier.size(48.dp).clip(CardShape).clickable(role = Role.Button, onClickLabel = "About this build", onClick = onSettings), contentAlignment = Alignment.Center) {
                 Icon(EdgeIcons.Info, contentDescription = "About this build", tint = EdgeColors.textMuted)
             }
         }

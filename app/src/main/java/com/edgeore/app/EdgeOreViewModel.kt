@@ -366,7 +366,32 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     fun resetReview() {
         abandonCurrentDraft()
-        _review.value = ReviewState(destination = _wallet.value.address ?: "")
+        // Destination and amount start empty. Prefilling the user's own address made a self-transfer the default.
+        _review.value = ReviewState()
+    }
+
+    /** Applies scanned QR text to the review form only. It never prepares, signs or submits anything. */
+    fun applyScannedQr(raw: String?) {
+        when (val r = com.edgeore.app.scan.AddressQr.parse(raw)) {
+            is com.edgeore.app.scan.AddressQr.Result.Filled -> {
+                editReview(destination = r.destination, amount = r.amountSol ?: _review.value.amount)
+                val what = buildString {
+                    append("Filled from QR: destination ${com.edgeore.app.ui.Format.short(r.destination, 6)}")
+                    if (r.amountSol != null) append(" and amount ${r.amountSol} SOL")
+                    r.label?.let { append(" (label \"$it\", not verified)") }
+                    append(". Compare it with what the payee shows you, then prepare the review.")
+                }
+                _review.update { it.copy(info = what) }
+            }
+            is com.edgeore.app.scan.AddressQr.Result.Refused -> {
+                editReview()
+                _review.update { it.copy(message = "QR not used: ${r.reason}") }
+            }
+        }
+    }
+
+    fun scanFailed(reason: String) {
+        _review.update { it.copy(message = reason, info = null) }
     }
 
     /** An unsigned draft that is edited or reset releases its reservation. Signed bytes are kept until observed or discarded. */

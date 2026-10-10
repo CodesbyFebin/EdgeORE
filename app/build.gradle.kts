@@ -104,6 +104,10 @@ dependencies {
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
     // On-device LLM runtime (LiteRT-LM, as used by Google AI Edge Gallery) behind a Java-only bridge module; see ondevice-llm/build.gradle.kts.
     implementation(project(":ondevice-llm"))
+    // QR decoding for the review destination field. zxing-core is pure Java with no runtime dependencies, so it adds
+    // one jar and changes no resolved version (evidence/ux-from-clearance/*/deps). Chosen over ML Kit (Play Services or a
+    // bundled model) and CameraX (several extra artifacts for one screen). The camera is driven with platform Camera2.
+    implementation("com.google.zxing:core:3.5.3")
 
     testImplementation("junit:junit:4.13.2")
     // Real org.json on the JVM test classpath (android.jar only ships stubs).

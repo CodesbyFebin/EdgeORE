@@ -19,6 +19,17 @@ LiteRT-LM Android API (com.google.ai.edge.litertlm:litertlm-android:0.8.0)
   Linked as a binary dependency through the ondevice-llm module. Its own third-party
   notices ship inside the AAR (THIRD_PARTY_NOTICE.txt).
 
+ZXing core (com.google.zxing:core:3.5.3)
+  https://github.com/zxing/zxing
+  Copyright ZXing authors. Licensed under the Apache License, Version 2.0.
+  Linked as a binary dependency to decode QR codes for the review destination field, on the phone only.
+
+Clearance (prior work by CodesbyFebin)
+  The owner's own earlier Android prototype. EdgeORE adapts its UX patterns (first-run explanation, a "Now"
+  overview, QR address entry and a plain-language transaction explanation) and rewrites them against EdgeORE's
+  exact-message review. Its cloud transaction audit, SKR staking/claims, DePIN reward tasks, simulated wallet
+  signatures and RPC fallbacks were not carried over. See docs/analysis/clearance-app-review.md.
+
 Model weights are NOT included in this repository or APK. A model is downloaded only when
 the user confirms it in the app, and stays under its own license (for example Qwen2.5-1.5B-Instruct:
 Apache-2.0; Gemma: Gemma Terms of Use, gated on Hugging Face and not downloadable in this build).

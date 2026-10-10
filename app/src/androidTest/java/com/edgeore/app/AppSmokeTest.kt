@@ -15,7 +15,8 @@ import org.junit.runner.RunWith
 /** Launches the real Activity and walks the five destinations, checking honest default states. */
 @RunWith(AndroidJUnit4::class)
 class AppSmokeTest {
-    @get:Rule val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0) val onboarded = OnboardingSeenRule()
+    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
 
     private fun exists(text: String, substring: Boolean = true) =
         assertTrue("missing: $text", rule.onAllNodesWithText(text, substring = substring).fetchSemanticsNodes().isNotEmpty())

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -161,7 +163,9 @@ private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
         }.onFailure { if (challenge.isNotBlank()) Notice(it.message ?: "Invalid challenge", error = true) }
         OutlinedTextField(code, { code = it }, label = { Text("Single-use pairing code") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
         Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = true, onCheckedChange = null, enabled = false); Text("READ_NODE (required: health)") }
-        Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = exportScope, onCheckedChange = { exportScope = it }); Text("EXPORT_PUBLIC_RECORDS (optional; host must allow)") }
+        // The whole row (box + label) is one 48dp+ toggle, so TalkBack reads the label with the checked state.
+        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = exportScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = { exportScope = it }),
+            verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = exportScope, onCheckedChange = null); Text("EXPORT_PUBLIC_RECORDS (optional; host must allow)") }
         PrimaryAction("Pair your node", icon = EdgeIcons.Link, enabled = parsed.isSuccess && cert.isNotBlank() && code.isNotBlank(), loading = busy) {
             vm.pairNode(endpoint, cert, challenge, code, listOfNotNull("READ_NODE", if (exportScope) "EXPORT_PUBLIC_RECORDS" else null))
         }
