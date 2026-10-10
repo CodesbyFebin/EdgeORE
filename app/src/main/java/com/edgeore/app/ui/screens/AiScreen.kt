@@ -1,5 +1,6 @@
 package com.edgeore.app.ui.screens
 
+import com.edgeore.app.ai.ondevice.ExecutionLabel
 import com.edgeore.app.ui.components.EffectNote
 import com.edgeore.app.settings.Control
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -74,7 +75,7 @@ fun AiScreen(vm: EdgeOreViewModel) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Icon(EdgeIcons.Ai, contentDescription = null, tint = EdgeColors.mint)
             Column(Modifier.weight(1f)) {
-                Text("On-device execution", style = MaterialTheme.typography.titleMedium)
+                Text(ExecutionLabel.title(od.downloaded, od.loadedId), style = MaterialTheme.typography.titleMedium)
                 Text("No weights ship in this APK. Download an allowlisted model below to run on this phone, or connect a host you own.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
             }
             Text("Cloud fallback OFF", color = EdgeColors.onAction, modifier = Modifier.background(EdgeColors.mint, RoundedCornerShape(20.dp)).padding(horizontal = 10.dp, vertical = 6.dp))

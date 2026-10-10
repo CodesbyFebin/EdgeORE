@@ -206,4 +206,12 @@ class OnDeviceAiTest {
         assertEquals(listOf("hi"), c.state.value.messages.map { it.text })
         assertEquals(OnDevicePhase.IDLE, c.state.value.phase)
     }
+
+    // H5: the AI card must not say "On-device execution" while no model is on the phone.
+    @org.junit.Test fun executionTitleNamesWhatCanActuallyRun() {
+        org.junit.Assert.assertEquals("Owned-host AI · on-device not set up", com.edgeore.app.ai.ondevice.ExecutionLabel.title(emptySet(), null))
+        org.junit.Assert.assertEquals("On-device model downloaded, not loaded", com.edgeore.app.ai.ondevice.ExecutionLabel.title(setOf("qwen"), null))
+        org.junit.Assert.assertEquals("On-device model loaded", com.edgeore.app.ai.ondevice.ExecutionLabel.title(setOf("qwen"), "qwen"))
+        org.junit.Assert.assertFalse(com.edgeore.app.ai.ondevice.ExecutionLabel.title(emptySet(), null).contains("On-device execution"))
+    }
 }
