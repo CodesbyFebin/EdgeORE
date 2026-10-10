@@ -58,7 +58,7 @@ class WalletConnection(
             attempt++
             log("wallet_disconnect at=${now()} wallet_confirmed=$walletConfirmed")
             _state.value = WalletState(
-                status = if (walletConfirmed) "Disconnected" else "Disconnected in EdgeORE. The wallet did not confirm deauthorization.",
+                status = if (walletConfirmed) "Disconnected. The wallet confirmed deauthorization." else "Disconnected in EdgeORE. The wallet did not confirm deauthorization.",
             )
         }
     }

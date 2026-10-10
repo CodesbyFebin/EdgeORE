@@ -177,6 +177,17 @@ class WalletAuthorizationTest {
         assertTrue(c.state.value.status.contains("did not confirm"))
     }
 
+    // Appetize phase 4 showed a bare "Disconnected" that did not say whether the wallet confirmed it.
+    @Test fun confirmedDisconnectSaysTheWalletConfirmed() = runTest {
+        val c = conn()
+        c.connect { ConnectResult.Authorized(key, null) }
+        c.disconnected(walletConfirmed = true)
+        assertNull(c.state.value.address)
+        assertNull(c.state.value.error)
+        assertEquals("Disconnected. The wallet confirmed deauthorization.", c.state.value.status)
+        assertEquals(c.state.value.status, WalletDisplay.statusLine(c.state.value))
+    }
+
     // ---- sanitized diagnostics ----
     @Test fun logLineCarriesCodeStageUtcAndTypeButNoWalletText() = runTest {
         val logs = mutableListOf<String>()
