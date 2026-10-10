@@ -28,10 +28,14 @@ pub enum SettlementError {
     DigestMismatch,
     #[msg("Receipt already settled")]
     AlreadySettled,
-    #[msg("Job still has unclaimed receipts")]
+    #[msg("Job has unclaimed receipts whose claim window is still open")]
     PendingClaims,
     #[msg("Vault balance is insufficient for this payment")]
     InsufficientVault,
     #[msg("Arithmetic overflow or underflow")]
     MathOverflow,
+    #[msg("Claim window must be greater than zero slots")]
+    InvalidClaimWindow,
+    #[msg("The receipt's claim window has passed")]
+    ClaimWindowExpired,
 }

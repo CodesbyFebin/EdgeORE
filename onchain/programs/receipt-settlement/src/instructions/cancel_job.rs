@@ -30,10 +30,16 @@ pub fn handle_cancel_job(ctx: Context<CancelJob>) -> Result<()> {
         job.status == JobStatus::Active,
         SettlementError::JobNotActive
     );
-    // Rule: every accepted receipt must be claimed before the creator can
-    // withdraw, so a worker holding a signed, accepted receipt is never left
-    // unpaid by a cancellation.
-    require!(job.pending_claims == 0, SettlementError::PendingClaims);
+    // Rule: while any accepted receipt is unclaimed AND its claim window may
+    // still be open, the creator cannot withdraw. job.claim_deadline is the
+    // latest deadline over all receipts, so once it has passed no unclaimed
+    // receipt can be claimed any more and the unpaid charges go back to the
+    // creator together with the unspent budget.
+    let slot = Clock::get()?.slot;
+    require!(
+        job.pending_claims == 0 || slot > job.claim_deadline,
+        SettlementError::PendingClaims
+    );
 
     // The job account stays as a Cancelled tombstone so the same
     // (creator, job_id) cannot be re-created over old receipt/section PDAs.
@@ -43,6 +49,7 @@ pub fn handle_cancel_job(ctx: Context<CancelJob>) -> Result<()> {
     emit!(JobCancelled {
         job: job.key(),
         refunded_lamports: refunded,
+        expired_unclaimed: job.pending_claims,
     });
     Ok(())
 }

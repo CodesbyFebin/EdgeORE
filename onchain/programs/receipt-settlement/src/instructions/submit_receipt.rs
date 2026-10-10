@@ -92,6 +92,11 @@ pub fn handle_submit_receipt(ctx: Context<SubmitReceipt>, args: ReceiptArgs) -> 
         .ok_or(SettlementError::MathOverflow)?;
 
     let slot = Clock::get()?.slot;
+    let claim_deadline_slot = slot
+        .checked_add(job.claim_window_slots)
+        .ok_or(SettlementError::MathOverflow)?;
+    job.claim_deadline = job.claim_deadline.max(claim_deadline_slot);
+
     let receipt = &mut ctx.accounts.receipt;
     receipt.job = job_key;
     receipt.worker = worker_key;
@@ -104,6 +109,7 @@ pub fn handle_submit_receipt(ctx: Context<SubmitReceipt>, args: ReceiptArgs) -> 
     receipt.actual_charge = args.actual_charge;
     receipt.digest = expected;
     receipt.submitted_slot = slot;
+    receipt.claim_deadline_slot = claim_deadline_slot;
     receipt.settled = false;
     receipt.settled_slot = 0;
     receipt.bump = ctx.bumps.receipt;

@@ -23,6 +23,8 @@ use {
 
 const SOL: u64 = 1_000_000_000;
 const START_SLOT: u64 = 1_000;
+/// Claim window (slots) used by setup().
+const WINDOW: u64 = 100;
 const ED25519_ID: Pubkey = solana_sdk_ids::ed25519_program::ID;
 const IX_SYSVAR: Pubkey = solana_sdk_ids::sysvar::instructions::ID;
 // Anchor framework error codes used below.
@@ -132,6 +134,7 @@ fn setup_with(budget: u64, sections: u16) -> Env {
             budget,
             section_count: sections,
             verifier: verifier.pubkey(),
+            claim_window_slots: WINDOW,
         }
         .data(),
         receipt_settlement::accounts::CreateJob {
@@ -677,14 +680,28 @@ fn create_job_rejects_invalid_parameters() {
     let creator = Keypair::new();
     svm.airdrop(&creator.pubkey(), 10 * SOL).unwrap();
     let verifier = Keypair::new().pubkey();
-    for (i, (budget, sections, ver, err)) in [
-        (0u64, 1u16, verifier, SettlementError::InvalidBudget),
-        (SOL, 0u16, verifier, SettlementError::InvalidSectionCount),
+    for (i, (budget, sections, ver, window, err)) in [
+        (0u64, 1u16, verifier, WINDOW, SettlementError::InvalidBudget),
+        (
+            SOL,
+            0u16,
+            verifier,
+            WINDOW,
+            SettlementError::InvalidSectionCount,
+        ),
         (
             SOL,
             1u16,
             Pubkey::default(),
+            WINDOW,
             SettlementError::InvalidVerifier,
+        ),
+        (
+            SOL,
+            1u16,
+            verifier,
+            0u64,
+            SettlementError::InvalidClaimWindow,
         ),
     ]
     .into_iter()
@@ -699,6 +716,7 @@ fn create_job_rejects_invalid_parameters() {
                 budget,
                 section_count: sections,
                 verifier: ver,
+                claim_window_slots: window,
             }
             .data(),
             receipt_settlement::accounts::CreateJob {
@@ -711,4 +729,105 @@ fn create_job_rejects_invalid_parameters() {
         );
         expect_custom(send(&mut svm, &[ix], &creator, &[&creator]), 0, code(err));
     }
+}
+
+// ------------------------------------------------- claim window (deadline)
+
+fn warp(env: &mut Env, slot: u64) {
+    env.svm.warp_to_slot(slot);
+}
+
+#[test]
+fn claim_window_recorded_on_receipt_and_job() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    let r: Receipt = read(&env.svm, &receipt_pda(&env.job, &a.receipt_id));
+    assert_eq!(r.claim_deadline_slot, r.submitted_slot + WINDOW);
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.claim_window_slots, WINDOW);
+    assert_eq!(j.claim_deadline, r.claim_deadline_slot);
+}
+
+#[test]
+fn early_cancel_with_unclaimed_receipt_is_rejected_until_deadline_passes() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    let r: Receipt = read(&env.svm, &receipt_pda(&env.job, &a.receipt_id));
+    // At the deadline slot itself the window is still open.
+    warp(&mut env, r.claim_deadline_slot);
+    expect_custom(cancel(&mut env), 0, code(SettlementError::PendingClaims));
+    assert!(exists(&env.svm, &env.vault));
+}
+
+#[test]
+fn cancel_after_deadline_reclaims_unclaimed_funds() {
+    let mut env = setup();
+    let rent = vault_rent(&env.svm);
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    let r: Receipt = read(&env.svm, &receipt_pda(&env.job, &a.receipt_id));
+    warp(&mut env, r.claim_deadline_slot + 1);
+    let before = env.svm.get_balance(&env.creator.pubkey()).unwrap();
+    let res = cancel(&mut env);
+    assert!(res.is_ok(), "{}", res.err().unwrap().meta.pretty_logs());
+    let fee = res.unwrap().fee;
+    let after = env.svm.get_balance(&env.creator.pubkey()).unwrap();
+    // The whole budget (including the unclaimed charge) plus vault rent returns.
+    assert_eq!(after + fee, before + env.budget + rent);
+    assert!(!exists(&env.svm, &env.vault));
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.status, JobStatus::Cancelled);
+    assert_eq!(j.pending_claims, 1, "expired receipt stays unclaimed");
+    let r: Receipt = read(&env.svm, &receipt_pda(&env.job, &a.receipt_id));
+    assert!(!r.settled);
+}
+
+#[test]
+fn claim_at_deadline_allowed_after_deadline_rejected() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    let b = args(2, 1, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    assert!(submit(&mut env, &b).is_ok());
+    let ra: Receipt = read(&env.svm, &receipt_pda(&env.job, &a.receipt_id));
+    // Last slot of the window: claim succeeds.
+    warp(&mut env, ra.claim_deadline_slot);
+    assert!(claim(&mut env, &a.receipt_id).is_ok());
+    // One slot later: claim rejected, nothing paid.
+    warp(&mut env, ra.claim_deadline_slot + 1);
+    let vault_before = env.svm.get_balance(&env.vault).unwrap();
+    expect_custom(
+        claim(&mut env, &b.receipt_id),
+        0,
+        code(SettlementError::ClaimWindowExpired),
+    );
+    assert_eq!(env.svm.get_balance(&env.vault).unwrap(), vault_before);
+    let rb: Receipt = read(&env.svm, &receipt_pda(&env.job, &b.receipt_id));
+    assert!(!rb.settled);
+}
+
+#[test]
+fn later_receipt_extends_job_deadline() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    warp(&mut env, START_SLOT + WINDOW / 2);
+    let b = args(2, 1, SOL, SOL);
+    assert!(submit(&mut env, &b).is_ok());
+    let rb: Receipt = read(&env.svm, &receipt_pda(&env.job, &b.receipt_id));
+    // a's window has passed but b's has not: cancel still rejected, b claimable.
+    warp(&mut env, START_SLOT + WINDOW + 1);
+    expect_custom(cancel(&mut env), 0, code(SettlementError::PendingClaims));
+    expect_custom(
+        claim(&mut env, &a.receipt_id),
+        0,
+        code(SettlementError::ClaimWindowExpired),
+    );
+    assert!(claim(&mut env, &b.receipt_id).is_ok());
+    // a is still unclaimed, so cancel waits for the job-level deadline (b's).
+    expect_custom(cancel(&mut env), 0, code(SettlementError::PendingClaims));
+    warp(&mut env, rb.claim_deadline_slot + 1);
+    assert!(cancel(&mut env).is_ok());
 }

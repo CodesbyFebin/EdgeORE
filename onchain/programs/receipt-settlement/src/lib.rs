@@ -31,8 +31,16 @@ pub mod receipt_settlement {
         budget: u64,
         section_count: u16,
         verifier: Pubkey,
+        claim_window_slots: u64,
     ) -> Result<()> {
-        instructions::create_job::handle_create_job(ctx, job_id, budget, section_count, verifier)
+        instructions::create_job::handle_create_job(
+            ctx,
+            job_id,
+            budget,
+            section_count,
+            verifier,
+            claim_window_slots,
+        )
     }
 
     /// Record a verifier-signed receipt. The transaction must contain an
@@ -42,13 +50,15 @@ pub mod receipt_settlement {
         instructions::submit_receipt::handle_submit_receipt(ctx, args)
     }
 
-    /// Pay the receipt's worker its signed charge from the vault, exactly once.
+    /// Pay the receipt's worker its signed charge from the vault, exactly once,
+    /// while the receipt's claim window is open.
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         instructions::claim::handle_claim(ctx)
     }
 
     /// Creator cancels the job and reclaims the vault (unspent budget + rent).
-    /// Only allowed when no submitted receipt is still unclaimed.
+    /// Allowed when no receipt is unclaimed, or once every receipt's claim
+    /// window has passed (unclaimed charges then return to the creator).
     pub fn cancel_job(ctx: Context<CancelJob>) -> Result<()> {
         instructions::cancel_job::handle_cancel_job(ctx)
     }

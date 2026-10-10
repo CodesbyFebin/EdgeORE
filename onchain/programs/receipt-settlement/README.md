@@ -15,9 +15,9 @@ lamports:
    transaction must carry an Ed25519 signature by the job's verifier over the
    canonical receipt digest.
 3. The worker named in the receipt **claims** the signed charge from the vault,
-   exactly once.
+   exactly once, within the job's claim window.
 4. The creator can **cancel** the job and reclaim the unspent budget once no
-   accepted receipt is still unclaimed.
+   accepted receipt is still unclaimed, or once every claim window has passed.
 
 Written from scratch for EdgeORE; it does not reuse the earlier pasted draft.
 
@@ -25,17 +25,23 @@ Written from scratch for EdgeORE; it does not reuse the earlier pasted draft.
 
 | Account | PDA seeds | Purpose |
 |---|---|---|
-| `Job` | `["job", creator, job_id u64 LE]` | creator, verifier, budget, committed, paid, section count, receipt/pending counters, status |
+| `Job` | `["job", creator, job_id u64 LE]` | creator, verifier, budget, committed, paid, section count, claim window + latest claim deadline, receipt/pending counters, status |
 | `Vault` | `["vault", job]` | program-owned lamport escrow (budget + its own rent) |
-| `Receipt` | `["receipt", job, receipt_id]` | signed receipt fields, digest, submitted slot, settled flag + settled slot |
+| `Receipt` | `["receipt", job, receipt_id]` | signed receipt fields, digest, submitted slot, claim deadline slot, settled flag + settled slot |
 | `SectionMarker` | `["section", job, section u16 LE]` | makes `(job, section)` unique |
 | `OutputMarker` | `["output", job, output_hash]` | rejects a repeated output hash within one job |
 
 ## Instructions and rules
 
-**`create_job(job_id, budget, section_count, verifier)`** — `budget > 0`,
-`section_count > 0`, `verifier` not the default key. Transfers `budget`
-lamports into the vault on top of the vault's rent-exempt minimum.
+**`create_job(job_id, budget, section_count, verifier, claim_window_slots)`** —
+`budget > 0`, `section_count > 0`, `verifier` not the default key,
+`claim_window_slots > 0`. Transfers `budget` lamports into the vault on top of
+the vault's rent-exempt minimum.
+
+**Claim window.** Each accepted receipt gets
+`claim_deadline_slot = submitted_slot + claim_window_slots` (checked add). It
+can be claimed while `current slot <= claim_deadline_slot`. The job keeps
+`claim_deadline`, the latest deadline over all its receipts.
 
 **`submit_receipt(args)`** — `args = { receipt_id, section, input_hash,
 output_hash, model_hash, quoted_price, actual_charge }`; the signer is the
@@ -76,17 +82,23 @@ sha256( "EdgeORE/receipt-settlement/v1" || program_id || job || job_id u64 LE ||
 Binding the program id, job account and worker means a signed receipt cannot be
 replayed on another deployment, against another job, or by another worker.
 
-**`claim()`** — signer must equal `receipt.worker` (`has_one`), receipt must be
-unsettled. Pays exactly `actual_charge` from the vault without touching the
+**`claim()`** — signer must equal `receipt.worker` (`has_one`), job `Active`,
+receipt unsettled, and `current slot <= receipt.claim_deadline_slot`
+(otherwise `ClaimWindowExpired`). Pays exactly `actual_charge` from the vault without touching the
 vault's rent reserve, sets `settled = true` and `settled_slot` to the current
 slot, updates `paid`/`pending_claims` with checked arithmetic. **No transaction
 signature is stored** (a program cannot observe its own transaction signature);
 the settlement transaction's signature is whatever the client/RPC reports.
 
 **`cancel_job()`** — creator only (job PDA seeds + `has_one`), job `Active`,
-and **`pending_claims == 0`**: every accepted receipt must be claimed first, so
-a cancellation never strands a worker holding an accepted receipt. The vault is
-closed to the creator (unspent budget + vault rent). The `Job` account is kept
+and either **`pending_claims == 0`** or **`current slot > job.claim_deadline`**.
+A worker whose receipt is still inside its claim window can therefore never be
+cut off by a cancellation, and a worker who never claims cannot lock the
+creator's funds forever. The vault is closed to the creator, returning the
+unspent budget, the charges of receipts that expired unclaimed, and the vault
+rent. Expired receipts stay `settled = false`. The cancel rule waits for the
+*latest* deadline in the job, so it is conservative: one recent receipt keeps
+the job open even after it is claimed, if older receipts expired unclaimed. The `Job` account is kept
 as a `Cancelled` tombstone so the same `(creator, job_id)` cannot be re-opened
 over old receipt/section PDAs; further submissions fail with `JobNotActive`.
 
@@ -97,8 +109,8 @@ Anchor's checked `add_lamports`/`sub_lamports`); the release profile also keeps
 ## Known limitations
 
 - Unaudited prototype; no fuzzing, no formal verification.
-- A worker who never claims blocks the creator's cancellation indefinitely (by
-  design of the rule above; no timeout/expiry is implemented).
+- Claim windows are measured in slots, so their length in wall-clock time
+  depends on slot times.
 - The verifier is a single trusted key per job; there is no key rotation,
   multi-verifier quorum or dispute process.
 - Rent for receipt and marker accounts is paid by the worker and is not

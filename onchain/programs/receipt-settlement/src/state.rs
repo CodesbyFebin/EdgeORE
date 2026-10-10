@@ -27,6 +27,11 @@ pub struct Job {
     /// Sum of actual_charge over claimed receipts.
     pub paid: u64,
     pub section_count: u16,
+    /// Each accepted receipt can be claimed for this many slots after the
+    /// slot it was submitted in (inclusive). Set once at creation.
+    pub claim_window_slots: u64,
+    /// Latest claim deadline over all accepted receipts (0 = none yet).
+    pub claim_deadline: u64,
     pub receipt_count: u32,
     /// Accepted receipts that have not been claimed yet.
     pub pending_claims: u32,
@@ -59,6 +64,8 @@ pub struct Receipt {
     /// Canonical digest the verifier signed (see digest.rs).
     pub digest: [u8; 32],
     pub submitted_slot: u64,
+    /// submitted_slot + job.claim_window_slots; claimable while slot <= this.
+    pub claim_deadline_slot: u64,
     pub settled: bool,
     /// Slot in which the claim executed; 0 while unsettled. No transaction
     /// signature is stored: a program cannot observe its own tx signature.
@@ -115,4 +122,6 @@ pub struct ReceiptClaimed {
 pub struct JobCancelled {
     pub job: Pubkey,
     pub refunded_lamports: u64,
+    /// Accepted receipts that were never claimed before their deadline.
+    pub expired_unclaimed: u32,
 }
