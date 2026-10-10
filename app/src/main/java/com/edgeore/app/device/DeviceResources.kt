@@ -28,7 +28,16 @@ object DeviceResourcesReader {
     private val cpuTracker = CpuRateTracker()
     private val diskTracker = DiskRateTracker()
 
+    /**
+     * Test seam only: the screenshot suite sets this so renders do not depend on the build machine's /proc CPU and
+     * disk counters. Production code never assigns it; null means "read the real device".
+     */
+    @androidx.annotation.VisibleForTesting
+    @Volatile
+    internal var testSource: ((Context) -> DeviceResources)? = null
+
     fun read(context: Context): DeviceResources {
+        testSource?.let { return it(context) }
         val stat = runCatching { StatFs(context.filesDir.absolutePath) }.getOrNull()
         val rx = TrafficStats.getTotalRxBytes().takeIf { it >= 0 }
         val tx = TrafficStats.getTotalTxBytes().takeIf { it >= 0 }

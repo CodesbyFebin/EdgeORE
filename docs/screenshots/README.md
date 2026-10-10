@@ -34,3 +34,7 @@ Baselines are re-recorded only when the screen change is intentional and traced 
 | `02-ai.png`, `full/02-ai-full.png` | The AI page gained the on-device LiteRT-LM section (allowlist, download state); `feature/ai-edge-gallery` did not run the screenshot suite. | `4f665e5` `AiScreen.kt` |
 
 All other baselines verified unchanged after the merges. A record run also rewrote `full/03-storage-full.png` with a sub-threshold difference; that file was restored because `verifyRoborazziDebug` already passes against the committed baseline.
+
+### Re-record: build-machine-independent readings (integration/0.2.9-candidate, round 3)
+
+The screenshot suite now installs `FixedDeviceReadings` (a test rule ordered before the Compose rule) through the test-only seam `DeviceResourcesReader.testSource`. Every device reading in a render is "not observed", so the CPU, disk I/O, storage and since-boot lines no longer carry the build machine's `/proc` counters. Nothing is invented: the screen shows exactly what it shows on a device that reports nothing. `03-storage.png` and `full/03-storage-full.png` were re-recorded for this; the per-shot 0.3% threshold on the tall Storage shot is gone and every shot compares at 0.1%. `storageRenderUsesNoHostReadings` asserts the fixture text is what is rendered. Two consecutive `verifyRoborazziDebug -Pscreens --rerun-tasks` runs passed against the new baselines.
