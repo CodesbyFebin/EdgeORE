@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ContributionPolicyTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:18:16" hostname="grok-bot-vm-446931431" time="0.016">
+  <properties/>
+  <testcase name="qualificationGateMeansNothingRuns" classname="com.edgeore.app.ContributionPolicyTest" time="0.007"/>
+  <testcase name="existingSafetyGatesStillApply" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="controlIsLabelledAndCopyMakesNoRewardClaims" classname="com.edgeore.app.ContributionPolicyTest" time="0.006"/>
+  <testcase name="constraintLinesSayNotObserved" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="userPauseWinsOverEverything" classname="com.edgeore.app.ContributionPolicyTest" time="0.001"/>
+  <testcase name="waitsForWifi" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="offByDefaultAndNotScheduled" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="waitsForBatteryNotLow" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="schedulerHealthIsReportedNotAssumed" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="waitsForCharger" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <testcase name="jobOutcomesNeverClaimWork" classname="com.edgeore.app.ContributionPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

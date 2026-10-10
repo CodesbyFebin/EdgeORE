@@ -1,0 +1,9 @@
+# Per-commit re-run (git worktree, shared CARGO_TARGET_DIR), 2026-10-10T10:23:20Z
+53ebcd23369521782615499aaed25ac99027ba83 onchain: build receipt-settlement as SBPF v3; test with LiteSVM 0.18 (
+  anchor build exit=0 ; anchor test --skip-build exit=0 ; test result: ok. 17 passed; 0 failed; 0 ignored
+1647338f8f6c184ed3950f83e59dd864b1a0dc6f receipt-settlement: per-job claim window (slots); cancel after the dea
+  anchor build exit=0 ; anchor test --skip-build exit=0 ; test result: ok. 22 passed; 0 failed; 0 ignored
+6879bd9834a64239d8fc399469a29507dea15779 receipt-settlement: creator can rotate the job verifier
+  anchor build exit=0 ; anchor test --skip-build exit=0 ; test result: ok. 24 passed; 0 failed; 0 ignored
+5fc87160ead4357dafcd17d7a7f06ca79c08f9e6 receipt-settlement: close receipts, markers and jobs to reclaim rent
+  anchor build exit=0 ; anchor test --skip-build exit=0 ; test result: ok. 29 passed; 0 failed; 0 ignored

@@ -1,0 +1,12 @@
+workdir: onchain/  (PATH starts with Agave 4.3.0 bin)
+$ anchor build
+exit_code: 0
+$ anchor test --skip-build --skip-local-validator --skip-deploy    # cargo test --test settlement (LiteSVM)
+exit_code: 0
+$ anchor test --skip-build --validator legacy --script validator --provider.wallet <throwaway local keypair, not in repo>    # cargo test --test validator -- --ignored
+exit_code: 0
+finished_utc: 2026-10-10T10:23:03Z
+program_so_sha256: 330b19b881a4e7c801b9817ce081e995fbe5643b69eed675ed674652796235de
+program_so_bytes: 278344
+program_so_elf_flags:  Flags: 0x3, CPU Version: 3
+program_id: 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT

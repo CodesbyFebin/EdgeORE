@@ -17,7 +17,7 @@ Current status is in [`qualification-status.md`](qualification-status.md). Nothi
 - Cancel closes the local socket. Ollama's non-streaming API does not acknowledge the cancel, so the host may finish the work anyway. The app labels the result "Stopped receiving".
 - A private IP is not proof that you own the host. Every resolved address must be private, and the request goes to the address that was checked.
 - Model checksums match a digest that you type in. That is not a trusted provenance pin.
-- No on-device runtime or weights are in the APK.
+- No weights are in the APK. The on-device LiteRT-LM path (`docs/on-device-ai.md`) downloads an allowlisted model only after consent; it has not been run on a device, so no on-device answer has been observed.
 
 **Controls**
 - Each control on screen is labelled **Enforced**, **Saved only** or **Unavailable**. The CPU limit, model memory limit, sharing quota and sharing consent are Saved only. The kill switch and location are Unavailable. The battery, thermal and charge gates are Enforced, but only on the Edge Mode state: no mining workload exists.
@@ -29,6 +29,7 @@ Current status is in [`qualification-status.md`](qualification-status.md). Nothi
 
 **Storage**
 - Vault export writes plaintext. The Keystore key never leaves the phone, so uninstalling or a reset makes the vault unrecoverable.
+- Remote backup is **Not configured**: no EdgeORE backend exists, so nothing is uploaded. The backup design is device-bound encrypted backup only; cross-device recovery is not implemented. See `docs/storage-vault.md`.
 
 **Receipts**
 - The device signature shows that this install wrote the record. The wallet's Ed25519 signature is verified separately.

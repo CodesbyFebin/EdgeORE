@@ -1,0 +1,14 @@
+rustc 1.99.0 (b940084d7 2026-09-28)
+cargo 1.99.0 (5f94df478 2026-08-27)
+anchor-cli 1.2.1
+solana-cli 4.3.0 (src:825efd18; feat:c9ad34d2, client:Agave)
+solana-test-validator 4.3.0 (src:825efd18; feat:c9ad34d2, client:Agave)
+cargo-build-sbf 4.3.0
+platform-tools v1.57
+rustc 1.95.0
+name = "litesvm"
+version = "0.18.0"
+[toolchain]
+channel = "1.99.0"
+components = ["rustfmt","clippy"]
+profile = "minimal"

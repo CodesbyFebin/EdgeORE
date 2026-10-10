@@ -32,8 +32,8 @@ private typealias Rule_ = AndroidComposeTestRule<ActivityScenarioRule<MainActivi
 
 private val out: String = System.getProperty("screens.out") ?: "build/screenshots"
 
-// The Storage telemetry line shows a CPU percentage read from the JVM host's /proc/stat (not a phone),
-// which varies between runs. A 0.1% pixel threshold tolerates that one line and still catches layout changes.
+// Device readings come from FixedDeviceReadings (all "not observed"), not from the build machine's /proc, so every
+// render is deterministic. 0.1% only absorbs anti-aliasing noise; any text or layout change fails.
 private val options = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.001f))
 
 private fun Rule_.tab(name: String) { onNode(hasText(name) and hasClickAction()).performClick(); waitForIdle() }
@@ -48,7 +48,8 @@ private fun Rule_.shot(file: String) {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = RobolectricDeviceQualifiers.Pixel7)
 class ScreenshotTest {
-    @get:Rule val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0) val readings = FixedDeviceReadings()
+    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
     @Test fun mine() = rule.shot("01-mine")
     @Test fun ai() { rule.tab("AI"); rule.shot("02-ai") }
     @Test fun storage() { rule.tab("Storage"); rule.shot("03-storage") }
@@ -62,10 +63,18 @@ class ScreenshotTest {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = "w411dp-h4200dp-normal-long-notround-any-420dpi-keyshidden-nonav")
 class FullScreenshotTest {
-    @get:Rule val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0) val readings = FixedDeviceReadings()
+    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
     @Test fun mine() = rule.shot("full/01-mine-full")
     @Test fun ai() { rule.tab("AI"); rule.shot("full/02-ai-full") }
     @Test fun storage() { rule.tab("Storage"); rule.shot("full/03-storage-full") }
+    /** The renders must not carry build-machine readings: the fixture's "not observed" text is what is shown. */
+    @Test fun storageRenderUsesNoHostReadings() {
+        rule.tab("Storage")
+        rule.onNode(hasText("CPU waiting for a second reading")).assertExists()
+        rule.onNode(hasText("Disk I/O waiting for a second reading")).assertExists()
+        rule.onNode(hasText("Received since boot not observed")).assertExists()
+    }
     @Test fun nodes() { rule.tab("Nodes"); rule.shot("full/04-nodes-full") }
     @Test fun receipts() { rule.tab("Receipts"); rule.shot("full/05-receipts-full") }
     @Test fun review() { rule.button("Review a supported action"); rule.shot("full/06-review-full") }

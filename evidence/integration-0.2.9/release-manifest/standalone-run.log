@@ -1,0 +1,7 @@
+commit 28acd193fc7c
+MANIFEST CHECK: PASS (app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml)
+check-manifest EXIT=0
+Ran 9 tests in 0.002s
+
+OK
+test_check_manifest EXIT=0

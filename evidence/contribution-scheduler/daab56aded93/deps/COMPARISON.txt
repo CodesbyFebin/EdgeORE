@@ -1,0 +1,70 @@
+## debugRuntimeClasspath (gradle exit 0)
+modules main=110 branch=124
+CHANGED existing versions: 0
+REMOVED: 0
+ADDED (new modules): 14
+  androidx.concurrent:concurrent-futures-ktx:1.1.0
+  androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7
+  androidx.lifecycle:lifecycle-livedata:2.8.7
+  androidx.lifecycle:lifecycle-service:2.8.7
+  androidx.room:room-common:2.6.1
+  androidx.room:room-ktx:2.6.1
+  androidx.room:room-runtime:2.6.1
+  androidx.sqlite:sqlite-framework:2.4.0
+  androidx.sqlite:sqlite:2.4.0
+  androidx.tracing:tracing-ktx:1.2.0
+  androidx.work:work-runtime-ktx:2.10.0
+  androidx.work:work-runtime:2.10.0
+  org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
+  org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22
+compare exit 0
+
+## releaseRuntimeClasspath (gradle exit 0)
+modules main=103 branch=117
+CHANGED existing versions: 0
+REMOVED: 0
+ADDED (new modules): 14
+  androidx.concurrent:concurrent-futures-ktx:1.1.0
+  androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7
+  androidx.lifecycle:lifecycle-livedata:2.8.7
+  androidx.lifecycle:lifecycle-service:2.8.7
+  androidx.room:room-common:2.6.1
+  androidx.room:room-ktx:2.6.1
+  androidx.room:room-runtime:2.6.1
+  androidx.sqlite:sqlite-framework:2.4.0
+  androidx.sqlite:sqlite:2.4.0
+  androidx.tracing:tracing-ktx:1.2.0
+  androidx.work:work-runtime-ktx:2.10.0
+  androidx.work:work-runtime:2.10.0
+  org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
+  org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22
+compare exit 0
+
+## debugUnitTestRuntimeClasspath (gradle exit 0)
+modules main=174 branch=188
+CHANGED existing versions: 0
+REMOVED: 0
+ADDED (new modules): 14
+  androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7
+  androidx.lifecycle:lifecycle-livedata:2.8.7
+  androidx.lifecycle:lifecycle-service:2.8.7
+  androidx.room:room-common:2.6.1
+  androidx.room:room-ktx:2.6.1
+  androidx.room:room-runtime:2.6.1
+  androidx.sqlite:sqlite-framework:2.4.0
+  androidx.sqlite:sqlite:2.4.0
+  androidx.tracing:tracing-ktx:1.2.0
+  androidx.work:work-runtime-ktx:2.10.0
+  androidx.work:work-runtime:2.10.0
+  androidx.work:work-testing:2.10.0
+  org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
+  org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22
+compare exit 0
+
+## debugAndroidTestRuntimeClasspath (gradle exit 0)
+modules main=85 branch=85
+CHANGED existing versions: 0
+REMOVED: 0
+ADDED (new modules): 0
+compare exit 0
+

@@ -1,0 +1,38 @@
+
+Found a 'validator' script in the Anchor.toml. Running it as a test suite!
+
+Running test suite: "/workspace/final/anchorrun/onchain/Anchor.toml"
+
+   Compiling receipt-settlement v0.1.0 (/workspace/final/anchorrun/onchain/programs/receipt-settlement)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.38s
+     Running tests/validator.rs (target/debug/deps/validator-1e98155060616168)
+
+running 25 tests
+test create_job_binds_terms_verifier_and_clock_deadline ... ok
+test create_and_refund_in_one_transaction_is_rejected ... ok
+test accept_records_node_consent_and_limits ... ok
+test create_job_rejects_invalid_parameters ... ok
+test duplicate_settle_moves_zero_lamports_on_every_account ... ok
+test accept_rejects_wrong_terms_zero_hashes_range_and_duplicate ... ok
+test rotate_verifier_allowed_before_accept_and_locked_after ... ok
+test rotate_verifier_rejects_non_creator_default_and_same ... ok
+test settle_bad_signature_is_rejected_by_ed25519_program ... ok
+test settle_ed25519_offsets_into_other_instruction_are_rejected ... ok
+test settle_missing_ed25519_instruction_is_rejected ... ok
+test settle_pays_recorded_node_and_substituted_payout_fails ... ok
+test deadline_from_clock_is_inclusive_then_closes ... ok
+test close_job_requires_refund_and_no_open_accounts ... ok
+test happy_path_create_accept_prove_settle_refund_close ... ok
+test settle_without_proof_is_rejected ... ok
+test close_assignment_only_after_refund_rent_to_node ... ok
+test settle_signature_over_different_values_is_rejected ... ok
+test refund_crank_is_permissionless_after_deadline_only ... ok
+test settle_wrong_verifier_is_rejected ... ok
+test recreated_job_rejects_replay_of_old_signature ... ok
+test refund_returns_unsettled_reservations ... ok
+test submit_proof_only_by_accepted_node ... ok
+test submit_proof_over_budget_is_rejected ... ok
+test submit_proof_rejects_bad_charge_second_proof_and_duplicate_output ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 34.38s
+

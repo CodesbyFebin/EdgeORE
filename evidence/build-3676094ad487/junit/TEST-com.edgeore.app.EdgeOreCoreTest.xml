@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.EdgeOreCoreTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2026-10-10T03:10:29" hostname="grok-bot-vm-446931431" time="0.007">
+  <properties/>
+  <testcase name="wholeSol" classname="com.edgeore.app.EdgeOreCoreTest" time="0.001"/>
+  <testcase name="nineDecimalsExact" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="dailyBudgetEnforced" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="highMaskBitRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.001"/>
+  <testcase name="mutationRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="allSelectedSquaresCharged" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="excessPrecisionRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.001"/>
+  <testcase name="longBoundary" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="malformedAmountsRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.001"/>
+  <testcase name="exactDecimalUnits" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="negativeInputRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="allTwentyFiveSquares" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="sameBytesAccepted" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="overflowRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.001"/>
+  <testcase name="budgetRefusesNonPositiveAndOverspent" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <testcase name="exposureOverflowRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.001"/>
+  <testcase name="zeroMaskRefused" classname="com.edgeore.app.EdgeOreCoreTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

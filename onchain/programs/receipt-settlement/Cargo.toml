@@ -1,0 +1,45 @@
+[package]
+name = "receipt-settlement"
+version = "0.1.0"
+description = "EdgeORE devnet-only, unaudited receipt-settlement prototype (not deployed)"
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+license = "UNLICENSED"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "receipt_settlement"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+anchor-lang = "1.2.1"
+# Not re-exported by anchor-lang 1.x; versions match the ones anchor-lang 1.2.1 already resolves.
+solana-instructions-sysvar = "3.0.1"
+solana-sdk-ids = "3.1.0"
+solana-sha256-hasher = { version = "3.1.0", features = ["sha2"] }
+
+[dev-dependencies]
+litesvm = { version = "0.18.0", features = ["precompiles"] }
+solana-message = "4"
+solana-transaction = "4.1.5"
+solana-signer = "3.0.0"
+solana-keypair = "3.0.1"
+sha2 = "0.10.8"
+# Only used by tests/validator.rs (local solana-test-validator run).
+solana-rpc-client = "4.3.0"
+solana-rpc-client-api = "4.3.0"
+solana-commitment-config = "3"
+solana-transaction-status-client-types = "4.3.0"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

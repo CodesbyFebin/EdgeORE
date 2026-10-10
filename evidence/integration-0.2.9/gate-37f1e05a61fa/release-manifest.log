@@ -1,0 +1,15 @@
+test_debuggable_fails (__main__.CheckManifestTest.test_debuggable_fails) ... ok
+test_exported_receiver_without_permission_fails (__main__.CheckManifestTest.test_exported_receiver_without_permission_fails) ... ok
+test_exported_service_with_app_defined_permission_fails (__main__.CheckManifestTest.test_exported_service_with_app_defined_permission_fails) ... ok
+test_exported_test_activity_fails (__main__.CheckManifestTest.test_exported_test_activity_fails) ... ok
+test_release_shape_passes (__main__.CheckManifestTest.test_release_shape_passes) ... ok
+test_unexported_tooling_activity_still_fails (__main__.CheckManifestTest.test_unexported_tooling_activity_still_fails) ... ok
+test_unknown_exported_component_fails (__main__.CheckManifestTest.test_unknown_exported_component_fails) ... ok
+test_unreadable_input_is_tool_error (__main__.CheckManifestTest.test_unreadable_input_is_tool_error) ... ok
+test_workmanager_components_guarded_by_system_permissions_pass (__main__.CheckManifestTest.test_workmanager_components_guarded_by_system_permissions_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.001s
+
+OK
+MANIFEST CHECK: PASS (app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml)

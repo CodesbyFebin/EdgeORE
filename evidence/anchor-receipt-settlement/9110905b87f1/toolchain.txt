@@ -1,0 +1,12 @@
+commit: 9110905b87f1a651a67e821490f46074fb32a6df
+tree_clean_before_run: onchain/ had no changes vs commit (only this untracked evidence directory existed; git status --porcelain -- onchain was empty after the run as well)
+started_utc: 2026-10-10T09:33:40Z
+host_rustc (onchain/rust-toolchain.toml): rustc 1.89.0 (29483883e 2025-08-04)
+cargo: cargo 1.89.0 (c24e10642 2025-06-23)
+anchor: anchor-cli 1.2.1
+avm: avm 1.2.1
+solana: solana-cli 3.1.10 (src:7bc9c805; feat:1620780344, client:Agave)
+cargo-build-sbf: solana-cargo-build-sbf 3.1.10 platform-tools v1.52 rustc 1.89.0 
+litesvm: version = "0.10.0"
+anchor-lang: version = "1.2.1"
+os: Debian GNU/Linux 13 (trixie)

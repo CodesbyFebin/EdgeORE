@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OnDeviceAiTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:44:14" hostname="grok-bot-vm-446931431" time="0.08">
+  <properties/>
+  <testcase name="allowlistRejectsUnpinnedTraversalAndUnverifiableEntries" classname="com.edgeore.app.OnDeviceAiTest" time="0.004"/>
+  <testcase name="verifiedCopyRejectsShortLongAndWrongDigestWithoutLeavingFiles" classname="com.edgeore.app.OnDeviceAiTest" time="0.006"/>
+  <testcase name="runLabelsOfflineOnlyWithoutNetworkAndRecordsCompletion" classname="com.edgeore.app.OnDeviceAiTest" time="0.044"/>
+  <testcase name="executionTitleNamesWhatCanActuallyRun" classname="com.edgeore.app.OnDeviceAiTest" time="0.0"/>
+  <testcase name="downloaderNeverOpensAConnectionForGatedOrUnpinnedModels" classname="com.edgeore.app.OnDeviceAiTest" time="0.002"/>
+  <testcase name="bundledAllowlistIsGallerySubsetPinnedToCommits" classname="com.edgeore.app.OnDeviceAiTest" time="0.001"/>
+  <testcase name="nothingRunsOrDownloadsUntilDownloadedAndConsented" classname="com.edgeore.app.OnDeviceAiTest" time="0.007"/>
+  <testcase name="downloaderRefusesServerSizeMismatch" classname="com.edgeore.app.OnDeviceAiTest" time="0.002"/>
+  <testcase name="verifiedCopyRenamesOnlyOnExactSizeAndDigest" classname="com.edgeore.app.OnDeviceAiTest" time="0.007"/>
+  <testcase name="loadFailureIsReportedAsNotRun" classname="com.edgeore.app.OnDeviceAiTest" time="0.004"/>
+  <testcase name="gatedModelShowsReasonAndNeverAsksForConsent" classname="com.edgeore.app.OnDeviceAiTest" time="0.002"/>
+  <testcase name="storeCountsOnlyExactSizeFilesAsDownloaded" classname="com.edgeore.app.OnDeviceAiTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

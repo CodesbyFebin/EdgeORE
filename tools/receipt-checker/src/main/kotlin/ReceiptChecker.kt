@@ -4,6 +4,9 @@ import java.io.File
 import java.io.PrintStream
 import kotlin.system.exitProcess
 
+/** Export fields outside every receipt-body and checkpoint signature; only the optional envelope covers them (docs/hardening-backlog.md H4). */
+const val UNSIGNED_EXPORT_FIELDS = "top-level note, exclusions, payment, location, exportedAt; deviceKeys[].protection, deviceKeys[].firstUsedAt"
+
 /** Exit 0: integrity accepted; 1: rejected; 2: invocation/read/runtime error. */
 fun checkReceipt(args: Array<String>, out: PrintStream = System.out, err: PrintStream = System.err): Int {
     if (args.size !in setOf(1, 3) || (args.size == 3 && args[1] != "--trusted-key")) {
@@ -26,6 +29,13 @@ fun checkReceipt(args: Array<String>, out: PrintStream = System.out, err: PrintS
         out.println(if (report.accepted) "VERIFIED: PASS" else "VERIFIED: FAIL")
         out.println(report.summary)
         report.findings.forEach { out.println("Finding: $it") }
+        // Hardening backlog H4: exports since integration 0.2.9 sign these fields in an "envelope"; older (or stripped) ones do not.
+        // Exports that declare envelopeRequired=true are rejected above when the envelope is missing.
+        when {
+            report.descriptiveFieldsSigned -> out.println("Descriptive export fields covered by the signed envelope: $UNSIGNED_EXPORT_FIELDS")
+            report.legacyWithoutEnvelope -> out.println("Not covered by any signature (legacy export without envelope, descriptive only): $UNSIGNED_EXPORT_FIELDS")
+            else -> out.println("Not covered by any signature (descriptive only, no signed envelope): $UNSIGNED_EXPORT_FIELDS")
+        }
         if (report.accepted) 0 else 1
     } catch (e: java.io.IOException) {
         err.println("CHECKER ERROR: cannot read input (${e.javaClass.simpleName})")

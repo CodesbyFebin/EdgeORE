@@ -5,19 +5,25 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.edgeore.app.ai.EndpointPolicy
+import com.edgeore.app.contribution.ContributionPolicy
+import com.edgeore.app.contribution.ContributionScheduling
+import com.edgeore.app.contribution.JobState
+import com.edgeore.app.contribution.LastRun
+import com.edgeore.app.contribution.LastRunStore
 import com.edgeore.app.ai.OwnedHostModelClient
 import com.edgeore.app.crypto.Base58
 import com.edgeore.app.crypto.Sha256
 import com.edgeore.app.device.DeviceObservations
-import com.edgeore.app.device.DeviceResources
 import com.edgeore.app.device.DeviceResourcesReader
 import com.edgeore.app.device.DeviceSnapshot
 import com.edgeore.app.device.KeystoreReceiptSigner
 import com.edgeore.app.device.NodeKeyVault
 import com.edgeore.app.device.ResourceSettings
+import com.edgeore.app.device.ResourceSettingsStore
 import com.edgeore.app.node.NodeAgentClient
 import com.edgeore.app.node.NodeAgentProtocol
 import com.edgeore.app.node.NodeResult
@@ -38,19 +44,29 @@ import com.edgeore.app.solana.OperationStore
 import com.edgeore.app.solana.OperationStoreUnavailable
 import com.edgeore.app.solana.PendingOperation
 import com.edgeore.app.solana.TransferCoordinator
-import com.edgeore.app.storage.VaultEntry
 import com.edgeore.app.storage.VaultException
 import com.edgeore.app.io.BoundedInput
 import com.edgeore.app.io.InputTooLargeException
 import com.edgeore.app.ai.InferenceClaim
+import com.edgeore.app.ai.ExecutionLocation
+import com.edgeore.app.ai.ondevice.LiteRtLmRuntime
+import com.edgeore.app.ai.ondevice.ModelStore
+import com.edgeore.app.ai.ondevice.OnDeviceAiController
+import com.edgeore.app.ai.ondevice.OnDeviceCatalog
+import com.edgeore.app.ai.ondevice.OnDeviceState
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.solana.TransferReview
+import com.edgeore.app.storage.BackupJobStore
 import com.edgeore.app.storage.LocalVault
+import com.edgeore.app.storage.NotConfiguredBackupProvider
 import com.edgeore.app.storage.StorageAudit
+import com.edgeore.app.storage.StorageController
+import com.edgeore.app.storage.StorageEvent
+import com.edgeore.app.wallet.WalletConnection
 import com.edgeore.app.wallet.WalletCoordinator
 import com.solana.mobilewalletadapter.clientlib.ActivityResultSender
 import kotlinx.coroutines.CancellationException
@@ -60,6 +76,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -69,84 +86,8 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 
-data class WalletState(val publicKey: ByteArray? = null, val label: String? = null, val status: String = "Not connected", val busy: Boolean = false) {
-    val address: String? get() = publicKey?.let(Base58::encode)
-}
-
-data class NodeRecord(
-    val endpoint: String, val certSha256: String, val fingerprint: String, val sessionId: String,
-    val scopes: List<String>, val pairedAt: String, val revocationPending: Boolean = false,
-)
-
-data class NodeOp(val time: String, val action: String, val operationId: String?, val payloadSha256: String?, val outcome: String)
-
-data class NodeState(
-    val record: NodeRecord? = null,
-    val health: JSONObject? = null,
-    val healthObservedAt: Long? = null,
-    val status: String? = null,
-    val error: String? = null,
-    val busy: Boolean = false,
-    val ops: List<NodeOp> = emptyList(),
-)
-
-enum class AiStatus { NO_ENDPOINT, CHECKING, NO_MODEL, READY, LOADING, COMPLETED, CANCELED, FAILED }
-data class ChatMessage(val fromUser: Boolean, val text: String, val time: Long)
-data class AiState(
-    val endpoint: String = "",
-    val location: String? = null,
-    val models: List<String> = emptyList(),
-    val selectedModel: String? = null,
-    val status: AiStatus = AiStatus.NO_ENDPOINT,
-    val statusDetail: String = "No local model installed. On-device inference is not bundled in this build.",
-    val messages: List<ChatMessage> = emptyList(),
-    val documentName: String? = null,
-    val documentSha256: String? = null,
-    val documentChars: Int = 0,
-    val documentTruncated: Boolean = false,
-    val memoryLimitMb: Int = 2048,
-    val pauseComputeDuringChat: Boolean = false,
-    val allocationChars: Int = 8000,
-    val galleryNote: String? = null,
-    val checksumResult: String? = null,
-    val airplaneResult: String? = null,
-)
-
-enum class ReviewPhase { EDITING, PREPARING, READY, SIGNING, SIGNED, SUBMITTING, SUBMITTED, UNKNOWN, REFUSED }
-data class ReviewState(
-    val destination: String = "",
-    val amount: String = "0.001",
-    val phase: ReviewPhase = ReviewPhase.EDITING,
-    val draft: TransferReview.Draft? = null,
-    val feeLamports: Long? = null,
-    val feeKnown: Boolean = false,
-    val verified: TransferReview.WalletReturn.Verified? = null,
-    val submittedSignature: String? = null,
-    val confirmation: String? = null,
-    val message: String? = null,
-    val operationId: String? = null,
-    val operation: PendingOperation? = null,
-)
-
-data class VerifyOutcome(val accepted: Boolean, val summary: String, val findings: List<String>)
-
-data class StorageState(
-    val files: List<VaultEntry> = emptyList(),
-    val usedBytes: Long = 0,
-    val allocationMb: Int = 0,
-    val sharingConsent: Boolean = false,
-    val quotaMb: Int = 500,
-    val pauseOnMetered: Boolean = true,
-    val blockOnDisconnect: Boolean = false,
-    val provider: String = "",
-    val note: String = "Vault is empty until you encrypt a file.",
-    val auditCount: Int = 0,
-    val auditOk: Boolean? = null,
-    val device: DeviceResources? = null,
-)
-
 class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
-    private val prefs = app.getSharedPreferences("edgeore.settings", 0)
+    private val prefs = ResourceSettingsStore.prefs(app)
     private val nodePrefs = app.getSharedPreferences("edgeore.node", 0)
     private val keyRegistry = KeyRegistry(File(app.filesDir, "receipts/keys.json"))
     // Keystore first. If it is unavailable, a persisted (weaker, labelled) software key keeps the same identity across restarts.
@@ -169,8 +110,9 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val settings: StateFlow<ResourceSettings> = _settings.asStateFlow()
     private val _device = MutableStateFlow<DeviceSnapshot?>(null)
     val device: StateFlow<DeviceSnapshot?> = _device.asStateFlow()
-    private val _wallet = MutableStateFlow(WalletState())
-    val walletState: StateFlow<WalletState> = _wallet.asStateFlow()
+    private val walletConnection = WalletConnection(log = { Log.w(WALLET_LOG_TAG, it) })
+    private val _wallet get() = walletConnection.state
+    val walletState: StateFlow<WalletState> = walletConnection.state
     private val _balance = MutableStateFlow<RpcObservation?>(null)
     val balance: StateFlow<RpcObservation?> = _balance.asStateFlow()
     private val _node = MutableStateFlow(NodeState(record = loadNode(), ops = loadOps()))
@@ -184,6 +126,9 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val ai: StateFlow<AiState> = _ai.asStateFlow()
     private val fileVault = LocalVault.forApp(app)
     private val storageAudit = StorageAudit(File(app.filesDir, "storage/audit.jsonl"))
+    // No EdgeORE backend exists in this build: remote backup is honestly unavailable, never simulated.
+    private val backupJobs = BackupJobStore(File(app.filesDir, "storage/backup-jobs.json"))
+    private val storageController = StorageController(fileVault, backupJobs, NotConfiguredBackupProvider, storageAudit, onEvent = { recordStorage(it) })
     private val _storage = MutableStateFlow(loadStorage())
     val storage: StateFlow<StorageState> = _storage.asStateFlow()
     private val _review = MutableStateFlow(ReviewState())
@@ -196,14 +141,62 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     private val _verify = MutableStateFlow<VerifyOutcome?>(null)
     val verify: StateFlow<VerifyOutcome?> = _verify.asStateFlow()
 
+    // Contribution scheduler state. Declared before init, which reads it.
+    private val _contributionJob = MutableStateFlow(JobState.NONE)
+    /** WorkManager's state for the unique job. NONE while the user has not opted in (WorkManager is not touched). */
+    val contributionJob: StateFlow<JobState> = _contributionJob.asStateFlow()
+    private val _unmetered = MutableStateFlow<Boolean?>(null)
+    /** Active network has NET_CAPABILITY_NOT_METERED. Null when not observed. */
+    val unmetered: StateFlow<Boolean?> = _unmetered.asStateFlow()
+    private val _lastContributionRun = MutableStateFlow<LastRun?>(LastRunStore.read(prefs))
+    val lastContributionRun: StateFlow<LastRun?> = _lastContributionRun.asStateFlow()
+    private var jobWatch: Job? = null
+
     private var documentText: String? = null
+    // On-device LLM (LiteRT-LM, the Google AI Edge Gallery runtime). Weights are downloaded only after consent.
+    private val onDeviceAi = OnDeviceAiController(
+        store = ModelStore(File(app.filesDir, "models")),
+        catalog = { app.assets.open(OnDeviceCatalog.ASSET).bufferedReader().use { OnDeviceCatalog.parse(it.readText()) } },
+        scope = viewModelScope,
+        runtimeLoader = { file, model -> LiteRtLmRuntime(file, model) },
+        networkUp = { networkUp() },
+        metered = { metered() },
+        ramBytes = { app.getSystemService(android.app.ActivityManager::class.java)?.let { am -> android.app.ActivityManager.MemoryInfo().also { am.getMemoryInfo(it) }.totalMem } ?: 0L },
+        onCompleted = { model, prompt, answer, location ->
+            val offline = location == ExecutionLocation.ON_DEVICE
+            record(ReceiptDraft(ReceiptKind.LOCAL_AI, if (offline) "COMPLETED_ON_DEVICE_OFFLINE" else "COMPLETED_IN_APP_NETWORK_UP", "On-device AI run",
+                "Model ${model.name} (${model.repo}@${model.commit.take(10)}) via LiteRT-LM in this app. Contents not stored; digests only.", "in-app LiteRT-LM",
+                digests = mapOf("promptSha256" to Sha256.hex(prompt), "responseSha256" to Sha256.hex(answer), "modelSha256" to (model.sha256 ?: "unpinned")),
+                localObservation = Evidence("CHECKED", if (offline) "Runtime answered in-process; no active network before or after the run" else "Runtime answered in-process; a network was active, so offline is not claimed")))
+        },
+    )
+    val onDevice: StateFlow<OnDeviceState> = onDeviceAi.state
+    fun refreshOnDevice() = onDeviceAi.refresh()
+    fun selectOnDeviceModel(id: String) = onDeviceAi.select(id)
+    fun requestOnDeviceDownload(id: String) = onDeviceAi.requestDownload(id)
+    fun confirmOnDeviceDownload() = onDeviceAi.confirmDownload()
+    fun declineOnDeviceDownload() = onDeviceAi.declineDownload()
+    fun cancelOnDeviceDownload() = onDeviceAi.cancelDownload()
+    fun deleteOnDeviceModel(id: String) { onDeviceAi.delete(id) }
+    fun sendOnDevicePrompt(prompt: String) = onDeviceAi.send(prompt)
+    fun cancelOnDeviceGeneration() { onDeviceAi.cancelGeneration() }
+    fun clearOnDeviceConversation() = onDeviceAi.clearConversation()
+    override fun onCleared() { onDeviceAi.close(); super.onCleared() }
+
     private var aiJob: Job? = null
     @Volatile private var aiClient: OwnedHostModelClient? = null
 
     init {
         refreshReceipts()
-        val abandonedWrites = fileVault.recoverAbandonedWrites()
-        if (abandonedWrites > 0) storageAudit.append("reclaimed $abandonedWrites interrupted vault write(s)")
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val abandonedWrites = fileVault.recoverAbandonedWrites()
+                if (abandonedWrites > 0) storageAudit.append("reclaimed $abandonedWrites interrupted vault write(s)")
+            }
+            storageController.view.collect { v ->
+                _storage.update { it.copy(files = v.files.map { f -> f.entry }, views = v.files, usedBytes = v.usedBytes, backup = v.backup, busy = v.busy, auditCount = storageAudit.count(), note = v.message ?: it.note) }
+            }
+        }
         // Restart recovery: local state first (no network), then receipts for any transition the
         // previous process committed but did not record, then read-only chain observation.
         coordinator?.recoverAfterRestart()
@@ -213,31 +206,55 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             flushOperationReceipts()
         }
         viewModelScope.launch {
-            while (true) { _device.value = DeviceObservations.read(getApplication()); delay(15_000) }
+            while (true) { refreshDevice(); delay(15_000) }
         }
+        // Re-register the job after a restart only if the user opted in; never touch WorkManager otherwise.
+        if (ContributionPolicy.shouldSchedule(_settings.value)) applyContributionSchedule(_settings.value)
     }
 
     // ---------- settings ----------
-    private fun loadSettings() = ResourceSettings(
-        edgeModeResumed = prefs.getBoolean("edge.resumed", false),
-        chargeOnly = prefs.getBoolean("ctl.chargeOnly", true),
-        thermalGuard = prefs.getBoolean("ctl.thermal", true),
-        batteryReservePercent = prefs.getInt("ctl.reserve", 20),
-        cpuLimitPercent = prefs.getInt("ctl.cpu", 50),
-        dailyLimitLamports = prefs.getLong("budget.daily", 50_000_000L),
-    )
+    private fun loadSettings() = ResourceSettingsStore.load(prefs)
 
     fun updateSettings(transform: (ResourceSettings) -> ResourceSettings) {
-        val s = transform(_settings.value).let {
+        val old = _settings.value
+        val s = transform(old).let {
             it.copy(batteryReservePercent = it.batteryReservePercent.coerceIn(5, 90), cpuLimitPercent = it.cpuLimitPercent.coerceIn(10, 100), dailyLimitLamports = it.dailyLimitLamports.coerceAtLeast(0))
         }
-        prefs.edit().putBoolean("edge.resumed", s.edgeModeResumed).putBoolean("ctl.chargeOnly", s.chargeOnly)
-            .putBoolean("ctl.thermal", s.thermalGuard).putInt("ctl.reserve", s.batteryReservePercent)
-            .putInt("ctl.cpu", s.cpuLimitPercent).putLong("budget.daily", s.dailyLimitLamports).apply()
+        ResourceSettingsStore.save(prefs, s)
         _settings.value = s
+        if (ContributionPolicy.shouldSchedule(old) != ContributionPolicy.shouldSchedule(s)) applyContributionSchedule(s)
     }
 
-    fun refreshDevice() { _device.value = DeviceObservations.read(getApplication()) }
+    fun refreshDevice() {
+        _device.value = DeviceObservations.read(getApplication())
+        refreshContributionObservations()
+    }
+
+    // ---------- contribution scheduler (opt-in, WorkManager) ----------
+    private fun applyContributionSchedule(s: ResourceSettings) {
+        val want = ContributionPolicy.shouldSchedule(s)
+        jobWatch?.cancel(); jobWatch = null
+        if (!ContributionScheduling.apply(getApplication(), want)) { _contributionJob.value = JobState.UNAVAILABLE; return }
+        if (!want) { _contributionJob.value = JobState.NONE; return }
+        jobWatch = viewModelScope.launch {
+            val flow = runCatching { androidx.work.WorkManager.getInstance(getApplication()).getWorkInfosForUniqueWorkFlow(ContributionScheduling.UNIQUE_NAME) }.getOrNull()
+            if (flow == null) { _contributionJob.value = JobState.UNAVAILABLE; return@launch }
+            flow.catch { _contributionJob.value = JobState.UNAVAILABLE }.collect { infos ->
+                _contributionJob.value = ContributionScheduling.jobState(infos)
+                _lastContributionRun.value = LastRunStore.read(prefs)
+            }
+        }
+    }
+
+    private fun refreshContributionObservations() {
+        val cm = runCatching { getApplication<Application>().getSystemService(ConnectivityManager::class.java) }.getOrNull()
+        _unmetered.value = when {
+            cm == null -> null
+            cm.activeNetwork == null -> false // no network at all: the unmetered constraint is not met
+            else -> cm.getNetworkCapabilities(cm.activeNetwork)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+        }
+        _lastContributionRun.value = LastRunStore.read(prefs)
+    }
 
     // ---------- receipts ----------
     private fun refreshReceipts() = viewModelScope.launch(Dispatchers.IO) {
@@ -324,19 +341,14 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     // ---------- wallet / RPC ----------
     fun connectWallet(sender: ActivityResultSender) = viewModelScope.launch {
-        _wallet.update { it.copy(busy = true, status = "Waiting for wallet…") }
-        _wallet.value = try {
-            when (val r = wallet.connect(sender)) {
-                is WalletCoordinator.ConnectResult.Authorized -> WalletState(r.publicKey, r.label, "Authorized on devnet")
-                is WalletCoordinator.ConnectResult.Refused -> WalletState(status = r.reason)
-            }
-        } catch (e: CancellationException) { throw e } catch (e: Exception) { WalletState(status = "Wallet unavailable") }
-        _wallet.value.address?.let { refreshBalance(it) }
+        // The connection state is published by WalletConnection only; a balance (RPC) failure below
+        // is shown on its own line and never changes an authorized connection.
+        if (walletConnection.connect { wallet.connect(sender) }) _wallet.value.address?.let { refreshBalance(it) }
     }
 
     fun disconnectWallet(sender: ActivityResultSender) = viewModelScope.launch {
-        runCatching { wallet.disconnect(sender) }
-        _wallet.value = WalletState(status = "Disconnected")
+        val confirmed = wallet.disconnect(sender)
+        walletConnection.disconnected(confirmed)
         _balance.value = null
     }
 
@@ -807,14 +819,10 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     )
 
     fun refreshStorage() {
-        val device = runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull()
-        _storage.update {
-            it.copy(
-                files = fileVault.entries(),
-                usedBytes = fileVault.usedBytes(),
-                auditCount = storageAudit.count(),
-                device = device ?: it.device,
-            )
+        viewModelScope.launch {
+            val device = withContext(Dispatchers.IO) { runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull() }
+            _storage.update { it.copy(device = device ?: it.device, deviceReadFailed = device == null) }
+            storageController.refresh()
         }
     }
 
@@ -826,46 +834,32 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         refreshStorage()
     }
 
+    /** Storage Access Framework import. Reading, the byte limit and encryption run off the main thread. */
     fun importVault(uri: Uri) = viewModelScope.launch {
-        val outcome = withContext(Dispatchers.IO) {
-            runCatching {
-                val name = getApplication<Application>().contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
-                    if (c.moveToFirst()) c.getString(0) else null
-                } ?: "file"
-                // Hard limit enforced while reading: an oversized or unknown-size stream is cut off at 8 MB + 1 byte.
-                val bytes = getApplication<Application>().contentResolver.openInputStream(uri)?.use {
-                    try { BoundedInput.readAtMost(it, LocalVault.MAX_PLAIN_BYTES) } catch (_: InputTooLargeException) { throw VaultException.TooLarge(LocalVault.MAX_PLAIN_BYTES) }
-                } ?: error("unreadable")
-                fileVault.put(name, bytes, allowanceBytes = _storage.value.allocationMb * 1024L * 1024L)
-            }
+        val resolver = getApplication<Application>().contentResolver
+        val name = withContext(Dispatchers.IO) {
+            runCatching { resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null } }.getOrNull()
         }
-        outcome.onSuccess {
-            storageAudit.append("encrypted object ${it.id}")
-            refreshStorage()
-            _storage.update { s -> s.copy(note = "Encrypted ${it.displayName} with AES-256-GCM. The plaintext was not kept. Only this phone's Keystore key can decrypt it.") }
-        }.onFailure { e ->
-            refreshStorage()
-            _storage.update { it.copy(note = "Import failed, nothing was saved: ${e.message ?: "unreadable"}") }
-        }
+        storageController.import(name, _storage.value.allocationMb * 1024L * 1024L) { resolver.openInputStream(uri) }
     }
 
-    fun deleteVault(id: String) {
-        val ok = fileVault.delete(id)
-        storageAudit.append(if (ok) "deleted object $id" else "delete missed $id")
-        refreshStorage()
-        _storage.update { it.copy(note = if (ok) "Deleted from this phone." else "That file was not in the vault.") }
-    }
+    fun deleteVault(id: String) = viewModelScope.launch { storageController.deleteLocal(id) }
 
-    /** Decrypts off the main thread and writes to the chosen document. Every failure is reported specifically. */
+    /** Decrypts off the main thread and writes to the chosen document after the user confirmed the warning. */
     fun exportVault(id: String, uri: Uri) = viewModelScope.launch {
-        val r = withContext(Dispatchers.IO) {
-            runCatching {
-                val bytes = fileVault.read(id)
-                getApplication<Application>().contentResolver.openOutputStream(uri)?.use { it.write(bytes) } ?: error("destination unavailable")
-                bytes.size
-            }
+        storageController.exportDecrypted(id) { getApplication<Application>().contentResolver.openOutputStream(uri) }
+    }
+
+    /** App-record integrity evidence for a storage action: identifiers and encrypted-object digests only. */
+    private suspend fun recordStorage(e: StorageEvent) {
+        runCatching {
+            record(ReceiptDraft(ReceiptKind.STORAGE, e.action, e.action.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() },
+                e.observation + ". App-record integrity evidence; not proof of provider storage or physical deletion.", "EdgeORE local vault",
+                operationId = e.operationId,
+                digests = buildMap { e.encryptedSha256?.let { put("encryptedObjectSha256", it) }; e.objectId?.let { put("vaultObjectId", it) } },
+                localObservation = Evidence("OBSERVED", e.observation),
+                providerAcknowledgement = e.providerObservation?.let { Evidence("OBSERVED", it) } ?: Evidence.NOT_AVAILABLE))
         }
-        _storage.update { it.copy(note = r.fold({ n -> "Exported $n bytes of plaintext to the file you chose." }, { e -> "Export failed: ${e.message ?: e.javaClass.simpleName}" })) }
     }
 
     fun setSharingConsent(on: Boolean) {
@@ -885,12 +879,6 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val v = mb.coerceIn(1, 10000)
         prefs.edit().putInt("store.quotaMb", v).apply()
         _storage.update { it.copy(quotaMb = v, note = "Daily quota stored as $v MB. Usage is not metered in this build.") }
-    }
-
-    fun setProvider(name: String) {
-        prefs.edit().putString("store.provider", name).apply()
-        storageAudit.append("provider label set")
-        _storage.update { it.copy(provider = name, note = "Label saved. No cloud upload ran.") }
     }
 
     fun setPauseOnMetered(on: Boolean) {
@@ -913,7 +901,13 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun restoreStorageDefaults() {
         prefs.edit().putBoolean("store.consent", false).putInt("store.quotaMb", 500).putBoolean("store.metered", true).putBoolean("store.kill", false).putString("store.provider", "").apply()
         storageAudit.append("secure defaults restored")
-        _storage.value = loadStorage().copy(files = fileVault.entries(), usedBytes = fileVault.usedBytes(), note = "Consent, quota, provider and kill switch reset. Vault files were kept.")
+        _storage.update { loadStorage().copy(files = it.files, views = it.views, usedBytes = it.usedBytes, backup = it.backup, device = it.device, note = "Consent, quota and kill switch reset. Vault files were kept.") }
+    }
+
+    private fun networkUp(): Boolean {
+        val cm = getApplication<Application>().getSystemService(ConnectivityManager::class.java) ?: return false
+        val caps = cm.activeNetwork?.let { cm.getNetworkCapabilities(it) } ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun metered(): Boolean {

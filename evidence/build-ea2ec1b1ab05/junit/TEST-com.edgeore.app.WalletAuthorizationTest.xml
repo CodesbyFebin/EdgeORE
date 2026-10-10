@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.WalletAuthorizationTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:39:16" hostname="grok-bot-vm-446931431" time="0.026">
+  <properties/>
+  <testcase name="confirmedDisconnectSaysTheWalletConfirmed" classname="com.edgeore.app.WalletAuthorizationTest" time="0.004"/>
+  <testcase name="sdkResultsMapToDistinctCategoriesAndNeverSuccess" classname="com.edgeore.app.WalletAuthorizationTest" time="0.002"/>
+  <testcase name="accountValidationUsesReturnedAccountNotAHardCodedAddress" classname="com.edgeore.app.WalletAuthorizationTest" time="0.0"/>
+  <testcase name="balanceFailureShowsUnavailableAndKeepsAuthorization" classname="com.edgeore.app.WalletAuthorizationTest" time="0.002"/>
+  <testcase name="callerCancellationPropagatesAndLeavesNoWaitingState" classname="com.edgeore.app.WalletAuthorizationTest" time="0.001"/>
+  <testcase name="secondConnectWhileBusyIsRejectedWithoutCallingWallet" classname="com.edgeore.app.WalletAuthorizationTest" time="0.003"/>
+  <testcase name="logLineCarriesCodeStageUtcAndTypeButNoWalletText" classname="com.edgeore.app.WalletAuthorizationTest" time="0.004"/>
+  <testcase name="declineThenRetryClearsErrorOnlyWhenNextAttemptStarts" classname="com.edgeore.app.WalletAuthorizationTest" time="0.002"/>
+  <testcase name="disconnectIsReportedSeparatelyFromConnect" classname="com.edgeore.app.WalletAuthorizationTest" time="0.001"/>
+  <testcase name="validAuthorizationReachesConnectedStateWithReturnedAccount" classname="com.edgeore.app.WalletAuthorizationTest" time="0.001"/>
+  <testcase name="thrownSdkExceptionBecomesVisibleFailureNotSuccess" classname="com.edgeore.app.WalletAuthorizationTest" time="0.002"/>
+  <testcase name="emptyOrMalformedAccountsAreVisibleErrors" classname="com.edgeore.app.WalletAuthorizationTest" time="0.0"/>
+  <testcase name="lateResultFromAnOlderAttemptCannotOverwriteCurrentState" classname="com.edgeore.app.WalletAuthorizationTest" time="0.002"/>
+  <testcase name="failedConnectIsNeverShownAsNeutralNotConnected" classname="com.edgeore.app.WalletAuthorizationTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

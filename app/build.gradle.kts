@@ -20,8 +20,8 @@ android {
         applicationId = "com.edgeore.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "0.2.8-review"
+        versionCode = 11
+        versionName = "0.2.9-review"
         // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -94,16 +94,23 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    // Opt-in contribution scheduler (Wi-Fi + charging + battery-not-low constraints). 2.10.0 is the newest line that
+    // adds only new modules here: every existing resolved version stays the same (evidence/contribution-scheduler/*/deps).
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
 
     // Solana Mobile Wallet Adapter: wallet keys stay in the wallet app.
     implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.0.3")
     // Ed25519 for node-agent pairing keys and for verifying wallet-returned signatures.
     implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    // On-device LLM runtime (LiteRT-LM, as used by Google AI Edge Gallery) behind a Java-only bridge module; see ondevice-llm/build.gradle.kts.
+    implementation(project(":ondevice-llm"))
 
     testImplementation("junit:junit:4.13.2")
     // Real org.json on the JVM test classpath (android.jar only ships stubs).
     testImplementation("org.json:json:20240303")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    // WorkManager test driver (constraints met/unmet) for the scheduler tests; same version as the runtime.
+    testImplementation("androidx.work:work-testing:2.10.0")
     // Screenshot suite only (see -Pscreens above).
     testImplementation("org.robolectric:robolectric:4.14.1")
     testImplementation("io.github.takahirom.roborazzi:roborazzi:1.36.0")

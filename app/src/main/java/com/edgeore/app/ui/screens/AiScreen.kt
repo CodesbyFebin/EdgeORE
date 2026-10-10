@@ -1,5 +1,6 @@
 package com.edgeore.app.ui.screens
 
+import com.edgeore.app.ai.ondevice.ExecutionLabel
 import com.edgeore.app.ui.components.EffectNote
 import com.edgeore.app.settings.Control
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,7 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -40,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.AiStatus
 import com.edgeore.app.EdgeOreViewModel
+import com.edgeore.app.ai.ondevice.OnDevicePhase
+import androidx.compose.runtime.LaunchedEffect
 import com.edgeore.app.ui.Format
 import com.edgeore.app.ui.components.EdgeCard
 import com.edgeore.app.ui.components.EdgeIcons
@@ -53,6 +59,9 @@ import com.edgeore.app.ui.theme.EdgeColors
 @Composable
 fun AiScreen(vm: EdgeOreViewModel) {
     val ai by vm.ai.collectAsStateWithLifecycle()
+    val od by vm.onDevice.collectAsStateWithLifecycle()
+    var odPrompt by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(Unit) { vm.refreshOnDevice() }
     val settings by vm.settings.collectAsStateWithLifecycle()
     var endpoint by rememberSaveable { mutableStateOf(ai.endpoint.ifEmpty { "http://127.0.0.1:11434" }) }
     var prompt by rememberSaveable { mutableStateOf("") }
@@ -66,11 +75,72 @@ fun AiScreen(vm: EdgeOreViewModel) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Icon(EdgeIcons.Ai, contentDescription = null, tint = EdgeColors.mint)
             Column(Modifier.weight(1f)) {
-                Text("On-device execution", style = MaterialTheme.typography.titleMedium)
-                Text("Weights are not in this app. A prompt leaves the phone only if you connect a host you own.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+                Text(ExecutionLabel.title(od.downloaded, od.loadedId), style = MaterialTheme.typography.titleMedium)
+                Text("No weights ship in this APK. Download an allowlisted model below to run on this phone, or connect a host you own.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
             }
             Text("Cloud fallback OFF", color = EdgeColors.onAction, modifier = Modifier.background(EdgeColors.mint, RoundedCornerShape(20.dp)).padding(horizontal = 10.dp, vertical = 6.dp))
         }
+    }
+
+    od.consentFor?.let { m ->
+        AlertDialog(
+            onDismissRequest = { vm.declineOnDeviceDownload() },
+            title = { Text("Download ${m.name}?") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    KeyValue("Size", "${Format.bytes(m.sizeBytes)} (${m.sizeBytes} bytes)")
+                    KeyValue("From", "huggingface.co/${m.repo}")
+                    KeyValue("Commit", m.commit.take(12), mono = true)
+                    KeyValue("License", m.license)
+                    KeyValue("Free space", Format.bytes(od.freeBytes))
+                    Text("Saved in this app's private storage. Size and SHA-256 are checked before it counts as downloaded. Only the weights are fetched; prompts are never sent.", style = MaterialTheme.typography.bodyMedium)
+                    if (od.consentMetered) Text("You are on a metered network. This is a large download.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+                    m.minDeviceMemoryGb?.let { gb -> if (od.deviceRamBytes in 1 until gb * 1_000_000_000L) Text("This phone reports ${Format.bytes(od.deviceRamBytes)} RAM; Google AI Edge Gallery lists $gb GB for this model. It may fail to load.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium) }
+                }
+            },
+            confirmButton = { TextButton(onClick = { vm.confirmOnDeviceDownload() }) { Text("Download") } },
+            dismissButton = { TextButton(onClick = { vm.declineOnDeviceDownload() }) { Text("Not now") } },
+        )
+    }
+
+    EdgeCard {
+        Text("On-device model (LiteRT-LM)", style = MaterialTheme.typography.titleMedium)
+        Text("Allowlist and runtime from Google AI Edge Gallery (Apache-2.0). Runs in this app on the CPU. Not device-qualified yet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        od.catalogError?.let { Notice(it, error = true) }
+        od.models.forEach { m ->
+            val downloaded = m.id in od.downloaded
+            FilterChip(selected = od.selectedId == m.id, onClick = { vm.selectOnDeviceModel(m.id) }, label = {
+                Text("${m.name} · ${Format.bytes(m.sizeBytes)} · " + when { downloaded -> "downloaded"; m.gated -> "gated"; else -> "not downloaded" })
+            })
+        }
+        val sel = od.selected
+        if (sel != null) {
+            KeyValue("License", sel.license)
+            when {
+                od.downloadingId == sel.id -> {
+                    LinearProgressIndicator(progress = { if (sel.sizeBytes > 0) (od.downloadedBytes.toFloat() / sel.sizeBytes).coerceIn(0f, 1f) else 0f }, modifier = Modifier.fillMaxWidth())
+                    Text("${Format.bytes(od.downloadedBytes)} of ${Format.bytes(sel.sizeBytes)}", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+                    SecondaryAction("Cancel download") { vm.cancelOnDeviceDownload() }
+                }
+                sel.id in od.downloaded -> SecondaryAction("Delete from phone", danger = true, enabled = od.phase == OnDevicePhase.IDLE) { vm.deleteOnDeviceModel(sel.id) }
+                sel.downloadable -> SecondaryAction("Download ${Format.bytes(sel.sizeBytes)}…", enabled = od.phase == OnDevicePhase.IDLE) { vm.requestOnDeviceDownload(sel.id) }
+                else -> Notice("Gated: needs a Hugging Face sign-in this build does not have.")
+            }
+        }
+        Text(od.status, color = if (od.error != null) EdgeColors.danger else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        od.messages.forEach { m ->
+            Box(Modifier.fillMaxWidth(), contentAlignment = if (m.fromUser) Alignment.CenterEnd else Alignment.CenterStart) {
+                Column(Modifier.widthIn(max = 300.dp).background(if (m.fromUser) EdgeColors.mint.copy(alpha = 0.16f) else EdgeColors.surface, RoundedCornerShape(16.dp)).padding(12.dp)) {
+                    Text(if (m.fromUser) "You" else "On-device model", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+                    Text(m.text, style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+        }
+        OutlinedTextField(odPrompt, { odPrompt = it }, label = { Text(if (od.selectedDownloaded) "Prompt for the on-device model…" else "Download a model first") }, enabled = od.selectedDownloaded, modifier = Modifier.fillMaxWidth())
+        val busy = od.phase == OnDevicePhase.LOADING_MODEL || od.phase == OnDevicePhase.GENERATING
+        PrimaryAction(if (od.selectedDownloaded) "Run on this phone" else "Model not downloaded", icon = EdgeIcons.Send, enabled = od.canSend && odPrompt.isNotBlank(), loading = busy) { vm.sendOnDevicePrompt(odPrompt); odPrompt = "" }
+        SecondaryAction("Stop generation", enabled = od.phase == OnDevicePhase.GENERATING) { vm.cancelOnDeviceGeneration() }
+        Text("Model output cannot approve a transaction.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     }
 
     EdgeCard {

@@ -1,0 +1,3 @@
+commit 28acd193fc7c
+bash gradlew -p tools/receipt-checker --no-daemon --console=plain clean test  EXIT=0
+tests="14" skipped="0" failures="0" errors="0"

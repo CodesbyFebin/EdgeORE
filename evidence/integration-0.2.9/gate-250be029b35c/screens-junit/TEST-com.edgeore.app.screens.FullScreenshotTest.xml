@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.FullScreenshotTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-10T12:16:56" hostname="grok-bot-vm-446931431" time="11.757">
+  <properties/>
+  <testcase name="storage" classname="com.edgeore.app.screens.FullScreenshotTest" time="2.752"/>
+  <testcase name="storageRenderUsesNoHostReadings" classname="com.edgeore.app.screens.FullScreenshotTest" time="0.394"/>
+  <testcase name="review" classname="com.edgeore.app.screens.FullScreenshotTest" time="1.762"/>
+  <testcase name="receipts" classname="com.edgeore.app.screens.FullScreenshotTest" time="1.525"/>
+  <testcase name="ai" classname="com.edgeore.app.screens.FullScreenshotTest" time="1.807"/>
+  <testcase name="mine" classname="com.edgeore.app.screens.FullScreenshotTest" time="1.582"/>
+  <testcase name="nodes" classname="com.edgeore.app.screens.FullScreenshotTest" time="1.935"/>
+  <system-out><![CDATA[Roborazzi: 03-storage-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=11884950, width=1078, height=11025) changed:false
+Roborazzi: 06-review-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=11884950, width=1078, height=11025) changed:false
+Roborazzi: 05-receipts-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=11884950, width=1078, height=11025) changed:false
+Roborazzi: 02-ai-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=11884950, width=1078, height=11025) changed:false
+Roborazzi: 01-mine-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=11884950, width=1078, height=11025) changed:false
+Roborazzi: 04-nodes-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=11884950, width=1078, height=11025) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

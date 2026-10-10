@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "source": "Entries taken from Google AI Edge Gallery model_allowlists/1_0_20.json (https://github.com/google-ai-edge/gallery, Apache-2.0, commit a8e795660ee5c02b983897553c7844c351c77bda). Same Hugging Face repo, file, commit pin and size. EdgeORE adds the SHA-256 that Hugging Face reports for the pinned file, the license and gated flags, and drops every field it does not use.",
+  "models": [
+    {
+      "id": "qwen2.5-1.5b-instruct-q8",
+      "name": "Qwen2.5-1.5B-Instruct (q8)",
+      "modelId": "litert-community/Qwen2.5-1.5B-Instruct",
+      "modelFile": "Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv4096.litertlm",
+      "commitHash": "19edb84c69a0212f29a6ef17ba0d6f278b6a1614",
+      "sizeInBytes": 1597931520,
+      "sha256": "faa60663b333290c1496c499828b21d3e3254a788cacd8cce917ce0f761a2dc9",
+      "license": "Apache-2.0",
+      "gated": false,
+      "minDeviceMemoryInGb": 6,
+      "defaultConfig": { "topK": 20, "topP": 0.8, "temperature": 0.7, "maxTokens": 1024 }
+    },
+    {
+      "id": "gemma3-1b-it-int4",
+      "name": "Gemma3-1B-IT (int4)",
+      "modelId": "litert-community/Gemma3-1B-IT",
+      "modelFile": "gemma3-1b-it-int4.litertlm",
+      "commitHash": "42d538a932e8d5b12e6b3b455f5572560bd60b2c",
+      "sizeInBytes": 584417280,
+      "sha256": null,
+      "license": "Gemma Terms of Use",
+      "gated": true,
+      "minDeviceMemoryInGb": 6,
+      "defaultConfig": { "topK": 64, "topP": 0.95, "temperature": 1.0, "maxTokens": 1024 }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# EdgeORE receipt-settlement — devnet-only prototype. NOT DEPLOYED.
+# There is intentionally no [programs.devnet] / [programs.mainnet] entry. Tests run
+# in LiteSVM or against a local solana-test-validator only. A devnet deployment is
+# prepared but NOT run: ../scripts/deploy-devnet.sh, gate in ../docs/DEPLOY-DEVNET.md.
+
+# Two test modes (see programs/receipt-settlement/README.md):
+#   LiteSVM, in-process:   anchor test --skip-build --skip-local-validator --skip-deploy
+#   (--skip-deploy matters: --skip-local-validator alone makes Anchor try to
+#   deploy to the configured localnet URL first)
+#   local validator:       anchor test --skip-build --validator legacy --script validator
+skip_local_validator = false
+
+[toolchain]
+anchor_version = "1.2.1"
+solana_version = "4.3.0"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+# Program id derived from a keypair generated locally by `anchor init`
+# (target/deploy/receipt_settlement-keypair.json, gitignored, never committed).
+receipt_settlement = "8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "cargo test --test settlement"
+validator = "cargo test --test validator -- --ignored"

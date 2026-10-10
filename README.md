@@ -11,6 +11,7 @@ Built by **[CodesbyFebin](https://github.com/CodesbyFebin)** · **Solana Mobile 
 
 **Candidate:** `0.2.8-review` · versionCode `10` · debug APK  
 **Current `main`:** `111a3dba48c3` (evidence-only merge of PR #4) · **Tested source / APK stamp:** `d675002bd701` (`d675002bd701f94809cf776aaa0580b3cb9e83ef`).
+**Integration candidate (merged into `main` with its device gates still NOT_RUN):** branch `integration/0.2.9-candidate` (`0.2.9-review`, versionCode `11`) combines the wallet-authorization fix, Storage vault, on-device AI path and the `onchain/` prototype; see [`evidence/integration-0.2.9/`](evidence/integration-0.2.9/). The submitted candidate above is unchanged.
 
 > **Qualification:** source-side work has progressed; the wallet journey still needs runtime evidence. No confirmed transfer through EdgeORE, installed-app demo video or physical-device walkthrough is recorded here yet. This is a review candidate, not a production or ORE-earning release.
 
@@ -87,8 +88,8 @@ The previously reported single-byte mutation experiment has no preserved script 
 | Destination | Purpose and current boundary |
 |---|---|
 | **Mine** | Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
-| **Private AI** | Ollama-compatible chat and document attachment to an owned host. No embedded model runtime or airplane-mode inference. |
-| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Android Keystore behavior still needs device qualification. |
+| **Private AI** | Ollama-compatible chat and document attachment to an owned host. On the integration candidate: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
+| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. |
 | **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
 | **Receipts** | Inspect, export and verify operation records with evidence dimensions kept separate. |
 
@@ -158,6 +159,8 @@ The Compose app coordinates four distinct paths: MWA wallet signing, devnet RPC 
 
 Android Keystore protects device-held keys where available. Any software fallback is labeled as weaker protection. Vault keys are device-bound; an export is not a cross-device restore guarantee.
 
+The device-bound vault is a design decision, not a defect: local vault keys never leave the device; cross-device restore would need a separate passphrase-wrapped backup envelope, which is not built yet.
+
 ## Deliberate limits and next milestones
 
 **Unavailable:** ORE deploy/checkpoint/claim, ORE earnings, SKR payments, VPN tunnel, cloud sync, bandwidth sharing and bandwidth rewards. EdgeORE issues no token and promises no income.
@@ -166,7 +169,7 @@ The next milestone is a recorded Android session: wallet authorization → revie
 
 ## License and attribution
 
-No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
+No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; see [`NOTICE`](NOTICE) for Google AI Edge Gallery (Apache-2.0) and LiteRT-LM (Apache-2.0). Upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
 
 ---
 

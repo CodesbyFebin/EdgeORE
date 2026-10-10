@@ -29,7 +29,11 @@ sealed class VaultException(message: String) : Exception(message) {
     class Corrupt(why: String) : VaultException("Vault object is damaged: $why")
     class Tampered : VaultException("Authentication failed: the object or its metadata was modified, or the key changed")
     class KeyUnavailable : VaultException("The vault key is not available on this phone; these files cannot be decrypted")
+    class SourceUnavailable(why: String) : VaultException("The chosen file can no longer be read ($why). Nothing was saved.")
 }
+
+/** A backup envelope (nameless EOV2) plus the digests needed to verify a later restore. */
+class BackupBlob(val objectId: String, val ciphertext: ByteArray, val ciphertextSha256: String, val ciphertextBytes: Long, val plainSha256: String, val plainBytes: Long)
 
 /** One listed object. Display names are metadata; identity is the random object id. */
 data class VaultEntry(val id: String, val displayName: String, val plainBytes: Long, val storedBytes: Long, val legacy: Boolean)
@@ -76,7 +80,7 @@ class LocalVault(
      * the per-file cap and phone free space apply). The reservation is taken before writing and
      * released on every outcome.
      */
-    fun put(displayName: String, plain: ByteArray, allowanceBytes: Long = 0): VaultEntry {
+    fun put(displayName: String, plain: ByteArray, allowanceBytes: Long = 0, beforePublish: () -> Unit = {}): VaultEntry {
         if (plain.size > maxPlainBytes) throw VaultException.TooLarge(maxPlainBytes)
         val id = Hex.encode(ByteArray(16).also(random::nextBytes))
         val name = displayName.replace(Regex("[\\p{Cntrl}]"), "").take(MAX_NAME_CHARS).ifBlank { "file" }
@@ -92,19 +96,11 @@ class LocalVault(
         }
         try {
             val key = try { keyProvider() } catch (e: Exception) { throw VaultException.KeyUnavailable() }
-            val iv = ByteArray(IV_BYTES).also(random::nextBytes)
-            val header = header(iv, Hex.decode(id), nameBytes, plain.size.toLong())
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            try { cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(TAG_BYTES * 8, iv)) } catch (_: java.security.InvalidAlgorithmParameterException) {
-                // Android Keystore keys generate their own IV (caller-provided IVs are rejected by default).
-                cipher.init(Cipher.ENCRYPT_MODE, key)
-            }
-            val actualIv = cipher.iv
-            val finalHeader = if (actualIv.contentEquals(iv)) header else header(actualIv, Hex.decode(id), nameBytes, plain.size.toLong())
-            cipher.updateAAD(finalHeader)
-            val ct = cipher.doFinal(plain)
-            AtomicFiles.write(File(dir, id + SUFFIX)) { out -> out.write(finalHeader); out.write(ct) }
-            return VaultEntry(id, name, plain.size.toLong(), finalHeader.size + ct.size.toLong(), legacy = false)
+            val sealed = seal(key, Hex.decode(id), nameBytes, plain)
+            // beforePublish runs after the bytes are written but before the rename: throwing there
+            // (for example on cancellation) removes the temp file and nothing is published.
+            AtomicFiles.write(File(dir, id + SUFFIX)) { out -> out.write(sealed); beforePublish() }
+            return VaultEntry(id, name, plain.size.toLong(), sealed.size.toLong(), legacy = false)
         } catch (e: java.io.IOException) {
             if (e.message?.contains("ENOSPC") == true || e.message?.contains("No space") == true) throw VaultException.NoSpace()
             throw e
@@ -119,17 +115,75 @@ class LocalVault(
         if (!f.isFile) throw VaultException.NotFound()
         if (f.name.endsWith(LEGACY_SUFFIX)) return readLegacy(f)
         val total = f.length()
-        if (total > maxPlainBytes + HEADER_FIXED + MAX_NAME_BYTES + TAG_BYTES) throw VaultException.Corrupt("larger than any object this vault writes")
-        val h = readHeader(f)
-        if (h.id != id) throw VaultException.Corrupt("object id in header does not match file")
-        val expected = h.headerBytes.size + h.plainLen + TAG_BYTES
-        if (total != expected) throw VaultException.Corrupt(if (total < expected) "truncated" else "unexpected trailing bytes")
+        if (total > maxEnvelopeBytes()) throw VaultException.Corrupt("larger than any object this vault writes")
         val all = FileInputStream(f).use { s -> ByteArray(total.toInt()).also { DataInputStream(s).readFully(it) } }
+        return openEnvelope(all, id)
+    }
+
+    /**
+     * The one EOV2 authentication/decryption path, shared by [read] and backup restore. Parses and
+     * range-checks the header, requires the header id to equal [expectedId], then authenticates the
+     * whole header as AAD. Any modification, truncation or a different key fails here.
+     */
+    fun openEnvelope(all: ByteArray, expectedId: String): ByteArray {
+        if (all.size > maxEnvelopeBytes()) throw VaultException.Corrupt("larger than any object this vault writes")
+        val h = parseHeader(java.io.ByteArrayInputStream(all))
+        if (h.id != expectedId) throw VaultException.Corrupt("object id in header does not match file")
+        val expected = h.headerBytes.size + h.plainLen + TAG_BYTES
+        if (all.size.toLong() != expected) throw VaultException.Corrupt(if (all.size < expected) "truncated" else "unexpected trailing bytes")
         val key = try { keyProvider() } catch (_: Exception) { throw VaultException.KeyUnavailable() }
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(TAG_BYTES * 8, h.iv))
+        try { cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(TAG_BYTES * 8, h.iv)) } catch (_: java.security.GeneralSecurityException) { throw VaultException.KeyUnavailable() }
         cipher.updateAAD(h.headerBytes)
         return try { cipher.doFinal(all, h.headerBytes.size, all.size - h.headerBytes.size) } catch (_: AEADBadTagException) { throw VaultException.Tampered() }
+    }
+
+    /**
+     * Ciphertext for a device-bound encrypted backup of object [id]: the object is decrypted and
+     * re-sealed with the same device-bound Keystore key in the same EOV2 format, but with an empty
+     * name field, so the display name never leaves the phone. The plaintext SHA-256 is returned for
+     * local restore verification only; it is never uploaded or written to a receipt.
+     */
+    fun sealForBackup(id: String): BackupBlob {
+        val plain = read(id)
+        val key = try { keyProvider() } catch (_: Exception) { throw VaultException.KeyUnavailable() }
+        val sealed = seal(key, Hex.decode(id), ByteArray(0), plain)
+        return BackupBlob(id, sealed, Sha256.hex(sealed), sealed.size.toLong(), Sha256.hex(plain), plain.size.toLong())
+    }
+
+    /** SHA-256 of the stored encrypted object (never of plaintext), for receipts. */
+    fun objectSha256(id: String): String {
+        val f = fileFor(id)
+        if (!f.isFile) throw VaultException.NotFound()
+        return FileInputStream(f).use { com.edgeore.app.io.BoundedInput.sha256Hex(it) }
+    }
+
+    /** Free bytes under [allowanceBytes] (used + in-progress subtracted), or null when no allowance is set. */
+    fun allowanceRemaining(allowanceBytes: Long): Long? =
+        if (allowanceBytes <= 0) null else synchronized(lock) { (allowanceBytes - usedBytes() - reservations.values.sum()).coerceAtLeast(0) }
+
+    /** Largest plaintext that can still fit [allowanceBytes] given the envelope overhead for [nameBytes]. */
+    fun maxImportBytes(allowanceBytes: Long, nameBytes: Int = MAX_NAME_BYTES): Long {
+        val free = allowanceRemaining(allowanceBytes) ?: return maxPlainBytes
+        return minOf(maxPlainBytes, (free - HEADER_FIXED - nameBytes - TAG_BYTES).coerceAtLeast(0))
+    }
+
+    val perFileLimit: Long get() = maxPlainBytes
+
+    private fun maxEnvelopeBytes(): Long = maxPlainBytes + HEADER_FIXED + MAX_NAME_BYTES + TAG_BYTES
+
+    private fun seal(key: SecretKey, id: ByteArray, nameBytes: ByteArray, plain: ByteArray): ByteArray {
+        val iv = ByteArray(IV_BYTES).also(random::nextBytes)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        try {
+            try { cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(TAG_BYTES * 8, iv)) } catch (_: java.security.InvalidAlgorithmParameterException) {
+                // Android Keystore keys generate their own IV (caller-provided IVs are rejected by default).
+                cipher.init(Cipher.ENCRYPT_MODE, key)
+            }
+        } catch (_: java.security.InvalidKeyException) { throw VaultException.KeyUnavailable() }
+        val finalHeader = header(cipher.iv, id, nameBytes, plain.size.toLong())
+        cipher.updateAAD(finalHeader)
+        return finalHeader + cipher.doFinal(plain)
     }
 
     fun delete(id: String): Boolean {
@@ -171,29 +225,29 @@ class LocalVault(
             putShort(name.size.toShort()); put(name); putLong(plainLen)
         }.array()
 
-    private fun readHeader(f: File): Header {
-        FileInputStream(f).use { s ->
-            val d = DataInputStream(s)
-            val fixedPrefix = ByteArray(4 + 3 + IV_BYTES + 16 + 2)
-            try { d.readFully(fixedPrefix) } catch (_: java.io.EOFException) { throw VaultException.Corrupt("truncated header") }
-            val b = ByteBuffer.wrap(fixedPrefix)
-            val magic = ByteArray(4).also { b.get(it) }
-            if (!magic.contentEquals(MAGIC)) throw VaultException.Corrupt("unknown format")
-            val version = b.get(); val alg = b.get(); val ivLen = b.get().toInt()
-            if (version != VERSION) throw VaultException.Corrupt("unsupported version $version")
-            if (alg != ALG_AES256_GCM || ivLen != IV_BYTES) throw VaultException.Corrupt("unsupported algorithm parameters")
-            val iv = ByteArray(IV_BYTES).also { b.get(it) }
-            val id = ByteArray(16).also { b.get(it) }
-            val nameLen = b.short.toInt() and 0xffff
-            if (nameLen > MAX_NAME_BYTES) throw VaultException.Corrupt("name length out of range")
-            val rest = ByteArray(nameLen + 8)
-            try { d.readFully(rest) } catch (_: java.io.EOFException) { throw VaultException.Corrupt("truncated header") }
-            val rb = ByteBuffer.wrap(rest)
-            val name = ByteArray(nameLen).also { rb.get(it) }
-            val plainLen = rb.long
-            if (plainLen < 0 || plainLen > maxPlainBytes) throw VaultException.Corrupt("length field out of range")
-            return Header(Hex.encode(id), String(name, Charsets.UTF_8), iv, plainLen, fixedPrefix + rest)
-        }
+    private fun readHeader(f: File): Header = FileInputStream(f).use { parseHeader(it) }
+
+    private fun parseHeader(s: java.io.InputStream): Header {
+        val d = DataInputStream(s)
+        val fixedPrefix = ByteArray(4 + 3 + IV_BYTES + 16 + 2)
+        try { d.readFully(fixedPrefix) } catch (_: java.io.EOFException) { throw VaultException.Corrupt("truncated header") }
+        val b = ByteBuffer.wrap(fixedPrefix)
+        val magic = ByteArray(4).also { b.get(it) }
+        if (!magic.contentEquals(MAGIC)) throw VaultException.Corrupt("unknown format")
+        val version = b.get(); val alg = b.get(); val ivLen = b.get().toInt()
+        if (version != VERSION) throw VaultException.Corrupt("unsupported version $version")
+        if (alg != ALG_AES256_GCM || ivLen != IV_BYTES) throw VaultException.Corrupt("unsupported algorithm parameters")
+        val iv = ByteArray(IV_BYTES).also { b.get(it) }
+        val id = ByteArray(16).also { b.get(it) }
+        val nameLen = b.short.toInt() and 0xffff
+        if (nameLen > MAX_NAME_BYTES) throw VaultException.Corrupt("name length out of range")
+        val rest = ByteArray(nameLen + 8)
+        try { d.readFully(rest) } catch (_: java.io.EOFException) { throw VaultException.Corrupt("truncated header") }
+        val rb = ByteBuffer.wrap(rest)
+        val name = ByteArray(nameLen).also { rb.get(it) }
+        val plainLen = rb.long
+        if (plainLen < 0 || plainLen > maxPlainBytes) throw VaultException.Corrupt("length field out of range")
+        return Header(Hex.encode(id), String(name, Charsets.UTF_8), iv, plainLen, fixedPrefix + rest)
     }
 
     companion object {

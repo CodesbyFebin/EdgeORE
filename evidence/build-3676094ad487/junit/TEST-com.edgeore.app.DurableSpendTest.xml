@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.DurableSpendTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-10T03:10:29" hostname="grok-bot-vm-446931431" time="0.093">
+  <properties/>
+  <testcase name="legacyReceiptSpendIsCountedOnce" classname="com.edgeore.app.DurableSpendTest" time="0.002"/>
+  <testcase name="secondDraftOverLimitRefusedButReplacesUnsignedFirst" classname="com.edgeore.app.DurableSpendTest" time="0.002"/>
+  <testcase name="newReviewAbandonsTheOldUnsignedDraft" classname="com.edgeore.app.DurableSpendTest" time="0.002"/>
+  <testcase name="overflowAndInvalidInputsRefused" classname="com.edgeore.app.DurableSpendTest" time="0.0"/>
+  <testcase name="dayRolloverStartsAFreshUtcDay" classname="com.edgeore.app.DurableSpendTest" time="0.004"/>
+  <testcase name="concurrentReservationsNeverExceedTheLimit" classname="com.edgeore.app.DurableSpendTest" time="0.071"/>
+  <testcase name="accountsAndClustersArePartitioned" classname="com.edgeore.app.DurableSpendTest" time="0.009"/>
+  <testcase name="exposureSurvivesProcessDeath" classname="com.edgeore.app.DurableSpendTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
