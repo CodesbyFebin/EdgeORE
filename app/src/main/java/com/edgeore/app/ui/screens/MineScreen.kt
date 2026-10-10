@@ -178,7 +178,7 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
             Text(sched.status.label, color = if (sched.status == SchedulerStatus.CHECKING) EdgeColors.mint else EdgeColors.copper, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
         }
         Text(sched.detail, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        ResourceControl(EdgeIcons.Wifi, "Contribution scheduler", "Check only on Wi-Fi, while charging, battery not low", settings.contributionOptIn, if (settings.contributionOptIn) "Now: opted in" else "Now: off") { v -> vm.updateSettings { it.copy(contributionOptIn = v) } }
+        ResourceControl(EdgeIcons.Wifi, "Allow scheduled checks", "Check only on Wi-Fi, while charging, battery not low", settings.contributionOptIn, if (settings.contributionOptIn) "Now: opted in" else "Now: off") { v -> vm.updateSettings { it.copy(contributionOptIn = v) } }
         EffectNote(Control.CONTRIBUTION_SCHEDULER)
         Text(ContributionPolicy.constraintLine("Unmetered network (Wi-Fi)", observed.unmetered), color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         Text(ContributionPolicy.constraintLine("Charging", observed.charging), color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
