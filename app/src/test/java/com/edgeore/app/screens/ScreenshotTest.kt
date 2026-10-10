@@ -35,13 +35,17 @@ private val out: String = System.getProperty("screens.out") ?: "build/screenshot
 // The Storage telemetry line shows a CPU percentage read from the JVM host's /proc/stat (not a phone),
 // which varies between runs. A 0.1% pixel threshold tolerates that one line and still catches layout changes.
 private val options = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.001f))
+// The tall Storage render also shows the host's Disk I/O rate next to CPU. Two varying host lines measured 0.109%
+// of that image (run on ea2ec1b), just over 0.1%. 0.3% (~36k px of 1078x11025) still fails any layout shift, which moves
+// every pixel below it, but a one-word copy change inside that page could pass: review Storage copy changes by eye.
+private val storageFullOptions = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.003f))
 
 private fun Rule_.tab(name: String) { onNode(hasText(name) and hasClickAction()).performClick(); waitForIdle() }
 private fun Rule_.button(text: String) { onNode(hasText(text) and hasClickAction()).performScrollTo().performClick(); waitForIdle() }
-private fun Rule_.shot(file: String) {
+private fun Rule_.shot(file: String, roborazziOptions: RoborazziOptions = options) {
     onAllNodes(hasScrollAction()).onFirst().performTouchInput { repeat(10) { swipeDown() } }
     waitForIdle()
-    onRoot().captureRoboImage("$out/$file.png", roborazziOptions = options)
+    onRoot().captureRoboImage("$out/$file.png", roborazziOptions = roborazziOptions)
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -65,7 +69,7 @@ class FullScreenshotTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
     @Test fun mine() = rule.shot("full/01-mine-full")
     @Test fun ai() { rule.tab("AI"); rule.shot("full/02-ai-full") }
-    @Test fun storage() { rule.tab("Storage"); rule.shot("full/03-storage-full") }
+    @Test fun storage() { rule.tab("Storage"); rule.shot("full/03-storage-full", storageFullOptions) }
     @Test fun nodes() { rule.tab("Nodes"); rule.shot("full/04-nodes-full") }
     @Test fun receipts() { rule.tab("Receipts"); rule.shot("full/05-receipts-full") }
     @Test fun review() { rule.button("Review a supported action"); rule.shot("full/06-review-full") }
