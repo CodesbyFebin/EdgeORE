@@ -28,6 +28,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.ConscryptMode
 
 /**
  * WorkManager wiring under Robolectric with WorkManager's own test driver. This proves the request's
@@ -35,6 +36,9 @@ import org.robolectric.annotation.Config
  */
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [28])
+// Robolectric otherwise installs Conscrypt as the JVM-wide TLS provider. That outlives this class and made
+// TransportHardeningTest's pinned-TLS handshakes block in the same test JVM. These tests use no TLS.
+@ConscryptMode(ConscryptMode.Mode.OFF)
 class ContributionWorkTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val prefs get() = ResourceSettingsStore.prefs(context)
