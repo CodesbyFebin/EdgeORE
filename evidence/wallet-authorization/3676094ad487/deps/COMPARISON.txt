@@ -1,0 +1,4 @@
+debugRuntimeClasspath: IDENTICAL (653 lines; sha256 00a904d98eaa4512)
+releaseRuntimeClasspath: IDENTICAL (561 lines; sha256 393dcbc5403b7366)
+debugUnitTestRuntimeClasspath: IDENTICAL (895 lines; sha256 2fd03b7b3c9affd7)
+debugAndroidTestRuntimeClasspath: IDENTICAL (537 lines; sha256 b3f9c5a0bf243438)

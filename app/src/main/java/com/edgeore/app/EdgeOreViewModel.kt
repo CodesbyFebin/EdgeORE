@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.edgeore.app.ai.EndpointPolicy
@@ -51,6 +52,8 @@ import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.solana.TransferReview
 import com.edgeore.app.storage.LocalVault
 import com.edgeore.app.storage.StorageAudit
+import com.edgeore.app.wallet.ConnectFailure
+import com.edgeore.app.wallet.WalletConnection
 import com.edgeore.app.wallet.WalletCoordinator
 import com.solana.mobilewalletadapter.clientlib.ActivityResultSender
 import kotlinx.coroutines.CancellationException
@@ -69,7 +72,17 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 
-data class WalletState(val publicKey: ByteArray? = null, val label: String? = null, val status: String = "Not connected", val busy: Boolean = false) {
+/** Logcat tag for sanitized wallet-connection diagnostics (codes, stages, UTC times, exception types). */
+const val WALLET_LOG_TAG = "EdgeORE.Wallet"
+
+data class WalletState(
+    val publicKey: ByteArray? = null,
+    val label: String? = null,
+    val status: String = "Not connected",
+    val busy: Boolean = false,
+    /** Last connect failure; stays visible until the next attempt starts. */
+    val error: ConnectFailure? = null,
+) {
     val address: String? get() = publicKey?.let(Base58::encode)
 }
 
@@ -169,8 +182,9 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val settings: StateFlow<ResourceSettings> = _settings.asStateFlow()
     private val _device = MutableStateFlow<DeviceSnapshot?>(null)
     val device: StateFlow<DeviceSnapshot?> = _device.asStateFlow()
-    private val _wallet = MutableStateFlow(WalletState())
-    val walletState: StateFlow<WalletState> = _wallet.asStateFlow()
+    private val walletConnection = WalletConnection(log = { Log.w(WALLET_LOG_TAG, it) })
+    private val _wallet get() = walletConnection.state
+    val walletState: StateFlow<WalletState> = walletConnection.state
     private val _balance = MutableStateFlow<RpcObservation?>(null)
     val balance: StateFlow<RpcObservation?> = _balance.asStateFlow()
     private val _node = MutableStateFlow(NodeState(record = loadNode(), ops = loadOps()))
@@ -324,19 +338,14 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
 
     // ---------- wallet / RPC ----------
     fun connectWallet(sender: ActivityResultSender) = viewModelScope.launch {
-        _wallet.update { it.copy(busy = true, status = "Waiting for wallet…") }
-        _wallet.value = try {
-            when (val r = wallet.connect(sender)) {
-                is WalletCoordinator.ConnectResult.Authorized -> WalletState(r.publicKey, r.label, "Authorized on devnet")
-                is WalletCoordinator.ConnectResult.Refused -> WalletState(status = r.reason)
-            }
-        } catch (e: CancellationException) { throw e } catch (e: Exception) { WalletState(status = "Wallet unavailable") }
-        _wallet.value.address?.let { refreshBalance(it) }
+        // The connection state is published by WalletConnection only; a balance (RPC) failure below
+        // is shown on its own line and never changes an authorized connection.
+        if (walletConnection.connect { wallet.connect(sender) }) _wallet.value.address?.let { refreshBalance(it) }
     }
 
     fun disconnectWallet(sender: ActivityResultSender) = viewModelScope.launch {
-        runCatching { wallet.disconnect(sender) }
-        _wallet.value = WalletState(status = "Disconnected")
+        val confirmed = wallet.disconnect(sender)
+        walletConnection.disconnected(confirmed)
         _balance.value = null
     }
 

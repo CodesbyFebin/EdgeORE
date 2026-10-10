@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.StoreFailureAndSigningGateTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-10T03:10:29" hostname="grok-bot-vm-446931431" time="0.269">
+  <properties/>
+  <testcase name="recordRefusedAndDiscardWriteFailuresKeepState" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.008"/>
+  <testcase name="refusedReserveThatAbandonsDraftsAlsoRollsBackOnWriteFailure" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.002"/>
+  <testcase name="beginSigningWriteFailureRefusesWithoutOpeningAnything" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.003"/>
+  <testcase name="concurrentTapsOpenOneSigningFlightAndReadHeightOnce" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.204"/>
+  <testcase name="validHeightProceedsToSigning" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.005"/>
+  <testcase name="recordSignedWriteFailureKeepsSigningOnDiskAndInMemory" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.003"/>
+  <testcase name="expiredOrNearlyExpiredHeightNeedsFreshReview" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.008"/>
+  <testcase name="reserveWriteFailureRefusesAndKeepsMemoryEqualToDisk" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.004"/>
+  <testcase name="observeWriteFailureKeepsStateAndLatches" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.006"/>
+  <testcase name="submitAttemptWriteFailureNeverSends" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.004"/>
+  <testcase name="markReceiptedWriteFailureKeepsUnreceiptedAndLatches" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.002"/>
+  <testcase name="latchedStoreRefusesEvenAfterTheDiskRecovers" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.004"/>
+  <testcase name="unavailableHeightRefusesBeforeWallet" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.004"/>
+  <testcase name="postSendWriteFailureLeavesSubmitAttemptedWhichRestartTreatsAsUnknown" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.004"/>
+  <testcase name="unavailableStatusNeverExpiresOrReleases" classname="com.edgeore.app.StoreFailureAndSigningGateTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
