@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/CodesbyFebin/EdgeORE",
+  "source_commit": "6f7b60050f3651227ddc9d7dd261f6d31f7324b2",
+  "tested_source_commit": "250be029b35c",
+  "kit_changes": "design/prompt/phase ledger/evidence template/static UI reference only; Android and Anchor source unchanged",
+  "apk_included": false,
+  "production_qualified": false
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "base_commit": "6f7b60050f3651227ddc9d7dd261f6d31f7324b2",
+  "historical_tested_commit": "250be029b35c",
+  "qualification": "NOT_PRODUCTION_QUALIFIED",
+  "phases": [
+    {
+      "id": "V",
+      "title": "Runtime candidate",
+      "status": "NOT_RUN",
+      "acceptance": "Exact artifact install; wallet connect/disconnect/restart; approved transfer; interrupted-send observation; real receipt integrity; vault; arm64 local generation",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    },
+    {
+      "id": "H",
+      "title": "Owned hosts",
+      "status": "NOT_RUN",
+      "acceptance": "Pair/pin/replay/scope/revoke; owned-host AI response/cancel/public-endpoint refusal",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    },
+    {
+      "id": "B",
+      "title": "Portable backup",
+      "status": "NOT_RUN",
+      "acceptance": "Authenticated passphrase envelope; configured backend; independent-device restore; corruption/refusal; interruption safety",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    },
+    {
+      "id": "P",
+      "title": "Consent enforcement",
+      "status": "NOT_RUN",
+      "acceptance": "Canonical consent persistence; executable byte/time/charge/retention limits; revocation",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    },
+    {
+      "id": "J",
+      "title": "Settlement integration",
+      "status": "NOT_RUN",
+      "acceptance": "Approved devnet deployment; byte/authority verification; Android client; single settlement; duplicate rejection; refunds; ambiguity recovery",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    },
+    {
+      "id": "T",
+      "title": "Trust labels",
+      "status": "NOT_RUN",
+      "acceptance": "Independent key/execution/settlement states; attributable reputation; source freshness",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    },
+    {
+      "id": "R",
+      "title": "Release",
+      "status": "NOT_RUN",
+      "acceptance": "Accessibility/visual matrix; owner license/signing; stripped release; clean clone; artifact manifest; claim review; approval",
+      "evidence": [],
+      "definition": "new production-kit phase; historical runbook numbers are not redefined"
+    }
+  ]
+}
