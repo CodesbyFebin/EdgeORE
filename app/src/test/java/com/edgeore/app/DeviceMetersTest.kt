@@ -1,5 +1,6 @@
 package com.edgeore.app
 
+import com.edgeore.app.device.BatteryDrain
 import com.edgeore.app.device.CpuSample
 import com.edgeore.app.device.DiskSample
 import com.edgeore.app.device.ioBytesPerSecond
@@ -36,5 +37,24 @@ class DeviceMetersTest {
     fun ioRateUsesElapsedTime() {
         assertEquals(1024L, ioBytesPerSecond(DiskSample(0), DiskSample(1024), 1000))
         assertNull(ioBytesPerSecond(DiskSample(0), DiskSample(10), 0))
+    }
+
+    // Audit section 11: charging current is not a drain rate, and a missing property is not 0 %/h.
+    @Test
+    fun batteryDrainOnlyWhileKnownDischarging() {
+        // 4000 mAh full (2000 mAh at 50 %), 400 mA draw -> 10 % per hour, whichever sign the device reports.
+        assertEquals(10, BatteryDrain.percentPerHour(-400_000, 2_000_000, 50, charging = false))
+        assertEquals(10, BatteryDrain.percentPerHour(400_000, 2_000_000, 50, charging = false))
+        assertNull(BatteryDrain.percentPerHour(-400_000, 2_000_000, 50, charging = true))
+        assertNull(BatteryDrain.percentPerHour(-400_000, 2_000_000, 50, charging = null))
+    }
+
+    @Test
+    fun batteryDrainUnavailableInputsStayNull() {
+        assertNull(BatteryDrain.percentPerHour(Int.MIN_VALUE, 2_000_000, 50, charging = false))
+        assertNull(BatteryDrain.percentPerHour(-400_000, Int.MIN_VALUE, 50, charging = false))
+        assertNull(BatteryDrain.percentPerHour(-400_000, 2_000_000, 0, charging = false))
+        assertNull(BatteryDrain.percentPerHour(0, 2_000_000, 50, charging = false))
+        assertNull(BatteryDrain.percentPerHour(-400_000, 0, 50, charging = false))
     }
 }
