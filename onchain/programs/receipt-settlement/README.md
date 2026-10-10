@@ -106,27 +106,44 @@ Anchor's checked `add_lamports`/`sub_lamports`); the release profile also keeps
 - The Job tombstone's rent is not reclaimed after cancellation.
 - Output-hash dedupe is exact-match only (see above).
 
-## Toolchain (as used for the recorded test run)
+## Toolchain
 
-- Rust (host tests): 1.89.0 via `rust-toolchain.toml`
+- Host Rust for tests and IDL build: 1.99.0 via `rust-toolchain.toml`
+  (LiteSVM 0.18 / Agave 4.3 crates need rustc >= 1.97.1). The program crate
+  itself still declares `rust-version = 1.89.0`, because the SBF build uses the
+  platform-tools compiler (rustc 1.95 in platform-tools v1.57).
 - Anchor CLI / `anchor-lang`: 1.2.1 (installed with `avm` 1.2.1)
-- Solana/Agave CLI: 3.1.10 (`cargo-build-sbf` 3.1.10, platform-tools v1.52)
-- LiteSVM 0.10.0 (with `precompiles` feature so the Ed25519 program runs)
+- Solana/Agave CLI: 4.3.0 (`cargo-build-sbf` 4.3.0, platform-tools v1.57),
+  pinned in `Anchor.toml` `[toolchain]`
+- LiteSVM 0.18.0 (with `precompiles` feature so the Ed25519 program runs)
+- Program artifact: **SBPF v3** (Anchor 1.2.1's default `--arch`)
+
+### Why SBPF v3 now (and why it was v0 before)
+
+The first version built with `--arch v0` because LiteSVM 0.10.0 refused the v3
+artifact (`add_program` -> `InvalidAccountData`). LiteSVM 0.10 embeds the
+Agave 3.1 runtime (`solana-sbpf` 0.13.1). Its loader config *allows* v3 when
+the feature is enabled, so the problem was not a disabled feature: the v3 ELF
+that platform-tools v1.57 emits did not load in that older runtime.
+LiteSVM 0.18.0 (Agave 4.3 runtime) loads the same v3 artifact. All tests pass
+against it, so the program now builds as v3.
+
+On mainnet-beta, the v3 feature (`5cC3foj77CWun58pC51ebHFUWavHWKarWyR5UUik7dnC`) shows
+"active since epoch 993" (read-only `solana feature status`). **Devnet was not
+checked:** the box could not reach `api.devnet.solana.com` (TLS connection
+reset). A future devnet deployment must confirm the feature is active there or
+rebuild with `--arch v0`.
 
 ## Build and test
 
-From `onchain/`:
+From `onchain/`, with the Agave 4.3.0 binaries first on `PATH`:
 
 ```sh
-anchor build --arch v0
+anchor build                 # SBPF v3
 anchor test --skip-build     # runs `cargo test` (LiteSVM, in-process)
 ```
 
-`--arch v0` is required: Anchor 1.2.1 defaults to SBPF v3, and LiteSVM 0.10.0
-(Agave 3.1 runtime) refused to load the v3 artifact (`InvalidAccountData`).
-`anchor test` has no `--arch` flag, hence `--skip-build` after an explicit
-build. No local validator is started (`skip_local_validator = true`), no
-cluster is contacted and no wallet or funds are needed.
+No cluster is contacted and no wallet or funds are needed for the LiteSVM run.
 
 The program id in `declare_id!` / `Anchor.toml` comes from a keypair generated
 locally by `anchor init` under `target/deploy/` (gitignored, never committed).
