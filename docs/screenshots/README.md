@@ -54,3 +54,20 @@ The suite now orders an `OnboardingSeen` rule before the Compose rule, so the ex
 | new `09-plain-language.png` | `PlainLanguageCard` over a real `TransferReview.prepare` draft built from a fixed test key, destination and blockhash (no wallet, no RPC, so the fee reads *unknown*), and over an unsupported draft. | `PlainLanguage.kt` |
 
 `02-ai`, `03-storage` and `05-receipts` (and their `full/` versions) are unchanged. These are JVM renders, not device screenshots.
+
+### Re-record: agentic redesign (feature/agentic-redesign)
+
+Intentional re-record of every app-shell baseline after the redesign that adapts patterns from OptimAI Agentic for Android
+(see `docs/analysis/agentic-android-review.md`). Fresh-install state is unchanged: no wallet, node, host, model or receipts.
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| all `0[1-6]-*.png`, all `full/0[1-6]-*-full.png`, `full/08-review-filled-full.png` | The shell now shows the "Devnet · Review candidate" / "Test SOL only" strip under the header (design.md §3), which moves every screen down. | `ui/EdgeOreApp.kt`, `ui/components/DesignKit.kt` |
+| `01-mine*.png` | Heading "Your edge, under your control"; Now rows use icon tiles; the wallet card is a fact card with a "Not connected" pill. | `ui/screens/MineScreen.kt` |
+| `02-ai*.png` | Execution and on-device cards use the fact-card layout and status pills; empty conversation text instead of a blank area. | `ui/screens/AiScreen.kt`, `ui/components/Chat.kt` |
+| `04-nodes*.png` | Host card gains an icon tile. | `ui/screens/NodesScreen.kt` |
+| `05-receipts*.png` | New "Receipt activity" card; with no receipts it shows "Nothing to plot yet" and draws no chart. | `ui/screens/ReceiptsScreen.kt`, `ui/components/Charts.kt` |
+
+`07-onboarding*.png` and `09-plain-language.png` did not change (onboarding has no shell header; the plain-language card is rendered alone).
+The new chart, chat bubbles and badges only appear with real local data, so no baseline shows them with values; their logic is covered by
+`ChartsAndActivityTest`, `MarkdownTest`, `PlainErrorTest` and `NavBadgesTest`.
