@@ -6,10 +6,11 @@ use solana_instructions_sysvar::{load_current_index_checked, load_instruction_at
 use crate::{error::SettlementError, state::ReceiptArgs};
 
 /// Domain separator; bump the version if the layout ever changes.
-pub const DIGEST_DOMAIN: &[u8] = b"EdgeORE/receipt-settlement/v1";
+pub const DIGEST_DOMAIN: &[u8] = b"EdgeORE/receipt-settlement/v2";
 
 /// sha256(
 ///   DIGEST_DOMAIN || program_id(32) || job(32) || job_id(u64 LE) ||
+///   job_created_slot(u64 LE) ||
 ///   receipt_id(32) || section(u16 LE) || worker(32) ||
 ///   input_hash(32) || output_hash(32) || model_hash(32) ||
 ///   quoted_price(u64 LE) || actual_charge(u64 LE)
@@ -17,11 +18,15 @@ pub const DIGEST_DOMAIN: &[u8] = b"EdgeORE/receipt-settlement/v1";
 ///
 /// Binding the program id, job account and worker prevents a signed receipt
 /// from being replayed against another deployment, another job, or paid to a
-/// different worker.
+/// different worker. `job_created_slot` distinguishes a job from a later job
+/// re-created at the same address after `close_job` (close_job requires the
+/// current slot to be past created_slot, so a re-created job always has a
+/// strictly larger created_slot).
 pub fn receipt_digest(
     program_id: &Pubkey,
     job: &Pubkey,
     job_id: u64,
+    job_created_slot: u64,
     worker: &Pubkey,
     args: &ReceiptArgs,
 ) -> [u8; 32] {
@@ -30,6 +35,7 @@ pub fn receipt_digest(
         program_id.as_ref(),
         job.as_ref(),
         &job_id.to_le_bytes(),
+        &job_created_slot.to_le_bytes(),
         &args.receipt_id,
         &args.section.to_le_bytes(),
         worker.as_ref(),

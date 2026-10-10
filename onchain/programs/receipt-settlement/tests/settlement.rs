@@ -41,6 +41,7 @@ struct Env {
     verifier: Keypair,
     worker: Keypair,
     job_id: u64,
+    created_slot: u64,
     job: Pubkey,
     vault: Pubkey,
     budget: u64,
@@ -151,12 +152,14 @@ fn setup_with(budget: u64, sections: u16) -> Env {
         "create_job failed: {:?}",
         res.err().map(|e| e.meta.pretty_logs())
     );
+    let created_slot = read::<Job>(&svm, &job).created_slot;
     Env {
         svm,
         creator,
         verifier,
         worker,
         job_id,
+        created_slot,
         job,
         vault,
         budget,
@@ -180,12 +183,19 @@ fn args(n: u8, section: u16, quote: u64, charge: u64) -> ReceiptArgs {
 }
 
 /// Independent re-implementation of the canonical digest (see digest.rs).
-fn digest(job: &Pubkey, job_id: u64, worker: &Pubkey, a: &ReceiptArgs) -> [u8; 32] {
+fn digest(
+    job: &Pubkey,
+    job_id: u64,
+    created_slot: u64,
+    worker: &Pubkey,
+    a: &ReceiptArgs,
+) -> [u8; 32] {
     let mut h = Sha256::new();
-    h.update(b"EdgeORE/receipt-settlement/v1");
+    h.update(b"EdgeORE/receipt-settlement/v2");
     h.update(pid().as_ref());
     h.update(job.as_ref());
     h.update(job_id.to_le_bytes());
+    h.update(created_slot.to_le_bytes());
     h.update(a.receipt_id);
     h.update(a.section.to_le_bytes());
     h.update(worker.as_ref());
@@ -249,7 +259,13 @@ fn submit_ix(env: &Env, worker: &Pubkey, a: &ReceiptArgs) -> Instruction {
 
 /// Verifier signs the digest of `a` for env.worker; env.worker submits `a`.
 fn submit(env: &mut Env, a: &ReceiptArgs) -> TransactionResult {
-    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), a);
+    let d = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        a,
+    );
     let ixs = [
         ed25519_ix(&env.verifier, &d),
         submit_ix(env, &env.worker.pubkey(), a),
@@ -329,7 +345,13 @@ fn happy_path_submit_claim_cancel() {
     assert_eq!(r.actual_charge, SOL + 500);
     assert_eq!(
         r.digest,
-        digest(&env.job, env.job_id, &env.worker.pubkey(), &a)
+        digest(
+            &env.job,
+            env.job_id,
+            env.created_slot,
+            &env.worker.pubkey(),
+            &a
+        )
     );
     assert!(!r.settled);
     assert_eq!(r.settled_slot, 0);
@@ -384,7 +406,13 @@ fn happy_path_submit_claim_cancel() {
 fn bad_signature_is_rejected_by_ed25519_program() {
     let mut env = setup();
     let a = args(1, 0, SOL, SOL);
-    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), &a);
+    let d = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        &a,
+    );
     let mut sig: [u8; 64] = env.verifier.sign_message(&d).as_ref().try_into().unwrap();
     sig[10] ^= 0x01;
     let ixs = [
@@ -430,7 +458,13 @@ fn ed25519_offsets_into_other_instruction_index_are_rejected() {
     // the program only accepts the self-referencing u16::MAX form.
     let mut env = setup();
     let a = args(1, 0, SOL, SOL);
-    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), &a);
+    let d = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        &a,
+    );
     let sig = env.verifier.sign_message(&d);
     let ixs = [
         ed25519_ix_raw(env.verifier.pubkey().as_ref(), sig.as_ref(), &d, 0),
@@ -448,7 +482,13 @@ fn ed25519_offsets_into_other_instruction_index_are_rejected() {
 fn wrong_verifier_is_rejected() {
     let mut env = setup();
     let a = args(1, 0, SOL, SOL);
-    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), &a);
+    let d = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        &a,
+    );
     let impostor = Keypair::new();
     let ixs = [
         ed25519_ix(&impostor, &d),
@@ -467,7 +507,13 @@ fn wrong_verifier_is_rejected() {
 fn tampered_receipt_fields_after_signing_are_rejected() {
     let mut env = setup();
     let signed = args(1, 0, 2 * SOL, SOL);
-    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), &signed);
+    let d = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        &signed,
+    );
     let mut variants: Vec<(&str, ReceiptArgs)> = Vec::new();
     let mut t = signed;
     t.actual_charge = SOL - 1;
@@ -854,7 +900,13 @@ fn rotate(env: &mut Env, new_verifier: Pubkey) -> TransactionResult {
 
 /// `signer` signs the digest of `a` for env.worker; env.worker submits.
 fn submit_signed_by(env: &mut Env, signer: &Keypair, a: &ReceiptArgs) -> TransactionResult {
-    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), a);
+    let d = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        a,
+    );
     let ixs = [
         ed25519_ix(signer, &d),
         submit_ix(env, &env.worker.pubkey(), a),
@@ -920,4 +972,309 @@ fn rotate_verifier_rejects_non_creator_default_same_and_inactive() {
         0,
         code(SettlementError::JobNotActive),
     );
+}
+
+// ------------------------------------------------------------ rent reclaim
+
+fn close_receipt_ix(env: &Env, closer: &Pubkey, receipt_id: &[u8; 32]) -> Instruction {
+    Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::CloseReceipt {}.data(),
+        receipt_settlement::accounts::CloseReceipt {
+            closer: *closer,
+            worker: env.worker.pubkey(),
+            job: env.job,
+            receipt: receipt_pda(&env.job, receipt_id),
+        }
+        .to_account_metas(None),
+    )
+}
+
+fn close_markers_ix(env: &Env, closer: &Pubkey, a: &ReceiptArgs) -> Instruction {
+    Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::CloseMarkers {
+            section: a.section,
+            output_hash: a.output_hash,
+        }
+        .data(),
+        receipt_settlement::accounts::CloseMarkers {
+            closer: *closer,
+            worker: env.worker.pubkey(),
+            job: env.job,
+            section_marker: section_pda(&env.job, a.section),
+            output_marker: output_pda(&env.job, &a.output_hash),
+        }
+        .to_account_metas(None),
+    )
+}
+
+fn close_job_ix(env: &Env, creator: &Pubkey) -> Instruction {
+    Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::CloseJob {}.data(),
+        receipt_settlement::accounts::CloseJob {
+            creator: *creator,
+            job: env.job,
+        }
+        .to_account_metas(None),
+    )
+}
+
+fn as_signer(env: &mut Env, who: &Keypair, ix: Instruction) -> TransactionResult {
+    send(&mut env.svm, &[ix], who, &[who])
+}
+
+fn lamports(env: &Env, key: &Pubkey) -> u64 {
+    env.svm.get_balance(key).unwrap_or(0)
+}
+
+#[test]
+fn worker_closes_settled_receipt_while_job_active_and_replay_still_blocked() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    let w = env.worker.insecure_clone();
+    let rpda = receipt_pda(&env.job, &a.receipt_id);
+
+    // Unsettled and inside its window: cannot be closed.
+    let ix = close_receipt_ix(&env, &w.pubkey(), &a.receipt_id);
+    expect_custom(
+        as_signer(&mut env, &w, ix),
+        0,
+        code(SettlementError::ReceiptStillClaimable),
+    );
+
+    assert!(claim(&mut env, &a.receipt_id).is_ok());
+    let receipt_rent = lamports(&env, &rpda);
+    let before = lamports(&env, &w.pubkey());
+    let ix = close_receipt_ix(&env, &w.pubkey(), &a.receipt_id);
+    let res = as_signer(&mut env, &w, ix);
+    assert!(res.is_ok(), "{}", res.err().unwrap().meta.pretty_logs());
+    let fee = res.unwrap().fee;
+    assert_eq!(lamports(&env, &w.pubkey()) + fee, before + receipt_rent);
+    assert!(!exists(&env.svm, &rpda));
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.open_accounts, 2, "markers remain open");
+
+    // Re-submitting the same signed receipt fails on the surviving section marker.
+    let logs = expect_custom(submit(&mut env, &a), 1, 0);
+    let section = section_pda(&env.job, a.section);
+    assert!(
+        logs.iter()
+            .any(|l| l.contains("already in use") && l.contains(&section.to_string())),
+        "{logs:#?}"
+    );
+
+    // Markers cannot be closed while the job is active.
+    let ix = close_markers_ix(&env, &w.pubkey(), &a);
+    expect_custom(
+        as_signer(&mut env, &w, ix),
+        0,
+        code(SettlementError::MarkersStillNeeded),
+    );
+}
+
+#[test]
+fn completed_job_full_rent_reclaim_lifecycle() {
+    let mut env = setup_with(SOL, 2);
+    let a = args(1, 0, SOL / 2, SOL / 2);
+    let b = args(2, 1, SOL / 2, SOL / 2);
+    assert!(submit(&mut env, &a).is_ok());
+    assert!(submit(&mut env, &b).is_ok());
+    assert!(claim(&mut env, &a.receipt_id).is_ok());
+    assert!(claim(&mut env, &b.receipt_id).is_ok());
+
+    // close_job before finalization is rejected.
+    let c = env.creator.insecure_clone();
+    let ix = close_job_ix(&env, &c.pubkey());
+    expect_custom(
+        as_signer(&mut env, &c, ix),
+        0,
+        code(SettlementError::JobStillActive),
+    );
+
+    assert!(cancel(&mut env).is_ok());
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.status, JobStatus::Completed);
+    assert_eq!(j.open_accounts, 6);
+
+    // Open receipt/marker accounts block close_job.
+    let ix = close_job_ix(&env, &c.pubkey());
+    expect_custom(
+        as_signer(&mut env, &c, ix),
+        0,
+        code(SettlementError::OpenAccountsRemain),
+    );
+
+    // Worker reclaims rent for both receipts and their markers, exactly.
+    let w = env.worker.insecure_clone();
+    for r in [a, b] {
+        let keys = [
+            receipt_pda(&env.job, &r.receipt_id),
+            section_pda(&env.job, r.section),
+            output_pda(&env.job, &r.output_hash),
+        ];
+        let rent: u64 = keys.iter().map(|k| lamports(&env, k)).sum();
+        let before = lamports(&env, &w.pubkey());
+        let ix1 = close_receipt_ix(&env, &w.pubkey(), &r.receipt_id);
+        let ix2 = close_markers_ix(&env, &w.pubkey(), &r);
+        let res = send(&mut env.svm, &[ix1, ix2], &w, &[&w]);
+        assert!(res.is_ok(), "{}", res.err().unwrap().meta.pretty_logs());
+        let fee = res.unwrap().fee;
+        assert_eq!(lamports(&env, &w.pubkey()) + fee, before + rent);
+        assert!(keys.iter().all(|k| !exists(&env.svm, k)));
+    }
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.open_accounts, 0);
+
+    // A non-creator cannot close the job.
+    let ix = close_job_ix(&env, &w.pubkey());
+    expect_custom(as_signer(&mut env, &w, ix), 0, CONSTRAINT_SEEDS);
+
+    // Creator closes the job (a later slot than creation) and gets its rent.
+    env.svm.warp_to_slot(START_SLOT + 1);
+    let job_rent = lamports(&env, &env.job);
+    let before = lamports(&env, &c.pubkey());
+    let ix = close_job_ix(&env, &c.pubkey());
+    let res = as_signer(&mut env, &c, ix);
+    assert!(res.is_ok(), "{}", res.err().unwrap().meta.pretty_logs());
+    let fee = res.unwrap().fee;
+    assert_eq!(lamports(&env, &c.pubkey()) + fee, before + job_rent);
+    assert!(!exists(&env.svm, &env.job));
+}
+
+#[test]
+fn creator_cleans_up_expired_receipt_rent_goes_to_worker() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit(&mut env, &a).is_ok());
+    let c = env.creator.insecure_clone();
+    let stranger = Keypair::new();
+    env.svm.airdrop(&stranger.pubkey(), SOL).unwrap();
+
+    // Settled-or-expired rule applies to the creator too; and the creator may
+    // not close receipts of an active job.
+    let r: Receipt = read(&env.svm, &receipt_pda(&env.job, &a.receipt_id));
+    env.svm.warp_to_slot(r.claim_deadline_slot + 1);
+    let ix = close_receipt_ix(&env, &c.pubkey(), &a.receipt_id);
+    expect_custom(
+        as_signer(&mut env, &c, ix),
+        0,
+        code(SettlementError::Unauthorized),
+    );
+
+    assert!(cancel(&mut env).is_ok());
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.status, JobStatus::Cancelled);
+
+    // A stranger can close nothing.
+    let ix = close_receipt_ix(&env, &stranger.pubkey(), &a.receipt_id);
+    expect_custom(
+        as_signer(&mut env, &stranger, ix),
+        0,
+        code(SettlementError::Unauthorized),
+    );
+    let ix = close_markers_ix(&env, &stranger.pubkey(), &a);
+    expect_custom(
+        as_signer(&mut env, &stranger, ix),
+        0,
+        code(SettlementError::Unauthorized),
+    );
+
+    // Creator closes the expired receipt + markers; the worker gets the rent.
+    let keys = [
+        receipt_pda(&env.job, &a.receipt_id),
+        section_pda(&env.job, a.section),
+        output_pda(&env.job, &a.output_hash),
+    ];
+    let rent: u64 = keys.iter().map(|k| lamports(&env, k)).sum();
+    let worker_before = lamports(&env, &env.worker.pubkey());
+    let ix1 = close_receipt_ix(&env, &c.pubkey(), &a.receipt_id);
+    let ix2 = close_markers_ix(&env, &c.pubkey(), &a);
+    let res = send(&mut env.svm, &[ix1, ix2], &c, &[&c]);
+    assert!(res.is_ok(), "{}", res.err().unwrap().meta.pretty_logs());
+    assert_eq!(lamports(&env, &env.worker.pubkey()), worker_before + rent);
+
+    let ix = close_job_ix(&env, &c.pubkey());
+    assert!(as_signer(&mut env, &c, ix).is_ok());
+    assert!(!exists(&env.svm, &env.job));
+}
+
+#[test]
+fn close_job_rejected_in_creation_slot() {
+    let mut env = setup();
+    assert!(cancel(&mut env).is_ok());
+    let c = env.creator.insecure_clone();
+    let ix = close_job_ix(&env, &c.pubkey());
+    expect_custom(
+        as_signer(&mut env, &c, ix),
+        0,
+        code(SettlementError::CloseTooEarly),
+    );
+    env.svm.warp_to_slot(START_SLOT + 1);
+    let ix = close_job_ix(&env, &c.pubkey());
+    assert!(as_signer(&mut env, &c, ix).is_ok());
+}
+
+#[test]
+fn recreated_job_rejects_replay_of_old_signed_receipt() {
+    let mut env = setup();
+    let a = args(1, 0, SOL, SOL);
+    // Verifier-signed receipt for the first generation of this job.
+    let old_digest = digest(
+        &env.job,
+        env.job_id,
+        env.created_slot,
+        &env.worker.pubkey(),
+        &a,
+    );
+    assert!(submit(&mut env, &a).is_ok());
+    assert!(claim(&mut env, &a.receipt_id).is_ok());
+    assert!(cancel(&mut env).is_ok());
+    let w = env.worker.insecure_clone();
+    let ix1 = close_receipt_ix(&env, &w.pubkey(), &a.receipt_id);
+    let ix2 = close_markers_ix(&env, &w.pubkey(), &a);
+    assert!(send(&mut env.svm, &[ix1, ix2], &w, &[&w]).is_ok());
+    env.svm.warp_to_slot(START_SLOT + 5);
+    let c = env.creator.insecure_clone();
+    let ix = close_job_ix(&env, &c.pubkey());
+    assert!(as_signer(&mut env, &c, ix).is_ok());
+
+    // Re-create the same (creator, job_id) with the same verifier.
+    let ix = Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::CreateJob {
+            job_id: env.job_id,
+            budget: env.budget,
+            section_count: 4,
+            verifier: env.verifier.pubkey(),
+            claim_window_slots: WINDOW,
+        }
+        .data(),
+        receipt_settlement::accounts::CreateJob {
+            creator: c.pubkey(),
+            job: env.job,
+            vault: env.vault,
+            system_program: system_program::ID,
+        }
+        .to_account_metas(None),
+    );
+    assert!(as_signer(&mut env, &c, ix).is_ok());
+    let j: Job = read(&env.svm, &env.job);
+    assert!(j.created_slot > env.created_slot);
+
+    // Replaying the old signature/digest is rejected (digest binds created_slot).
+    let ixs = [
+        ed25519_ix(&env.verifier, &old_digest),
+        submit_ix(&env, &w.pubkey(), &a),
+    ];
+    expect_custom(
+        send(&mut env.svm, &ixs, &w, &[&w]),
+        1,
+        code(SettlementError::DigestMismatch),
+    );
+    // A fresh signature for the new generation is accepted.
+    env.created_slot = j.created_slot;
+    assert!(submit(&mut env, &a).is_ok());
 }

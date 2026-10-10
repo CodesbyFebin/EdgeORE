@@ -56,6 +56,28 @@ pub mod receipt_settlement {
         instructions::claim::handle_claim(ctx)
     }
 
+    /// Close a settled (or expired, never-claimable) receipt; rent goes to the
+    /// worker. Signer: the worker, or the creator once the job is finalized.
+    pub fn close_receipt(ctx: Context<CloseReceipt>) -> Result<()> {
+        instructions::close_receipt::handle_close_receipt(ctx)
+    }
+
+    /// Close a receipt's section + output markers once the job is finalized;
+    /// rent goes to the worker. Signer: the worker or the creator.
+    pub fn close_markers(
+        ctx: Context<CloseMarkers>,
+        section: u16,
+        output_hash: [u8; 32],
+    ) -> Result<()> {
+        instructions::close_markers::handle_close_markers(ctx, section, output_hash)
+    }
+
+    /// Creator closes a Cancelled/Completed job once all its receipt and
+    /// marker accounts are closed; rent goes to the creator.
+    pub fn close_job(ctx: Context<CloseJob>) -> Result<()> {
+        instructions::close_job::handle_close_job(ctx)
+    }
+
     /// Creator replaces the job's authorized verifier key. Receipts signed by
     /// the previous key are rejected afterwards.
     pub fn rotate_verifier(ctx: Context<RotateVerifier>, new_verifier: Pubkey) -> Result<()> {

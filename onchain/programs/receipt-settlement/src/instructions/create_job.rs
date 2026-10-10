@@ -54,6 +54,8 @@ pub fn handle_create_job(
     job.claim_window_slots = claim_window_slots;
     job.claim_deadline = 0;
     job.receipt_count = 0;
+    job.created_slot = Clock::get()?.slot;
+    job.open_accounts = 0;
     job.pending_claims = 0;
     job.status = JobStatus::Active;
     job.bump = ctx.bumps.job;

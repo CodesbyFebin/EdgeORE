@@ -74,7 +74,14 @@ pub fn handle_submit_receipt(ctx: Context<SubmitReceipt>, args: ReceiptArgs) -> 
         .ok_or(SettlementError::MathOverflow)?;
     require!(new_committed <= job.budget, SettlementError::OverBudget);
 
-    let expected = digest::receipt_digest(ctx.program_id, &job_key, job.job_id, &worker_key, &args);
+    let expected = digest::receipt_digest(
+        ctx.program_id,
+        &job_key,
+        job.job_id,
+        job.created_slot,
+        &worker_key,
+        &args,
+    );
     digest::verify_preceding_ed25519(
         &ctx.accounts.instructions_sysvar.to_account_info(),
         &job.verifier,
@@ -89,6 +96,11 @@ pub fn handle_submit_receipt(ctx: Context<SubmitReceipt>, args: ReceiptArgs) -> 
     job.pending_claims = job
         .pending_claims
         .checked_add(1)
+        .ok_or(SettlementError::MathOverflow)?;
+    // receipt + section marker + output marker
+    job.open_accounts = job
+        .open_accounts
+        .checked_add(3)
         .ok_or(SettlementError::MathOverflow)?;
 
     let slot = Clock::get()?.slot;
@@ -114,8 +126,16 @@ pub fn handle_submit_receipt(ctx: Context<SubmitReceipt>, args: ReceiptArgs) -> 
     receipt.settled_slot = 0;
     receipt.bump = ctx.bumps.receipt;
 
-    ctx.accounts.section_marker.receipt = receipt_key;
-    ctx.accounts.output_marker.receipt = receipt_key;
+    let section_marker = &mut ctx.accounts.section_marker;
+    section_marker.job = job_key;
+    section_marker.receipt = receipt_key;
+    section_marker.worker = worker_key;
+    section_marker.section = args.section;
+    let output_marker = &mut ctx.accounts.output_marker;
+    output_marker.job = job_key;
+    output_marker.receipt = receipt_key;
+    output_marker.worker = worker_key;
+    output_marker.output_hash = args.output_hash;
 
     emit!(ReceiptSubmitted {
         job: job_key,

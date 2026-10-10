@@ -18,6 +18,9 @@ lamports:
    exactly once, within the job's claim window.
 4. The creator can **cancel** the job and reclaim the unspent budget once no
    accepted receipt is still unclaimed, or once every claim window has passed.
+5. Afterwards, receipt and marker rent goes back to the worker who paid it, and
+   job rent goes back to the creator (`close_receipt`, `close_markers`,
+   `close_job`).
 
 Written from scratch for EdgeORE; it does not reuse the earlier pasted draft.
 
@@ -25,11 +28,11 @@ Written from scratch for EdgeORE; it does not reuse the earlier pasted draft.
 
 | Account | PDA seeds | Purpose |
 |---|---|---|
-| `Job` | `["job", creator, job_id u64 LE]` | creator, verifier, budget, committed, paid, section count, claim window + latest claim deadline, receipt/pending counters, status |
+| `Job` | `["job", creator, job_id u64 LE]` | creator, verifier, budget, committed, paid, section count, claim window + latest claim deadline, receipt/pending counters, created slot, open receipt/marker account count, status (`Active` / `Cancelled` / `Completed`) |
 | `Vault` | `["vault", job]` | program-owned lamport escrow (budget + its own rent) |
 | `Receipt` | `["receipt", job, receipt_id]` | signed receipt fields, digest, submitted slot, claim deadline slot, settled flag + settled slot |
-| `SectionMarker` | `["section", job, section u16 LE]` | makes `(job, section)` unique |
-| `OutputMarker` | `["output", job, output_hash]` | rejects a repeated output hash within one job |
+| `SectionMarker` | `["section", job, section u16 LE]` | makes `(job, section)` unique; records job, receipt, worker (rent payer) |
+| `OutputMarker` | `["output", job, output_hash]` | rejects a repeated output hash within one job; records job, receipt, worker |
 
 ## Instructions and rules
 
@@ -73,7 +76,8 @@ transaction if the signature itself is invalid.
 Canonical digest (`src/digest.rs`):
 
 ```
-sha256( "EdgeORE/receipt-settlement/v1" || program_id || job || job_id u64 LE ||
+sha256( "EdgeORE/receipt-settlement/v2" || program_id || job || job_id u64 LE ||
+        job_created_slot u64 LE ||
         receipt_id || section u16 LE || worker ||
         input_hash || output_hash || model_hash ||
         quoted_price u64 LE || actual_charge u64 LE )
@@ -81,6 +85,10 @@ sha256( "EdgeORE/receipt-settlement/v1" || program_id || job || job_id u64 LE ||
 
 Binding the program id, job account and worker means a signed receipt cannot be
 replayed on another deployment, against another job, or by another worker.
+`job_created_slot` separates a job from a later job re-created at the same
+address after `close_job`. `close_job` requires `current slot > created_slot`,
+so the re-created job always has a larger created slot, and a signature for
+the old job no longer matches.
 
 **`claim()`** — signer must equal `receipt.worker` (`has_one`), job `Active`,
 receipt unsettled, and `current slot <= receipt.claim_deadline_slot`
@@ -105,9 +113,29 @@ creator's funds forever. The vault is closed to the creator, returning the
 unspent budget, the charges of receipts that expired unclaimed, and the vault
 rent. Expired receipts stay `settled = false`. The cancel rule waits for the
 *latest* deadline in the job, so it is conservative: one recent receipt keeps
-the job open even after it is claimed, if older receipts expired unclaimed. The `Job` account is kept
-as a `Cancelled` tombstone so the same `(creator, job_id)` cannot be re-opened
-over old receipt/section PDAs; further submissions fail with `JobNotActive`.
+the job open even after it is claimed, if older receipts expired unclaimed. The job becomes `Completed` if every section was submitted and claimed,
+otherwise `Cancelled`. Either way, further submissions, claims and rotations
+fail with `JobNotActive`. `cancel_job` is also how a fully claimed job is
+finalized.
+
+**`close_receipt()`** — the receipt must be settled, or unsettled with its claim
+window passed, so closing it can never strand a claimable payment (otherwise
+`ReceiptStillClaimable`). The signer must be the worker, or the creator once
+the job is no longer `Active` (otherwise `Unauthorized`). Rent always goes to
+`receipt.worker`. While the job is active, the section and output markers stay
+in place, so re-submitting the same signed receipt fails on the section marker.
+
+**`close_markers(section, output_hash)`** — only once the job is no longer
+`Active` (otherwise `MarkersStillNeeded`), because the markers are what enforce
+section and output uniqueness. Both markers must belong to the same receipt.
+The signer must be the worker or the creator, and rent goes to the worker.
+
+**`close_job()`** — creator only. The job must be `Cancelled` or `Completed`
+(its vault was already closed by `cancel_job`), with `open_accounts == 0` (all
+receipt and marker accounts closed) and `current slot > created_slot`. Job rent
+goes to the creator. The creator can close a departed worker's
+expired or settled receipts and markers themselves (rent still goes to the
+worker) to get there.
 
 All arithmetic on balances and counters is checked (`checked_add`/`checked_sub`,
 Anchor's checked `add_lamports`/`sub_lamports`); the release profile also keeps
@@ -122,9 +150,10 @@ Anchor's checked `add_lamports`/`sub_lamports`); the release profile also keeps
   there is no multi-verifier quorum or dispute process, and rotation takes
   effect at the next submission, with no grace period for receipts the old
   key already signed.
-- Rent for receipt and marker accounts is paid by the worker and is not
-  reclaimed (no close instructions for receipts/markers).
-- The Job tombstone's rent is not reclaimed after cancellation.
+- Markers (and their rent) stay locked until the job is finalized, because
+  they enforce uniqueness while the job is active.
+- To close a job, its creator may have to send one cleanup transaction per
+  receipt left open by workers (transaction fees only; rent goes to workers).
 - Output-hash dedupe is exact-match only (see above).
 
 ## Toolchain
