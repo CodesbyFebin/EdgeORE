@@ -1,4 +1,5 @@
 # EdgeORE
+<img width="1942" height="809" alt="EdgeORE github readme hero" src="https://github.com/user-attachments/assets/55d989d9-b9d7-49cd-8bf9-86f1f3a35571" />
 
 **Your Edge. Your AI. Your Proof.**
 
