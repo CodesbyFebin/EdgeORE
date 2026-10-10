@@ -51,7 +51,8 @@ fun NodesScreen(vm: EdgeOreViewModel) {
     SectionTitle("Owned Nodes", "Use your phone or Ubuntu host.")
 
     EdgeCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.edgeore.app.ui.components.IconTile(EdgeIcons.Nodes, if (rec == null) EdgeColors.copper else EdgeColors.mint)
             Column(Modifier.weight(1f)) {
                 Text("Ubuntu host", style = MaterialTheme.typography.titleMedium)
                 Text(if (rec == null) "No node paired" else Format.short(rec.fingerprint, 8), color = if (rec == null) EdgeColors.copper else EdgeColors.textPrimary, fontFamily = FontFamily.Monospace)
@@ -74,7 +75,7 @@ fun NodesScreen(vm: EdgeOreViewModel) {
     }
 
     node.status?.let { Notice(it) }
-    node.error?.let { Notice(it, error = true) }
+    node.error?.let { com.edgeore.app.ui.components.PlainNotice(it, com.edgeore.app.ui.components.PlainError.Area.NODE) }
 
     if (rec == null) PairingForm(vm, node.busy)
 
