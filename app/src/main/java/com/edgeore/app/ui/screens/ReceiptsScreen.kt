@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
@@ -38,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.EdgeOreViewModel
 import com.edgeore.app.receipts.ReceiptLog
@@ -57,6 +59,7 @@ import java.time.format.DateTimeFormatter
 
 private val NODE_KINDS = setOf("NODE")
 private val REVIEW_KINDS = setOf("REVIEW")
+private val dayLabel = DateTimeFormatter.ofPattern("d MMM")
 private val clock = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm").withZone(ZoneId.systemDefault())
 
 @Composable
@@ -115,6 +118,24 @@ fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExpo
     if (damage.isNotEmpty()) EdgeCard {
         Notice("Evidence damage: ${damage.size} receipt line(s) could not be read. Valid records are still shown below; the damaged lines were kept, not deleted.", error = true)
         damage.take(5).forEach { Text("Line ${it.lineNumber}: ${it.reason}", style = MaterialTheme.typography.bodyMedium) }
+    }
+    val activity = remember(receipts) { com.edgeore.app.ui.ReceiptActivity.lastDays(receipts.map { it.createdAt }) }
+    com.edgeore.app.ui.components.FactCard(
+        EdgeIcons.Receipts, "Receipt activity", "Receipts recorded on this phone per day · last ${activity.days.size} days",
+        status = { com.edgeore.app.ui.components.StatusPill("${activity.total} stored", if (activity.isEmpty) com.edgeore.app.ui.components.PillTone.NEUTRAL else com.edgeore.app.ui.components.PillTone.MINT) },
+        footer = "Local records only. A receipt is not a payment and is not checked on chain here.",
+    ) {
+        if (activity.isEmpty) {
+            Notice("Nothing to plot yet. The chart appears once receipts exist; no sample data is shown.")
+        } else {
+            com.edgeore.app.ui.components.CountAreaChart(activity.counts.map { it.toDouble() }, activity.summary(), Modifier.fillMaxWidth().height(96.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(dayLabel.format(activity.days.first()), style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+                Text("Today", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+            }
+            Text(activity.summary(), style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+        }
+        if (activity.unreadable > 0) Notice("${activity.unreadable} receipt time(s) could not be read and are not plotted.", error = true)
     }
     if (shown.isEmpty()) EdgeCard { Notice(if (receipts.isEmpty() && damage.isEmpty()) "No receipts yet." else if (receipts.isEmpty()) "No readable receipts. See the damage report above." else "No receipts match this search or filter.") }
     shown.forEach { r ->
