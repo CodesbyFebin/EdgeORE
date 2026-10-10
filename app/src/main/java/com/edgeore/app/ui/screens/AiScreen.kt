@@ -5,16 +5,11 @@ import com.edgeore.app.ui.components.EffectNote
 import com.edgeore.app.settings.Control
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
@@ -31,8 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -48,6 +43,17 @@ import com.edgeore.app.ai.ondevice.OnDevicePhase
 import androidx.compose.runtime.LaunchedEffect
 import com.edgeore.app.ui.Format
 import com.edgeore.app.ui.components.EdgeCard
+import com.edgeore.app.ui.components.EdgeDivider
+import com.edgeore.app.ui.components.EmptyChat
+import com.edgeore.app.ui.components.FactCard
+import com.edgeore.app.ui.components.ModelBubble
+import com.edgeore.app.ui.components.PillTone
+import com.edgeore.app.ui.components.PlainError
+import com.edgeore.app.ui.components.PlainNotice
+import com.edgeore.app.ui.components.StatCell
+import com.edgeore.app.ui.components.StatusPill
+import com.edgeore.app.ui.components.UserBubble
+import com.edgeore.app.ui.components.WorkingRow
 import com.edgeore.app.ui.components.EdgeIcons
 import com.edgeore.app.ui.components.KeyValue
 import com.edgeore.app.ui.components.Notice
@@ -71,15 +77,9 @@ fun AiScreen(vm: EdgeOreViewModel) {
 
     SectionTitle("Personal Edge AI", "Your models. Your memory. Your control.")
 
-    EdgeCard {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(EdgeIcons.Ai, contentDescription = null, tint = EdgeColors.mint)
-            Column(Modifier.weight(1f)) {
-                Text(ExecutionLabel.title(od.downloaded, od.loadedId), style = MaterialTheme.typography.titleMedium)
-                Text("No weights ship in this APK. Download an allowlisted model below to run on this phone, or connect a host you own.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-            }
-            Text("Cloud fallback OFF", color = EdgeColors.onAction, modifier = Modifier.background(EdgeColors.mint, RoundedCornerShape(20.dp)).padding(horizontal = 10.dp, vertical = 6.dp))
-        }
+    FactCard(EdgeIcons.Ai, ExecutionLabel.title(od.downloaded, od.loadedId), null) {
+        Text("No weights ship in this APK. Download an allowlisted model below to run on this phone, or connect a host you own.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        StatusPill("Cloud fallback OFF", PillTone.MINT, EdgeIcons.Check)
     }
 
     od.consentFor?.let { m ->
@@ -103,10 +103,21 @@ fun AiScreen(vm: EdgeOreViewModel) {
         )
     }
 
-    EdgeCard {
-        Text("On-device model (LiteRT-LM)", style = MaterialTheme.typography.titleMedium)
+    val odBusy = od.phase == OnDevicePhase.LOADING_MODEL || od.phase == OnDevicePhase.GENERATING
+    FactCard(
+        EdgeIcons.Ai, "On-device model", "LiteRT-LM · in this app · CPU",
+        status = {
+            when {
+                od.phase == OnDevicePhase.GENERATING -> StatusPill("Generating", PillTone.COPPER)
+                od.loadedId != null -> StatusPill("Loaded", PillTone.MINT, EdgeIcons.Check)
+                od.downloaded.isNotEmpty() -> StatusPill("Downloaded", PillTone.MINT)
+                else -> StatusPill("Not set up", PillTone.NEUTRAL)
+            }
+        },
+        footer = "Prompts on this path never leave the phone. Model output cannot approve a transaction.",
+    ) {
         Text("Allowlist and runtime from Google AI Edge Gallery (Apache-2.0). Runs in this app on the CPU. Not device-qualified yet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        od.catalogError?.let { Notice(it, error = true) }
+        od.catalogError?.let { PlainNotice(it, PlainError.Area.ON_DEVICE_AI) }
         od.models.forEach { m ->
             val downloaded = m.id in od.downloaded
             FilterChip(selected = od.selectedId == m.id, onClick = { vm.selectOnDeviceModel(m.id) }, label = {
@@ -115,7 +126,14 @@ fun AiScreen(vm: EdgeOreViewModel) {
         }
         val sel = od.selected
         if (sel != null) {
-            KeyValue("License", sel.license)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StatCell("Size", Format.bytes(sel.sizeBytes), Modifier.weight(1f))
+                StatCell("License", sel.license, Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StatCell("Commit", sel.commit.take(12), Modifier.weight(1f), mono = true)
+                StatCell("SHA-256", sel.sha256?.let { Format.short(it, 6) }, Modifier.weight(1f), missing = "Gated · not pinned", mono = true)
+            }
             when {
                 od.downloadingId == sel.id -> {
                     LinearProgressIndicator(progress = { if (sel.sizeBytes > 0) (od.downloadedBytes.toFloat() / sel.sizeBytes).coerceIn(0f, 1f) else 0f }, modifier = Modifier.fillMaxWidth())
@@ -127,20 +145,16 @@ fun AiScreen(vm: EdgeOreViewModel) {
                 else -> Notice("Gated: needs a Hugging Face sign-in this build does not have.")
             }
         }
-        Text(od.status, color = if (od.error != null) EdgeColors.danger else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-        od.messages.forEach { m ->
-            Box(Modifier.fillMaxWidth(), contentAlignment = if (m.fromUser) Alignment.CenterEnd else Alignment.CenterStart) {
-                Column(Modifier.widthIn(max = 300.dp).background(if (m.fromUser) EdgeColors.mint.copy(alpha = 0.16f) else EdgeColors.surface, RoundedCornerShape(16.dp)).padding(12.dp)) {
-                    Text(if (m.fromUser) "You" else "On-device model", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
-                    Text(m.text, style = MaterialTheme.typography.bodyLarge)
-                }
-            }
-        }
+        if (od.error != null) PlainNotice(od.error!!, PlainError.Area.ON_DEVICE_AI)
+        else Text(od.status, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        EdgeDivider()
+        if (od.messages.isEmpty() && !odBusy) EmptyChat("No messages yet. A reply appears only after you run a prompt on a downloaded model.")
+        od.messages.forEach { m -> if (m.fromUser) UserBubble(m.text) else ModelBubble(m.text, "On-device model") }
+        if (od.phase == OnDevicePhase.LOADING_MODEL) WorkingRow("Loading the model on this phone…")
+        if (od.phase == OnDevicePhase.GENERATING) WorkingRow("Generating on this phone…")
         OutlinedTextField(odPrompt, { odPrompt = it }, label = { Text(if (od.selectedDownloaded) "Prompt for the on-device model…" else "Download a model first") }, enabled = od.selectedDownloaded, modifier = Modifier.fillMaxWidth())
-        val busy = od.phase == OnDevicePhase.LOADING_MODEL || od.phase == OnDevicePhase.GENERATING
-        PrimaryAction(if (od.selectedDownloaded) "Run on this phone" else "Model not downloaded", icon = EdgeIcons.Send, enabled = od.canSend && odPrompt.isNotBlank(), loading = busy) { vm.sendOnDevicePrompt(odPrompt); odPrompt = "" }
+        PrimaryAction(if (od.selectedDownloaded) "Run on this phone" else "Model not downloaded", icon = EdgeIcons.Send, enabled = od.canSend && odPrompt.isNotBlank(), loading = odBusy) { vm.sendOnDevicePrompt(odPrompt); odPrompt = "" }
         SecondaryAction("Stop generation", enabled = od.phase == OnDevicePhase.GENERATING) { vm.cancelOnDeviceGeneration() }
-        Text("Model output cannot approve a transaction.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     }
 
     EdgeCard {
@@ -168,14 +182,8 @@ fun AiScreen(vm: EdgeOreViewModel) {
         Text("3. Private chat", style = MaterialTheme.typography.titleMedium)
         Text(if (ai.selectedModel == null) "Illustrative until a model is chosen." else "Messages go to ${ai.selectedModel} on ${ai.location}.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         if (ai.messages.isEmpty()) Notice("Preview only — no inference executed.")
-        ai.messages.forEach { m ->
-            Box(Modifier.fillMaxWidth(), contentAlignment = if (m.fromUser) Alignment.CenterEnd else Alignment.CenterStart) {
-                Column(Modifier.widthIn(max = 300.dp).background(if (m.fromUser) EdgeColors.mint.copy(alpha = 0.16f) else EdgeColors.surface, RoundedCornerShape(16.dp)).padding(12.dp)) {
-                    Text(if (m.fromUser) "You" else "Local AI", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
-                    Text(m.text, style = MaterialTheme.typography.bodyLarge)
-                }
-            }
-        }
+        ai.messages.forEach { m -> if (m.fromUser) UserBubble(m.text) else ModelBubble(m.text, "Owned host · ${ai.selectedModel ?: "model"}") }
+        if (ai.status == AiStatus.LOADING) WorkingRow("Waiting for ${ai.selectedModel ?: "the host"}…")
         OutlinedTextField(prompt, { prompt = it }, label = { Text("Message your local AI…") }, modifier = Modifier.fillMaxWidth())
         val canSend = ai.selectedModel != null && ai.status != AiStatus.LOADING && prompt.isNotBlank()
         PrimaryAction(if (ai.selectedModel == null) "Send stays off" else "Send", icon = EdgeIcons.Send, enabled = canSend) { vm.sendPrompt(prompt); prompt = "" }
@@ -184,7 +192,8 @@ fun AiScreen(vm: EdgeOreViewModel) {
 
     EdgeCard {
         Text("4. Runtime and cancellation", style = MaterialTheme.typography.titleMedium)
-        Text(ai.statusDetail, color = if (ai.status == AiStatus.FAILED) EdgeColors.danger else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        if (ai.status == AiStatus.FAILED || ai.statusDetail.startsWith("Host unreachable")) PlainNotice(ai.statusDetail, PlainError.Area.OWNED_HOST)
+        else Text(ai.statusDetail, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         PrimaryAction(if (ai.status == AiStatus.CHECKING) "Checking…" else "Load model", icon = EdgeIcons.Play, enabled = ai.status != AiStatus.CHECKING && ai.status != AiStatus.LOADING) {
             if (ai.selectedModel == null) vm.setAiEndpoint(endpoint) else vm.selectModel(ai.selectedModel!!)
         }
