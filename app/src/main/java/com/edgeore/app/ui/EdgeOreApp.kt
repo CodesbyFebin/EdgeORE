@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BadgedBox
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -33,7 +36,9 @@ import com.edgeore.app.BuildConfigInfo
 import com.edgeore.app.EdgeOreViewModel
 import com.edgeore.app.receipts.StoredReceipt
 import com.edgeore.app.ui.components.EdgeIcons
+import com.edgeore.app.ui.components.CountBadge
 import com.edgeore.app.ui.components.EdgeOreHeader
+import com.edgeore.app.ui.components.EnvironmentStrip
 import com.edgeore.app.ui.components.Notice
 import com.edgeore.app.ui.screens.AiScreen
 import com.edgeore.app.ui.screens.ConceptPreviewScreen
@@ -69,6 +74,8 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     var route by rememberSaveable { mutableStateOf<String?>(null) } // "review", "preview", "receipt:<id>"
     var about by rememberSaveable { mutableStateOf(false) }
     val receipts by vm.receipts.collectAsStateWithLifecycle()
+    val ops by vm.operations.collectAsStateWithLifecycle()
+    val damage by vm.receiptDamage.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var onboarded by rememberSaveable { mutableStateOf(Onboarding.done(context)) }
 
@@ -85,11 +92,17 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         containerColor = EdgeColors.background,
         bottomBar = {
             NavigationBar(containerColor = EdgeColors.surfaceInset) {
+                val badges = NavBadges.of(ops, damage.size)
                 Destination.entries.forEach { d ->
+                    val badge = badges[d]
                     NavigationBarItem(
                         selected = tab == d && route == null,
                         onClick = { tab = d; route = null },
-                        icon = { Icon(d.icon, contentDescription = null) },
+                        modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier,
+                        icon = {
+                            if (badge == null) Icon(d.icon, contentDescription = null)
+                            else BadgedBox(badge = { CountBadge(badge.count, badge.tone) }) { Icon(d.icon, contentDescription = null) }
+                        },
                         label = { Text(d.label) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = EdgeColors.copper, selectedTextColor = EdgeColors.copper,
@@ -107,6 +120,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 EdgeOreHeader(onSettings = { about = true })
+                EnvironmentStrip()
                 if (route != null) {
                     TextButton(onClick = { route = null }) {
                         Icon(EdgeIcons.Back, contentDescription = null, tint = EdgeColors.textMuted); Text(" Back", color = EdgeColors.textMuted)

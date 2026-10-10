@@ -46,6 +46,11 @@ import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.ui.Format
 import com.edgeore.app.wallet.WalletDisplay
 import com.edgeore.app.ui.components.EdgeCard
+import com.edgeore.app.ui.components.FactCard
+import com.edgeore.app.ui.components.IconTile
+import com.edgeore.app.ui.components.PillTone
+import com.edgeore.app.ui.components.StatCell
+import com.edgeore.app.ui.components.StatusPill
 import com.edgeore.app.ui.components.EdgeIcons
 import com.edgeore.app.ui.components.ObservationCard
 import com.edgeore.app.ui.components.PrimaryAction
@@ -72,7 +77,8 @@ fun MineScreen(
     val storage by vm.storage.collectAsStateWithLifecycle()
 
     // "Now" overview: what needs attention, each row opening the place that handles it.
-    val waiting = ops.count { it.state.needsObservation || it.state == com.edgeore.app.solana.OpState.SIGNED }
+    val waiting = com.edgeore.app.ui.NavBadges.waiting(ops)
+    com.edgeore.app.ui.components.SectionTitle("Your edge, under your control", "What needs attention, your wallet, and the gates that decide when anything may run.")
     EdgeCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("Now", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })
@@ -88,20 +94,19 @@ fun MineScreen(
             attention = false, onClick = { onOpenTab(com.edgeore.app.ui.Destination.Storage) })
     }
 
-    EdgeCard {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(EdgeIcons.Wallet, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.size(28.dp))
-            Column(Modifier.weight(1f)) {
-                Text("Connect Solana Wallets", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    wallet.address?.let { Format.short(it) } ?: "Authorize securely through your wallet",
-                    color = EdgeColors.textMuted,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+    FactCard(
+        EdgeIcons.Wallet, "Connect Solana Wallets",
+        wallet.address?.let { Format.short(it) } ?: "Authorize securely through your wallet",
+        status = {
+            when {
+                wallet.busy -> StatusPill("Waiting", PillTone.COPPER)
+                wallet.address != null -> StatusPill("Connected", PillTone.MINT, EdgeIcons.Check)
+                else -> StatusPill("Not connected", PillTone.NEUTRAL)
             }
-            if (wallet.address == null) {
-                SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", enabled = !wallet.busy, onClick = onConnect)
-            }
+        },
+    ) {
+        if (wallet.address == null) {
+            SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", Modifier.fillMaxWidth(), enabled = !wallet.busy, onClick = onConnect)
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(WalletDisplay.statusLine(wallet), color = if (wallet.error != null && wallet.address == null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
@@ -117,7 +122,15 @@ fun MineScreen(
                 }
             }
         }
-        wallet.address?.let {
+        wallet.address?.let { address ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StatCell("Address", Format.short(address, 6), Modifier.weight(1f), mono = true)
+                StatCell("Devnet balance", fresh?.let { b -> Format.sol(b.lamports) }, Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StatCell("Slot", fresh?.slot?.toString(), Modifier.weight(1f), mono = true)
+                StatCell("Observed", fresh?.let { b -> Format.ago(b.observedAt) }, Modifier.weight(1f))
+            }
             Text(
                 WalletDisplay.balanceLine(balance) { b -> "Devnet ${Format.sol(b.lamports)} · slot ${b.slot} · ${Format.ago(b.observedAt)}" },
                 color = if (fresh == null) EdgeColors.copper else EdgeColors.textPrimary,
@@ -232,7 +245,7 @@ private fun StatusRow(icon: androidx.compose.ui.graphics.vector.ImageVector, tit
             .semantics(mergeDescendants = true) {},
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(icon, contentDescription = null, tint = if (attention) EdgeColors.copper else EdgeColors.mint, modifier = Modifier.size(22.dp))
+        IconTile(icon, if (attention) EdgeColors.copper else EdgeColors.mint)
         Column(Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
             Text(value, style = MaterialTheme.typography.bodyMedium, color = if (attention) EdgeColors.copper else EdgeColors.textMuted)
