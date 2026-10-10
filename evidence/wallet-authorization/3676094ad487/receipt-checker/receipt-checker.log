@@ -1,0 +1,35 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.9/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :compileKotlin
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar
+> Task :compileTestKotlin
+> Task :startScripts
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+
+> Task :test
+
+ReceiptCheckerTest > rejectsWrongArguments PASSED
+
+ReceiptCheckerTest > acceptsExportAndReportsUnpinnedOfflineLimits PASSED
+
+ReceiptCheckerTest > rejectsWellFormedBodyTamperAndPreservesOriginal PASSED
+
+ReceiptCheckerTest > reportsMissingInputAsToolError PASSED
+
+ReceiptCheckerTest > acceptsPinnedKeyAndRejectsDifferentKey PASSED
+
+ReceiptCheckerTest > rejectsMalformedJson PASSED
+
+ReceiptCheckerTest > rejectsMalformedUtf8 PASSED
+
+> Task :installDist
+
+BUILD SUCCESSFUL in 13s
+6 actionable tasks: 6 executed
+CHECKER_EXIT=0
