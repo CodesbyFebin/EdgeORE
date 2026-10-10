@@ -1,0 +1,12 @@
+# Build output (contains the locally generated program keypair under target/deploy/)
+target
+.anchor
+test-ledger
+.surfpool
+node_modules
+.yarn
+.DS_Store
+**/*.rs.bk
+# Never commit keypairs
+*-keypair.json
+id.json
