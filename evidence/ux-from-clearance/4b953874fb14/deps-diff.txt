@@ -1,0 +1,7 @@
+# Resolved-version diff, main 6f7b600 -> this branch (group:artifact:resolvedVersion, sorted unique)
+## releaseRuntimeClasspath
+97a98
+> com.google.zxing:core:3.5.3
+## debugRuntimeClasspath
+104a105
+> com.google.zxing:core:3.5.3

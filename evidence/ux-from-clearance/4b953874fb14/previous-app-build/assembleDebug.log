@@ -1,0 +1,81 @@
+
+Welcome to Gradle 9.3.1!
+
+Here are the highlights of this release:
+ - Test reporting improvements
+ - Error and warning improvements
+ - Build authoring improvements
+
+For more details see https://docs.gradle.org/9.3.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Calculating task graph as no cached configuration is available for tasks: :app:assembleDebug
+Checking the license for package Android SDK Platform 36.1 in /workspace/tools/android-sdk/licenses
+License for package Android SDK Platform 36.1 accepted.
+Preparing "Install Android SDK Platform 36.1 (revision 1)".
+"Install Android SDK Platform 36.1 (revision 1)" ready.
+Installing Android SDK Platform 36.1 in /workspace/tools/android-sdk/platforms/android-36.1
+"Install Android SDK Platform 36.1 (revision 1)" complete.
+"Install Android SDK Platform 36.1 (revision 1)" finished.
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+
+> Task :app:processDebugGoogleServices
+File google-services.json is missing.
+The Google Services Plugin cannot function without it.
+Searched locations: /workspace/ux-work/prevbuild/src/app/src/debug/google-services.json, /workspace/ux-work/prevbuild/src/app/src/debug/google-services.json, /workspace/ux-work/prevbuild/src/app/src/google-services.json, /workspace/ux-work/prevbuild/src/app/src/debug/google-services.json, /workspace/ux-work/prevbuild/src/app/src/Debug/google-services.json, /workspace/ux-work/prevbuild/src/app/google-services.json
+
+> Task :app:generateDebugResources
+> Task :app:generateDebugBuildConfig
+> Task :app:packageDebugResources
+> Task :app:javaPreCompileDebug
+> Task :app:processDebugNavigationResources
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:generateDebugRFile
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mapDebugSourceSetPaths
+> Task :app:kspDebugKotlin
+> Task :app:checkDebugAarMetadata
+> Task :app:mergeExtDexDebug
+> Task :app:mergeLibDexDebug
+> Task :app:compileDebugNavigationResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libdatastore_shared_counter.so. Run with --info option to learn more.
+
+> Task :app:validateSigningDebug FAILED
+> Task :app:mergeDebugResources
+
+> Task :app:compileDebugKotlin
+w: file:///workspace/ux-work/prevbuild/src/app/src/main/java/com/example/ui/theme/Theme.kt:46:24 'var statusBarColor: Int' is deprecated. Deprecated in Java.
+w: file:///workspace/ux-work/prevbuild/src/app/src/main/java/com/example/ui/theme/Theme.kt:47:24 'var navigationBarColor: Int' is deprecated. Deprecated in Java.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:validateSigningDebug'.
+> Keystore file '/workspace/ux-work/prevbuild/src/debug.keystore' not found for signing config 'debugConfig'.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 16s
+29 actionable tasks: 29 executed
+Configuration cache entry stored.
+EXIT=1
