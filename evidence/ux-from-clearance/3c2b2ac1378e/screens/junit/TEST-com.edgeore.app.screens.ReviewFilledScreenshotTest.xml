@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.ReviewFilledScreenshotTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-10T15:34:09" hostname="grok-bot-vm-446931431" time="0.709">
+  <properties/>
+  <testcase name="reviewFilled" classname="com.edgeore.app.screens.ReviewFilledScreenshotTest" time="0.709"/>
+  <system-out><![CDATA[Roborazzi: 08-review-filled-full.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=7357350, width=1078, height=6825) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

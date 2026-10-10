@@ -1,0 +1,3 @@
+qr-recipient-address.png decodes OK: 73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n
+qr-solana-pay-0.01.png decodes OK: solana:73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n?amount=0.01
+qr-refused-spl-token.png decodes OK: solana:73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n?amount=0.01&spl-token=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
