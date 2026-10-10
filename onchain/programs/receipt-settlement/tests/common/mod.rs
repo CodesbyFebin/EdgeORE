@@ -313,12 +313,14 @@ fn record(sig: &impl std::fmt::Display, landed: bool, slot: u64, outcome: &str) 
     use std::io::Write;
     let path = concat!(env!("CARGO_TARGET_TMPDIR"), "/validator-transactions.log");
     let test = std::thread::current().name().unwrap_or("?").to_string();
+    // One write_all per line: O_APPEND keeps concurrent test threads' lines whole.
+    let line = format!("{test}\t{sig}\tlanded={landed}\tslot={slot}\t{outcome}\n");
     if let Ok(mut f) = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
         .open(path)
     {
-        let _ = writeln!(f, "{test}\t{sig}\tlanded={landed}\tslot={slot}\t{outcome}");
+        let _ = f.write_all(line.as_bytes());
     }
 }
 
