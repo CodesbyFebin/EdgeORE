@@ -83,52 +83,52 @@ tasks.withType<Test>().configureEach {
 
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation(platform(libs.androidx.compose.compose.bom.lib))
+    implementation(libs.androidx.activity.activity.compose.lib)
+    implementation(libs.androidx.compose.material3.material3.lib)
+    implementation(libs.androidx.compose.ui.ui.lib)
+    implementation(libs.androidx.compose.ui.ui.tooling.preview.lib)
+    debugImplementation(libs.androidx.compose.ui.ui.tooling.lib)
+    implementation(libs.androidx.core.core.ktx.lib)
+    implementation(libs.androidx.lifecycle.lifecycle.runtime.ktx.lib)
+    implementation(libs.androidx.lifecycle.lifecycle.viewmodel.compose.lib)
+    implementation(libs.androidx.lifecycle.lifecycle.runtime.compose.lib)
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.android.lib)
     // Opt-in contribution scheduler (Wi-Fi + charging + battery-not-low constraints). 2.10.0 is the newest line that
     // adds only new modules here: every existing resolved version stays the same (evidence/contribution-scheduler/*/deps).
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation(libs.androidx.work.work.runtime.ktx.lib)
 
     // Solana Mobile Wallet Adapter: wallet keys stay in the wallet app.
-    implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.0.3")
+    implementation(libs.com.solanamobile.mobile.wallet.adapter.clientlib.ktx.lib)
     // Ed25519 for node-agent pairing keys and for verifying wallet-returned signatures.
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation(libs.org.bouncycastle.bcprov.jdk18on.lib)
     // On-device LLM runtime (LiteRT-LM, as used by Google AI Edge Gallery) behind a Java-only bridge module; see ondevice-llm/build.gradle.kts.
     implementation(project(":ondevice-llm"))
     // QR decoding for the review destination field. zxing-core is pure Java with no runtime dependencies, so it adds
     // one jar and changes no resolved version (evidence/ux-from-clearance/*/deps). Chosen over ML Kit (Play Services or a
     // bundled model) and CameraX (several extra artifacts for one screen). The camera is driven with platform Camera2.
-    implementation("com.google.zxing:core:3.5.3")
+    implementation(libs.com.google.zxing.core.lib)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit.junit.lib)
     // Real org.json on the JVM test classpath (android.jar only ships stubs).
-    testImplementation("org.json:json:20240303")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation(libs.org.json.json.lib)
+    testImplementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.test.lib)
     // WorkManager test driver (constraints met/unmet) for the scheduler tests; same version as the runtime.
-    testImplementation("androidx.work:work-testing:2.10.0")
+    testImplementation(libs.androidx.work.work.testing.lib)
     // Screenshot suite only (see -Pscreens above).
-    testImplementation("org.robolectric:robolectric:4.14.1")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.36.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.36.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.36.0")
-    testImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
-    testImplementation("androidx.compose.ui:ui-test-junit4")
-    testImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation(libs.org.robolectric.robolectric.lib)
+    testImplementation(libs.io.github.takahirom.roborazzi.roborazzi.lib)
+    testImplementation(libs.io.github.takahirom.roborazzi.roborazzi.compose.lib)
+    testImplementation(libs.io.github.takahirom.roborazzi.roborazzi.junit.rule.lib)
+    testImplementation(platform(libs.androidx.compose.compose.bom.lib))
+    testImplementation(libs.androidx.compose.ui.ui.test.junit4.lib)
+    testImplementation(libs.androidx.test.ext.junit.lib)
 
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation(platform(libs.androidx.compose.compose.bom.lib))
+    androidTestImplementation(libs.androidx.compose.ui.ui.test.junit4.lib)
+    debugImplementation(libs.androidx.compose.ui.ui.test.manifest.lib)
     // MWA clientlib-ktx 2.0.3 publishes androidx.test.ext:junit-ktx 1.1.5 on its runtime path; test libs are aligned to it.
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test:runner:1.5.2")
-    androidTestImplementation("androidx.test:core-ktx:1.5.0")
+    androidTestImplementation(libs.androidx.test.ext.junit.lib)
+    androidTestImplementation(libs.androidx.test.runner.lib)
+    androidTestImplementation(libs.androidx.test.core.ktx.lib)
 }
