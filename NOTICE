@@ -1,0 +1,26 @@
+EdgeORE
+Copyright CodesbyFebin
+
+This product includes or depends on the following third-party work.
+
+Google AI Edge Gallery
+  https://github.com/google-ai-edge/gallery
+  Copyright 2025 Google LLC. Licensed under the Apache License, Version 2.0.
+  Used: the on-device model approach (allowlisted Hugging Face model files pinned to a commit,
+  user-started download, in-process LiteRT-LM inference) and the model entries in
+  app/src/main/assets/ai/ondevice-model-allowlist.json, which are taken from
+  model_allowlists/1_0_20.json at commit a8e795660ee5c02b983897553c7844c351c77bda
+  (repo, file, commit pin, size and sampler defaults). No gallery source code is copied.
+  EdgeORE is not affiliated with or endorsed by Google.
+
+LiteRT-LM Android API (com.google.ai.edge.litertlm:litertlm-android:0.8.0)
+  https://github.com/google-ai-edge/LiteRT-LM
+  Copyright The LiteRT-LM Authors. Licensed under the Apache License, Version 2.0.
+  Linked as a binary dependency through the ondevice-llm module. Its own third-party
+  notices ship inside the AAR (THIRD_PARTY_NOTICE.txt).
+
+Model weights are NOT included in this repository or APK. A model is downloaded only when
+the user confirms it in the app, and stays under its own license (for example Qwen2.5-1.5B-Instruct:
+Apache-2.0; Gemma: Gemma Terms of Use, gated on Hugging Face and not downloadable in this build).
+
+A copy of the Apache License, Version 2.0 is available at http://www.apache.org/licenses/LICENSE-2.0

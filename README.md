@@ -86,7 +86,7 @@ The previously reported single-byte mutation experiment has no preserved script 
 | Destination | Purpose and current boundary |
 |---|---|
 | **Mine** | Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
-| **Private AI** | Ollama-compatible chat and document attachment to an owned host. No embedded model runtime or airplane-mode inference. |
+| **Private AI** | Ollama-compatible chat and document attachment to an owned host. On branch `feature/ai-edge-gallery`: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
 | **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Android Keystore behavior still needs device qualification. |
 | **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
 | **Receipts** | Inspect, export and verify operation records with evidence dimensions kept separate. |
@@ -165,7 +165,7 @@ The next milestone is a recorded Android session: wallet authorization → revie
 
 ## License and attribution
 
-No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
+No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; see [`NOTICE`](NOTICE) for Google AI Edge Gallery (Apache-2.0) and LiteRT-LM (Apache-2.0). Upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
 
 ---
 

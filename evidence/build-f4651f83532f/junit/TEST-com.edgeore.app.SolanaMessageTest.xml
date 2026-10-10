@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.SolanaMessageTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-09T22:49:57" hostname="grok-bot-vm-446931431" time="0.009">
+  <properties/>
+  <testcase name="invalidAddressRefused" classname="com.edgeore.app.SolanaMessageTest" time="0.001"/>
+  <testcase name="versionedMessageUnsupported" classname="com.edgeore.app.SolanaMessageTest" time="0.0"/>
+  <testcase name="unknownProgramIsUnsupported" classname="com.edgeore.app.SolanaMessageTest" time="0.001"/>
+  <testcase name="reviewRefusesBadAmountAndAddress" classname="com.edgeore.app.SolanaMessageTest" time="0.0"/>
+  <testcase name="reviewRefusesOverBudget" classname="com.edgeore.app.SolanaMessageTest" time="0.001"/>
+  <testcase name="transferEncodesAndDecodes" classname="com.edgeore.app.SolanaMessageTest" time="0.001"/>
+  <testcase name="selfTransferDeduplicatesKeys" classname="com.edgeore.app.SolanaMessageTest" time="0.0"/>
+  <testcase name="unsignedTransactionLayout" classname="com.edgeore.app.SolanaMessageTest" time="0.0"/>
+  <testcase name="walletReturnMustMatchReviewedBytesAndSignature" classname="com.edgeore.app.SolanaMessageTest" time="0.005"/>
+  <testcase name="trailingBytesUnsupported" classname="com.edgeore.app.SolanaMessageTest" time="0.0"/>
+  <testcase name="base58RoundTripAndKnownValues" classname="com.edgeore.app.SolanaMessageTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
