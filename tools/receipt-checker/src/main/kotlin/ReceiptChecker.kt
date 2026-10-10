@@ -30,8 +30,12 @@ fun checkReceipt(args: Array<String>, out: PrintStream = System.out, err: PrintS
         out.println(report.summary)
         report.findings.forEach { out.println("Finding: $it") }
         // Hardening backlog H4: exports since integration 0.2.9 sign these fields in an "envelope"; older (or stripped) ones do not.
-        if (report.descriptiveFieldsSigned) out.println("Descriptive export fields covered by the signed envelope: $UNSIGNED_EXPORT_FIELDS")
-        else out.println("Not covered by any signature (descriptive only, no signed envelope): $UNSIGNED_EXPORT_FIELDS")
+        // Exports that declare envelopeRequired=true are rejected above when the envelope is missing.
+        when {
+            report.descriptiveFieldsSigned -> out.println("Descriptive export fields covered by the signed envelope: $UNSIGNED_EXPORT_FIELDS")
+            report.legacyWithoutEnvelope -> out.println("Not covered by any signature (legacy export without envelope, descriptive only): $UNSIGNED_EXPORT_FIELDS")
+            else -> out.println("Not covered by any signature (descriptive only, no signed envelope): $UNSIGNED_EXPORT_FIELDS")
+        }
         if (report.accepted) 0 else 1
     } catch (e: java.io.IOException) {
         err.println("CHECKER ERROR: cannot read input (${e.javaClass.simpleName})")

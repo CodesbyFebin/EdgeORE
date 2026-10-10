@@ -93,14 +93,38 @@ class ReceiptCheckerTest {
         assertEquals(output, 1, code)
         assertTrue(output, output.contains("Envelope: descriptive fields changed after export"))
     }
-    @Test fun exportWithoutEnvelopeIsLabelledUnsigned() {
-        // A pre-0.2.9 export (or one with the envelope stripped) still verifies its receipts, but is labelled unsigned.
+    @Test fun newExportWithEnvelopeRemovedIsRejected() {
         val (file, _) = export()
         val doc = JSONObject(file.readText()).also { it.remove("envelope") }.put("note", "Edited after export")
         val copy = temp.newFile("no-envelope.json").apply { writeText(doc.toString()) }
         val (code, output) = run(copy.path)
+        assertEquals(output, 1, code)
+        assertTrue(output, output.contains("Envelope: required by this export but missing (removed after export)"))
+    }
+    @Test fun legacyExportWithoutEnvelopeIsLabelledUnsigned() {
+        // A pre-envelope export has neither envelope nor envelopeRequired: it still verifies, labelled legacy and unsigned.
+        val (file, _) = export()
+        val doc = JSONObject(file.readText()).also { it.remove("envelope"); it.remove("envelopeRequired") }
+        val copy = temp.newFile("legacy.json").apply { writeText(doc.toString()) }
+        val (code, output) = run(copy.path)
         assertEquals(output, 0, code)
-        assertTrue(output, output.contains("Not covered by any signature (descriptive only, no signed envelope): top-level note, exclusions, payment, location, exportedAt"))
+        assertTrue(output, output.contains("Not covered by any signature (legacy export without envelope, descriptive only): top-level note, exclusions, payment, location, exportedAt"))
+    }
+    @Test fun nonBooleanEnvelopeRequiredIsRejected() {
+        val (file, _) = export()
+        val doc = JSONObject(file.readText()).put("envelopeRequired", "true")
+        val copy = temp.newFile("bad-flag.json").apply { writeText(doc.toString()) }
+        val (code, output) = run(copy.path)
+        assertEquals(output, 1, code)
+        assertTrue(output, output.contains("envelopeRequired is not true or false"))
+    }
+    @Test fun realPreEnvelopeExportFromBuildD675002StillVerifies() {
+        // Committed evidence from the submitted build d675002bd701, written before envelopes existed.
+        val dir = java.io.File("../../evidence/build-d675002bd701/receipt-checker-demo")
+        val (code, output) = run(java.io.File(dir, "receipt.json").path)
+        assertEquals(output, 0, code)
+        assertTrue(output, output.contains("legacy export without envelope"))
+        assertEquals(1, run(java.io.File(dir, "receipt-tampered.json").path).first)
     }
     @Test fun reportsMissingInputAsToolError() { assertEquals(2, run(java.io.File(temp.root, "missing").path).first) }
     @Test fun rejectsWrongArguments() { assertEquals(2, run().first); assertEquals(2, run("file", "--wrong", "key").first) }

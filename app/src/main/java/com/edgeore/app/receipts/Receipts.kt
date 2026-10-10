@@ -185,6 +185,13 @@ class ReceiptLog(
         const val EXPORT_SCHEMA_V2 = "edgeore.receipt-export.v2"
         const val CHECKPOINT_DOMAIN = "edgeore.export-checkpoint.v1"
         const val ENVELOPE_DOMAIN = "edgeore.export-envelope.v1"
+        /**
+         * Top-level flag written by every export from this version on. true: this export was written with a signed
+         * envelope, so a verifier must reject it if the envelope is missing. Absent: a legacy export from before the
+         * envelope existed, still accepted and labelled unsigned. false: written without an envelope on purpose
+         * (device keys hidden), so nothing could sign it.
+         */
+        const val ENVELOPE_REQUIRED_FIELD = "envelopeRequired"
         const val GENESIS = "0000000000000000000000000000000000000000000000000000000000000000"
         const val MAX_LINE_CHARS = 256 * 1024
         const val MAX_FILE_BYTES = 64L * 1024 * 1024
@@ -322,6 +329,7 @@ class ReceiptLog(
         }
         // Additive, optional field (hardening backlog H4): the export schema, receipt lines and checkpoint are unchanged,
         // and a checker that predates it ignores unknown top-level fields.
+        doc.put(ENVELOPE_REQUIRED_FIELD, !hideDeviceKey)
         if (!hideDeviceKey) {
             val payload = envelopePayload(doc)
             doc.put("envelope", JSONObject().put("domain", ENVELOPE_DOMAIN).put("keyId", signer.keyId())
@@ -381,13 +389,19 @@ object ReceiptVerifier {
         val walletSignaturesVerified: Int = 0,
         /** True only when a signed envelope covering the descriptive export fields was present and verified. */
         val descriptiveFieldsSigned: Boolean = false,
+        /** True when the export carries no envelope and no envelopeRequired flag: written before envelopes existed. */
+        val legacyWithoutEnvelope: Boolean = false,
     ) {
         val summary: String get() = buildString {
             append(if (accepted) "Integrity OK for $verifiedReceipts receipt(s)" else "REJECTED")
             append(" · key ").append(when (provenance) { Provenance.PINNED_KEY -> "matches pinned key"; Provenance.UNPINNED_KEY -> "not pinned (self-contained only)"; Provenance.KEY_MISMATCH -> "does NOT match pinned key" })
             append(" · ").append(when (completeness) { Completeness.FULL_CHAIN_CHECKPOINTED -> "full chain through signed checkpoint"; Completeness.SELECTED_SUBSET -> "selected subset, completeness not established"; Completeness.NOT_ESTABLISHED -> "completeness not established" })
             append(" · wallet signatures verified: $walletSignaturesVerified")
-            append(if (descriptiveFieldsSigned) " · descriptive fields covered by the signed envelope" else " · descriptive fields not signed (no envelope)")
+            append(when {
+                descriptiveFieldsSigned -> " · descriptive fields covered by the signed envelope"
+                legacyWithoutEnvelope -> " · descriptive fields not signed (legacy export without envelope)"
+                else -> " · descriptive fields not signed (no envelope)"
+            })
             append(" · chain status not checked offline")
         }
     }
@@ -491,13 +505,22 @@ object ReceiptVerifier {
             }
         }
         var envelopeOk = false
-        doc.optJSONObject("envelope")?.let { env ->
-            val problem = envelopeFinding(doc, env, keysById)
-            if (problem != null) findings += "Envelope: $problem" else envelopeOk = true
+        val envelope = doc.opt("envelope")
+        val required = doc.opt(ReceiptLog.ENVELOPE_REQUIRED_FIELD)
+        if (required != null && required !is Boolean) findings += "Envelope: ${ReceiptLog.ENVELOPE_REQUIRED_FIELD} is not true or false"
+        when {
+            envelope is JSONObject -> {
+                val problem = envelopeFinding(doc, envelope, keysById)
+                if (problem != null) findings += "Envelope: $problem" else envelopeOk = true
+            }
+            envelope != null -> findings += "Envelope: malformed"
+            // Written with an envelope, now without one: removed after export.
+            required == true -> findings += "Envelope: required by this export but missing (removed after export)"
         }
+        val legacy = envelope == null && required == null
         val accepted = findings.isEmpty() && ok == arr.length() && ok > 0
         if (ok == 0 && arr.length() == 0) findings += "Export contains no receipts"
-        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk, accepted && envelopeOk)
+        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk, accepted && envelopeOk, accepted && legacy)
     }
 
     private fun ecKey(b64: String): PublicKey = KeyFactory.getInstance("EC").generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(b64)))

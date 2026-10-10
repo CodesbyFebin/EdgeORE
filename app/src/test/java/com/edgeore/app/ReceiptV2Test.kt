@@ -270,13 +270,46 @@ class ReceiptV2Test {
         assertTrue(r.findings.toString(), r.findings.contains("Envelope: signature invalid"))
     }
 
-    @Test fun strippedEnvelopeIsALabelledDowngradeNotASignedResult() {
-        // Older exports have no envelope. Removing it is therefore accepted, but never reported as signed.
+    @Test fun newExportsDeclareTheEnvelopeRequired() {
+        val (_, json) = envelopeExport()
+        assertEquals(true, JSONObject(json).get(ReceiptLog.ENVELOPE_REQUIRED_FIELD))
+    }
+
+    @Test fun strippingTheEnvelopeFromANewExportIsRejected() {
         val (s, json) = envelopeExport()
         val doc = JSONObject(json).also { it.remove("envelope") }.put("note", "Edited")
         val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
+        assertFalse(r.accepted)
+        assertFalse(r.descriptiveFieldsSigned)
+        assertTrue(r.findings.toString(), r.findings.contains("Envelope: required by this export but missing (removed after export)"))
+    }
+
+    @Test fun malformedEnvelopeOrFlagIsRejected() {
+        val (s, json) = envelopeExport()
+        for (edit in listOf<(JSONObject) -> Unit>({ it.put("envelope", "signed") }, { it.put(ReceiptLog.ENVELOPE_REQUIRED_FIELD, "yes") })) {
+            val doc = JSONObject(json).also(edit)
+            assertFalse(ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList()).accepted)
+        }
+    }
+
+    @Test fun legacyExportWithoutEnvelopeOrFlagStillVerifiesAndIsLabelled() {
+        // Exports written before the envelope existed carry neither field. They keep verifying, never as signed.
+        // Removing both fields from a new export looks the same: that downgrade is labelled, not detectable (documented).
+        val (s, json) = envelopeExport()
+        val doc = JSONObject(json).also { it.remove("envelope"); it.remove(ReceiptLog.ENVELOPE_REQUIRED_FIELD) }
+        val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
         assertTrue(r.findings.toString(), r.accepted)
         assertFalse(r.descriptiveFieldsSigned)
-        assertTrue(r.summary.contains("descriptive fields not signed (no envelope)"))
+        assertTrue(r.legacyWithoutEnvelope)
+        assertTrue(r.summary.contains("descriptive fields not signed (legacy export without envelope)"))
+    }
+
+    @Test fun envelopeWithoutTheFlagStillVerifiesAsSigned() {
+        // Round-2 candidate exports had the envelope but not the flag.
+        val (s, json) = envelopeExport()
+        val doc = JSONObject(json).also { it.remove(ReceiptLog.ENVELOPE_REQUIRED_FIELD) }
+        val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
+        assertTrue(r.findings.toString(), r.accepted)
+        assertTrue(r.descriptiveFieldsSigned)
     }
 }
