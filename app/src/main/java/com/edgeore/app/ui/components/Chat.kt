@@ -93,7 +93,7 @@ fun WorkingRow(text: String) {
 @Composable
 fun EmptyChat(text: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.md), verticalAlignment = Alignment.CenterVertically) {
-        IconTile(EdgeIcons.Ai, EdgeColors.textMuted)
+        IconTile(EdgeIcons.Ai, tint = EdgeColors.textMuted)
         Text(text, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted, modifier = Modifier.weight(1f))
     }
 }

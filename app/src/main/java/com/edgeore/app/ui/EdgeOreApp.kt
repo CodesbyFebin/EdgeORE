@@ -101,7 +101,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier,
                         icon = {
                             if (badge == null) Icon(d.icon, contentDescription = null)
-                            else BadgedBox(badge = { CountBadge(badge.count, badge.tone) }) { Icon(d.icon, contentDescription = null) }
+                            else BadgedBox(badge = { CountBadge(badge.count, tone = badge.tone) }) { Icon(d.icon, contentDescription = null) }
                         },
                         label = { Text(d.label) },
                         colors = NavigationBarItemDefaults.colors(

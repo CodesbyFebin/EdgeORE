@@ -52,7 +52,7 @@ fun NodesScreen(vm: EdgeOreViewModel) {
 
     EdgeCard {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.edgeore.app.ui.components.IconTile(EdgeIcons.Nodes, if (rec == null) EdgeColors.copper else EdgeColors.mint)
+            com.edgeore.app.ui.components.IconTile(EdgeIcons.Nodes, tint = if (rec == null) EdgeColors.copper else EdgeColors.mint)
             Column(Modifier.weight(1f)) {
                 Text("Ubuntu host", style = MaterialTheme.typography.titleMedium)
                 Text(if (rec == null) "No node paired" else Format.short(rec.fingerprint, 8), color = if (rec == null) EdgeColors.copper else EdgeColors.textPrimary, fontFamily = FontFamily.Monospace)

@@ -99,9 +99,9 @@ fun MineScreen(
         wallet.address?.let { Format.short(it) } ?: "Authorize securely through your wallet",
         status = {
             when {
-                wallet.busy -> StatusPill("Waiting", PillTone.COPPER)
-                wallet.address != null -> StatusPill("Connected", PillTone.MINT, EdgeIcons.Check)
-                else -> StatusPill("Not connected", PillTone.NEUTRAL)
+                wallet.busy -> StatusPill("Waiting", tone = PillTone.COPPER)
+                wallet.address != null -> StatusPill("Connected", tone = PillTone.MINT, icon = EdgeIcons.Check)
+                else -> StatusPill("Not connected", tone = PillTone.NEUTRAL)
             }
         },
     ) {
@@ -245,7 +245,7 @@ private fun StatusRow(icon: androidx.compose.ui.graphics.vector.ImageVector, tit
             .semantics(mergeDescendants = true) {},
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        IconTile(icon, if (attention) EdgeColors.copper else EdgeColors.mint)
+        IconTile(icon, tint = if (attention) EdgeColors.copper else EdgeColors.mint)
         Column(Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
             Text(value, style = MaterialTheme.typography.bodyMedium, color = if (attention) EdgeColors.copper else EdgeColors.textMuted)

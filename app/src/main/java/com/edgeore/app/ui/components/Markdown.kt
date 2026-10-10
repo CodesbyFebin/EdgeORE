@@ -8,15 +8,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 
-/*
- * Inline Markdown for model output: **bold**, *italic* / _italic_, `code` and [label](url).
- *
- * Adapted from OptimAI Agentic for Android, app/src/main/java/com/test/agenttrade/ui/components/Markdown.kt
- * (MIT License, Copyright (c) 2026 OptimAI Agentic contributors; see NOTICE). Change for EdgeORE: links are NOT made
- * clickable. Model output is untrusted text, so a link renders as "label (url)" with the full destination visible and
- * nothing opens from a tap (design.md §3: external links must show their destination before leaving). Anything
- * unmatched stays literal, so a parse problem never hides part of an answer.
- */
+// Inline Markdown for model output: **bold**, *italic* / _italic_, `code` and [label](url).
+//
+// Adapted from OptimAI Agentic for Android, app/src/main/java/com/test/agenttrade/ui/components/Markdown.kt
+// (MIT License, Copyright (c) 2026 OptimAI Agentic contributors; see NOTICE). Change for EdgeORE: links are NOT made
+// clickable. Model output is untrusted text, so a link renders as "label (url)" with the full destination visible and
+// nothing opens from a tap (design.md §3: external links must show their destination before leaving). Anything
+// unmatched stays literal, so a parse problem never hides part of an answer.
 fun markdown(text: String): AnnotatedString = buildAnnotatedString {
     var i = 0
     while (i < text.length) {

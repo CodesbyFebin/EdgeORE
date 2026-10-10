@@ -122,7 +122,7 @@ fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExpo
     val activity = remember(receipts) { com.edgeore.app.ui.ReceiptActivity.lastDays(receipts.map { it.createdAt }) }
     com.edgeore.app.ui.components.FactCard(
         EdgeIcons.Receipts, "Receipt activity", "Receipts recorded on this phone per day · last ${activity.days.size} days",
-        status = { com.edgeore.app.ui.components.StatusPill("${activity.total} stored", if (activity.isEmpty) com.edgeore.app.ui.components.PillTone.NEUTRAL else com.edgeore.app.ui.components.PillTone.MINT) },
+        status = { com.edgeore.app.ui.components.StatusPill("${activity.total} stored", tone = if (activity.isEmpty) com.edgeore.app.ui.components.PillTone.NEUTRAL else com.edgeore.app.ui.components.PillTone.MINT) },
         footer = "Local records only. A receipt is not a payment and is not checked on chain here.",
     ) {
         if (activity.isEmpty) {

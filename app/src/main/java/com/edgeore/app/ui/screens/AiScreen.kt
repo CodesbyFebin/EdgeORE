@@ -79,7 +79,7 @@ fun AiScreen(vm: EdgeOreViewModel) {
 
     FactCard(EdgeIcons.Ai, ExecutionLabel.title(od.downloaded, od.loadedId), null) {
         Text("No weights ship in this APK. Download an allowlisted model below to run on this phone, or connect a host you own.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        StatusPill("Cloud fallback OFF", PillTone.MINT, EdgeIcons.Check)
+        StatusPill("Cloud fallback OFF", tone = PillTone.MINT, icon = EdgeIcons.Check)
     }
 
     od.consentFor?.let { m ->
@@ -108,10 +108,10 @@ fun AiScreen(vm: EdgeOreViewModel) {
         EdgeIcons.Ai, "On-device model", "LiteRT-LM · in this app · CPU",
         status = {
             when {
-                od.phase == OnDevicePhase.GENERATING -> StatusPill("Generating", PillTone.COPPER)
-                od.loadedId != null -> StatusPill("Loaded", PillTone.MINT, EdgeIcons.Check)
-                od.downloaded.isNotEmpty() -> StatusPill("Downloaded", PillTone.MINT)
-                else -> StatusPill("Not set up", PillTone.NEUTRAL)
+                od.phase == OnDevicePhase.GENERATING -> StatusPill("Generating", tone = PillTone.COPPER)
+                od.loadedId != null -> StatusPill("Loaded", tone = PillTone.MINT, icon = EdgeIcons.Check)
+                od.downloaded.isNotEmpty() -> StatusPill("Downloaded", tone = PillTone.MINT)
+                else -> StatusPill("Not set up", tone = PillTone.NEUTRAL)
             }
         },
         footer = "Prompts on this path never leave the phone. Model output cannot approve a transaction.",

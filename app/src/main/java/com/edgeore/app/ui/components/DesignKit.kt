@@ -52,7 +52,7 @@ enum class PillTone(internal val fg: Color, internal val bg: Color) {
 
 /** A rounded status label. Always text; the tone only reinforces it. */
 @Composable
-fun StatusPill(text: String, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null, modifier: Modifier = Modifier) {
+fun StatusPill(text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null) {
     Row(
         modifier.background(tone.bg, RoundedCornerShape(EdgeRadius.pill)).border(1.dp, tone.fg.copy(alpha = 0.35f), RoundedCornerShape(EdgeRadius.pill))
             .padding(horizontal = 10.dp, vertical = 4.dp),
@@ -65,7 +65,7 @@ fun StatusPill(text: String, tone: PillTone = PillTone.NEUTRAL, icon: ImageVecto
 
 /** A small count for a tab or filter. Hidden by the caller when the count is zero. */
 @Composable
-fun CountBadge(count: Int, tone: PillTone = PillTone.COPPER, modifier: Modifier = Modifier) {
+fun CountBadge(count: Int, modifier: Modifier = Modifier, tone: PillTone = PillTone.COPPER) {
     Box(
         modifier.defaultMinSize(minWidth = 20.dp, minHeight = 20.dp).background(tone.fg, RoundedCornerShape(EdgeRadius.pill)).padding(horizontal = 6.dp),
         contentAlignment = Alignment.Center,
@@ -74,7 +74,7 @@ fun CountBadge(count: Int, tone: PillTone = PillTone.COPPER, modifier: Modifier 
 
 /** Icon inside an inset tile, used as the leading element of card headers and rows. */
 @Composable
-fun IconTile(icon: ImageVector, tint: Color = EdgeColors.mint, modifier: Modifier = Modifier) {
+fun IconTile(icon: ImageVector, modifier: Modifier = Modifier, tint: Color = EdgeColors.mint) {
     Box(
         modifier.size(40.dp).background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.tile)).border(1.dp, EdgeColors.border, RoundedCornerShape(EdgeRadius.tile)),
         contentAlignment = Alignment.Center,
@@ -123,7 +123,7 @@ fun FactCard(
 ) {
     EdgeCard(modifier, onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.md)) {
-            IconTile(icon, iconTint)
+            IconTile(icon, tint = iconTint)
             Column(Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary)
                 if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
@@ -139,7 +139,7 @@ fun FactCard(
 @Composable
 fun EnvironmentStrip(text: String = "Devnet · Review candidate") {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
-        StatusPill(text, PillTone.COPPER, EdgeIcons.Info)
-        StatusPill("Test SOL only", PillTone.NEUTRAL)
+        StatusPill(text, tone = PillTone.COPPER, icon = EdgeIcons.Info)
+        StatusPill("Test SOL only", tone = PillTone.NEUTRAL)
     }
 }
