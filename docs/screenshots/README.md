@@ -23,3 +23,14 @@ What these images are and are not:
 the two listed files are real EOV2 objects encrypted into a temporary vault by a **software** AES key on the build machine
 (Robolectric has no Android Keystore), remote backup is the shipped `NotConfiguredBackupProvider`, and device free space is not
 observable in that harness, so it reads *Not observed*. In the full-app renders (`03-storage*.png`) Robolectric's own storage stub reports 0 B.
+
+## Re-record log (integration/0.2.9-candidate)
+
+Baselines are re-recorded only when the screen change is intentional and traced to a source commit:
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| `06-review.png`, `full/06-review-full.png` | Review copy for the expiry policy changed on `main` without a re-record, so `verifyRoborazziDebug` failed on `main` itself. Re-recorded in `8f9633d` (from `feature/storage-vault`). | `cc31714` `ReviewScreen.kt` (expiry-policy wording) |
+| `02-ai.png`, `full/02-ai-full.png` | The AI page gained the on-device LiteRT-LM section (allowlist, download state); `feature/ai-edge-gallery` did not run the screenshot suite. | `4f665e5` `AiScreen.kt` |
+
+All other baselines verified unchanged after the merges. A record run also rewrote `full/03-storage-full.png` with a sub-threshold difference; that file was restored because `verifyRoborazziDebug` already passes against the committed baseline.
