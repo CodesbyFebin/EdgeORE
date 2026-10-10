@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.BackupCoordinatorTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-10-10T20:47:28" hostname="grok-bot-vm-446931431" time="0.244">
+  <properties/>
+  <testcase name="damagedJobStoreFailsClosed" classname="com.edgeore.app.BackupCoordinatorTest" time="0.097"/>
+  <testcase name="pinWithAForeignDigestIsFailedNotPinned" classname="com.edgeore.app.BackupCoordinatorTest" time="0.016"/>
+  <testcase name="jobJsonRoundTrips" classname="com.edgeore.app.BackupCoordinatorTest" time="0.0"/>
+  <testcase name="jobIsPersistedAsUploadingBeforeTheNetworkCallAndRestartMakesItOutcomeUnknown" classname="com.edgeore.app.BackupCoordinatorTest" time="0.024"/>
+  <testcase name="corruptedTruncatedOrOversizedDownloadIsRejectedBeforeDecryption" classname="com.edgeore.app.BackupCoordinatorTest" time="0.029"/>
+  <testcase name="unavailableProviderRefusesEveryRemoteActionAndPersistsNothing" classname="com.edgeore.app.BackupCoordinatorTest" time="0.003"/>
+  <testcase name="verifiedRestorePublishesANewObjectAndKeepsTheOriginal" classname="com.edgeore.app.BackupCoordinatorTest" time="0.012"/>
+  <testcase name="uploadCarriesCiphertextOnlyNeverTheNameOrPlaintext" classname="com.edgeore.app.BackupCoordinatorTest" time="0.008"/>
+  <testcase name="wrongOrUnavailableDeviceKeyFailsRestoreWithoutPublishing" classname="com.edgeore.app.BackupCoordinatorTest" time="0.011"/>
+  <testcase name="cancellationIsCanceledOnlyWhenTheBackendAcknowledges" classname="com.edgeore.app.BackupCoordinatorTest" time="0.018"/>
+  <testcase name="failedUploadIsOutcomeUnknownAndBackendWithoutRecordStaysUnknown" classname="com.edgeore.app.BackupCoordinatorTest" time="0.009"/>
+  <testcase name="plaintextDigestMismatchIsNotRestoreVerified" classname="com.edgeore.app.BackupCoordinatorTest" time="0.01"/>
+  <testcase name="acknowledgementsAndPinsNeverBecomeRestoreVerified" classname="com.edgeore.app.BackupCoordinatorTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

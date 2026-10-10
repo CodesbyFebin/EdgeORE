@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ReceiptV2Test" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-10-10T20:47:34" hostname="grok-bot-vm-446931431" time="0.298">
+  <properties/>
+  <testcase name="impossibleCombinationsAndMalformedFieldsAreRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.039"/>
+  <testcase name="evidenceDefaultsAreNotPasses" classname="com.edgeore.app.ReceiptV2Test" time="0.002"/>
+  <testcase name="truncatedTailIsReportedValidHistoryKeptAndNextAppendLinksToLastValid" classname="com.edgeore.app.ReceiptV2Test" time="0.024"/>
+  <testcase name="modifiedLineInTheMiddleIsReportedNotDropped" classname="com.edgeore.app.ReceiptV2Test" time="0.009"/>
+  <testcase name="newExportsDeclareTheEnvelopeRequired" classname="com.edgeore.app.ReceiptV2Test" time="0.013"/>
+  <testcase name="malformedEnvelopeOrFlagIsRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.014"/>
+  <testcase name="selfConsistentForgeryUnderAFreshKeyIsOnlyUnpinnedIntegrity" classname="com.edgeore.app.ReceiptV2Test" time="0.019"/>
+  <testcase name="appSignedButWalletForgedIsRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.031"/>
+  <testcase name="subsetIsNeverReportedComplete" classname="com.edgeore.app.ReceiptV2Test" time="0.013"/>
+  <testcase name="claimGuardFromFeatureBranchStillApplies" classname="com.edgeore.app.ReceiptV2Test" time="0.001"/>
+  <testcase name="signedEnvelopeVerifiesAndIsReported" classname="com.edgeore.app.ReceiptV2Test" time="0.009"/>
+  <testcase name="strippingTheEnvelopeFromANewExportIsRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.006"/>
+  <testcase name="droppingTheTailAndRecomputingTheBundleFailsTheSignedCheckpoint" classname="com.edgeore.app.ReceiptV2Test" time="0.014"/>
+  <testcase name="missingKeyEpochIsReported" classname="com.edgeore.app.ReceiptV2Test" time="0.007"/>
+  <testcase name="legacyExportWithoutEnvelopeOrFlagStillVerifiesAndIsLabelled" classname="com.edgeore.app.ReceiptV2Test" time="0.009"/>
+  <testcase name="persistedSoftwareKeyKeepsItsIdentityAcrossRestart" classname="com.edgeore.app.ReceiptV2Test" time="0.011"/>
+  <testcase name="envelopeSignedByAnotherKeyIsRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.009"/>
+  <testcase name="editingAnyDescriptiveFieldBreaksTheEnvelope" classname="com.edgeore.app.ReceiptV2Test" time="0.021"/>
+  <testcase name="oldRecordsVerifyAfterKeyRotationAndRestart" classname="com.edgeore.app.ReceiptV2Test" time="0.016"/>
+  <testcase name="envelopeWithoutTheFlagStillVerifiesAsSigned" classname="com.edgeore.app.ReceiptV2Test" time="0.008"/>
+  <testcase name="walletDigestAndSignatureMismatchesAreRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.011"/>
+  <testcase name="walletSignatureVerifiesIndependentlyOverTheReviewedMessage" classname="com.edgeore.app.ReceiptV2Test" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
