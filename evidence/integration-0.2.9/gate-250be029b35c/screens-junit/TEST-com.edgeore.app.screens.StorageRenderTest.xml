@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.StorageRenderTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-10T12:17:10" hostname="grok-bot-vm-446931431" time="3.511">
+  <properties/>
+  <testcase name="exportWarning" classname="com.edgeore.app.screens.StorageRenderTest" time="1.028"/>
+  <testcase name="backupStatus" classname="com.edgeore.app.screens.StorageRenderTest" time="0.656"/>
+  <testcase name="empty" classname="com.edgeore.app.screens.StorageRenderTest" time="0.451"/>
+  <testcase name="deleteConfirmation" classname="com.edgeore.app.screens.StorageRenderTest" time="0.526"/>
+  <testcase name="withFiles" classname="com.edgeore.app.screens.StorageRenderTest" time="0.445"/>
+  <testcase name="configureRemoteBackup" classname="com.edgeore.app.screens.StorageRenderTest" time="0.401"/>
+  <system-out><![CDATA[Roborazzi: jvm-render-storage-export-warning.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
+Roborazzi: jvm-render-storage-backup-status.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
+Roborazzi: jvm-render-storage-empty.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
+Roborazzi: jvm-render-storage-delete-confirm.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
+Roborazzi: jvm-render-storage-files.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
+Roborazzi: jvm-render-storage-configure-backup.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=5659500, width=1078, height=5250) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
