@@ -56,6 +56,31 @@ class ReceiptCheckerTest {
         val file = temp.newFile("bad-utf8.json").apply { writeBytes(byteArrayOf(0xc3.toByte(), 0x28)) }
         assertEquals(1, run(file.path).first)
     }
+    @Test fun acceptsStorageReceiptAndRejectsItsTamperedCopy() {
+        // STORAGE was added by feature/storage-vault; the checker compiles the app's Receipts.kt, so it must accept the kind.
+        val log = ReceiptLog(java.io.File(temp.root, "storage.jsonl"), SoftwareReceiptSigner())
+        log.append(ReceiptDraft(ReceiptKind.STORAGE, "IMPORTED", "Imported", "Fixture. App-record integrity evidence; not proof of provider storage or physical deletion.",
+            "EdgeORE local vault", operationId = "op-fixture", digests = mapOf("encryptedObjectSha256" to "00".repeat(32), "vaultObjectId" to "fixture"),
+            localObservation = Evidence("OBSERVED", "Synthetic test only")))
+        val file = temp.newFile("storage-export.json").apply { writeText(log.export()) }
+        val (code, output) = run(file.path)
+        assertEquals(output, 0, code)
+        assertTrue(output.contains("VERIFIED: PASS"))
+        val doc = JSONObject(file.readText())
+        val record = doc.getJSONArray("receipts").getJSONObject(0)
+        record.put("body", JSONObject(record.getString("body")).put("outcome", "DELETED").toString())
+        val copy = temp.newFile("storage-tampered.json").apply { writeText(doc.toString()) }
+        assertEquals(1, run(copy.path).first)
+    }
+    @Test fun rejectsSignedStorageReceiptThatClaimsPayment() {
+        // Correctly signed, so only the schema rule can reject it: a storage/backup record is never a payment observation.
+        val log = ReceiptLog(java.io.File(temp.root, "storage-pay.jsonl"), SoftwareReceiptSigner())
+        log.append(ReceiptDraft(ReceiptKind.STORAGE, "PINNED", "Pinned", "Fixture", "EdgeORE local vault", payment = "OBSERVED fixture"))
+        val file = temp.newFile("storage-pay.json").apply { writeText(log.export()) }
+        val (code, output) = run(file.path)
+        assertEquals(1, code)
+        assertTrue(output, output.contains("only wallet reviews can carry a payment observation"))
+    }
     @Test fun reportsMissingInputAsToolError() { assertEquals(2, run(java.io.File(temp.root, "missing").path).first) }
     @Test fun rejectsWrongArguments() { assertEquals(2, run().first); assertEquals(2, run("file", "--wrong", "key").first) }
 }
