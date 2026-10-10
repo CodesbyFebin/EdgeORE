@@ -23,6 +23,8 @@ enum class Control(val screen: String, val title: String, val effect: Effect, va
         "EdgePolicy blocks Edge Mode at Moderate or hotter Android thermal status, and when thermal status cannot be read. It does not stop chat or downloads."),
     BATTERY_RESERVE("Mine", "Battery reserve", Effect.ENFORCED,
         "EdgePolicy blocks Edge Mode below this battery level. It gates the Edge Mode state only."),
+    CONTRIBUTION_SCHEDULER("Mine", "Contribution scheduler", Effect.ENFORCED,
+        "Off by default. When on and Edge Mode is resumed, a WorkManager job is scheduled that Android starts only on an unmetered network, while charging, with battery not low. The job re-checks pause and the safety controls. No qualified workload exists in this build, so it records that and runs nothing."),
     CPU_LIMIT("Mine", "CPU limit", Effect.SAVED_ONLY,
         "Stored workload budget. Not a device-wide CPU cap. No workload reads it in this build."),
     AI_MEMORY_LIMIT("AI", "Model memory limit", Effect.SAVED_ONLY,

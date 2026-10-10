@@ -13,6 +13,8 @@ data class DeviceSnapshot(
     val charging: Boolean?,
     val thermal: ThermalLevel?,
     val observedAt: Long,
+    /** BatteryManager.EXTRA_BATTERY_LOW (API 28+); null when not reported. */
+    val batteryLow: Boolean? = null,
 )
 
 enum class ThermalLevel(val label: String) { NONE("Normal"), LIGHT("Light"), MODERATE("Moderate"), SEVERE("Severe"), CRITICAL("Critical"), EMERGENCY("Emergency"), SHUTDOWN("Shutdown") }
@@ -33,6 +35,9 @@ object DeviceObservations {
             val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
             ThermalLevel.entries.getOrNull(pm.currentThermalStatus)
         } else null
-        return DeviceSnapshot(pct, charging, thermal, System.currentTimeMillis())
+        val low = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && intent?.hasExtra(BatteryManager.EXTRA_BATTERY_LOW) == true) {
+            intent.getBooleanExtra(BatteryManager.EXTRA_BATTERY_LOW, false)
+        } else null
+        return DeviceSnapshot(pct, charging, thermal, System.currentTimeMillis(), low)
     }
 }
