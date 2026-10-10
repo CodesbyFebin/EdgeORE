@@ -1,6 +1,7 @@
 # EdgeORE receipt-settlement — devnet-only prototype. NOT DEPLOYED.
-# There is intentionally no [programs.devnet] / [programs.mainnet] entry and no
-# deploy script. Tests run in LiteSVM or against a local solana-test-validator only.
+# There is intentionally no [programs.devnet] / [programs.mainnet] entry. Tests run
+# in LiteSVM or against a local solana-test-validator only. A devnet deployment is
+# prepared but NOT run: ../scripts/deploy-devnet.sh, gate in ../docs/DEPLOY-DEVNET.md.
 
 # Two test modes (see programs/receipt-settlement/README.md):
 #   LiteSVM, in-process:   anchor test --skip-build --skip-local-validator --skip-deploy

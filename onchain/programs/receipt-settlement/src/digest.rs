@@ -1,49 +1,55 @@
-//! Canonical receipt digest and Ed25519 instruction introspection.
+//! Canonical settlement digest and Ed25519 instruction introspection.
 
 use anchor_lang::prelude::*;
 use solana_instructions_sysvar::{load_current_index_checked, load_instruction_at_checked};
 
-use crate::{error::SettlementError, state::ReceiptArgs};
+use crate::{
+    error::SettlementError,
+    state::{Assignment, Job},
+};
 
-/// Domain separator; bump the version if the layout ever changes.
-pub const DIGEST_DOMAIN: &[u8] = b"EdgeORE/receipt-settlement/v2";
+/// Domain separator; bump the version whenever the layout changes.
+pub const DIGEST_DOMAIN: &[u8] = b"EdgeORE/receipt-settlement/v3";
 
+/// The 32-byte message the verifier signs to approve one proof (spec §5):
+///
 /// sha256(
 ///   DIGEST_DOMAIN || program_id(32) || job(32) || job_id(u64 LE) ||
-///   job_created_slot(u64 LE) ||
-///   receipt_id(32) || section(u16 LE) || worker(32) ||
-///   input_hash(32) || output_hash(32) || model_hash(32) ||
+///   job.created_slot(u64 LE) || job.terms_hash(32) ||
+///   section(u16 LE) || node(32) || consent_hash(32) || limits_hash(32) ||
+///   receipt_id(32) || input_hash(32) || output_hash(32) || model_hash(32) ||
 ///   quoted_price(u64 LE) || actual_charge(u64 LE)
 /// )
 ///
-/// Binding the program id, job account and worker prevents a signed receipt
-/// from being replayed against another deployment, another job, or paid to a
-/// different worker. `job_created_slot` distinguishes a job from a later job
-/// re-created at the same address after `close_job` (close_job requires the
-/// current slot to be past created_slot, so a re-created job always has a
-/// strictly larger created_slot).
-pub fn receipt_digest(
+/// Every field is read from on-chain accounts (the Job and the Assignment
+/// written by accept_job/submit_proof); verify_and_settle takes no proof
+/// arguments, so what the verifier signed is exactly what is stored. Binding
+/// program id + job + created_slot stops replay against another deployment,
+/// another job, or a later job re-created at the same address; binding the
+/// node stops payment to anyone else.
+pub fn settlement_digest(
     program_id: &Pubkey,
-    job: &Pubkey,
-    job_id: u64,
-    job_created_slot: u64,
-    worker: &Pubkey,
-    args: &ReceiptArgs,
+    job_key: &Pubkey,
+    job: &Job,
+    a: &Assignment,
 ) -> [u8; 32] {
     solana_sha256_hasher::hashv(&[
         DIGEST_DOMAIN,
         program_id.as_ref(),
-        job.as_ref(),
-        &job_id.to_le_bytes(),
-        &job_created_slot.to_le_bytes(),
-        &args.receipt_id,
-        &args.section.to_le_bytes(),
-        worker.as_ref(),
-        &args.input_hash,
-        &args.output_hash,
-        &args.model_hash,
-        &args.quoted_price.to_le_bytes(),
-        &args.actual_charge.to_le_bytes(),
+        job_key.as_ref(),
+        &job.job_id.to_le_bytes(),
+        &job.created_slot.to_le_bytes(),
+        &job.terms_hash,
+        &a.section.to_le_bytes(),
+        a.node.as_ref(),
+        &a.consent_hash,
+        &a.limits_hash,
+        &a.receipt_id,
+        &a.input_hash,
+        &a.output_hash,
+        &a.model_hash,
+        &a.quoted_price.to_le_bytes(),
+        &a.actual_charge.to_le_bytes(),
     ])
     .to_bytes()
 }

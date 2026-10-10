@@ -18,19 +18,25 @@ pub struct CloseJob<'info> {
 
 pub fn handle_close_job(ctx: Context<CloseJob>) -> Result<()> {
     let job = &ctx.accounts.job;
-    // Finalized jobs only; their vault was already closed by cancel_job.
+    // Refunded jobs only; their vault was already closed by the refund crank.
     require!(
-        job.status != JobStatus::Active,
-        SettlementError::JobStillActive
+        job.status == JobStatus::Refunded,
+        SettlementError::JobStillOpen
     );
-    // No receipt/marker PDA derived from this job address may outlive it, so a
-    // job later re-created at the same address starts from a clean slate.
+    // No assignment/marker PDA derived from this job address may outlive it,
+    // so a job re-created at the same address starts from a clean slate.
     require!(job.open_accounts == 0, SettlementError::OpenAccountsRemain);
-    // Guarantees a re-created job gets a strictly larger created_slot, which is
-    // part of the receipt digest, so old signed receipts cannot be replayed.
+    // A re-created job must get a strictly larger created_slot (part of the
+    // signed digest). Already implied: Refunded needs slot > deadline_slot >=
+    // created_slot + 1. Kept as an explicit guard.
     require!(
         Clock::get()?.slot > job.created_slot,
         SettlementError::CloseTooEarly
     );
+    emit!(JobClosed {
+        job: job.key(),
+        creator: job.creator,
+        lamports: job.to_account_info().lamports(),
+    });
     Ok(())
 }
