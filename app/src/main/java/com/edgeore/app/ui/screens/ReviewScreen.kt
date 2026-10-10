@@ -11,16 +11,24 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.EdgeOreViewModel
 import com.edgeore.app.ReviewPhase
 import com.edgeore.app.solana.OpState
+import com.edgeore.app.solana.PlainLanguage
 import com.edgeore.app.solana.SolanaMessage
 import com.edgeore.app.solana.SolanaRpc
 import com.edgeore.app.ui.Format
+import com.edgeore.app.ui.ReviewInput
 import com.edgeore.app.ui.components.Capability
 import com.edgeore.app.ui.components.CapabilityBadge
 import com.edgeore.app.ui.components.EdgeCard
@@ -34,7 +42,7 @@ import com.edgeore.app.ui.theme.EdgeColors
 
 /** Dedicated review route: the only path to a wallet signature. */
 @Composable
-fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit) {
+fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit, onScanQr: () -> Unit = {}, onPickQrImage: () -> Unit = {}) {
     val st by vm.review.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
     val settings by vm.settings.collectAsStateWithLifecycle()
@@ -72,14 +80,30 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
 
     if (editing) EdgeCard {
         val shape = RoundedCornerShape(24.dp)
-        OutlinedTextField(st.destination, { vm.editReview(destination = it) }, label = { Text("Destination address") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
-        if (wallet.address != null && st.destination.isBlank()) SecondaryAction("Use my own address (self-transfer)") { vm.editReview(destination = wallet.address) }
+        val destCheck = ReviewInput.destination(st.destination)
+        val amountCheck = ReviewInput.amount(st.amount)
+        OutlinedTextField(st.destination, { vm.editReview(destination = it) }, label = { Text("Destination address") }, singleLine = true, shape = shape,
+            isError = destCheck.error, supportingText = { Text(destCheck.text) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii, autoCorrectEnabled = false),
+            modifier = Modifier.fillMaxWidth())
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SecondaryAction("Scan QR", Modifier.weight(1f), onClick = onScanQr)
+            SecondaryAction("QR from image", Modifier.weight(1f), onClick = onPickQrImage)
+        }
+        Text("The camera is asked for only when you tap Scan QR. Frames are decoded on this phone and never saved or sent.",
+            style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+        if (wallet.address != null && st.destination.isBlank()) SecondaryAction("Use my own address (self-transfer)", Modifier.fillMaxWidth()) { vm.editReview(destination = wallet.address) }
         OutlinedTextField(st.amount, { vm.editReview(amount = it) }, label = { Text("Amount (SOL, ≤ 9 decimals)") }, singleLine = true, shape = shape,
+            isError = amountCheck.error, supportingText = { Text(amountCheck.text) }, placeholder = { Text("e.g. 0.01") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
-        PrimaryAction("Prepare exact-message review", icon = EdgeIcons.Shield, enabled = wallet.address != null, loading = st.phase == ReviewPhase.PREPARING) { vm.prepareReview() }
+        st.info?.let { Notice(it) }
+        if (wallet.address == null) Notice("Connect a wallet to prepare the review. The form can be filled first.")
+        PrimaryAction("Prepare exact-message review", icon = EdgeIcons.Shield, enabled = wallet.address != null && destCheck.ok && amountCheck.ok, loading = st.phase == ReviewPhase.PREPARING) { vm.prepareReview() }
     }
 
     st.draft?.let { d ->
+        val plain = PlainLanguage.explain(d, st.feeKnown, st.feeLamports)
+        PlainLanguageCard(plain)
         EdgeCard {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Decoded from the exact bytes", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -147,6 +171,21 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         else -> Unit
     }
     Notice("Signing is only reachable from this route. Receipts record the outcome either way.")
+}
+
+/** Plain-language layer over the exact-message review. Derived from decoded bytes only (see [PlainLanguage]). */
+@Composable
+fun PlainLanguageCard(plain: PlainLanguage.Explanation) {
+    EdgeCard(inset = true) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Icon(if (plain.supported) EdgeIcons.Info else EdgeIcons.Cross, contentDescription = null, tint = if (plain.supported) EdgeColors.mint else EdgeColors.danger, modifier = Modifier.size(20.dp))
+            Text("In plain words", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })
+        }
+        Text(plain.headline, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
+        plain.points.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textPrimary) }
+        Text("Read from the decoded message bytes, not from what you typed. The exact fields below are what the wallet signs.",
+            style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+    }
 }
 
 @Composable

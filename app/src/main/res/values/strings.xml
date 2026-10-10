@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EdgeORE</string>
+    <string name="qr_scan_hint">Point the camera at a Solana address QR code. Frames stay on this phone.</string>
+    <string name="qr_scan_cancel">Cancel</string>
 </resources>

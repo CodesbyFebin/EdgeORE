@@ -21,7 +21,8 @@ import org.junit.runner.RunWith
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28])
 class DefaultStateWalkTest {
-    @get:Rule val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0) val onboarded = OnboardingSeen()
+    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
 
     private fun exists(text: String, substring: Boolean = true) =
         assertTrue("missing: $text", rule.onAllNodesWithText(text, substring = substring).fetchSemanticsNodes().isNotEmpty())

@@ -87,13 +87,13 @@ The previously reported single-byte mutation experiment has no preserved script 
 
 | Destination | Purpose and current boundary |
 |---|---|
-| **Mine** | Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
+| **Mine** | Opens with a *Now* overview (wallet, operations awaiting an outcome, receipts, vault), then Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
 | **Private AI** | Ollama-compatible chat and document attachment to an owned host. On the integration candidate: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
-| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. |
+| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. The device-bound vault is a design decision, not a defect: vault keys never leave this phone, so uninstalling makes the vault unrecoverable. Cross-device restore needs a separate passphrase-wrapped backup envelope, which is not built yet. |
 | **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
 | **Receipts** | Inspect, export and verify operation records with evidence dimensions kept separate. |
 
-A dedicated **Review** route controls wallet signing. Controls display their actual effect: **Enforced**, **Saved only** or **Unavailable**. A saved value is not presented as an enforced hardware limit.
+A dedicated **Review** route controls wallet signing. Its destination and amount start empty. The address can be typed, pasted or read from a QR code: the camera permission is requested only when you tap *Scan QR*, and frames are decoded on the phone and never saved, or you can pick an image instead. An *In plain words* summary, derived from the decoded message bytes, sits above the exact-message fields and never replaces them. On first run a short introduction explains devnet-only, the wallet requirement and what EdgeORE does not do. These UX patterns are adapted from the owner's earlier Clearance prototype; see [docs/analysis/clearance-app-review.md](docs/analysis/clearance-app-review.md). Controls display their actual effect: **Enforced**, **Saved only** or **Unavailable**. A saved value is not presented as an enforced hardware limit.
 
 ## Build and install
 
@@ -154,7 +154,7 @@ The Compose app coordinates four distinct paths: MWA wallet signing, devnet RPC 
 - **Wallet:** keeps private keys; returns signed bytes that EdgeORE verifies.
 - **Operation ledger:** persists reviewed bytes, submission attempts and observations. Unknown outcomes never trigger automatic resend.
 - **Receipt log:** appends exact body strings with digests, signatures and chain links. Full-chain exports carry a signed checkpoint; selected subsets do not claim completeness.
-- **JVM verifier:** checks exported records outside Android and separates integrity, key provenance, completeness and wallet-signature results.
+- **JVM verifier:** checks exported records outside Android: it verifies the integrity of signed receipt contents, and separates integrity, key provenance, completeness and wallet-signature results.
 - **Owned host:** receives only explicitly requested AI or scoped node traffic; it is a separate trust boundary from the phone.
 
 Android Keystore protects device-held keys where available. Any software fallback is labeled as weaker protection. Vault keys are device-bound; an export is not a cross-device restore guarantee.
@@ -169,7 +169,7 @@ The next milestone is a recorded Android session: wallet authorization → revie
 
 ## License and attribution
 
-No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; see [`NOTICE`](NOTICE) for Google AI Edge Gallery (Apache-2.0) and LiteRT-LM (Apache-2.0). Upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
+No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; see [`NOTICE`](NOTICE) for Google AI Edge Gallery (Apache-2.0), LiteRT-LM (Apache-2.0) and ZXing core (Apache-2.0). The first-run introduction, Now overview, QR address entry and plain-language review layer are adapted from **Clearance**, CodesbyFebin's own earlier prior-work Android prototype; nothing from it that sends wallet data off the phone, claims SKR staking or rewards, or simulates signatures was carried over. Upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
 
 ---
 

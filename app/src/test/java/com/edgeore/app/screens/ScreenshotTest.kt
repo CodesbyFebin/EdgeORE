@@ -49,7 +49,8 @@ private fun Rule_.shot(file: String) {
 @Config(sdk = [28], qualifiers = RobolectricDeviceQualifiers.Pixel7)
 class ScreenshotTest {
     @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 1) val onboarded = OnboardingSeen()
+    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
     @Test fun mine() = rule.shot("01-mine")
     @Test fun ai() { rule.tab("AI"); rule.shot("02-ai") }
     @Test fun storage() { rule.tab("Storage"); rule.shot("03-storage") }
@@ -64,7 +65,8 @@ class ScreenshotTest {
 @Config(sdk = [28], qualifiers = "w411dp-h4200dp-normal-long-notround-any-420dpi-keyshidden-nonav")
 class FullScreenshotTest {
     @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 1) val onboarded = OnboardingSeen()
+    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
     @Test fun mine() = rule.shot("full/01-mine-full")
     @Test fun ai() { rule.tab("AI"); rule.shot("full/02-ai-full") }
     @Test fun storage() { rule.tab("Storage"); rule.shot("full/03-storage-full") }
