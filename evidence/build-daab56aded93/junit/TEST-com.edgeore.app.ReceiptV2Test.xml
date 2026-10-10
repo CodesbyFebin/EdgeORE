@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ReceiptV2Test" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-10T10:08:08" hostname="grok-bot-vm-446931431" time="0.221">
+  <properties/>
+  <testcase name="impossibleCombinationsAndMalformedFieldsAreRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.027"/>
+  <testcase name="evidenceDefaultsAreNotPasses" classname="com.edgeore.app.ReceiptV2Test" time="0.001"/>
+  <testcase name="truncatedTailIsReportedValidHistoryKeptAndNextAppendLinksToLastValid" classname="com.edgeore.app.ReceiptV2Test" time="0.022"/>
+  <testcase name="modifiedLineInTheMiddleIsReportedNotDropped" classname="com.edgeore.app.ReceiptV2Test" time="0.01"/>
+  <testcase name="selfConsistentForgeryUnderAFreshKeyIsOnlyUnpinnedIntegrity" classname="com.edgeore.app.ReceiptV2Test" time="0.02"/>
+  <testcase name="appSignedButWalletForgedIsRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.021"/>
+  <testcase name="subsetIsNeverReportedComplete" classname="com.edgeore.app.ReceiptV2Test" time="0.019"/>
+  <testcase name="claimGuardFromFeatureBranchStillApplies" classname="com.edgeore.app.ReceiptV2Test" time="0.001"/>
+  <testcase name="droppingTheTailAndRecomputingTheBundleFailsTheSignedCheckpoint" classname="com.edgeore.app.ReceiptV2Test" time="0.016"/>
+  <testcase name="missingKeyEpochIsReported" classname="com.edgeore.app.ReceiptV2Test" time="0.014"/>
+  <testcase name="persistedSoftwareKeyKeepsItsIdentityAcrossRestart" classname="com.edgeore.app.ReceiptV2Test" time="0.016"/>
+  <testcase name="oldRecordsVerifyAfterKeyRotationAndRestart" classname="com.edgeore.app.ReceiptV2Test" time="0.021"/>
+  <testcase name="walletDigestAndSignatureMismatchesAreRejected" classname="com.edgeore.app.ReceiptV2Test" time="0.014"/>
+  <testcase name="walletSignatureVerifiesIndependentlyOverTheReviewedMessage" classname="com.edgeore.app.ReceiptV2Test" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
