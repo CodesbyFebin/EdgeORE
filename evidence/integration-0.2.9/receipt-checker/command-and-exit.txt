@@ -1,0 +1,2 @@
+bash gradlew -p tools/receipt-checker --no-daemon --console=plain clean test  EXIT=0
+suites=1 tests=10 passed=10 failures=0 errors=0 skipped=0
