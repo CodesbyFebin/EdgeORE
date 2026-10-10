@@ -31,8 +31,16 @@ pub mod receipt_settlement {
         budget: u64,
         section_count: u16,
         verifier: Pubkey,
+        claim_window_slots: u64,
     ) -> Result<()> {
-        instructions::create_job::handle_create_job(ctx, job_id, budget, section_count, verifier)
+        instructions::create_job::handle_create_job(
+            ctx,
+            job_id,
+            budget,
+            section_count,
+            verifier,
+            claim_window_slots,
+        )
     }
 
     /// Record a verifier-signed receipt. The transaction must contain an
@@ -42,13 +50,43 @@ pub mod receipt_settlement {
         instructions::submit_receipt::handle_submit_receipt(ctx, args)
     }
 
-    /// Pay the receipt's worker its signed charge from the vault, exactly once.
+    /// Pay the receipt's worker its signed charge from the vault, exactly once,
+    /// while the receipt's claim window is open.
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         instructions::claim::handle_claim(ctx)
     }
 
+    /// Close a settled (or expired, never-claimable) receipt; rent goes to the
+    /// worker. Signer: the worker, or the creator once the job is finalized.
+    pub fn close_receipt(ctx: Context<CloseReceipt>) -> Result<()> {
+        instructions::close_receipt::handle_close_receipt(ctx)
+    }
+
+    /// Close a receipt's section + output markers once the job is finalized;
+    /// rent goes to the worker. Signer: the worker or the creator.
+    pub fn close_markers(
+        ctx: Context<CloseMarkers>,
+        section: u16,
+        output_hash: [u8; 32],
+    ) -> Result<()> {
+        instructions::close_markers::handle_close_markers(ctx, section, output_hash)
+    }
+
+    /// Creator closes a Cancelled/Completed job once all its receipt and
+    /// marker accounts are closed; rent goes to the creator.
+    pub fn close_job(ctx: Context<CloseJob>) -> Result<()> {
+        instructions::close_job::handle_close_job(ctx)
+    }
+
+    /// Creator replaces the job's authorized verifier key. Receipts signed by
+    /// the previous key are rejected afterwards.
+    pub fn rotate_verifier(ctx: Context<RotateVerifier>, new_verifier: Pubkey) -> Result<()> {
+        instructions::rotate_verifier::handle_rotate_verifier(ctx, new_verifier)
+    }
+
     /// Creator cancels the job and reclaims the vault (unspent budget + rent).
-    /// Only allowed when no submitted receipt is still unclaimed.
+    /// Allowed when no receipt is unclaimed, or once every receipt's claim
+    /// window has passed (unclaimed charges then return to the creator).
     pub fn cancel_job(ctx: Context<CancelJob>) -> Result<()> {
         instructions::cancel_job::handle_cancel_job(ctx)
     }

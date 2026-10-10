@@ -32,6 +32,7 @@ pub fn handle_create_job(
     budget: u64,
     section_count: u16,
     verifier: Pubkey,
+    claim_window_slots: u64,
 ) -> Result<()> {
     require!(budget > 0, SettlementError::InvalidBudget);
     require!(section_count > 0, SettlementError::InvalidSectionCount);
@@ -39,6 +40,7 @@ pub fn handle_create_job(
         verifier != Pubkey::default(),
         SettlementError::InvalidVerifier
     );
+    require!(claim_window_slots > 0, SettlementError::InvalidClaimWindow);
 
     let job_key = ctx.accounts.job.key();
     let job = &mut ctx.accounts.job;
@@ -49,7 +51,11 @@ pub fn handle_create_job(
     job.committed = 0;
     job.paid = 0;
     job.section_count = section_count;
+    job.claim_window_slots = claim_window_slots;
+    job.claim_deadline = 0;
     job.receipt_count = 0;
+    job.created_slot = Clock::get()?.slot;
+    job.open_accounts = 0;
     job.pending_claims = 0;
     job.status = JobStatus::Active;
     job.bump = ctx.bumps.job;

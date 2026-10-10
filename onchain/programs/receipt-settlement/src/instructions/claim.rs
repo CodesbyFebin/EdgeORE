@@ -30,8 +30,17 @@ pub struct Claim<'info> {
 }
 
 pub fn handle_claim(ctx: Context<Claim>) -> Result<()> {
+    require!(
+        ctx.accounts.job.status == JobStatus::Active,
+        SettlementError::JobNotActive
+    );
+    let slot = Clock::get()?.slot;
     let receipt = &mut ctx.accounts.receipt;
     require!(!receipt.settled, SettlementError::AlreadySettled);
+    require!(
+        slot <= receipt.claim_deadline_slot,
+        SettlementError::ClaimWindowExpired
+    );
     let amount = receipt.actual_charge;
 
     // Never dip into the vault's rent-exempt reserve.
@@ -43,7 +52,6 @@ pub fn handle_claim(ctx: Context<Claim>) -> Result<()> {
         .ok_or(SettlementError::InsufficientVault)?;
     require!(available >= amount, SettlementError::InsufficientVault);
 
-    let slot = Clock::get()?.slot;
     receipt.settled = true;
     receipt.settled_slot = slot;
 

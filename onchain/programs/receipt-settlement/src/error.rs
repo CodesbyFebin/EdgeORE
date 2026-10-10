@@ -28,10 +28,30 @@ pub enum SettlementError {
     DigestMismatch,
     #[msg("Receipt already settled")]
     AlreadySettled,
-    #[msg("Job still has unclaimed receipts")]
+    #[msg("Job has unclaimed receipts whose claim window is still open")]
     PendingClaims,
     #[msg("Vault balance is insufficient for this payment")]
     InsufficientVault,
     #[msg("Arithmetic overflow or underflow")]
     MathOverflow,
+    #[msg("Claim window must be greater than zero slots")]
+    InvalidClaimWindow,
+    #[msg("The receipt's claim window has passed")]
+    ClaimWindowExpired,
+    #[msg("New verifier equals the current verifier")]
+    SameVerifier,
+    #[msg("Receipt is unsettled and its claim window is still open")]
+    ReceiptStillClaimable,
+    #[msg("Signer may not close this account")]
+    Unauthorized,
+    #[msg("Markers enforce uniqueness while the job is active")]
+    MarkersStillNeeded,
+    #[msg("Job still has open receipt or marker accounts")]
+    OpenAccountsRemain,
+    #[msg("Job cannot be closed in the slot it was created")]
+    CloseTooEarly,
+    #[msg("Section and output markers belong to different receipts")]
+    MarkerMismatch,
+    #[msg("Job must be cancelled or completed first")]
+    JobStillActive,
 }

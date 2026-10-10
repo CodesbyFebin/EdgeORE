@@ -9,7 +9,10 @@ pub const OUTPUT_SEED: &[u8] = b"output";
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug, InitSpace)]
 pub enum JobStatus {
     Active,
+    /// Finalized by cancel_job before every section was claimed.
     Cancelled,
+    /// Finalized by cancel_job after every section was submitted and claimed.
+    Completed,
 }
 
 /// PDA: ["job", creator, job_id.to_le_bytes()]
@@ -27,7 +30,17 @@ pub struct Job {
     /// Sum of actual_charge over claimed receipts.
     pub paid: u64,
     pub section_count: u16,
+    /// Each accepted receipt can be claimed for this many slots after the
+    /// slot it was submitted in (inclusive). Set once at creation.
+    pub claim_window_slots: u64,
+    /// Latest claim deadline over all accepted receipts (0 = none yet).
+    pub claim_deadline: u64,
     pub receipt_count: u32,
+    /// Slot the job was created in; part of the receipt digest.
+    pub created_slot: u64,
+    /// Receipt + marker accounts of this job that are not closed yet.
+    /// close_job requires 0.
+    pub open_accounts: u32,
     /// Accepted receipts that have not been claimed yet.
     pub pending_claims: u32,
     pub status: JobStatus,
@@ -59,6 +72,8 @@ pub struct Receipt {
     /// Canonical digest the verifier signed (see digest.rs).
     pub digest: [u8; 32],
     pub submitted_slot: u64,
+    /// submitted_slot + job.claim_window_slots; claimable while slot <= this.
+    pub claim_deadline_slot: u64,
     pub settled: bool,
     /// Slot in which the claim executed; 0 while unsettled. No transaction
     /// signature is stored: a program cannot observe its own tx signature.
@@ -70,7 +85,11 @@ pub struct Receipt {
 #[account]
 #[derive(InitSpace)]
 pub struct SectionMarker {
+    pub job: Pubkey,
     pub receipt: Pubkey,
+    /// Paid the rent; receives it back on close.
+    pub worker: Pubkey,
+    pub section: u16,
 }
 
 /// Marker rejecting a repeated output hash within one job.
@@ -79,7 +98,11 @@ pub struct SectionMarker {
 #[account]
 #[derive(InitSpace)]
 pub struct OutputMarker {
+    pub job: Pubkey,
     pub receipt: Pubkey,
+    /// Paid the rent; receives it back on close.
+    pub worker: Pubkey,
+    pub output_hash: [u8; 32],
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq, Eq)]
@@ -112,7 +135,25 @@ pub struct ReceiptClaimed {
 }
 
 #[event]
+pub struct VerifierRotated {
+    pub job: Pubkey,
+    pub old_verifier: Pubkey,
+    pub new_verifier: Pubkey,
+}
+
+#[event]
+pub struct AccountsClosed {
+    pub job: Pubkey,
+    pub receipt: Pubkey,
+    pub rent_to: Pubkey,
+    pub lamports: u64,
+}
+
+#[event]
 pub struct JobCancelled {
     pub job: Pubkey,
     pub refunded_lamports: u64,
+    /// Accepted receipts that were never claimed before their deadline.
+    pub expired_unclaimed: u32,
+    pub status: JobStatus,
 }
