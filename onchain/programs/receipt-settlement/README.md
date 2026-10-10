@@ -90,6 +90,13 @@ slot, updates `paid`/`pending_claims` with checked arithmetic. **No transaction
 signature is stored** (a program cannot observe its own transaction signature);
 the settlement transaction's signature is whatever the client/RPC reports.
 
+**`rotate_verifier(new_verifier)`** — creator only (job PDA seeds +
+`has_one`), job `Active`, `new_verifier` not the default key and different
+from the current one. `submit_receipt` checks the Ed25519 signer against the
+*current* `job.verifier`, so receipts signed by the old key are rejected after
+rotation, even if they were signed before it. Receipts already accepted are
+unaffected and stay claimable. Emits `VerifierRotated`.
+
 **`cancel_job()`** — creator only (job PDA seeds + `has_one`), job `Active`,
 and either **`pending_claims == 0`** or **`current slot > job.claim_deadline`**.
 A worker whose receipt is still inside its claim window can therefore never be
@@ -111,8 +118,10 @@ Anchor's checked `add_lamports`/`sub_lamports`); the release profile also keeps
 - Unaudited prototype; no fuzzing, no formal verification.
 - Claim windows are measured in slots, so their length in wall-clock time
   depends on slot times.
-- The verifier is a single trusted key per job; there is no key rotation,
-  multi-verifier quorum or dispute process.
+- The verifier is a single trusted key per job. The creator can rotate it, but
+  there is no multi-verifier quorum or dispute process, and rotation takes
+  effect at the next submission, with no grace period for receipts the old
+  key already signed.
 - Rent for receipt and marker accounts is paid by the worker and is not
   reclaimed (no close instructions for receipts/markers).
 - The Job tombstone's rent is not reclaimed after cancellation.

@@ -56,6 +56,12 @@ pub mod receipt_settlement {
         instructions::claim::handle_claim(ctx)
     }
 
+    /// Creator replaces the job's authorized verifier key. Receipts signed by
+    /// the previous key are rejected afterwards.
+    pub fn rotate_verifier(ctx: Context<RotateVerifier>, new_verifier: Pubkey) -> Result<()> {
+        instructions::rotate_verifier::handle_rotate_verifier(ctx, new_verifier)
+    }
+
     /// Creator cancels the job and reclaims the vault (unspent budget + rent).
     /// Allowed when no receipt is unclaimed, or once every receipt's claim
     /// window has passed (unclaimed charges then return to the creator).

@@ -119,6 +119,13 @@ pub struct ReceiptClaimed {
 }
 
 #[event]
+pub struct VerifierRotated {
+    pub job: Pubkey,
+    pub old_verifier: Pubkey,
+    pub new_verifier: Pubkey,
+}
+
+#[event]
 pub struct JobCancelled {
     pub job: Pubkey,
     pub refunded_lamports: u64,

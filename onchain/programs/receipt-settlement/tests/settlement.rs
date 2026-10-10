@@ -831,3 +831,93 @@ fn later_receipt_extends_job_deadline() {
     warp(&mut env, rb.claim_deadline_slot + 1);
     assert!(cancel(&mut env).is_ok());
 }
+
+// ------------------------------------------------------ verifier rotation
+
+fn rotate_ix(env: &Env, signer: &Pubkey, new_verifier: Pubkey) -> Instruction {
+    Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::RotateVerifier { new_verifier }.data(),
+        receipt_settlement::accounts::RotateVerifier {
+            creator: *signer,
+            job: env.job,
+        }
+        .to_account_metas(None),
+    )
+}
+
+fn rotate(env: &mut Env, new_verifier: Pubkey) -> TransactionResult {
+    let ix = rotate_ix(env, &env.creator.pubkey(), new_verifier);
+    let c = env.creator.insecure_clone();
+    send(&mut env.svm, &[ix], &c, &[&c])
+}
+
+/// `signer` signs the digest of `a` for env.worker; env.worker submits.
+fn submit_signed_by(env: &mut Env, signer: &Keypair, a: &ReceiptArgs) -> TransactionResult {
+    let d = digest(&env.job, env.job_id, &env.worker.pubkey(), a);
+    let ixs = [
+        ed25519_ix(signer, &d),
+        submit_ix(env, &env.worker.pubkey(), a),
+    ];
+    let w = env.worker.insecure_clone();
+    send(&mut env.svm, &ixs, &w, &[&w])
+}
+
+#[test]
+fn rotated_verifier_old_key_rejected_new_key_accepted() {
+    let mut env = setup();
+    let old = env.verifier.insecure_clone();
+    let new = Keypair::new();
+    // Accepted under the old key before rotation.
+    let a = args(1, 0, SOL, SOL);
+    assert!(submit_signed_by(&mut env, &old, &a).is_ok());
+
+    assert!(rotate(&mut env, new.pubkey()).is_ok());
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.verifier, new.pubkey());
+
+    // A receipt signed by the old key (even one signed before the rotation) is rejected.
+    let b = args(2, 1, SOL, SOL);
+    expect_custom(
+        submit_signed_by(&mut env, &old, &b),
+        1,
+        code(SettlementError::VerifierMismatch),
+    );
+    assert!(!exists(&env.svm, &receipt_pda(&env.job, &b.receipt_id)));
+    // The same receipt signed by the new key is accepted.
+    assert!(submit_signed_by(&mut env, &new, &b).is_ok());
+    // The receipt accepted before rotation is still claimable.
+    assert!(claim(&mut env, &a.receipt_id).is_ok());
+}
+
+#[test]
+fn rotate_verifier_rejects_non_creator_default_same_and_inactive() {
+    let mut env = setup();
+    let other = Keypair::new();
+    env.svm.airdrop(&other.pubkey(), SOL).unwrap();
+    let ix = rotate_ix(&env, &other.pubkey(), other.pubkey());
+    expect_custom(
+        send(&mut env.svm, &[ix], &other, &[&other]),
+        0,
+        CONSTRAINT_SEEDS,
+    );
+    expect_custom(
+        rotate(&mut env, Pubkey::default()),
+        0,
+        code(SettlementError::InvalidVerifier),
+    );
+    let same = env.verifier.pubkey();
+    expect_custom(
+        rotate(&mut env, same),
+        0,
+        code(SettlementError::SameVerifier),
+    );
+    let j: Job = read(&env.svm, &env.job);
+    assert_eq!(j.verifier, same);
+    assert!(cancel(&mut env).is_ok());
+    expect_custom(
+        rotate(&mut env, Keypair::new().pubkey()),
+        0,
+        code(SettlementError::JobNotActive),
+    );
+}

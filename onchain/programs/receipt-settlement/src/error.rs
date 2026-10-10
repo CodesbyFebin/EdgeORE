@@ -38,4 +38,6 @@ pub enum SettlementError {
     InvalidClaimWindow,
     #[msg("The receipt's claim window has passed")]
     ClaimWindowExpired,
+    #[msg("New verifier equals the current verifier")]
+    SameVerifier,
 }
