@@ -1,57 +1,68 @@
 use anchor_lang::prelude::*;
 
+/// Codes are 6000 + declaration index. Listed in docs/SETTLEMENT-SPEC.md.
 #[error_code]
 pub enum SettlementError {
     #[msg("Budget must be greater than zero")]
-    InvalidBudget,
+    InvalidBudget, // 6000
     #[msg("Section count must be greater than zero")]
-    InvalidSectionCount,
+    InvalidSectionCount, // 6001
     #[msg("Verifier must be a non-default public key")]
-    InvalidVerifier,
-    #[msg("Job is not active")]
-    JobNotActive,
+    InvalidVerifier, // 6002
+    #[msg("deadline_slots must be in 1..=MAX_DEADLINE_SLOTS")]
+    InvalidDeadline, // 6003
+    #[msg("Hash must not be all zero")]
+    InvalidHash, // 6004
+    #[msg("Job is not open")]
+    JobNotOpen, // 6005
+    #[msg("The job deadline has passed")]
+    DeadlinePassed, // 6006
+    #[msg("The job deadline has not passed yet")]
+    DeadlineNotReached, // 6007
     #[msg("Section index is outside the job's section range")]
-    SectionOutOfRange,
+    SectionOutOfRange, // 6008
+    #[msg("Terms hash does not match the job's terms hash")]
+    TermsMismatch, // 6009
+    #[msg("A proof was already submitted for this assignment")]
+    ProofAlreadySubmitted, // 6010
+    #[msg("No proof has been submitted for this assignment")]
+    NoProof, // 6011
     #[msg("Actual charge must be greater than zero")]
-    ZeroCharge,
+    ZeroCharge, // 6012
     #[msg("Actual charge exceeds the quoted price")]
-    ChargeExceedsQuote,
+    ChargeExceedsQuote, // 6013
     #[msg("Charge would exceed the job's remaining budget")]
-    OverBudget,
-    #[msg("Missing Ed25519 verification instruction immediately before submit_receipt")]
-    MissingEd25519Instruction,
+    OverBudget, // 6014
+    #[msg("Missing Ed25519 verification instruction immediately before verify_and_settle")]
+    MissingEd25519Instruction, // 6015
     #[msg("Malformed or unsupported Ed25519 verification instruction")]
-    InvalidEd25519Instruction,
-    #[msg("Ed25519 signer is not the job's authorized verifier")]
-    VerifierMismatch,
-    #[msg("Signed message does not equal the canonical receipt digest")]
-    DigestMismatch,
-    #[msg("Receipt already settled")]
-    AlreadySettled,
-    #[msg("Job has unclaimed receipts whose claim window is still open")]
-    PendingClaims,
+    InvalidEd25519Instruction, // 6016
+    #[msg("Ed25519 signer is not the job's verifier")]
+    VerifierMismatch, // 6017
+    #[msg("Signed message does not equal the canonical settlement digest")]
+    DigestMismatch, // 6018
+    #[msg("Assignment already settled")]
+    AlreadySettled, // 6019
+    #[msg("Payout account is not the node recorded at accept_job")]
+    PayoutMismatch, // 6020
+    #[msg("Refund account is not the job creator")]
+    CreatorMismatch, // 6021
     #[msg("Vault balance is insufficient for this payment")]
-    InsufficientVault,
+    InsufficientVault, // 6022
     #[msg("Arithmetic overflow or underflow")]
-    MathOverflow,
-    #[msg("Claim window must be greater than zero slots")]
-    InvalidClaimWindow,
-    #[msg("The receipt's claim window has passed")]
-    ClaimWindowExpired,
+    MathOverflow, // 6023
     #[msg("New verifier equals the current verifier")]
-    SameVerifier,
-    #[msg("Receipt is unsettled and its claim window is still open")]
-    ReceiptStillClaimable,
+    SameVerifier, // 6024
+    #[msg("Verifier is locked once any node has accepted")]
+    VerifierLocked, // 6025
     #[msg("Signer may not close this account")]
-    Unauthorized,
-    #[msg("Markers enforce uniqueness while the job is active")]
-    MarkersStillNeeded,
-    #[msg("Job still has open receipt or marker accounts")]
-    OpenAccountsRemain,
+    Unauthorized, // 6026
+    #[msg("Job must be refunded before its accounts can be closed")]
+    JobStillOpen, // 6027
+    #[msg("Output marker must be passed exactly when a proof was submitted")]
+    OutputMarkerMismatch, // 6028
+    #[msg("Job still has open assignment or output-marker accounts")]
+    OpenAccountsRemain, // 6029
     #[msg("Job cannot be closed in the slot it was created")]
-    CloseTooEarly,
-    #[msg("Section and output markers belong to different receipts")]
-    MarkerMismatch,
-    #[msg("Job must be cancelled or completed first")]
-    JobStillActive,
+    CloseTooEarly, // 6030
 }

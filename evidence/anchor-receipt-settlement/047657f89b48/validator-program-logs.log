@@ -1,0 +1,1784 @@
+Transaction executed in slot 10:
+  Signature: AUATGMwApojiJwTYvTEce4EcwEFg7BCoZuYkevxoWDVpxQ6GPCPV4h67LWL23YQuVGy4icEzTHTCEhkS2yqp293
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4Okg+bJX/QA6HY0qLiyE28j6UFoFk1Zg+3hO7jL0clQVp9Ak+bNk1laAEh+SrYTo679aghuajcSInxLmjwXtAl+WlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlrg8BXOGGtyPlpkXrycj5sTuj/zyD+P7Ce3zN1UdCT51wDKmjsAAAAAAwAKAAAAAAAAAJoBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 10:
+  Signature: 43p6U1W24ChKV3tDNZmWkfmByz3jAY2ttnKjUq33CQTcJK4gXXzWtCwQtNQrmcLJxpzCbCSqaZcunbJY3RZTrvrs
+  Status: Error processing Instruction 1: custom program error: 0x1777
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4O/0IgL5Np3ou8rVj4QNRyrWZAW8kdQZvzxK4LDwqIw6BXIzWXXzvTnZtl429DKKnhSJBj2wmQqxookVYcrSYBtfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn64lyEyDw3iPvQOu+iKc9D1uAWlX9NjjxKJeMA482mlvgDKmjsAAAAAAQAKAAAAAAAAAAsAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17350 of 600000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/refund_after_deadline.rs:39. Error Code: DeadlineNotReached. Error Number: 6007. Error Message: The job deadline has not passed yet.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 8092 of 582650 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1777
+
+Transaction executed in slot 10:
+  Signature: 5snwd7MkXkyqcWmoV23SWGAv3Zc7Cx5i5UUQfxBoX1KLy9kuX1v9kgUn2fENRtEjBy8wJN8b9EiksfpxCsycntja
+  Status: Error processing Instruction 0: custom program error: 0x1774
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/create_job.rs:39. Error Code: InvalidHash. Error Number: 6004. Error Message: Hash must not be all zero.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14464 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1774
+
+Transaction executed in slot 11:
+  Signature: 5xE1CyQr8pLJ7CNRm1Rpzyoa1mK7TopHXG6bRXAJmQMZk9gHbiEXJ89YqrWUF2XPFDKBgghXjCxFAtEwZnbiVCJp
+  Status: Error processing Instruction 0: custom program error: 0x1770
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/create_job.rs:40. Error Code: InvalidBudget. Error Number: 6000. Error Message: Budget must be greater than zero.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12968 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1770
+
+Transaction executed in slot 11:
+  Signature: 3XnVu4fxjuq7QDhFgHcz8nYPpX1UkWVVvjZkrKPaYrUmMNLJHaLRZd217hUGVRJWhyFAuREYiM75fL2t5yMaN3Dk
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4N6VO++RvH7t7d4vlJtNo5tOM6PryDujhMa9BJqhMdT+tF4+HUxwk3rXHFOPTwAqcb/Ql9sdd3eL/K1gcwTFikgfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5YkE2HtuCX4xqu3IjiF9Vl4lxzdgb9yMFsmv1rJPucqADkC1QCAAAABAALAAAAAAAAAJsBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 11:
+  Signature: 56wx8QtVcvaABq7wQj8hZVcV1YGRABmU8B8HbLGmNx5ThBrJWusussiKDTY61E5FuuuXYWhppNiifu1u2xeRDJuQ
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4PMYVUg6dgsKcunnETVrykCVxSsnc+MW1neT9XRc57lsNojk4IZkOOBBaDzauQfSZlrVX7H5y7eiW3sLGFJPMdufn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5R22nRPgjgqVtr7FUdAe3lcrQ7xpXYx25fAyvp/vewkADkC1QCAAAABAALAAAAAAAAAEcAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 11:
+  Signature: 3Dvr3P5cxbsQce7sXQ1JhGN4a6ZYBb85ju8UU8tdF1hjTwgt7iqZpeUT4JvoGj6dSJXM7dQpbVEBaxrJoAWw1eTu
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4OMGC0RJM1llz++4d+GKXK2kcE5OUKMZUua6E1drLtKqYpa67zlFWT3PisH48ItAnql7I6l4KzWrJg0UI81IBLQfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4tmKXYyhyvxL06Ml7feaCFfzhf86HHZuieJ+TuXB3Y/wDkC1QCAAAABAALAAAAAAAAAJsBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 11:
+  Signature: 4FDFUL4MuvyUfK1idsrhApiXbMb4j4mVngwyLDYuPpbBHXCaCm2qcqTVpkyot2priEJ9U3wsgWY6aQse6LNwSjGM
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4N75GUIAue+4jzt4ErS/cqBhTv9SWC3w7ePWFhpmzix19OUHcJXLGJi3qRhGAmghUAVOHCnTUXSmiexlqrhatK7fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn49U/rPgDEJLlVVywDohYergwMfalBIs1PiLuWjySZ5MADkC1QCAAAABAALAAAAAAAAAEcAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 18850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 11:
+  Signature: 5C4rnJkgLbcntKHmbRgG8rNPXfepkeN9oswUDxpBgeU5efpDWs4B4RkiCDU37eZ1ZJZQB6uoQ5wds6Gq8vZf37ty
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4Naq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZKWKIDUBnMc3SVmVAo+KVjNwiFRkuv52/UHFkZH7gkhNfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5GWofDkN/7ubDVegUR50l7FQkI0DLd5orpapA+PGNu/wDkC1QCAAAABAALAAAAAAAAAEcAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 12:
+  Signature: 5h2ydTjoCN2sXV9qdpj5s2Hduntx7AWkyuPGFbbACV6qTnYaYki4t7GajUFMwxX99cSz6DniXgFLb7xVjUq6F14Q
+  Status: Error processing Instruction 0: custom program error: 0x1771
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/create_job.rs:41. Error Code: InvalidSectionCount. Error Number: 6001. Error Message: Section count must be greater than zero.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14486 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1771
+
+Transaction executed in slot 12:
+  Signature: 2QdbfDa1RrsgYcSZySh3mTKWem2avye5m9TQQVHXz9NxNbDhqvP6eDHEsqEkgJVvVtG7iw4qhCyGAVkjw1if5BEC
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3J75GUIAue+4jzt4ErS/cqBhTv9SWC3w7ePWFhpmzix172teIhDZo63gvdIQ/hmBGyKODaR08HCebh1MJwS5D5wAAC/2si7LbNRbCTdLnaqLAV4hj3GdZ41u8meXa29aBTU17/ayLsts1FswMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREMAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 12:
+  Signature: 5ALrTxWK8nTNgHiM9gDxL9maBXwnaNLXLUryVUi3vazyG8NoFhGUMTqNZZKLJD3xw8x6PkBU8nQRXA14RgJwmhft
+  Status: Error processing Instruction 0: custom program error: 0x1779
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/accept_job.rs:49. Error Code: TermsMismatch. Error Number: 6009. Error Message: Terms hash does not match the job's terms hash.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11325 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1779
+
+Transaction executed in slot 12:
+  Signature: 2w6Z8FvkpLQb65rE6ohsvSXi9Mkc9EQDmuvP8RTqExh3k1XxPN7Jne5SK6FXakH1W9hJ5AQbpCZod4ZLYA5x7pu8
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3Jaq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZNd/lSN8SH7cyIOcykyYORM2KtahkpQANfX5oYXqk4DbAADtYB0sBwS6BqGZLN7t2OUjYLoA8OItC3CmnueNe5CBDO1gHSwHBLoGwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREMAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 12:
+  Signature: 46LGtEFHdoBnnwQGU9reRi6xqVRx9fV4efrmZnsHPxzXTgh5wPSVetsJTkPC2a5FWje7P8ucsvZnGY6wtbZhjXWs
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3KMGC0RJM1llz++4d+GKXK2kcE5OUKMZUua6E1drLtKqRoE5xfnf15CkAIwPmFohAWuDEFGPK7MKG08QRJWSK4wAgA2vylDZiWLmG4nL+fXIuB2/DgTp+FUaMX0E/MQjTqpRza/KUNmJYuYwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREMAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 12:
+  Signature: 581zRJiYxc8tCT3ZZ3MSuY2B4HHFYL6cuLg9j5rs9oR8vFq3tmkFFAVELFVuRonAvoKpDBF89fSHBuXSBn6uj4eC
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3LMYVUg6dgsKcunnETVrykCVxSsnc+MW1neT9XRc57lsN4ju3YnokoALsrirr6Hm121QwBd7c4/5yk8mN+Lq60cAADPSmxiGgeS4zRjT82POhzFXB9YUgNsTHGr9f2RSbM3rc9KbGIaB5LjwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREMAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 13:
+  Signature: RXrPVAX2G163BMpPwjEEu5JMHHCpDTfE3n1ggvt7Ryh3AMfuZMpUP1LrACkHbdriHuenGB38kaN5TJmgLktJooj
+  Status: Error processing Instruction 0: custom program error: 0x178b
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseJob
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/close_job.rs:22. Error Code: JobStillOpen. Error Number: 6027. Error Message: Job must be refunded before its accounts can be closed.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5300 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x178b
+
+Transaction executed in slot 13:
+  Signature: 4hZp9XwZkZ3NdDzjUG16n8Z2bpeQvrfLJNtMd1ieoCdoCeQkZEm8TfhTNmd8BNxajR4NXEDrhb75o1zgcQ4Crqpr
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3Jaq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZFb/nTLXxGPJhgaaqivPiJlKY94oihd1OHf6UoC58ga7AQDtYB0sBwS6BqGZLN7t2OUjYLoA8OItC3CmnueNe5CBDO1gHSwHBLoGwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERENAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 13:
+  Signature: 4pPrQLzJCpvZ6NcGVggNxKFu9qqGQQxdPmA7dcZNmLVrqRBoSDxgmg7hrBYwHqCTSeY2gJ3NcwwXF28cd1Hdv8Ve
+  Status: Error processing Instruction 0: custom program error: 0x1774
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/accept_job.rs:50. Error Code: InvalidHash. Error Number: 6004. Error Message: Hash must not be all zero.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11322 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1774
+
+Transaction executed in slot 13:
+  Signature: 51qauPV6S3woxEz9sfT2h6Qi5D4Lfwc3X8XDspQ7N9WAydfSngyvQE46ELh61VT3DyMoWd1yZLNFoMorpwjBBee1
+  Status: Error processing Instruction 0: custom program error: 0x1772
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/create_job.rs:42. Error Code: InvalidVerifier. Error Number: 6002. Error Message: Verifier must be a non-default public key.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14493 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1772
+
+Transaction executed in slot 13:
+  Signature: 63CWN5eEFAo7r3eaAwDfcEtMVRxFeDjK8X4rYZgrdQeAVB7KEQWFYDc6BLxaWpzqXKrjo8778xyXsxfAgCwsEgV9
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4MjGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0xrx8hZrU3CXxiy4dnrRT5C7zhHrhakmuYIiDNNrZsn6fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4y7ICWBQYzdgepFgkIcMhxd93PwjPOZcfmq9kQ3y3tNgDkC1QCAAAABAANAAAAAAAAAEkAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 13:
+  Signature: 2kHBy7nRgZeS1AdjCA8SP75jN9xr3Uuxf9gMyubSeQwe9nFza4XhC1qPY3RS7GCbjpkwsekr3x9Cn1XfufFkEgRh
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4OkTTcORzll/Ukg2Na4cSwhONu9MjDVoU2qCJFeOx21QDSdtMxQrEeiCYMhq2Geu3ZdFloWZPT/hd5lcJsdZYxOfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5UjjfUsJ0kEAxRanLklQXp3UR8MiWoF7y2YXWygK2apQDkC1QCAAAABAANAAAAAAAAAJ0BAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 14:
+  Signature: 4BmTHNmj73RjEYA6YV2yWYmX4a5BmudXoArxHS1BbFW9LRDJfkz1ovaPFxscFMEYGzcAn7ahMG4BKacsAikHsaJU
+  Status: Error processing Instruction 0: custom program error: 0x1774
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/accept_job.rs:50. Error Code: InvalidHash. Error Number: 6004. Error Message: Hash must not be all zero.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11324 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1774
+
+Transaction executed in slot 14:
+  Signature: 2viyFHDQZqh3C2etz7UXYotwQBJbkkHLSvib1zjtCoJNByMUyXu9gmPXsXuUN7R71UaCcPXnn1UAuivx1GypP4sf
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYtaq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZNd/lSN8SH7cyIOcykyYORM2KtahkpQANfX5oYXqk4DbAADtYB0sBwS6BqGZLN7t2OUjYLoA8OItC3CmnueNe5CBDADKmjsAAAAADgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 14:
+  Signature: 4Sz1JZm36cYrYRvzxFXEfjQbsWUfaxVxiVPdbdJMrz997JLonXni8vW6Z17oyrUJNfZQV5DKFLvmpo19TCWoekGK
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3KkTTcORzll/Ukg2Na4cSwhONu9MjDVoU2qCJFeOx21QLiky3+dRE6kF93pGMfEnRbzV/8HuZHVnaA6Ol0bnuKAAADNGCkM4lHTFMxO9RSiTvbM8DfAo9Y1X0QsHYamoQoiJs0YKQziUdMUwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREOAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 14:
+  Signature: Pm4MoGWKciAkMmwNnCPQ3XUut73oK34xs7VYXXwG3HZkB9k8dJ45fYHquTr4oUtA9kGsNT17qDyEgXXKbnQv6cB
+  Status: Error processing Instruction 0: custom program error: 0x1773
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/create_job.rs:46. Error Code: InvalidDeadline. Error Number: 6003. Error Message: deadline_slots must be in 1..=MAX_DEADLINE_SLOTS.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15995 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1773
+
+Transaction executed in slot 15:
+  Signature: 29dyM5amX7uhzFnFX3UEQwVywsG3DcnKZbDKC3Sdh4Dr2KHu1Pf4S8AvL9QGtgZV6nUJReYH5CmXttVVUcJc4977
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4PY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCoQv1SiGJ+/8raiyTjFMycoO8hPkCp4eWIGwvtflbb58fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5J7WVgOl5IFB0IbG7McWIh/NLiKuv7+ldcKbGV0WMXDQDkC1QCAAAABAAPAAAAAAAAAEsAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 21850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 15:
+  Signature: 3gkGsr5NbkMPkhWd9qRVjFi46A4jmkJ1D5NLjSzQHMaAre6tYJKLxptysCbTZ7ZKncjEBnBvTCDg74oXJfpohocU
+  Status: Error processing Instruction 0: custom program error: 0x1773
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/create_job.rs:46. Error Code: InvalidDeadline. Error Number: 6003. Error Message: deadline_slots must be in 1..=MAX_DEADLINE_SLOTS.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 20495 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1773
+
+Transaction executed in slot 15:
+  Signature: 4eRZRZ4KTnTDGxV8sGRbfpuFezVsDBjoJVBeQeLsS7qyQEVZqtJ8PXzobnYBnMeuuxh6V4xe9XYNPMZw1MjbgFxb
+  Status: Error processing Instruction 0: custom program error: 0x178b
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/close_assignment.rs:43. Error Code: JobStillOpen. Error Number: 6027. Error Message: Job must be refunded before its accounts can be closed.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14107 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x178b
+
+Transaction executed in slot 15:
+  Signature: 2kt3SgnKqn9ULMKJdDHtHN14vgoVdevhPPiKTpxDWdyWhYqwkFTJbxYnsaVRBNRkxWRx8v4AGyUakKL2HrqADPYt
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYukTTcORzll/Ukg2Na4cSwhONu9MjDVoU2qCJFeOx21QLiky3+dRE6kF93pGMfEnRbzV/8HuZHVnaA6Ol0bnuKAAADNGCkM4lHTFMxO9RSiTvbM8DfAo9Y1X0QsHYamoQoiJgDKmjsAAAAADwAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16246 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 15:
+  Signature: yZ87APMsCQhN7H6bkHomhP8TbcNc7PXYCiWWF3rVCcYVXhYbH3SjN7hPrkjLjrfgYJ6A4C7qnV7d7JRVEzWRKTe
+  Status: Error processing Instruction 0: custom program error: 0x1778
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/accept_job.rs:44. Error Code: SectionOutOfRange. Error Number: 6008. Error Message: Section index is outside the job's section range.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11330 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1778
+
+Transaction executed in slot 16:
+  Signature: 5gmnL8HeujykbqyqdbLvuYwwLELfZQRUdvhh4NLETHKh4eCVuhV4XqU9AKWq1yoGJiki8goLHD5DdBy3edDdqjBS
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3IjGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0zW76/GQO1eN/Ra0S/iJ8GBI6MfbapxpzGsil4x7Kk8MAABMoeYN8tV1LOagvo/gLGsExUdg9b9pMsmVIXK9Qbf0B0yh5g3y1XUswMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREQAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 16:
+  Signature: 646S9VkCRUMz8SLBqnefEKbbEbBknz3BamDj84BDqY7SqCLSkQrmujSNUEh1ZSecJVMMbTnHy73WMgqH93CMz6kG
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3LY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCssIx2OaqcfEi+6vqtdmjo6dQynHqAHLb5/UPv4u0zCcAADGw41oqfsS25HVZ3jdmsP4zUU0iEGspwamqqk+ckR/OMbDjWip+xLbwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREQAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 16:
+  Signature: 3hnLNmpmkoEjCQhAiWoEwFooKa4kzYPoa5f8kAtSN9h21zFVmF6yVoNRMuXtXLDmvGoKmkv5tC446BSrQX3QTtzy
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke6kTTcORzll/Ukg2Na4cSwhONu9MjDVoU2qCJFeOx21QLiky3+dRE6kF93pGMfEnRbzV/8HuZHVnaA6Ol0bnuKAAADNGCkM4lHTFMxO9RSiTvbM8DfAo9Y1X0QsHYamoQoiJgDKmjsAAAAAzRgpDOJR0xTMTvUUok72zPA3wKPWNV9ELB2GpqEKIiYQAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13293 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 16:
+  Signature: 5rwYgoMapR1uxzUoTSekACNwf6hADo7213WmmLHLVd2RBL4K9y1pcwgCi9SKkvxPiuqaPjguoyRDnB1j4hebFvjb
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3J6VO++RvH7t7d4vlJtNo5tOM6PryDujhMa9BJqhMdT+p6T5FJix9Fxfs+Z1nqEmkcZczITk8TVdzJwzZQJanYmAAB2lMx+qTrF8pbsCDLEIGqDUKcmTdORCDU3+I8dPtgLqHaUzH6pOsXywMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREQAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 17:
+  Signature: 3zau4wheGsbrVFL3kr5psScZY33aH6k2Jg6HD4YTbzTgr4aPD5ybDNh4JjbkaBWNJreZUggfiH3FzwtGDs68TcP8
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYsjGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0zW76/GQO1eN/Ra0S/iJ8GBI6MfbapxpzGsil4x7Kk8MAABMoeYN8tV1LOagvo/gLGsExUdg9b9pMsmVIXK9Qbf0BwAvaFkAAAAAEQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 19246 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 17:
+  Signature: 2pyjoAPYiy8nwkXeZ4jfAKvRF9TBHJvnEwH5HmdbmfcsWPwHmN1n8kVnHoCScGcH66yq9itEdvgeubzh2uaUBFjg
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYvY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCssIx2OaqcfEi+6vqtdmjo6dQynHqAHLb5/UPv4u0zCcAADGw41oqfsS25HVZ3jdmsP4zUU0iEGspwamqqk+ckR/OADKmjsAAAAAEQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 18:
+  Signature: 5Tgs1cDQvrXgGVyEnNnzXdpWQnRi9TN2Uqznt9pwHKrmFCJPCodhhyoMf1UnNXMdr1v4D1A8vTxraNvG1t7kp1GP
+  Status: Error processing Instruction 0: custom program error: 0x0
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Allocate: account Address { address: Bg2DL7EVsUQX18693zXQtn4cqKgAKf6AsECTwGcKpe9B, base: None } already in use
+    Program 11111111111111111111111111111111 failed: custom program error: 0x0
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5267 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x0
+
+Transaction executed in slot 18:
+  Signature: 2Bfn9VsE3vPsDb8UV2MWZnTQr4PBDccJBqNTyEWP8Ygx4Pvy8Heo9QiNXiERgLoPLUhCHNPhZnF2n44t1tjDPb5e
+  Status: Error processing Instruction 1: custom program error: 0x1783
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/verify_and_settle.rs:53. Error Code: AlreadySettled. Error Number: 6019. Error Message: Assignment already settled.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11487 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1783
+
+Transaction executed in slot 18:
+  Signature: 5kfADByN48TvpCSRfY1tmtBhcNBazwP6A9136DpvSaKuXmcYJ3R48McYb4c88D6UXWure6s3x2J8Gctr2AySMXnu
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4MHiq+CKVHmMPuB35HF7n7+rIkyBI0A1sCI8QCcgmit9JBJiiki9eYR/2diPbGU4JGpRJ4xEdFYKcWY1V4zuAqufn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5prY7cO/Ore59Yf89XctZa/1DNCQv37mZJ2o1JzuUE3gDkC1QCAAAABAASAAAAAAAAAE4AAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 18:
+  Signature: Km5qPNKgsqXgPF5KYzFKF4qL5k1Hapd9eha3GYdNokefaRSH3aU1TsonkDUWepKGEYWwMxbjz2ezZMsjNa2rwpx
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke4jGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0zW76/GQO1eN/Ra0S/iJ8GBI6MfbapxpzGsil4x7Kk8MAABMoeYN8tV1LOagvo/gLGsExUdg9b9pMsmVIXK9Qbf0BwAvaFkAAAAATKlqG8PStEB3tB9mOt5DGw/RP34qYNn+wI6QdbN6QAQSAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13485 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 20:
+  Signature: 5bi28u662fzZ8GpMsA3uQphc6AtEtY1Zt6BdoVDzDSW8hQa9EK95vcUzWDaujB814AfNXPw7oCFEC3B2ncsdEcs3
+  Status: Error processing Instruction 0: custom program error: 0x1777
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/refund_after_deadline.rs:39. Error Code: DeadlineNotReached. Error Number: 6007. Error Message: The job deadline has not passed yet.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 8263 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1777
+
+Transaction executed in slot 21:
+  Signature: 3K7QitfHSJsz3z7Ph3P9tF5va4LTKdhNiv2Wf6fhLZrRKJHs5ZXhHxH7Lq6jStbR9iH9nFjtiygypryHyEZJGYqi
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4MNSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHIqk6R4VqSVpp6h02QjAda5LM08HAug8jfKYC0zZQ+Hu0fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5XomOM9X8YhOrrrA831O54WSRqNlbUKYLnEHXe3l+wVADkC1QCAAAABAAVAAAAAAAAAFEAAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 21:
+  Signature: 3RwKpWdceYzs2cPoxhEUizfvyJkz4Xt3TSDR19dWAGnLekztAafrJzrGjaRpnyoH386n19k8tUp2GxVYdmYGyHMo
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4My2+HP7HpwJKqmrs4b/YHoFe/ARK+ZO6v8lmKwsEs2ve/sxtUqoHHYR5aGqGHOQPk9AWtyqpR+LGiD3/JbQVcvfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn63WMjaw5ThWfuWZqH3iT2k3cRMPiuCpzZwXzT4XykLlQDkC1QCAAAABAAVAAAAAAAAAKUBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 22:
+  Signature: 25Z4oR7h1LsJeaq8QyygamxQ3EiQSbaUg82cBJqjevkN959bHVdYvLoXVKNksz4BzZdWshWxXxiJEsws2Ay6dWdb
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3INSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHImLJ90DDOG1u0mmHYmXsCJm4TRYDw7+ZyN2Ly1P0J97SAACb9yNlSyEbuFWa1EagV/mupd7lFVnhv7ty2+vlMu/I45v3I2VLIRu4wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREWAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 22:
+  Signature: 5gZuFrFLMaSotXqE4h2kFDrCcqgq3Pm7o7gXcUMxUkQcix4sZBvgnhPt7fV1q9RCR2QttxYUeDzekJu9Gg8LvdDZ
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RotateVerifier
+    Program data: TF6QSZn5T2Iy2+HP7HpwJKqmrs4b/YHoFe/ARK+ZO6v8lmKwsEs2vbdYyNrDlOFZ+5ZmofeJPaTdxEw+K4KnNnBfNPhfKQuVpP6Ab0je/KGYJI/iy8/ofFfjGoLLbuAGy7eomFwwjXg=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4665 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 23:
+  Signature: NNSnretguB1ou63VJNh3Xyg7MXJYSUP4Ss9eWJeUjkYQZYhV6g9WHXxsh5UinQmeX1pcn9e6r9K86YzR1iPnMrH
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3INSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHItwx6rqbtcCMxu/mTnbfxSv3ZWP6ERyHB2SCW9d8Gl0UAQCb9yNlSyEbuFWa1EagV/mupd7lFVnhv7ty2+vlMu/I45v3I2VLIRu4wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREXAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 23:
+  Signature: mzkZZn9GbuEtBagCZdGStktGAoT71UQiZBkhwNjmv4bkAg7cP8s3rABHF8mziXT78njjGTXTCUGMsX2fg2zTnta
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3Iy2+HP7HpwJKqmrs4b/YHoFe/ARK+ZO6v8lmKwsEs2vdBbOarrbiRs21QhxOoXW8eZuKUeph4vy8pcii3nwjIGAAAysrw1yVpN7nikZ+pPfBpdj/2RCxpH9RLnJwBY3K/zkTKyvDXJWk3uwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREXAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 24:
+  Signature: rfsr66pFVuvAmmorQuLS6Lw3Q6PG3xyMyhbhLEdnNoAuwJ4ftMEQfBSskymYF4TvY7NrrQmYvDsPJHxpXnZ3msQ
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYsNSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHImLJ90DDOG1u0mmHYmXsCJm4TRYDw7+ZyN2Ly1P0J97SAACb9yNlSyEbuFWa1EagV/mupd7lFVnhv7ty2+vlMu/I4wDKmjsAAAAAGAAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 24:
+  Signature: 4Sm2fwrZrxkRiYLYRXbNDmSXWA5DZnTZe27o8v6WULQgssYbJRo7F94eCnfSRrsjcrvDyTuqWKAqsxDhPRVTYuWr
+  Status: Error processing Instruction 0: custom program error: 0x1789
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RotateVerifier
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/rotate_verifier.rs:22. Error Code: VerifierLocked. Error Number: 6025. Error Message: Verifier is locked once any node has accepted.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5327 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1789
+
+Transaction executed in slot 25:
+  Signature: 2NtG5oZDa3K9Y79zkDAvpMQbHPQAaFSQsjM9dKcG2r1Up22TGiTLE3FLQjuqxeqfH88zJeiV5MkRxZq29Sx2QXsw
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYsNSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHItwx6rqbtcCMxu/mTnbfxSv3ZWP6ERyHB2SCW9d8Gl0UAQCb9yNlSyEbuFWa1EagV/mupd7lFVnhv7ty2+vlMu/I4wBlzR0AAAAAGQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 25:
+  Signature: 2ZqPahTwCmHUsNRoPK5ssen8Scr1tsbfABeVNayyo2v5brM1hEjoHTWkKw5F6CVzGxGkvAWZyGaYP4mF9rEtAxiB
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYsy2+HP7HpwJKqmrs4b/YHoFe/ARK+ZO6v8lmKwsEs2vdBbOarrbiRs21QhxOoXW8eZuKUeph4vy8pcii3nwjIGAAAysrw1yVpN7nikZ+pPfBpdj/2RCxpH9RLnJwBY3K/zkQDKmjsAAAAAGQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 26:
+  Signature: uL8nHt8fFCmgRaEJr3JU8LpwkU28FAZsjdRN7b72nVT2QsfpEic8P7TBBbDRVKk4RJUTYxfbWcDeMPkBH2EPXuo
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke4NSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHImLJ90DDOG1u0mmHYmXsCJm4TRYDw7+ZyN2Ly1P0J97SAACb9yNlSyEbuFWa1EagV/mupd7lFVnhv7ty2+vlMu/I4wDKmjsAAAAAm/cjZUshG7hVmtRGoFf5rqXe5RVZ4b+7ctvr5TLvyOMaAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13293 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 26:
+  Signature: 4CLJj4DFjXeRmyE6XMxAvJHom4Sj2sqqspvhPdYagd6TQX9NLCwnswLk1HMmNiWqRoCAFr59A2fxw9BZxeFGe3RN
+  Status: Error processing Instruction 1: custom program error: 0x1781
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:149. Error Code: VerifierMismatch. Error Number: 6017. Error Message: Ed25519 signer is not the job's verifier.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12218 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1781
+
+Transaction executed in slot 27:
+  Signature: 2cVnkSNesFakktd9YKNLCAovQkyZiPvKAXA5FA5xPnj7PQmwcp2KtLtE9d3RPYVPr6CbXyJ3kZQJnt747Jj4MWKG
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke4y2+HP7HpwJKqmrs4b/YHoFe/ARK+ZO6v8lmKwsEs2vdBbOarrbiRs21QhxOoXW8eZuKUeph4vy8pcii3nwjIGAAAysrw1yVpN7nikZ+pPfBpdj/2RCxpH9RLnJwBY3K/zkQDKmjsAAAAAMrK8NclaTe54pGfqT3waXY/9kQsaR/US5ycAWNyv85EbAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13293 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 30:
+  Signature: 2YLwxGQTMRs5i1qFC4bL4KzGAxiKm9hjLcYBdTNZCcjYjNgtRvuqssuBnU8qUanA8vdam8UoH2svrxrBymmJrfBq
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4MCFaFsKPhScNuNzaVdOc/aAmz4/DDA7sbcv5wIF8RcWzkAVfVrOwbxG6oR3mXS9cGbKBsS4lXSSIlUB7mH7cR/fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn7pbXaCMajdlpgGgXvkNAFBhzpPfgSoCwfyM34n6mJWrgDkC1QCAAAABAAeAAAAAAAAAK4BAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 32:
+  Signature: 4qn5geV6FPhkxtxVxBfYVJ4ZekuQ21a1ohUSsAcZfkKNxDuwzoEHTMRxtxsViKCnsnfU5zASD532aroGMkXV7n7o
+  Status: Error processing Instruction 0: custom program error: 0x7d6
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RotateVerifier
+    Program log: AnchorError caused by account: job. Error Code: ConstraintSeeds. Error Number: 2006. Error Message: A seeds constraint was violated.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4773 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x7d6
+
+Transaction executed in slot 33:
+  Signature: 2KQZsoYYnvZrLntJg4YhaFvNgmLLuAyrteycP11Xk4AZSWLt24xgdBXBTKJeVxnwrsCgiLAz1vK1tqgYbCuWnc11
+  Status: Error processing Instruction 0: custom program error: 0x1772
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RotateVerifier
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/rotate_verifier.rs:23. Error Code: InvalidVerifier. Error Number: 6002. Error Message: Verifier must be a non-default public key.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5334 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1772
+
+Transaction executed in slot 34:
+  Signature: 2JEbpPhMCGnSuywGtPYyrzwodC3zWhX9wV63VCR7msDCoEj8hKVcEv8HWwsJXq7CnxypUdbLkZbFTfNxP19fUR1M
+  Status: Error processing Instruction 0: custom program error: 0x1788
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RotateVerifier
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/rotate_verifier.rs:27. Error Code: SameVerifier. Error Number: 6024. Error Message: New verifier equals the current verifier.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5333 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1788
+
+Transaction executed in slot 37:
+  Signature: 4T9yV5YpYD4YQidWGp7fnVgiL28mQ1oUArA6eN7UHHexgCT1FjB7GiNLLUe3RXuzYRRK83ByXhDJft9sq8d7Vy5z
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4NGCRv+cYTY2hIMpOyNOtET5J6ZNrpuSF+AnOvDKVa+H9FeBlavoQFOWRdhN3C8mmu30yR6AE88JWqPGzBIAVaffn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn7znj4bHD7Q+A1Ob/98V6R15G019+DwLJjB+rq9chR1dgDkC1QCAAAABAAlAAAAAAAAALUBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 38:
+  Signature: 4pK8uNukTyWiSdukVABepgirCjgN5v2oxvKYBAhzmrTp9vCQ8RTEuoA2DhWHhYZzQ8fqeXKzMzFpZUhKtWuKN1Qr
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3JGCRv+cYTY2hIMpOyNOtET5J6ZNrpuSF+AnOvDKVa+H2D+MlQQiOEkeZWL5wDBky/qc99F+hYjspjMaMEXf1yKAACeaFkioF7zO6ahgbVDm844dnAUZwFan+OZ5dLZ797EEp5oWSKgXvM7wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREmAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 39:
+  Signature: 5rXxHkDy7CaBcg7dyshjFJiEba7KtiVW8WuhjiF9FC49S7oUHvRAL1GimXq7vYbEAwvGBEkiAfg6CCvL2eaXFXFw
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYtGCRv+cYTY2hIMpOyNOtET5J6ZNrpuSF+AnOvDKVa+H2D+MlQQiOEkeZWL5wDBky/qc99F+hYjspjMaMEXf1yKAACeaFkioF7zO6ahgbVDm844dnAUZwFan+OZ5dLZ797EEgDKmjsAAAAAJwAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16246 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 40:
+  Signature: 3dtiv294xLq6HV26MDv1Yt1GLPR3V2rCoBJEkor52426ahgEYRjBQGX3J3xHJbRmTp71b2TbcTxvSLUxouSgPE4E
+  Status: Error processing Instruction 0: custom program error: 0x2
+  Log Messages:
+
+Transaction executed in slot 43:
+  Signature: 2rYwh1o6AWoVYhBSCXLGGqtbg2ZFbcVuKykDUVuLgu8zrzgW3GSVSCaDvbBTe6LasF6G3bpgFevrGtjq9UeRAg3
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4Nzjv0e0jPnLuYwpOYswq+Qd9Tl1zV0opCZQC1Tpq23GTlnK+uG7Hp6hb6mEv+LnMk8dgThzUdTxuNaTzZYAqlmfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn6LSrSyeDO9nXlL/wJNQ9dbZQhzv8xFRLHPbku/k32OtQDkC1QCAAAABAArAAAAAAAAALsBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 44:
+  Signature: 2tmb9iu7G2o3ZDDp2vJWiH6R3HTH18Mt1DwNxrpBXB3zSRDAgY1qtGuDsxmF9nwZds2tmBNeZC7x5aRRVLeaa7cm
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3Jzjv0e0jPnLuYwpOYswq+Qd9Tl1zV0opCZQC1Tpq23GWiNdthqjT3vySBClWRen6F1WBoofMeKlCCRhXcCIBCKAACuqaOAE+pZ8byin3yzZ0c9ERsd6JhcLrojaEVy2BkgoK6po4AT6lnxwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREsAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 45:
+  Signature: 2e6jdAx127TtR9DmFbsYJAoJwg7Kf6uUe5F8qeZ79QhT6Q2caeuCcYBNc3qem1jcbczu5JfiSKeR3hRqBDjNNshX
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYtzjv0e0jPnLuYwpOYswq+Qd9Tl1zV0opCZQC1Tpq23GWiNdthqjT3vySBClWRen6F1WBoofMeKlCCRhXcCIBCKAACuqaOAE+pZ8byin3yzZ0c9ERsd6JhcLrojaEVy2BkgoADKmjsAAAAALQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 19246 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 46:
+  Signature: 5imzWNyjeFMkHFkftfvGaVBtWW6Pv8KT63pf16nMCW2Q5ZdSKTggg3eWnoscQToY3sUUAyoGy1TZvb5c5KGE8cwL
+  Status: Error processing Instruction 1: custom program error: 0x1780
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:133. Error Code: InvalidEd25519Instruction. Error Number: 6016. Error Message: Malformed or unsupported Ed25519 verification instruction.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12172 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1780
+
+Transaction executed in slot 49:
+  Signature: 5JyBxzDAZyBdupwX6jySfizHzdTgzwhWsfzwptkikrSzba7GuK4DuVCECtrzu7F6Z7e4P9AUgUEUVtyGQUnxM3NB
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4PR0LWhZHc3XddHvXTpaNHDXBxVeM7RJqn3DHVlWYlBNBs9WC0M5JdzsXOvsQWW7QvjkWa4BbyyTAHiV+C5Vp6wfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4sFR1NCWhImlOnJgwjo2SEN4kPj0763otPkzhGFkU7LwDkC1QCAAAABAAxAAAAAAAAAMEBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 50:
+  Signature: 4QSMekQ3j9LcUkxSnQ1T76CxzzhM7ZQnpBXmMox41LUp3NjdqGAvGtZT41RENrfyKdbq4fbJi729bazw9yuz4Zm9
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3LR0LWhZHc3XddHvXTpaNHDXBxVeM7RJqn3DHVlWYlBNBTDCJrMq4w/vBD0pYLLBx1YNvzSVNXlZLKU98reMYb4AADgx3w03Ofk1SH7gMBfOpaB+w9lZeyVjKR2MuvHBs8R+uDHfDTc5+TVwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAEREREREREREREREREREREREREREREREREREREREREREyAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 51:
+  Signature: 4EtXMYrbknCiJnbvepgEseQ9xfA6bXWAfRxMZhowaVyqUiHaBfrTbncjNb4gJe7MpMJbcgKvFB9AHPiQLP7FCqc9
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYvR0LWhZHc3XddHvXTpaNHDXBxVeM7RJqn3DHVlWYlBNBTDCJrMq4w/vBD0pYLLBx1YNvzSVNXlZLKU98reMYb4AADgx3w03Ofk1SH7gMBfOpaB+w9lZeyVjKR2MuvHBs8R+gDKmjsAAAAAMwAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 52:
+  Signature: 6gbK38KnCiwCvCnKeqW1FoUeANWuCBeBibtowuUaxftSqfLp3Rz2TcM1Kmp7XoFnVrz93D94HHZUganAja5eCHx
+  Status: Error processing Instruction 0: custom program error: 0x177f
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:99. Error Code: MissingEd25519Instruction. Error Number: 6015. Error Message: Missing Ed25519 verification instruction immediately before verify_and_settle.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11830 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x177f
+
+Transaction executed in slot 55:
+  Signature: 5fBFDPjVK6xW9YTUwEboKCQWu1PcoNGi2NDwga7FwcbQMgd2mDycTsPtFpYoCM2GKvUnanEngPUTkad5Z2xRRMwP
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4OPs6LSXuoGQfI/OFpemLOTLpLKP48XblTmV9j1BHlc9cV9Dk3OCoSVxqJQSO0jydi6lFLh5VabV9jObwwCEqYofn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5mJk5HzqnMTrSsCiNq2DzgZzqT3BaTKqPY88AoEMqtYgDkC1QCAAAABAA3AAAAAAAAAMcBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 20350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 56:
+  Signature: 2UAiJzbSpVZV34fbMojLRnLBRCUgrBMSvBctPw27xpddqmh5DA8cJpsozQyeLGmS5yo4meYptuQ8bgBjZwVmsWwd
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3KPs6LSXuoGQfI/OFpemLOTLpLKP48XblTmV9j1BHlc9bDYNRhVtatM6Ywv2urfqsF9pgeMDrqDNa21aalrM5QGAADjvlb2+G9NrkuIZ++CL4bZSaqBeoR6UXXWXskeqaKhO+O+Vvb4b02uwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERE4AAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 57:
+  Signature: 4unvKUTm9iKEPKp1FTArPzRGkUUkw7dgYTcKeeegYiUN34Qgj3Smrmo9zgVrMGmV2aug5cNCZ82UMXookL5v6rQS
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYuPs6LSXuoGQfI/OFpemLOTLpLKP48XblTmV9j1BHlc9bDYNRhVtatM6Ywv2urfqsF9pgeMDrqDNa21aalrM5QGAADjvlb2+G9NrkuIZ++CL4bZSaqBeoR6UXXWXskeqaKhOwDKmjsAAAAAOQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 59:
+  Signature: 2z26Gi6L3STnYcyTxetnAjr3L2oZ3tLJ55ZMvJvWBV7rT4X6vSCW9qyj2RcU89BpboVBE8j1ngb2HyDjtx1QgbeN
+  Status: Error processing Instruction 1: custom program error: 0x1784
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError caused by account: node. Error Code: PayoutMismatch. Error Number: 6020. Error Message: Payout account is not the node recorded at accept_job.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5915 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1784
+
+Transaction executed in slot 60:
+  Signature: 4S3uw818swuHqhfoyk29fRc6crxMoAwdWufpBeKYZXdLtHHPBVf6ZXfJ5tL3RJ5eZzDZ2xFYfGvoVXmN5xcMMmg9
+  Status: Error processing Instruction 1: custom program error: 0x1784
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError caused by account: node. Error Code: PayoutMismatch. Error Number: 6020. Error Message: Payout account is not the node recorded at accept_job.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5915 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1784
+
+Transaction executed in slot 61:
+  Signature: 4bQiyapA1Uhgc6ZhuPQzVZF8k1ooYezErzr6qcR7dR8GkyspCRR4vwxU6YK2DAvPnFF38h5puKwvMiq6FefjiAk2
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke6Ps6LSXuoGQfI/OFpemLOTLpLKP48XblTmV9j1BHlc9bDYNRhVtatM6Ywv2urfqsF9pgeMDrqDNa21aalrM5QGAADjvlb2+G9NrkuIZ++CL4bZSaqBeoR6UXXWXskeqaKhOwDKmjsAAAAAYDTD0lSwJFrESfjucPteEdgQSrfwJVD0ofQ82IJYAQ09AAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13485 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 64:
+  Signature: aNghJDNtN3cp111eKdopk5PUaCDKW8zHg5ERQVpFKJN81sQnL3uGTBR8Ccv6Fr8nnuguMzvEreP5WZHkK4aTMvu
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4Pcnqz6Y/56OBDdDFlSZVGfSVmQIQw4Z/LiMJwuIJ0cEfTwC29wZ5gyH+sr8/3fYkV15ytxvWZCde3qxCoaN3XKfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5tG8Q3GScqkWvEJQ/Z3/6vylgxL+zgHlhS8/NIwvnDhADkC1QCAAAABABAAAAAAAAAANABAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 65:
+  Signature: 3otsJ3j1gZrg67Nn2VvLAv9Xya9Rt6acmM38Ey1L4AJbFrCDoULF4ZGEonH9NkTawyu4ZQJHbBriHCCDmgDNpdJq
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3Lcnqz6Y/56OBDdDFlSZVGfSVmQIQw4Z/LiMJwuIJ0cEacZB/4BxygmrIMBz0yMkFDRm4GtV8dWzxbG3Dqr08xJAAB9JE6zUdhKh5P8gFD82puh+GwujD0HQUyGbT4n0OKBI30kTrNR2EqHwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFBAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 66:
+  Signature: 9eZCwJTPYRisjjhs6zUqneubJjGJy4Do4s249f27rtdD7Ew1vTjtJSuMP2dY1NrsoJYKQE6dEiRLd1sEeMLN8i8
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYvcnqz6Y/56OBDdDFlSZVGfSVmQIQw4Z/LiMJwuIJ0cEacZB/4BxygmrIMBz0yMkFDRm4GtV8dWzxbG3Dqr08xJAAB9JE6zUdhKh5P8gFD82puh+GwujD0HQUyGbT4n0OKBIwDKmjsAAAAAQgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 67:
+  Signature: 5TyFniyS99r38DFreKPL6qiEKPrwQ6npUWj1DNkvfrvoA3Njjnb6Ta7TFbQoDiBFxgdxLV4YJnbeUdCmuks2z3fg
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 68:
+  Signature: bAtCBhdFGyUogckCGKTYgBw3pABKr2HWKFPZTU2RhEWoELKNuxDPWd1jVdToXArAuUwUjFoXmyc43LAp9mfYNuF
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 69:
+  Signature: 2XVYAoMtReNTtYEdZrLg1zh5snAa7a4NXfzDAKwL2Sktd7vJZcbJCLHvkA5g1Et1doGy3QTramK4EQcjcjbr4Taa
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 70:
+  Signature: hwwc3BVAxazkeUnCShRNcna8FTTRWL8thxMaxjuFN65mL8HSV2xSvgqdYUPVSmpt6TwDoHaEk2wHenpkAC7edd2
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 71:
+  Signature: 39j1rR5FkEY33FPRVDcV8ogiK3o2WAz9fYwTvPp9SQw9GKcBcHHCRGaMrFchiSKazTp4GoRLu6s6xdqhPYp5jVvb
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 72:
+  Signature: 3MMRmtsZoEbQo3xB6D8y5q7UyxERJr8EHiaseVpx24Y4JftHU3aCLi1sFd1JfZwxaiwH7YBAgtz6xdiAq9uSTJsj
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 73:
+  Signature: 5xDM54KWa3nHAKdsid59sygao7RdtKpT8AXbAa5oZ226s8HsVz7585xK7PCJg64ac3JQFpei3ZsUotBpozek5eco
+  Status: Error processing Instruction 0: custom program error: 0x1776
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/accept_job.rs:43. Error Code: DeadlinePassed. Error Number: 6006. Error Message: The job deadline has passed.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11301 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1776
+
+Transaction executed in slot 73:
+  Signature: 3c7cwPDa4d8QyjVBSvDK7ZKGHmuy47chwUvEyUoHsF4kZdtpiE2JTT2od2S5BLaMzKGGpDQMz1kVZq3f6agLjNKV
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 74:
+  Signature: gV2M6ozecoUx9R5t1DbwrrdE4tK6Hj5oYpUaPoxZ1hKGGFknYMj7Vu6NDzTUWk7s7rryTAW9GwkdAr3GDQoJFRr
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 74:
+  Signature: SdiejMJHVnK3xNwjsLBU9gJ5224jaZexuxAk7RizbodMYAmizo54eWN2h8pW3JrhC16cBU89zquui9bS2rhiWfF
+  Status: Error processing Instruction 0: custom program error: 0x1776
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/submit_proof.rs:45. Error Code: DeadlinePassed. Error Number: 6006. Error Message: The job deadline has passed.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14201 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1776
+
+Transaction executed in slot 74:
+  Signature: 2VQxLgWemfQcZjTpjy88tDF6ZfGktHsHKLTDx1R8HYsnv8LYAvbYj5vKqrz2JTYQ9w4WoYohYcpV79EegvPGccvt
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program data: nKtvJRGuCKdaq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZKWKIDUBnMc3SVmVAo+KVjNwiFRkuv52/UHFkZH7gkhNaZqH/nDst2bICGD6vZKGqCLlsfca+ZEEMThLxFws9xKw1h1UAgAAAAEASgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 7859 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 74:
+  Signature: 5YaPQe7cSYtkhxXnE8SHao8yERRJ6wMFQaVEVE9JqZbzzTHpMXqKdGP2n9sudQGCfU3pHBcYtRmWq3jceYSviaHm
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program data: nKtvJRGuCKfMYVUg6dgsKcunnETVrykCVxSsnc+MW1neT9XRc57lsNojk4IZkOOBBaDzauQfSZlrVX7H5y7eiW3sLGFJPMdut/YKGhiCLQbM/mp5wN5Odc9kW4vKvGIW0WrL1cX9Meaw1h1UAgAAAAAASgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 7859 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 75:
+  Signature: 5sC8txn4dXq8J1mTGnYUybYeqpvJ2F2mgHjgqqxGWRyouz7MCWvkshj8xYra4ETWWdfvgYihbvisQ2mqDDM53Tdk
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 75:
+  Signature: 2ffWowPAqFZj5AsDRVyB3FCj5dQE2cVQiTJUHC7k7hoWEZgwRERxYriAK9uwuvM5oSaVSPxadFWxzGzZsJ6GRnam
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program data: nKtvJRGuCKcjGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0xrx8hZrU3CXxiy4dnrRT5C7zhHrhakmuYIiDNNrZsn6qs0aDBY2+okG+IM8ZfDShSCAsqTFdikf+unvxMHoBEmwp7X6AQAAAAAASwAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 7859 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 75:
+  Signature: 2Yx79eU6CQGpRN9zbswUoy82LaXJsfysxq5MQyjDCwA7P288ovuS75R7y6dvw4xw5MZGVhEPQTYX1hUX7ZSK6z35
+  Status: Error processing Instruction 1: custom program error: 0x1776
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/verify_and_settle.rs:50. Error Code: DeadlinePassed. Error Number: 6006. Error Message: The job deadline has passed.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11294 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1776
+
+Transaction executed in slot 75:
+  Signature: 1pR7mWFrYmhLqxyGsacCqvgJLkNQ7ng7tC5tBUGkkckDuJKXWai5hZftSwHCm3X5e3kPvDmYN8QDHrwv1BGNbAw
+  Status: Error processing Instruction 0: custom program error: 0x178d
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseJob
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/close_job.rs:28. Error Code: OpenAccountsRemain. Error Number: 6029. Error Message: Job still has open assignment or output-marker accounts.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 5311 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x178d
+
+Transaction executed in slot 76:
+  Signature: 2DRqLWE8ZQtdK28BBDFzSqjLWhNAbPRc47cWauzze3EqaeHxC7dgvax6sg7AU2dqTjSRLZJXEjueCSi9DYsbGbDF
+  Status: Error processing Instruction 0: custom program error: 0x178a
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/close_assignment.rs:48. Error Code: Unauthorized. Error Number: 6026. Error Message: Signer may not close this account.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14286 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x178a
+
+Transaction executed in slot 76:
+  Signature: 5T2cgJVCiYFMhSVox6MayYR7Z91iQGvr6on5ZpqdsX94i4ngNFrv6EXHkWvwXiKRdPfFkFtXnNSiz2ocaiczBuJY
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 76:
+  Signature: 2qhkvK5eBQL7bXuUS3sqZfFoTyMyRG7FqDYHwPjPKhx8Mrtv7pUSSi58J7u2Fb8UGQD916GurkfWXisPgqco4WKb
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program data: 50yjPNE9UawjGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0zW76/GQO1eN/Ra0S/iJ8GBI6MfbapxpzGsil4x7Kk8MTKHmDfLVdSzmoL6P4CxrBMVHYPW/aTLJlSFyvUG39AfwS0sAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15428 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 76:
+  Signature: 7AXP2WsSdsFY6dZkMHmb8o31nnrZbSxV5tTsXaBUKAuLPaeTq5y9VBF2gBCU9kYr1zw2HuevPLDXmaCYzaPpDdP
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program data: 50yjPNE9UazMYVUg6dgsKcunnETVrykCVxSsnc+MW1neT9XRc57lsN4ju3YnokoALsrirr6Hm121QwBd7c4/5yk8mN+Lq60cz0psYhoHkuM0Y0/NjzocxVwfWFIDbExxq/X9kUmzN61wQi8AAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 8464 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 77:
+  Signature: HvrCiDAqHVjXnbczFFxu8iRYCDjYMue8gtiHVzzvsNHwK7vb4PVesGAmsMoVqgJV5Rii6Mmxn3fH4JpKHTBpTAQ
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseJob
+    Program data: ez/zma7UAjcjGl06rY6sGk1ej++KOcsLruliwrin2/WUKxCFcF7Z0xrx8hZrU3CXxiy4dnrRT5C7zhHrhakmuYIiDNNrZsn6UFQfAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4177 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 77:
+  Signature: w4CreH8u6PY6hFYj9Jau9AviRyD7xuWNGrdWBya8N8WDxtVUSaMHinQonPLo7PBrNoV9twt9np6USLLuExHYTc1
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program data: nKtvJRGuCKfY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCoQv1SiGJ+/8raiyTjFMycoO8hPkCp4eWIGwvtflbb58hC/VKIYn7/ytqLJOMUzJyg7yE+QKnh5YgbC+1+Vtvnyw1h1UAgAAAAEATQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 7667 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 77:
+  Signature: CqcLn9Svo8uQroAoDPPAM7KtJtjwTF6vbzGRwPNqhZp7zWKJarEYnSixZV1TgctjFECUxNWhtCdBnHgd7Pn1wLM
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseJob
+    Program data: ez/zma7UAjfMYVUg6dgsKcunnETVrykCVxSsnc+MW1neT9XRc57lsNojk4IZkOOBBaDzauQfSZlrVX7H5y7eiW3sLGFJPMduUFQfAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4177 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 77:
+  Signature: 4ptZuFjhDgyKtnFCLFvgicLfhAWJ4PjyFggrd5URqgtiT2v8Zgyx6CzpsMqsS3fUNGaxc3NVyGjosAXgSwhzBBsj
+  Status: Error processing Instruction 0: custom program error: 0x1784
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program log: AnchorError caused by account: node. Error Code: PayoutMismatch. Error Number: 6020. Error Message: Payout account is not the node recorded at accept_job.
+    Program log: Left:
+    Program log: HdhQ1FL5y9ThsuZFLZFaDkmmfJfESTjjds1ymcMa44qT
+    Program log: Right:
+    Program log: GycdRiWD8jjtYnFww78zcPHsdsCpPMafQNi8qjsQNagT
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 6536 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1784
+
+Transaction executed in slot 77:
+  Signature: 5ZknN9H2T6Lyfb7ndqLqs93YpJxgM23sMMniWrsEMpWAV37aVjX2F2vujCzN6qpNe4X8Zatwy5FzNC3qeQaoJu2M
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 78:
+  Signature: 4sbuex477LEcsBQdSwH9Qa8VU4rMgsHmLfYN3fsXSYirHa6XjTyGiWpGqPK9JPf3jq1Bfe5RBHKGwB82v51NvXCv
+  Status: Error processing Instruction 0: custom program error: 0x178c
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/close_assignment.rs:52. Error Code: OutputMarkerMismatch. Error Number: 6028. Error Message: Output marker must be passed exactly when a proof was submitted.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 8873 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x178c
+
+Transaction executed in slot 78:
+  Signature: 2vWCJrc5E27FUg5MFqcxctnWJchUas5EyzTNbwYMFQLDjbFWwwmxkgnLmXSqz9PeEPF4dUgLwQVsduLZ6uM2KRWv
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 78:
+  Signature: 3YLS5A3sYUa4RGazhpf9k1Y2LLnb7bL6jQvh36GjQHh9QHprnmkdiwSLxUJtv4uyrHLNPLsUNfFXAxJqhDqpR6Rn
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program data: 50yjPNE9UazY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCssIx2OaqcfEi+6vqtdmjo6dQynHqAHLb5/UPv4u0zCcxsONaKn7EtuR1Wd43ZrD+M1FNIhBrKcGpqqpPnJEfzjwS0sAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 10929 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 78:
+  Signature: 2Z3HJG2o5szZymbcQiiJm1XL2z32cqQDPYuD9jpTTvT9MD2ZL6QLizQLfbCFEvJhVA4iLejs1q4dMnPbAktSip6u
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4OdpQpqirqH7mRzCHVj6bYXUJDZU8iNwy2TL3gyMfCcDzlJyh8W58p89+8lQOGawGBpbt28502ABddOHDs44rETfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn47XrKVpurwtpGNK67BVgIIZfEIc8Aow1Wg6WNWgMgaVgDkC1QCAAAABABOAAAAAAAAAN4BAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 79:
+  Signature: ugdLZ88iM2YUZoSXb8nAGMNU7e7kiNSnD6jXYZpjfTQq3y3kfyHPuXcZawsvpEA75pLau4HkBtvm9ZuGx5MVU97
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program data: 50yjPNE9Uaxaq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZNd/lSN8SH7cyIOcykyYORM2KtahkpQANfX5oYXqk4Db7WAdLAcEugahmSze7djlI2C6APDiLQtwpp7njXuQgQzwS0sAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14123 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 79:
+  Signature: 9NsN6kEUdUqgKGpnHMTnq7vKd34b9LzFp1Sw81VXJcru5zksEbxoLAaHwJPFHJuyF93Aj7t4usM2Rj2EoCDH5BU
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 79:
+  Signature: 2eexPrqDr5fpgTD6VuLzq5oAfsSD1eYqhKjLmSdA6NbxM4DaExfv6JyAGfhFNayjXk91PxmQC2DaBsupcgmFvsPZ
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseJob
+    Program data: ez/zma7UAjfY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCoQv1SiGJ+/8raiyTjFMycoO8hPkCp4eWIGwvtflbb58UFQfAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4177 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 79:
+  Signature: 3MJzeUpAeTP2B2pCzKZUR6wGxQnTrZ9DCrBpNxayc7UCKuHnXFdRwepEaFWyVVdkp1cJjFXExRFLgULUhJvYSsff
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3KdpQpqirqH7mRzCHVj6bYXUJDZU8iNwy2TL3gyMfCcD5UqexLlqOj7g8zQLst+Styjv18SJXqZjYKvvibFOA7+AAA+G679b3uSjA0UAFBJnQadzU/Jbqd1k2XdbCOUgZKXKT4brv1ve5KMwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFPAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 80:
+  Signature: 41n5wWn175FpKQuny9QjxVXvmUy3UgsQHXbh6uPevV1erSvmiY6r7PpDeYFpNsSghyMLFaKf2A6dyJ6bNrBbohYK
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4OcJIm2vwjDKXJZd27JGdky1EW1XdB7+yEWKOMcQkCnfoPbXUcdMftQqgeiK8Wrx/VrcQZlNCih2Og4yZqpazfVfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn45IYsbCgTkjImRRZvNJis7QTvD/BrowCqjfotAyIUcqQDkC1QCAAAABABQAAAAAAAAAOABAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 80:
+  Signature: 2AEz4iaysfN69d7uFa16NiJBEqLBPKUeVhufiD3GN71JyigZmRPe8wrEAd4ZVb4qUts4cmS4qbp3FsEHE28CRp9H
+  Status: Error processing Instruction 1: custom program error: 0x177b
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/verify_and_settle.rs:51. Error Code: NoProof. Error Number: 6011. Error Message: No proof has been submitted for this assignment.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11305 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x177b
+
+Transaction executed in slot 80:
+  Signature: 5tY6Tz97pauQGQyPw27boV8TBtmRkye5cWE7vCJVUXFZFxjMdyLGZQ4KkhZF98MuJXw992NFWKrHMj7dcRD5qbsd
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4OApeoKSdkP4ajyJhmUMq+h6Qxp1GJoLXtxe6160qWDBklWWsL78suIJq6M1PcohAKicuVdIhOxM0JhiphnuFxDfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn6WxRTvz5AZ6uAU5VlsCeo0qAB5B/n5lzXF7CIrVFZ2+ADkC1QCAAAABABQAAAAAAAAAOABAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 80:
+  Signature: 3gLqvtyy7Tzi2nrbqX3znzo2afXazVrDtbDJpDcgCgLAKQTdatTEtg9dSdEeX9i5LxyN5hrVjJhxefN1UyKEwsy
+  Status: Error processing Instruction 0: custom program error: 0x1785
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program log: AnchorError caused by account: creator. Error Code: CreatorMismatch. Error Number: 6021. Error Message: Refund account is not the job creator.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4326 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1785
+
+Transaction executed in slot 80:
+  Signature: 45AhjJGB9HPfWorZbu4RDPaWiDNFfmXxXJhkQhc9AJuRnNhyJRybJuJCaPWuLBDD2FzPhpHPoKiDu8p85yeeDZUW
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 80:
+  Signature: 3KeEAWYSoSSisjwEcKwxPvoXjoidCnWZGzzB9g2PN18DGPKmTyZUanjwTN3CCpQwsFFEVgxjn5qDe4xyB37a6B7d
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CloseAssignment
+    Program data: 50yjPNE9Uaxaq2pYzc7DNSkqCOeRycCFKIQNYJv+mWAJA3SNVOfdZFb/nTLXxGPJhgaaqivPiJlKY94oihd1OHf6UoC58ga77WAdLAcEugahmSze7djlI2C6APDiLQtwpp7njXuQgQxwQi8AAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 8464 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 80:
+  Signature: 4ijT9t6xv24vUMqs5ikMJodXLBxKJ24dbJcL4LAL9GwKvL7wHQL3rF7ReqEuum279k1cLHFoJDKj2YZjCuHBqmKX
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4PY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCoQv1SiGJ+/8raiyTjFMycoO8hPkCp4eWIGwvtflbb58fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5J7WVgOl5IFB0IbG7McWIh/NLiKuv7+ldcKbGV0WMXDQDkC1QCAAAABABQAAAAAAAAAOABAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 21850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 81:
+  Signature: 4JomsRogyJLBWAh3kRu5iu25G3D7JeYRHbjSKbfYfkSNXCgyxNtqrD8xZkXKPf5iW8rfUPwiCWRoCW2zL7zEE7Cu
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3LY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCssIx2OaqcfEi+6vqtdmjo6dQynHqAHLb5/UPv4u0zCcAADGw41oqfsS25HVZ3jdmsP4zUU0iEGspwamqqk+ckR/OMbDjWip+xLbwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFRAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 81:
+  Signature: K88Vjn1vFgFkPoGtQM2CQkP39aaV82ipbHDpCD5ULju8LUvFCF8XQgeGbX1RTYUk9EJxcisv6x4RDdSxjTigEKy
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3KcJIm2vwjDKXJZd27JGdky1EW1XdB7+yEWKOMcQkCnfvWObdTMFIxTlUzG+Aw/z8vhegQNj75zt56TgSEoubNvAAAe3rtfYkBEF5FiaSUmHeaRY79V3EuVVyLVijhtoz7bux7eu19iQEQXwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFRAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 81:
+  Signature: 5xEHNwCddFkiu4LgdqQysuEFNstACVuJKevcNRtYx1HcfRYyf6Xp2eA5fqpmJpQRfBPm76tCLz3KVr4fCvvcTqEu
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3KApeoKSdkP4ajyJhmUMq+h6Qxp1GJoLXtxe6160qWDBtMVOq6EMWWpVXLwhj0t2nr6B6+px/znO2S64GVbIEpVAAB+ktyTsNYEfamPEIPftoS6FsXfTzKWDcKz/p0rdlYPcn6S3JOw1gR9wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFRAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 81:
+  Signature: 4BcJrC3caP18SW8AUDmG37Fn98Gdgv8psgTMqb1Pho4MLdvjmiPefEBvzeLYKBXhHnAmFZfWzxvjX5bxnLpVG6on
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program data: nKtvJRGuCKcHiq+CKVHmMPuB35HF7n7+rIkyBI0A1sCI8QCcgmit9JBJiiki9eYR/2diPbGU4JGpRJ4xEdFYKcWY1V4zuAqurWnT9tO5UR4Z57KWJPoKtBrW1YtHgLJlKfHEYJbcXLWw1h1UAgAAAAAAUQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 7859 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 81:
+  Signature: 3LEHyyyXNaxq2NUARdVuirrSNyXLwL8eYYXuafVLv7TMWbJsSzTdukDvNEZkSCXSNafHjqYY5BmqHu1cDoPQuCHL
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke7cnqz6Y/56OBDdDFlSZVGfSVmQIQw4Z/LiMJwuIJ0cEacZB/4BxygmrIMBz0yMkFDRm4GtV8dWzxbG3Dqr08xJAAB9JE6zUdhKh5P8gFD82puh+GwujD0HQUyGbT4n0OKBIwDKmjsAAAAAfSROs1HYSoeT/IBQ/NqbofhsLow9B0FMhm0+J9DigSNRAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13293 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 82:
+  Signature: 3zzw9heftUj8xaUxJaUKyFsmxsjCqx9rRn7ywNJ2Qytmwfy5fyzGydB6vMazd4XeMzZYB1ZUUGjVJ8jNG2ucs23s
+  Status: Error processing Instruction 0: custom program error: 0xbc4
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program log: AnchorError caused by account: vault. Error Code: AccountNotInitialized. Error Number: 3012. Error Message: The program expected this account to be already initialized.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 3439 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0xbc4
+
+Transaction executed in slot 82:
+  Signature: 3Ktx17EFuujMwur5XbqgWcTy15ETexLCQj9ayDkv82CjtuQVk15irP2K8DRcyaZU71YocCGFnCz8JBaV5UMjnyrb
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYvY/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCssIx2OaqcfEi+6vqtdmjo6dQynHqAHLb5/UPv4u0zCcAADGw41oqfsS25HVZ3jdmsP4zUU0iEGspwamqqk+ckR/OADKmjsAAAAAUgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 82:
+  Signature: 5dQZiiTG5hWFJFsgjqYcDezg3JreDTrTXUupuks9Z6YvCbGfoBFYmvARpehWGWRPfonNLsEhtc3qQgyAsKgwr9Xp
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYucJIm2vwjDKXJZd27JGdky1EW1XdB7+yEWKOMcQkCnfvWObdTMFIxTlUzG+Aw/z8vhegQNj75zt56TgSEoubNvAAAe3rtfYkBEF5FiaSUmHeaRY79V3EuVVyLVijhtoz7buwDKmjsAAAAAUgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 83:
+  Signature: sxvJ3keShYL2Uo13PBAKzatiThtSUy39Yo7RJDUZF7VXLyoZqtZfCk4dJmtWtE2ibATxQ1JRju78YVvLYfgWeDV
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4NGEzFaz2FF4a7gY697/j00np3TVS1AVECLO8qew559V9gCZdBYyKcF0k7JnakjkCW092jMLNL/yDOUJ8iGbYDafn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4eozqMIBL04HQzR0rhh4ML4/bVqJRUtYj6f+s9hH85AQBe0LIAAAAAAgBTAAAAAAAAAOMBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17350 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 83:
+  Signature: fSLD5wiadZDjVwWQRHQRyqFUfGz5dD8y158dzUEgKVxtCVMgtErenkjfHVWnpHGxxHzR3FXxRoQe8YBtw8TocTA
+  Status: Error processing Instruction 0: custom program error: 0x7d1
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError caused by account: assignment. Error Code: ConstraintHasOne. Error Number: 2001. Error Message: A has one constraint was violated.
+    Program log: Left:
+    Program log: 9X6Fo7UzVotvq1pi993kQU5UAQuRCpwtddQ1jTX9WT3F
+    Program log: Right:
+    Program log: BshZHuA1txC3eRbPTBoJXvZmpRzaQTUpGt1aM7z8T2oW
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 15428 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x7d1
+
+Transaction executed in slot 83:
+  Signature: e8KPSe81gpSexfgcDg9Fog8y9xKwYxFkvuZLzSqwBsgdS5o7f36F9hdyUow7pVsmjiRjenzP5ZKkbnfacdL3kfS
+  Status: Error processing Instruction 1: custom program error: 0x1782
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:153. Error Code: DigestMismatch. Error Number: 6018. Error Message: Signed message does not equal the canonical settlement digest.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12256 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1782
+
+Transaction executed in slot 83:
+  Signature: 5v6qhgLkfDeosP7vtZhmY7wtegX7qaLSAqnnU87ezwYtgQpe11PdakqXrR38wmKCmRuzWrL4zfT4igE8odtQkeDE
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: CreateJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: MG6isUNKn4MzEnZWav6jNAAl1OXSVT/TUVh/h0PNhGfFbEUxCp1d3epPfrXrFUxYGGACKoFQAPii0qIxu7Tkc/lA89leNxz2fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4tD2BsBy9TgMk6szEprLs+naS9JhbTVNog/7mG5lHwdgDkC1QCAAAABABTAAAAAAAAAOMBAAAAAAAA
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 18850 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 83:
+  Signature: 2rZZ46Khk35vPKHNDKaziL3No7QMmcHp4bWCZXaSW8zcmztdLUrUUNAjBAGMkKeZhCn69LobRZym3pRFhmbBimj9
+  Status: Error processing Instruction 1: custom program error: 0x1781
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError thrown in programs/receipt-settlement/src/digest.rs:149. Error Code: VerifierMismatch. Error Number: 6017. Error Message: Ed25519 signer is not the job's verifier.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 12218 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x1781
+
+Transaction executed in slot 84:
+  Signature: 3KTGZtssggWcZH51mSkuEHbS82QqRW1Mg9KGqrL1CQMpmDqMtzmEpg4mru51tTVGLs2UEi7M3SteWCnBaHCqgTz2
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program data: 6NIoEY58ke7Y/lu59PpY2newcUHTTNco5w9PmGxBloqLT9s3ulMOCssIx2OaqcfEi+6vqtdmjo6dQynHqAHLb5/UPv4u0zCcAADGw41oqfsS25HVZ3jdmsP4zUU0iEGspwamqqk+ckR/OADKmjsAAAAAxsONaKn7EtuR1Wd43ZrD+M1FNIhBrKcGpqqpPnJEfzhUAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13293 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 84:
+  Signature: 5QBkFJvJvxZoerLMK6jkwuX5tuWg2AppT8xBecMWopyrXSkEPk1YGikE3kLBZ5Med6YWYWUwQnZaeQpKvGmjpPKV
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3IzEnZWav6jNAAl1OXSVT/TUVh/h0PNhGfFbEUxCp1d3epa7+mY9v7JYJk67nGFos/Z3LpBoNfEBVJqMP3pHknNAACHoDSXt6xNeQz39aGf5Ljy8VmcCRkJeHcUxCLdvIPAx4egNJe3rE15wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFUAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 84:
+  Signature: nGzr9LqsJrrYCkMYhCqCwozGdr8UnQmpTJFsgmV3hPGMC4pj3P8FUTVCHraXSiQLzo7bxyWv6ufRz8XEGx5Ec6G
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RefundAfterDeadline
+    Program data: nKtvJRGuCKcNSbvhN3xO4+0YOovh30nnki9YI5Rjn1ETHfCFvCGHIqk6R4VqSVpp6h02QjAda5LM08HAug8jfKYC0zZQ+Hu0CyRE8oBeERy4DbvBcYg8bmDG2jva9c4vGQNCdzj9GmKwDIMYAgAAAAEAVAAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 7859 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 84:
+  Signature: 4dgk8q65Zv1cLK7Sc54tc97focAPbw45dPg5xYxRu2aDDtTHP2okYcL7DUETkYcNca4vFWhBKLUueDYzmP2VvwUd
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3JGEzFaz2FF4a7gY697/j00np3TVS1AVECLO8qew559V/Ob2gQY1XtibXg7ir3wywdU8yosLqYs6ZdQwKmNdpP6AACmkbRR4HvnJeQEtQ8VVFSDX0t+VCXTNwjt7utUHSrxQ6aRtFHge+clwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFUAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 11671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 84:
+  Signature: 66X2STyeocT1vuAZDJnYgvA9amYk8R9JoN9Mx8H1cqWXJsajR9X9NmwYds2rCfNmMZSur72XVddVoGdLQpV2MQyd
+  Status: Error processing Instruction 0: custom program error: 0xbc4
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program log: AnchorError caused by account: assignment. Error Code: AccountNotInitialized. Error Number: 3012. Error Message: The program expected this account to be already initialized.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4068 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0xbc4
+
+Transaction executed in slot 85:
+  Signature: 5YrJgYx5X5KhUiapp8Q56Td7sVry8bLEbUrxUrf2PzkifY56iCT5Diuayau5tuFQUkdzzXV7xbLJgdAh6QnGUaSv
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYuApeoKSdkP4ajyJhmUMq+h6Qxp1GJoLXtxe6160qWDBtMVOq6EMWWpVXLwhj0t2nr6B6+px/znO2S64GVbIEpVAAB+ktyTsNYEfamPEIPftoS6FsXfTzKWDcKz/p0rdlYPcgDKmjsAAAAAVQAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16246 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 85:
+  Signature: N5WAoKjygnRmouuzDqTriGCgwQhhpYL5SEVAQSovmJCZhHfan44J64srBe46yzeYNMeaDcKQQRStCVqvUT4HnVk
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3IzEnZWav6jNAAl1OXSVT/TUVh/h0PNhGfFbEUxCp1d3ZplKxRRTt03IXXwF7r9461JaCiQ+ibRtiLWVoocOs17AQCHoDSXt6xNeQz39aGf5Ljy8VmcCRkJeHcUxCLdvIPAx4egNJe3rE15wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFVAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14671 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 85:
+  Signature: 5J6TUrbavucSfM8iyr9KGmaKTB5ycr6jGos7TZ7vjSXjyVpYUqmyqWuEkFK81ShytTayUnJQuTcvkSMUJ6pyBG8j
+  Status: Error processing Instruction 1: custom program error: 0xbc4
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: VerifyAndSettle
+    Program log: AnchorError caused by account: vault. Error Code: AccountNotInitialized. Error Number: 3012. Error Message: The program expected this account to be already initialized.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 3834 of 203000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0xbc4
+
+Transaction executed in slot 85:
+  Signature: 5JBb2S8QWNx9WmmmFrvK4EFWdatjy7Z97zQFr8TeuXFVas1jrS29xJwFpAyUp5x5qF2Hcf1jSrywm1xZUzccqtst
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: AcceptJob
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: LzaYO3bD+3JGEzFaz2FF4a7gY697/j00np3TVS1AVECLO8qew559V7rTZeIANu6gPoMQyLdnT48fk73Q/gi/Ium2q9DzhYqTAQCmkbRR4HvnJeQEtQ8VVFSDX0t+VCXTNwjt7utUHSrxQ6aRtFHge+clwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAERERERERERERERERERERERERERERERERERERERERERFVAAAAAAAAAA==
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 13171 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 86:
+  Signature: 5pwogmk4ZAxhLAZgYELhzFmoavYNg9g7xqVoiziBmEUnC4mUizQkF5i832nRwPrJaK3AJdYVvwUHwSvazr7quSuS
+  Status: Error processing Instruction 0: custom program error: 0x177d
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/submit_proof.rs:50. Error Code: ChargeExceedsQuote. Error Number: 6013. Error Message: Actual charge exceeds the quoted price.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17223 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x177d
+
+Transaction executed in slot 86:
+  Signature: ntZwGDPZkEAhccN9EpqRbyRC7u8q63YzoCQFutxTHgVAGZQTy8ZSpT7kYcCkw1tKvZghncAYBNu2W9KbezRHCW5
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYtGEzFaz2FF4a7gY697/j00np3TVS1AVECLO8qew559V/Ob2gQY1XtibXg7ir3wywdU8yosLqYs6ZdQwKmNdpP6AACmkbRR4HvnJeQEtQ8VVFSDX0t+VCXTNwjt7utUHSrxQwCUNXcAAAAAVgAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 16246 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 87:
+  Signature: 3yyaNAKP8Wt4AFYNVeeuWxG2iokwCi7pUxG8Ep4UNGsafjkU9wjFGg7anBmqohhCEqvXGgKfWJq2qnYG4mhKPPJC
+  Status: Error processing Instruction 0: custom program error: 0x177e
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/submit_proof.rs:59. Error Code: OverBudget. Error Number: 6014. Error Message: Charge would exceed the job's remaining budget.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14229 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x177e
+
+Transaction executed in slot 87:
+  Signature: 3SApUdhgMXxyAwGvUKmPCHnynxJPZikwzJv6gj6FALUX5Y7jL3cxKAaynW8UvDWtjjZKYPXM6SwEr3sxy4ZNs4fV
+  Status: Error processing Instruction 0: custom program error: 0x177c
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/submit_proof.rs:48. Error Code: ZeroCharge. Error Number: 6012. Error Message: Actual charge must be greater than zero.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17212 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x177c
+
+Transaction executed in slot 88:
+  Signature: SWf1Q4LVjRYh7hz9PTebWkSymnkfPMhhM7Bw1FHDsep7rNeFPtCUUjCNqVxztJ7U2XZ8G4TARKX54Y7d1eMHZfG
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYszEnZWav6jNAAl1OXSVT/TUVh/h0PNhGfFbEUxCp1d3epa7+mY9v7JYJk67nGFos/Z3LpBoNfEBVJqMP3pHknNAACHoDSXt6xNeQz39aGf5Ljy8VmcCRkJeHcUxCLdvIPAxwDKmjsAAAAAWAAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 17746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 88:
+  Signature: 5t9gicEHN4E2e1dpsgQZwrqGcqeaU5jMLLALD1VRcyKfKuLGTK9oKcRNeYzoPzEsXKdeyALc1Gp5HqwxUCmm4vGz
+  Status: Ok
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program data: oDNVRvlZBYtGEzFaz2FF4a7gY697/j00np3TVS1AVECLO8qew559V7rTZeIANu6gPoMQyLdnT48fk73Q/gi/Ium2q9DzhYqTAQCmkbRR4HvnJeQEtQ8VVFSDX0t+VCXTNwjt7utUHSrxQwDKmjsAAAAAWAAAAAAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14746 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Transaction executed in slot 89:
+  Signature: 3N6CuYofMA3GUdqHX1tAQhgvix8GJMCPMeGg5SWV7TvnrGLdQujT2fcGnFawpniopouKy6RPgPTNKTyMDdHFgGug
+  Status: Error processing Instruction 0: custom program error: 0x177a
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program log: AnchorError thrown in programs/receipt-settlement/src/instructions/submit_proof.rs:47. Error Code: ProofAlreadySubmitted. Error Number: 6010. Error Message: A proof was already submitted for this assignment.
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 14231 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x177a
+
+Transaction executed in slot 90:
+  Signature: 2XEDQG6PJAfoyuCPxP1EjwjXtm34pWhHBt1eNJgAMsVpdaJ9YGSL3AXTcFfMdpxsbZeYAC7RAT7U3FtpeuJma3fY
+  Status: Error processing Instruction 0: custom program error: 0x0
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: SubmitProof
+    Program 11111111111111111111111111111111 invoke [2]
+    Allocate: account Address { address: 3tCc1nFZsgizkbyPX9hyYmTH3GATET7nBZAkQD4M7Zwq, base: None } already in use
+    Program 11111111111111111111111111111111 failed: custom program error: 0x0
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 9304 of 200000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT failed: custom program error: 0x0
+

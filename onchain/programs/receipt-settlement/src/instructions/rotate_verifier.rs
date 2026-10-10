@@ -16,10 +16,10 @@ pub struct RotateVerifier<'info> {
 
 pub fn handle_rotate_verifier(ctx: Context<RotateVerifier>, new_verifier: Pubkey) -> Result<()> {
     let job = &mut ctx.accounts.job;
-    require!(
-        job.status == JobStatus::Active,
-        SettlementError::JobNotActive
-    );
+    require!(job.status == JobStatus::Open, SettlementError::JobNotOpen);
+    // The verifier is bound at create_job. It may be corrected only before
+    // any node has accepted, i.e. before anyone consented to it.
+    require!(job.accepted_count == 0, SettlementError::VerifierLocked);
     require!(
         new_verifier != Pubkey::default(),
         SettlementError::InvalidVerifier
@@ -27,9 +27,6 @@ pub fn handle_rotate_verifier(ctx: Context<RotateVerifier>, new_verifier: Pubkey
     require!(new_verifier != job.verifier, SettlementError::SameVerifier);
 
     let old = job.verifier;
-    // submit_receipt compares the Ed25519 signer against job.verifier at
-    // submission time, so receipts signed by the old key are rejected from
-    // now on. Receipts already accepted stay valid and claimable.
     job.verifier = new_verifier;
     emit!(VerifierRotated {
         job: job.key(),
