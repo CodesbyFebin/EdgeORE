@@ -184,6 +184,7 @@ class ReceiptLog(
         const val EXPORT_SCHEMA = "edgeore.receipt-export.v1"
         const val EXPORT_SCHEMA_V2 = "edgeore.receipt-export.v2"
         const val CHECKPOINT_DOMAIN = "edgeore.export-checkpoint.v1"
+        const val ENVELOPE_DOMAIN = "edgeore.export-envelope.v1"
         const val GENESIS = "0000000000000000000000000000000000000000000000000000000000000000"
         const val MAX_LINE_CHARS = 256 * 1024
         const val MAX_FILE_BYTES = 64L * 1024 * 1024
@@ -319,8 +320,33 @@ class ReceiptLog(
                 .put("lastSha256", last?.sha256 ?: GENESIS).put("bundleSha256", bundle).put("exportedAt", exportedAt)
                 .put("keyId", signer.keyId()).put("signature", Base64.getEncoder().encodeToString(signer.sign(cp.toByteArray(Charsets.UTF_8)))))
         }
+        // Additive, optional field (hardening backlog H4): the export schema, receipt lines and checkpoint are unchanged,
+        // and a checker that predates it ignores unknown top-level fields.
+        if (!hideDeviceKey) {
+            val payload = envelopePayload(doc)
+            doc.put("envelope", JSONObject().put("domain", ENVELOPE_DOMAIN).put("keyId", signer.keyId())
+                .put("fieldsSha256", Sha256.hex(payload))
+                .put("signature", Base64.getEncoder().encodeToString(signer.sign(payload.toByteArray(Charsets.UTF_8)))))
+        }
         return doc.toString(2)
     }
+}
+
+/**
+ * Deterministic text over the export's descriptive fields, built field by field (never by re-serialising the
+ * document): domain, exportedAt, note, payment, location, each exclusion, each damaged line, then
+ * keyId/protection/firstUsedAt of each key epoch, each value JSON-quoted on its own line. Structural fields (mode,
+ * receipts, bundleSha256) are deliberately left out: receipts and the checkpoint already sign them, and a holder may
+ * still relabel a truncated FULL_CHAIN as SELECTED (completeness is then not claimed), exactly as before.
+ */
+fun envelopePayload(doc: JSONObject): String {
+    fun q(v: Any?): String = if (v == null || v == JSONObject.NULL) "null" else JSONObject.quote(v.toString())
+    val lines = mutableListOf(ReceiptLog.ENVELOPE_DOMAIN)
+    for (k in listOf("exportedAt", "note", "payment", "location")) lines += "$k=" + q(doc.opt(k))
+    doc.optJSONArray("exclusions").let { a -> lines += "exclusions=" + (a?.length() ?: -1); if (a != null) for (i in 0 until a.length()) lines += "exclusion=" + q(a.opt(i)) }
+    doc.optJSONArray("damagedLines").let { a -> lines += "damagedLines=" + (a?.length() ?: -1); if (a != null) for (i in 0 until a.length()) { val d = a.optJSONObject(i); lines += "damaged=" + q(d?.opt("line")) + "," + q(d?.opt("reason")) } }
+    doc.optJSONArray("deviceKeys").let { a -> lines += "deviceKeys=" + (a?.length() ?: -1); if (a != null) for (i in 0 until a.length()) { val k = a.optJSONObject(i); lines += "key=" + q(k?.opt("keyId")) + "," + q(k?.opt("protection")) + "," + q(k?.opt("firstUsedAt")) } }
+    return lines.joinToString("\n")
 }
 
 fun bundleDigest(shas: List<String>): String = Sha256.hex(shas.joinToString("\n"))
@@ -353,12 +379,16 @@ object ReceiptVerifier {
         val provenance: Provenance = Provenance.UNPINNED_KEY,
         val completeness: Completeness = Completeness.NOT_ESTABLISHED,
         val walletSignaturesVerified: Int = 0,
+        /** True only when a signed envelope covering the descriptive export fields was present and verified. */
+        val descriptiveFieldsSigned: Boolean = false,
     ) {
         val summary: String get() = buildString {
             append(if (accepted) "Integrity OK for $verifiedReceipts receipt(s)" else "REJECTED")
             append(" · key ").append(when (provenance) { Provenance.PINNED_KEY -> "matches pinned key"; Provenance.UNPINNED_KEY -> "not pinned (self-contained only)"; Provenance.KEY_MISMATCH -> "does NOT match pinned key" })
             append(" · ").append(when (completeness) { Completeness.FULL_CHAIN_CHECKPOINTED -> "full chain through signed checkpoint"; Completeness.SELECTED_SUBSET -> "selected subset, completeness not established"; Completeness.NOT_ESTABLISHED -> "completeness not established" })
-            append(" · wallet signatures verified: $walletSignaturesVerified · chain status not checked offline")
+            append(" · wallet signatures verified: $walletSignaturesVerified")
+            append(if (descriptiveFieldsSigned) " · descriptive fields covered by the signed envelope" else " · descriptive fields not signed (no envelope)")
+            append(" · chain status not checked offline")
         }
     }
 
@@ -460,9 +490,14 @@ object ReceiptVerifier {
                 else -> findings += "Unknown export mode"
             }
         }
+        var envelopeOk = false
+        doc.optJSONObject("envelope")?.let { env ->
+            val problem = envelopeFinding(doc, env, keysById)
+            if (problem != null) findings += "Envelope: $problem" else envelopeOk = true
+        }
         val accepted = findings.isEmpty() && ok == arr.length() && ok > 0
         if (ok == 0 && arr.length() == 0) findings += "Export contains no receipts"
-        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk)
+        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk, accepted && envelopeOk)
     }
 
     private fun ecKey(b64: String): PublicKey = KeyFactory.getInstance("EC").generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(b64)))
@@ -523,6 +558,18 @@ object ReceiptVerifier {
             prev = r
         }
         return null
+    }
+
+    /** A present envelope must verify; editing any descriptive field after export is then detected. */
+    private fun envelopeFinding(doc: JSONObject, env: JSONObject, keys: Map<String, PublicKey>): String? {
+        if (env.optString("domain") != ReceiptLog.ENVELOPE_DOMAIN) return "unknown domain"
+        val key = keys[env.optString("keyId")] ?: return "signed by a key not present in the export"
+        val payload = envelopePayload(doc)
+        if (env.optString("fieldsSha256") != Sha256.hex(payload)) return "descriptive fields changed after export"
+        val ok = try {
+            Signature.getInstance("SHA256withECDSA").run { initVerify(key); update(payload.toByteArray(Charsets.UTF_8)); verify(Base64.getDecoder().decode(env.optString("signature"))) }
+        } catch (_: Exception) { false }
+        return if (ok) null else "signature invalid"
     }
 
     private fun checkpointFinding(doc: JSONObject, list: List<StoredReceipt?>, shas: List<String>, keys: Map<String, PublicKey>): String? {

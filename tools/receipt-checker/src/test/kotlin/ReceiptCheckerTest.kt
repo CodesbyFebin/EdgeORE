@@ -81,15 +81,26 @@ class ReceiptCheckerTest {
         assertEquals(1, code)
         assertTrue(output, output.contains("only wallet reviews can carry a payment observation"))
     }
-    @Test fun labelsUnsignedDescriptiveFieldsEvenWhenTheyWereEdited() {
-        // H4: editing an unsigned descriptive field is not detected, so the checker must say those fields are unsigned.
+    @Test fun signedEnvelopeDetectsEditedDescriptiveFields() {
+        // H4: exports now carry a signed envelope, so editing note or a top-level payment string is rejected.
         val (file, _) = export()
+        val (okCode, okOut) = run(file.path)
+        assertEquals(okOut, 0, okCode)
+        assertTrue(okOut, okOut.contains("Descriptive export fields covered by the signed envelope"))
         val doc = JSONObject(file.readText()).put("note", "Edited after export").put("payment", "OBSERVED 9 SOL")
         val copy = temp.newFile("edited-note.json").apply { writeText(doc.toString()) }
         val (code, output) = run(copy.path)
+        assertEquals(output, 1, code)
+        assertTrue(output, output.contains("Envelope: descriptive fields changed after export"))
+    }
+    @Test fun exportWithoutEnvelopeIsLabelledUnsigned() {
+        // A pre-0.2.9 export (or one with the envelope stripped) still verifies its receipts, but is labelled unsigned.
+        val (file, _) = export()
+        val doc = JSONObject(file.readText()).also { it.remove("envelope") }.put("note", "Edited after export")
+        val copy = temp.newFile("no-envelope.json").apply { writeText(doc.toString()) }
+        val (code, output) = run(copy.path)
         assertEquals(output, 0, code)
-        assertTrue(output, output.contains("Not covered by any signature (descriptive only): top-level note, exclusions, payment, location, exportedAt"))
-        assertTrue(run(file.path).second.contains("Not covered by any signature"))
+        assertTrue(output, output.contains("Not covered by any signature (descriptive only, no signed envelope): top-level note, exclusions, payment, location, exportedAt"))
     }
     @Test fun reportsMissingInputAsToolError() { assertEquals(2, run(java.io.File(temp.root, "missing").path).first) }
     @Test fun rejectsWrongArguments() { assertEquals(2, run().first); assertEquals(2, run("file", "--wrong", "key").first) }

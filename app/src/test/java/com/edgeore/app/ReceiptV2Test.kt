@@ -221,4 +221,62 @@ class ReceiptV2Test {
     @Test fun evidenceDefaultsAreNotPasses() {
         assertEquals("NOT_AVAILABLE", Evidence.NOT_AVAILABLE.state)
     }
+
+    // ---- H4: signed envelope over the descriptive export fields (additive; schema and receipt lines unchanged) ----
+    private fun envelopeExport(): Pair<SoftwareReceiptSigner, String> {
+        val s = SoftwareReceiptSigner()
+        val log = ReceiptLog(logFile, s, keys = registry)
+        log.append(ReceiptDraft(ReceiptKind.POLICY, "REFUSED", "Fixture", "Synthetic", "unit test"))
+        return s to log.export()
+    }
+
+    @Test fun signedEnvelopeVerifiesAndIsReported() {
+        val (s, json) = envelopeExport()
+        val doc = JSONObject(json)
+        assertEquals(ReceiptLog.ENVELOPE_DOMAIN, doc.getJSONObject("envelope").getString("domain"))
+        assertEquals("edgeore.receipt-export.v2", doc.getString("schema"))
+        val r = ReceiptVerifier.verify(json, s.publicKeySpki(), emptyList())
+        assertTrue(r.findings.toString(), r.accepted)
+        assertTrue(r.descriptiveFieldsSigned)
+        assertTrue(r.summary.contains("descriptive fields covered by the signed envelope"))
+    }
+
+    @Test fun editingAnyDescriptiveFieldBreaksTheEnvelope() {
+        val (s, json) = envelopeExport()
+        val edits: List<(JSONObject) -> Unit> = listOf(
+            { d -> d.put("note", "Edited after export") },
+            { d -> d.put("payment", "OBSERVED 9 SOL") },
+            { d -> d.put("location", "Somewhere") },
+            { d -> d.getJSONArray("exclusions").put("added") },
+            { d -> d.getJSONArray("deviceKeys").getJSONObject(0).put("protection", "Android Keystore (StrongBox)") },
+            { d -> d.getJSONArray("deviceKeys").getJSONObject(0).put("firstUsedAt", "2020-01-01T00:00:00Z") },
+        )
+        for ((i, edit) in edits.withIndex()) {
+            val doc = JSONObject(json).also(edit)
+            val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
+            assertFalse("edit #$i accepted", r.accepted)
+            assertTrue("edit #$i: ${r.findings}", r.findings.any { it.startsWith("Envelope:") })
+        }
+    }
+
+    @Test fun envelopeSignedByAnotherKeyIsRejected() {
+        val (s, json) = envelopeExport()
+        val doc = JSONObject(json)
+        val other = SoftwareReceiptSigner()
+        val env = doc.getJSONObject("envelope")
+        env.put("signature", Base64.getEncoder().encodeToString(other.sign(com.edgeore.app.receipts.envelopePayload(doc).toByteArray())))
+        val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
+        assertFalse(r.accepted)
+        assertTrue(r.findings.toString(), r.findings.contains("Envelope: signature invalid"))
+    }
+
+    @Test fun strippedEnvelopeIsALabelledDowngradeNotASignedResult() {
+        // Older exports have no envelope. Removing it is therefore accepted, but never reported as signed.
+        val (s, json) = envelopeExport()
+        val doc = JSONObject(json).also { it.remove("envelope") }.put("note", "Edited")
+        val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
+        assertTrue(r.findings.toString(), r.accepted)
+        assertFalse(r.descriptiveFieldsSigned)
+        assertTrue(r.summary.contains("descriptive fields not signed (no envelope)"))
+    }
 }
