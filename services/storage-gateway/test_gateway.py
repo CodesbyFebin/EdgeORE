@@ -29,6 +29,13 @@ class GatewayTests(unittest.TestCase):
         self.assertTrue(self.store.cancel('job-1'))
         self.assertIsNone(self.store.get(self.digest))
         with self.assertRaises(ValueError): self.store.put('job-1', self.body, self.digest)
+    def test_quota_is_transactional_and_counts_retained_canceled_data(self):
+        limited = Store(self.path, max_total_bytes=len(self.body))
+        limited.put('job-1', self.body, self.digest)
+        self.assertFalse(limited.put('job-1', self.body, self.digest))
+        limited.cancel('job-1')
+        with self.assertRaises(ValueError): limited.put('job-2', self.body, self.digest)
+        self.assertIsNone(limited.status('job-2'))
     def test_bounds_and_identifier(self):
         with self.assertRaises(ValueError): self.store.put('../outside', self.body, self.digest)
         large = b'X' * (MAX_BYTES + 1)
@@ -59,6 +66,13 @@ class HttpTests(unittest.TestCase):
         result = r.status, r.read()
         c.close()
         return result
+    def test_capability_discovery_does_not_claim_pinning_or_payments(self):
+        import json
+        code, body = self.request('GET','/v1/capabilities',headers={'Authorization':'Bearer '+self.server.token})
+        self.assertEqual(code,200)
+        caps = json.loads(body)
+        self.assertFalse(caps['pinning'])
+        self.assertEqual(caps['settlement'],'not_integrated')
     def test_auth_required(self):
         self.assertEqual(self.request('GET', '/v1/jobs/job')[0], 401)
     def test_upload_observe_retrieve_cancel(self):

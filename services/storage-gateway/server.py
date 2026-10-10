@@ -14,8 +14,11 @@ ID = re.compile(r'[A-Za-z0-9_-]{1,80}')
 DIGEST = re.compile(r'[0-9a-f]{64}')
 
 class Store:
-    def __init__(self, path):
+    def __init__(self, path, max_total_bytes=1_000_000_000):
+        if type(max_total_bytes) is not int or max_total_bytes <= 0:
+            raise ValueError("Positive storage quota required")
         self.path = path
+        self.max_total_bytes = max_total_bytes
         with self.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, digest TEXT NOT NULL, body BLOB NOT NULL, canceled INTEGER NOT NULL DEFAULT 0)')
     @contextmanager
@@ -39,6 +42,9 @@ class Store:
                 if old[0] != digest or old[1]:
                     raise ValueError('Job identifier already used or canceled')
                 return False
+            used = db.execute('SELECT COALESCE(SUM(length(body)),0) FROM jobs').fetchone()[0]
+            if used + len(body) > self.max_total_bytes:
+                raise ValueError('Storage quota exceeded')
             db.execute('INSERT INTO jobs(id,digest,body) VALUES(?,?,?)', (job, digest, body))
             return True
     def status(self, job):
@@ -72,6 +78,8 @@ class Handler(BaseHTTPRequestHandler):
         auth = self.headers.get('Authorization', '')
         if not hmac.compare_digest(auth, 'Bearer ' + self.server.token):
             return self.reply(401, {'error': 'Unauthorized'})
+        if self.path == '/v1/capabilities' and self.command == 'GET':
+            return self.reply(200, {'version': 1, 'storage': 'owned-sqlite-ciphertext', 'maxObjectBytes': MAX_BYTES, 'maxStoredPayloadBytes': self.server.store.max_total_bytes, 'pinning': False, 'portableRestore': False, 'settlement': 'not_integrated'})
         parts = self.path.split('/')
         if len(parts) == 4 and parts[:3] == ['', 'v1', 'objects'] and DIGEST.fullmatch(parts[3]) and self.command == 'GET':
             body = self.server.store.get(parts[3])
@@ -110,5 +118,5 @@ if __name__ == '__main__':
         raise SystemExit('Set EDGEORE_STORAGE_TOKEN to a random secret of at least 32 characters')
     server = ThreadingHTTPServer(('127.0.0.1', 19844), Handler)
     server.token = token
-    server.store = Store(os.environ.get('EDGEORE_STORAGE_DB', 'storage.sqlite3'))
+    server.store = Store(os.environ.get('EDGEORE_STORAGE_DB', 'storage.sqlite3'), int(os.environ.get('EDGEORE_STORAGE_MAX_BYTES', '1000000000')))
     server.serve_forever()

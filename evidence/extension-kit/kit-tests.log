@@ -1,0 +1,21 @@
+test_bool_not_integer (test_kit.ConsentTests.test_bool_not_integer) ... ok
+test_canonical_order (test_kit.ConsentTests.test_canonical_order) ... ok
+test_expiration_revocation_budget (test_kit.ConsentTests.test_expiration_revocation_budget) ... ok
+test_meaning_change_changes_digest (test_kit.ConsentTests.test_meaning_change_changes_digest) ... ok
+test_no_cloud_fallback (test_kit.ConsentTests.test_no_cloud_fallback) ... ok
+test_origin_credentials_refused (test_kit.ConsentTests.test_origin_credentials_refused) ... ok
+test_review_not_execution (test_kit.ConsentTests.test_review_not_execution) ... ok
+test_string_flags_refused (test_kit.ConsentTests.test_string_flags_refused) ... ok
+test_unknown_fields_refused (test_kit.ConsentTests.test_unknown_fields_refused) ... ok
+test_unqualified_default_refused (test_kit.ConsentTests.test_unqualified_default_refused) ... ok
+test_duplicate_artifact_refused (test_kit.EvidenceTests.test_duplicate_artifact_refused) ... ok
+test_duplicate_json_refused (test_kit.EvidenceTests.test_duplicate_json_refused) ... ok
+test_modified_artifact_fails (test_kit.EvidenceTests.test_modified_artifact_fails) ... ok
+test_symlink_refused (test_kit.EvidenceTests.test_symlink_refused) ... ok
+test_traversal_refused (test_kit.EvidenceTests.test_traversal_refused) ... ok
+test_unsigned_integrity_only (test_kit.EvidenceTests.test_unsigned_integrity_only) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.003s
+
+OK

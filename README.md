@@ -175,3 +175,11 @@ No repository `LICENSE` was found in the inspected source snapshot. The owner mu
 
 **Built by CodesbyFebin.**  
 *A useful edge starts with clear permissions and inspectable results.*
+
+## Experimental extension kit
+
+Optional owned-storage gateway, build governance and offline consent/evidence tools are development candidates. Android integration and runtime qualification remain incomplete. No new payout, portable restore or production claim is implied.
+
+- [Fork and extension guide](FORK-GUIDE.md)
+- [Research and roadmap](docs/extensions/RESEARCH-AND-ROADMAP.md)
+- [Offline kit](tools/edgeore-kit/README.md)

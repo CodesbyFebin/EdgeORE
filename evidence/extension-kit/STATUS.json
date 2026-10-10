@@ -1,0 +1,27 @@
+{
+  "base": "b59b9d1",
+  "kit_tests": {
+    "passed": 16,
+    "exit": 0
+  },
+  "gateway_tests": {
+    "passed": 10,
+    "exit": 0
+  },
+  "build_policy_tests": {
+    "passed": 6,
+    "exit": 0
+  },
+  "dependency_declaration_policy": "PASS",
+  "android_build": "BLOCKED: prior Gradle distribution download failed; not retried for this Python/docs iteration",
+  "android_runtime": "NOT_RUN",
+  "provider_integrations": "NOT_RUN",
+  "portable_restore": "NOT_IMPLEMENTED",
+  "settlement": "NOT_RUN",
+  "source_sha256": {
+    "tools/edgeore-kit/edgeore_kit.py": "1706d5c4f6c2c0d2b439f46a1699e30598ecbb73d6857bee4e1c73f8c17a64b6",
+    "tools/edgeore-kit/test_kit.py": "c1e2d939ad468b7a924bd554fdf59fc7178737f98433fbc0a4dcb0e915e63eb2",
+    "services/storage-gateway/server.py": "b0ee8d25a78fceab001403c1bb031a02633e05f7c2f6eb18084cec464dfcad87",
+    "services/storage-gateway/test_gateway.py": "e8a750ade74303d26d74d32d82d1ad24c75432dfffe34cf7fa627c2e55a821a9"
+  }
+}
