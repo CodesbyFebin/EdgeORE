@@ -33,11 +33,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.edgeore.app.BuildConfig
 import com.edgeore.app.EdgeOreViewModel
 import com.edgeore.app.device.EdgePolicy
 import com.edgeore.app.device.EdgeState
 import com.edgeore.app.solana.RpcObservation
 import com.edgeore.app.ui.Format
+import com.edgeore.app.wallet.WalletDisplay
 import com.edgeore.app.ui.components.EdgeCard
 import com.edgeore.app.ui.components.EdgeIcons
 import com.edgeore.app.ui.components.ObservationCard
@@ -71,16 +73,22 @@ fun MineScreen(vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> 
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(if (wallet.address == null) "Not connected" else wallet.status, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+            Text(WalletDisplay.statusLine(wallet), color = if (wallet.error != null && wallet.address == null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
             Text("Compatible MWA wallet required", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        }
+        val failure = wallet.error
+        if (failure != null && wallet.address == null && !wallet.busy) {
+            // Persistent until the next Connect attempt; sanitized (no token, key or wallet payload).
+            Column(Modifier.semantics { contentDescription = "Wallet connection error ${failure.code.name}" }) {
+                WalletDisplay.errorLines(failure, showDiagnostics = BuildConfig.DEBUG).forEachIndexed { i, line ->
+                    Text(line, color = if (i == 0) EdgeColors.copper else EdgeColors.textMuted,
+                        style = if (i < 2) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelSmall)
+                }
+            }
         }
         wallet.address?.let {
             Text(
-                when (val b = balance) {
-                    is RpcObservation.Fresh -> "Devnet ${Format.sol(b.lamports)} · slot ${b.slot} · ${Format.ago(b.observedAt)}"
-                    is RpcObservation.Unavailable -> "Balance unavailable"
-                    null -> "Balance not requested"
-                },
+                WalletDisplay.balanceLine(balance) { b -> "Devnet ${Format.sol(b.lamports)} · slot ${b.slot} · ${Format.ago(b.observedAt)}" },
                 color = if (fresh == null) EdgeColors.copper else EdgeColors.textPrimary,
                 style = MaterialTheme.typography.bodyMedium,
             )
