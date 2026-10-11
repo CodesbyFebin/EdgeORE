@@ -1,0 +1,428 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EdgeORE owned storage gateway",
+    "version": "1",
+    "summary": "Ciphertext-only storage on a host the owner runs. Development prototype, not a hosted service.",
+    "description": "Matches services/storage-gateway/server.py; test_contract.py checks that routes, status codes, patterns and size limits agree. The server listens on 127.0.0.1:19844 over plain HTTP and must be put behind an owner-managed HTTPS reverse proxy (see Caddyfile.example). Acknowledged uploads are not pinning, replication or a retrieval guarantee. This file uses YAML's JSON-compatible syntax so it can be read without a YAML library.",
+    "license": {
+      "name": "No project licence chosen yet; see README"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://gateway.example.invalid",
+      "description": "Placeholder: the owner's HTTPS reverse proxy origin"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/capabilities": {
+      "get": {
+        "operationId": "getCapabilities",
+        "summary": "What this gateway can do. Explicitly false for pinning and portable restore.",
+        "responses": {
+          "200": {
+            "description": "Capabilities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/Busy"
+          }
+        }
+      }
+    },
+    "/v1/jobs/{jobId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/JobId"
+        }
+      ],
+      "get": {
+        "operationId": "getJob",
+        "summary": "Observe one upload job.",
+        "responses": {
+          "200": {
+            "description": "Acknowledged or canceled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No gateway record of this job (not proof that no upload happened elsewhere)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/Busy"
+          }
+        }
+      },
+      "put": {
+        "operationId": "putJob",
+        "summary": "Upload ciphertext for a job. Idempotent for the same job and digest.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ContentLength"
+          },
+          {
+            "$ref": "#/components/parameters/CiphertextSha256"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "contentMediaType": "application/octet-stream",
+                "maxLength": 8001024
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stored, or already stored with the same digest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Body shorter than Content-Length",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Bad identifier or digest, digest mismatch, job reused or canceled, or quota exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Content-Length missing, not decimal, above the limit, or Transfer-Encoding present",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/Busy"
+          }
+        }
+      },
+      "post": {
+        "operationId": "postJobRefused",
+        "summary": "Not supported on this path.",
+        "responses": {
+          "405": {
+            "description": "Method refused",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/Busy"
+          }
+        }
+      }
+    },
+    "/v1/jobs/{jobId}/cancel": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/JobId"
+        }
+      ],
+      "post": {
+        "operationId": "cancelJob",
+        "summary": "Stop retrieval through this job. Does not delete bytes or prove erasure; canceled bytes still count toward the quota.",
+        "responses": {
+          "200": {
+            "description": "Canceled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/Busy"
+          }
+        }
+      }
+    },
+    "/v1/objects/{sha256}": {
+      "parameters": [
+        {
+          "name": "sha256",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Digest"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getObject",
+        "summary": "Retrieve ciphertext by digest through any job that is not canceled.",
+        "responses": {
+          "200": {
+            "description": "Ciphertext bytes",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "contentMediaType": "application/octet-stream",
+                  "maxLength": 8001024
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not stored, or only through canceled jobs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/Busy"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "One operator token of at least 32 characters from EDGEORE_STORAGE_TOKEN. Never commit it or put it in an APK."
+      }
+    },
+    "parameters": {
+      "JobId": {
+        "name": "jobId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,80}$"
+        }
+      },
+      "ContentLength": {
+        "name": "Content-Length",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8001024
+        }
+      },
+      "CiphertextSha256": {
+        "name": "X-Ciphertext-SHA256",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Digest"
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or wrong bearer token. Checked before the body is read.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Busy": {
+        "description": "Connection cap reached (EDGEORE_STORAGE_MAX_CONNECTIONS, default 8). Sent before the request is parsed, so it has no body."
+      }
+    },
+    "schemas": {
+      "Digest": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NotFound": {
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "const": "not_found"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JobStatus": {
+        "type": "object",
+        "required": [
+          "state",
+          "remoteRef",
+          "ciphertextSha256",
+          "observedAt"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "enum": [
+              "acknowledged",
+              "canceled"
+            ]
+          },
+          "remoteRef": {
+            "$ref": "#/components/schemas/Digest"
+          },
+          "ciphertextSha256": {
+            "$ref": "#/components/schemas/Digest"
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the gateway answered this request, not when the bytes were stored."
+          }
+        }
+      },
+      "CancelResult": {
+        "type": "object",
+        "required": [
+          "canceled"
+        ],
+        "properties": {
+          "canceled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Capabilities": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "storage",
+          "maxObjectBytes",
+          "maxStoredPayloadBytes",
+          "pinning",
+          "portableRestore",
+          "settlement"
+        ],
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "storage": {
+            "const": "owned-sqlite-ciphertext"
+          },
+          "maxObjectBytes": {
+            "const": 8001024
+          },
+          "maxStoredPayloadBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pinning": {
+            "const": false
+          },
+          "portableRestore": {
+            "const": false
+          },
+          "settlement": {
+            "const": "not_integrated"
+          }
+        }
+      }
+    }
+  }
+}

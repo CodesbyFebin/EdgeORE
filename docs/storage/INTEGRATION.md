@@ -31,6 +31,9 @@ clarify before copying implementation. Preserve upstream attribution for any fut
 
 ## Implemented protocol
 
+The machine-readable contract is `services/storage-gateway/openapi.yaml` (OpenAPI 3.1, JSON-compatible YAML).
+`test_contract.py` fails if the server's routes, status codes, patterns or size limits drift from it.
+
 All routes require a bearer credential supplied outside source control.
 The gateway binds only to 127.0.0.1:19844. Android requires an HTTPS origin with owner-managed TLS.
 No IPFS administrative API or arbitrary remote URL is exposed.
