@@ -65,7 +65,9 @@ payload; the check and the insert run in one IMMEDIATE transaction.
     python3 services/storage-gateway/server.py
     python3 -m unittest discover -s services/storage-gateway -v
 
-Place a hardened HTTPS reverse proxy in front of loopback before Android integration. Configure
+Place a hardened HTTPS reverse proxy in front of loopback before Android integration. `Caddyfile.example` is a
+sample (request-size limit, timeouts, route allowlist, no access log); `scripts/gateway-proxy-it.sh` runs the
+gateway behind it on loopback with a throwaway certificate and exercises it with curl and the pinned Android client. Configure
 request-body limits, connection/concurrency limits, timeouts and a host disk quota. Do not expose
 Python's development HTTP server directly. This prototype has one operator credential and one
 namespace: it is not a multi-user production service. Production needs scoped expiring auth,
