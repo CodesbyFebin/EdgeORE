@@ -74,8 +74,11 @@ bound the wait. Streams check coroutine cancellation between reads/writes.
 
 1. Kotlin adapter compilation and its offline input-validation tests now pass on EdgeORE's build host
    (evidence/unified-upgrade/). Still missing: malformed-response, redirect and timeout tests against a live
-   HTTPS server. The adapter uses the platform trust store with no certificate pinning, unlike EdgeORE's node
-   pairing, so an owner's self-signed certificate is refused; add SHA-256 certificate pinning before wiring it.
+   HTTPS server. SPKI SHA-256 pinning (`SpkiPinning.kt`) is now in place: the owner supplies `sha256/<base64>`
+   pins at setup; without a pin only public-CA certificates are accepted, so a self-signed host is refused in the
+   handshake. Tested against a local self-signed JVM TLS server (`SpkiPinningTest`) and through Caddy
+   (`evidence/stack-alignment/`). Get a pin with:
+   `openssl x509 -in cert.pem -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64`
 2. Add explicit provider settings and consent; store credentials with Android Keystore protection.
    Inject OwnedGatewayBackupProvider into the coordinator only after configuration. Configured
    means a route was supplied, not that the server was reached.

@@ -13,10 +13,13 @@ import kotlin.coroutines.coroutineContext
 /** Optional client for services/storage-gateway; not selected by the default app build.
  * Credentials are provided at request time, never put in provider labels, URLs or receipts.
  * Only HTTPS, no redirects, no arbitrary remote download URLs and no automatic write retries.
+ * [spkiPins] are SPKI SHA-256 pins the owner supplies at setup (see [SpkiPinning]). With no pins only a public-CA
+ * certificate is accepted, so a self-signed owned host is refused until its pin is configured.
  */
 class OwnedGatewayBackupProvider(
     endpoint: String,
     private val token: () -> String,
+    spkiPins: Collection<String> = emptyList(),
     private val label: String = "Configured owned storage gateway",
 ) : BackupProvider {
     private val base = URI(endpoint).also {
@@ -24,6 +27,7 @@ class OwnedGatewayBackupProvider(
         require(it.rawUserInfo == null && it.rawQuery == null && it.rawFragment == null) { "No credentials, query or fragment in gateway URL" }
         require(it.path.isNullOrEmpty() || it.path == "/") { "Gateway URL must be an origin" }
     }.toString().trimEnd('/')
+    private val tls = SpkiPinning(spkiPins)
     override fun availability(): ProviderAvailability = ProviderAvailability.Configured(label)
 
     private fun identifier(id: String): String = id.also {
@@ -36,6 +40,9 @@ class OwnedGatewayBackupProvider(
         val credential = token()
         require(credential.length >= 32 && credential.all { it.code in 33..126 }) { "Storage credential unavailable" }
         return (URI(base + path).toURL().openConnection() as HttpURLConnection).apply {
+            // The scheme is checked to be https in init, so this is always an HttpsURLConnection; fail closed otherwise.
+            if (this !is javax.net.ssl.HttpsURLConnection) throw BackupUnavailableException("Gateway requires HTTPS")
+            tls.apply(this)
             requestMethod = method
             connectTimeout = 10_000
             readTimeout = 20_000
