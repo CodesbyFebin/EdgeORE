@@ -1,0 +1,33 @@
+{
+  "produced_on": "EdgeORE build host (network-enabled), 2026-10-11 IST; JVM/Gradle/Python only, no phone or emulator",
+  "tested_commit": "8cf386c9c9df5e665c8a1da07f6b78a99c7541f5",
+  "branch": "feature/unified-upgrade",
+  "base": "main 268fd7494eddbe4d0460d3a3683f390adc25985c",
+  "series": "3 patches by Codex <codex@localhost> applied with git am --3way, no conflicts: 68e392c (gateway, upstream a767f43), 6b16d5d (governance, upstream b59b9d14), 03ee0ad (kit, upstream 85524a0); review commits 09ced8e..8cf386c",
+  "suites_kept_separate": {
+    "edgeore_kit_tests": {"ran": 22, "passed": 22, "exit": 0, "note": "16 from the patch + 6 added in review"},
+    "storage_gateway_tests": {"ran": 13, "passed": 13, "exit": 0, "note": "10 from the patch + 3 added in review"},
+    "build_policy": {"result": "PASS", "exit": 0},
+    "build_policy_tests": {"ran": 12, "passed": 12, "exit": 0},
+    "android_unit_tests": {"suites": 26, "tests": 265, "passed": 264, "failed": 0, "skipped": 1, "skipped_test": "NodeAgentIntegrationTest.pairObserveRevokeAgainstRealAgent (needs a live node agent)", "note": "includes 11 OwnedGatewayBackupProviderTest (4 from the patch, 7 added in review)"},
+    "android_lint": "No issues found",
+    "screenshot_suite": {"verifyRoborazziDebug": "PASS", "suites": 9, "tests": 25, "passed": 25, "baselines_changed": false},
+    "receipt_checker": {"tests": 14, "passed": 14, "installDist": "PASS"},
+    "release_manifest": {"result": "PASS", "check_manifest_unit_tests": 9}
+  },
+  "resolved_dependencies_vs_main": {
+    "app releaseRuntimeClasspath": "IDENTICAL",
+    "app debugRuntimeClasspath": "IDENTICAL",
+    "ondevice-llm releaseRuntimeClasspath": "IDENTICAL",
+    "ondevice-llm debugRuntimeClasspath": "IDENTICAL",
+    "app releaseCompileClasspath": "IDENTICAL",
+    "ondevice-llm releaseCompileClasspath": "IDENTICAL",
+    "ondevice-llm debugCompileClasspath": "IDENTICAL",
+    "app debugCompileClasspath": "same lines; two compose-bom constraint lines in swapped order (same as on build/governance-catalog); versions identical",
+    "added_by_series": "none (the gateway client uses HttpURLConnection and org.json from the platform)",
+    "litertlm_on_app_compile_classpaths": 0,
+    "error_prone_annotations_in_ondevice_llm_reports": 0
+  },
+  "debug_apk": {"sha256": "45d2734e2fee8147789e1f64d1e7038b40337a216ce3b4ca99e6f40d42408103", "git_commit_stamp": "8cf386c9c9df", "permissions_and_manifest_vs_main": "identical"},
+  "not_run": ["GitHub workflow", "phone or emulator", "gateway behind a real HTTPS reverse proxy", "Android adapter against a live gateway", "Titan/IPFS provider", "portable restore", "settlement"]
+}
