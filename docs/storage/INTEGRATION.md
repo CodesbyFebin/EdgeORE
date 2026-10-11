@@ -84,7 +84,8 @@ bound the wait. Streams check coroutine cancellation between reads/writes.
 
 ## Evidence
 
-Backend: 8 tests passed, including real loopback HTTP authentication and upload/retrieve/cancel.
-Android compile: BLOCKED, Gradle 8.9 distribution download failed with Network is unreachable.
-No new APK, Titan request, deployed gateway, device restore or payment was observed.
-Logs are in evidence/storage-gateway-adaptation. Historical Android counts do not qualify this diff.
+The patch author reported backend 8/8 and Android compile BLOCKED (Gradle 8.9 download failed). Those logs are in
+`evidence/storage-gateway-adaptation/author-environment/`, labelled as the author's environment. The gateway suite,
+the Android build and the Android tests were later run on EdgeORE's build host; see `evidence/unified-upgrade/`.
+No Titan request, deployed gateway, device restore or payment was observed, and the Android adapter is still not
+selected by the app.

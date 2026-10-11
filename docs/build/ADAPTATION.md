@@ -1,6 +1,8 @@
 # EdgeORE build engineering adaptation
 
-Candidate changes on top of storage-gateway adaptation a767f43; not build-qualified.
+Imported as patch 2/3 of the unified series (upstream `b59b9d14`, author `Codex <codex@localhost>`), applied on top
+of patch 1/3, the storage-gateway adaptation (upstream `a767f43`), on `main` `268fd74`. Qualification on EdgeORE's
+build host is recorded in `evidence/unified-upgrade/`.
 No upstream code was copied. Project names below credit design references, not authorship of this code.
 
 ## Implemented
@@ -9,11 +11,14 @@ No upstream code was copied. Project names below credit design references, not a
   app and ondevice-llm now reference the catalog. No declaration versions or dependency scopes changed.
   Standalone receipt-checker remains its own Gradle build and retains its dependency declarations.
 - scripts/build-policy.py compares catalog and configuration declarations with a reviewed baseline,
-  rejects dynamic versions and checks the previously recorded Gradle 8.9 wrapper JAR SHA-256.
+  rejects dynamic versions and checks the previously recorded Gradle 8.9 wrapper JAR SHA-256. After review it also
+  covers every dependency configuration name (e.g. testRuntimeOnly, kapt, ksp), project() dependencies, dependency
+  exclusions, the settings.gradle.kts repository set and API_KEY/CREDENTIAL-style BuildConfig field names.
   It also rejects credential-like single-line BuildConfig fields in the scoped build scripts.
   This narrow policy is NOT a general secret scanner and NOT a resolved-classpath comparison.
-- Six adversarial policy tests cover catalog drift, dependency-scope changes, wrapper mutation,
-  dynamic versions and credential-like generated fields.
+- Twelve policy tests (six original, six added in review) cover catalog drift, dependency-scope changes, wrapper
+  mutation, dynamic versions, credential-like generated fields, unlisted configurations, project-dependency removal,
+  exclusion removal and added repositories.
 - GitHub Actions separates offline checks, Android qualification, screenshot verification and the
   receipt checker, with read-only repository permissions and artifacts saved even on failure.
   No automatic publishing, deployments or wallet actions. Workflow has not run on GitHub yet.
@@ -40,15 +45,15 @@ explicitly marks itself obsolete. Use official Gradle Kotlin DSL documentation f
 
 ## Qualification and next checks
 
-Offline declaration parity PASS, 6/6 policy tests PASS, storage gateway 8/8 PASS. Recorded logs live
-in evidence/build-governance. These are distinct test suites and not Android results.
-Gradle configuration/Android build is BLOCKED because the wrapper distribution cannot download in
-this environment. No new APK, resolved graph, Detekt result, dependency-analysis report or remote CI
-result exists. The migration must pass a clean network-enabled build before merge.
+The author reported offline declaration parity PASS, 6/6 policy tests PASS and storage gateway 8/8 PASS, with Gradle
+BLOCKED because the wrapper distribution could not download. Those logs are kept, labelled, in
+`evidence/build-governance/author-environment/`. Results from EdgeORE's network-enabled build host, including the
+resolved-graph comparison and APK hash, are in `evidence/unified-upgrade/` (see its `README.md`). The GitHub
+workflow itself has not run yet.
 
 Requires Python 3.11+ for tomllib. CI pins Python 3.12. The workflow currently relies on the hosted
-Ubuntu Android SDK and actions referenced by major tags; qualify the SDK and pin reviewed action
-commits before production release. Do not enable configuration cache until Git source-stamp and
+Ubuntu Android SDK and actions pinned to the commits their major tags pointed at on 2026-10-10;
+qualify the SDK and re-review the pins before production release. Do not enable configuration cache until Git source-stamp and
 configuration behavior are tested. Adding convention plugins now would expand the unqualified
 build surface; extract them after the catalog migration is green.
 

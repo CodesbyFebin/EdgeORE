@@ -41,7 +41,8 @@
   "scope": [
     "build.gradle.kts",
     "app/build.gradle.kts",
-    "ondevice-llm/build.gradle.kts"
+    "ondevice-llm/build.gradle.kts",
+    "settings.gradle.kts (repositories only)"
   ],
   "standalone_checker": "Unchanged; separate Gradle build",
   "declarations": {
@@ -132,6 +133,10 @@
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0"
       ],
       [
+        "implementation",
+        "project:ondevice-llm"
+      ],
+      [
         "testImplementation",
         "androidx.compose.ui:ui-test-junit4"
       ],
@@ -186,5 +191,17 @@
         "org.jetbrains.kotlin:kotlin-reflect:2.0.21"
       ]
     ]
-  }
+  },
+  "exclusions": {
+    "build.gradle.kts": [],
+    "app/build.gradle.kts": [],
+    "ondevice-llm/build.gradle.kts": [
+      "exclude(group = \"com.google.errorprone\", module = \"error_prone_annotations\")"
+    ]
+  },
+  "repositories": [
+    "google()",
+    "gradlePluginPortal()",
+    "mavenCentral()"
+  ]
 }
