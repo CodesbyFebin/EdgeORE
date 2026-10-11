@@ -54,6 +54,10 @@ authenticates/decrypts and publishes a new object after successful verification.
 Use Python 3 on an owned host. Set EDGEORE_STORAGE_TOKEN through a secret manager or private shell
 configuration to at least 32 printable random characters. Never paste it into logs or an APK.
 Set EDGEORE_STORAGE_DB to an absolute path on private, durable storage.
+The gateway creates that file readable by its own user only (umask 077), closes connections that stay
+idle for 20 seconds, and refuses connections beyond EDGEORE_STORAGE_MAX_CONNECTIONS (default 8) with 503,
+because each upload can hold up to 8 MB in memory. EDGEORE_STORAGE_MAX_BYTES (default 1 GB) caps retained
+payload; the check and the insert run in one IMMEDIATE transaction.
 
     python3 services/storage-gateway/server.py
     python3 -m unittest discover -s services/storage-gateway -v

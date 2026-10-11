@@ -36,6 +36,19 @@ class GatewayTests(unittest.TestCase):
         limited.cancel('job-1')
         with self.assertRaises(ValueError): limited.put('job-2', self.body, self.digest)
         self.assertIsNone(limited.status('job-2'))
+    def test_quota_holds_under_concurrent_uploads(self):
+        import threading
+        limited = Store(self.path, max_total_bytes=10)
+        results = []
+        def upload(i):
+            body = bytes([i]) * 10
+            try: results.append(limited.put(f'job-{i}', body, hashlib.sha256(body).hexdigest()))
+            except ValueError: results.append('refused')
+        threads = [threading.Thread(target=upload, args=(i,)) for i in range(8)]
+        for t in threads: t.start()
+        for t in threads: t.join()
+        self.assertEqual(results.count(True), 1)
+        self.assertEqual(results.count('refused'), 7)
     def test_bounds_and_identifier(self):
         with self.assertRaises(ValueError): self.store.put('../outside', self.body, self.digest)
         large = b'X' * (MAX_BYTES + 1)
@@ -73,6 +86,30 @@ class HttpTests(unittest.TestCase):
         caps = json.loads(body)
         self.assertFalse(caps['pinning'])
         self.assertEqual(caps['settlement'],'not_integrated')
+    def test_connection_cap_refuses_extra_connections(self):
+        import socket, threading
+        self.server.slots = threading.BoundedSemaphore(1)
+        idle = socket.create_connection(('127.0.0.1', self.server.server_port))
+        try:
+            import time
+            for _ in range(50):
+                if self.server.slots._value == 0: break
+                time.sleep(0.02)
+            self.assertEqual(self.request('GET', '/v1/capabilities')[0], 503)
+        finally:
+            idle.close()
+    def test_idle_connection_is_closed_by_timeout(self):
+        import socket
+        from server import Handler
+        self.assertTrue(Handler.timeout is not None and 0 < Handler.timeout <= 60)  # the default is bounded
+        # Shorten it for the test only; the mechanism is the same.
+        self.server.RequestHandlerClass = type('ShortTimeout', (self.server.RequestHandlerClass,), {'timeout': 0.5})
+        idle = socket.create_connection(('127.0.0.1', self.server.server_port))
+        idle.settimeout(5)
+        try:
+            self.assertEqual(idle.recv(1), b'')  # server closed it without a request
+        finally:
+            idle.close()
     def test_auth_required(self):
         self.assertEqual(self.request('GET', '/v1/jobs/job')[0], 401)
     def test_upload_observe_retrieve_cancel(self):

@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sqlite3
+import threading
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -61,6 +62,21 @@ class Store:
 
 class Handler(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
+    # Socket timeout from accept onward, so a client that never finishes its request line or headers cannot hold a
+    # thread forever (route() alone only set it after the headers had been parsed).
+    timeout = 20
+    def handle(self):
+        # Optional cap on concurrent connections (server.slots). Each connection may hold an 8 MB body in memory,
+        # so without a cap ThreadingHTTPServer accepts unbounded parallel uploads. Refuse early instead of queuing.
+        slots = getattr(self.server, 'slots', None)
+        if slots is not None and not slots.acquire(blocking=False):
+            self.wfile.write(b'HTTP/1.1 503 Service Unavailable\r\nContent-Length: 0\r\nConnection: close\r\n\r\n')
+            return
+        try:
+            super().handle()
+        finally:
+            if slots is not None:
+                slots.release()
     def log_message(self, *args):
         pass  # Do not log bearer credentials, object references or request bodies.
     def reply(self, code, value, binary=False):
@@ -116,7 +132,9 @@ if __name__ == '__main__':
     token = os.environ.get('EDGEORE_STORAGE_TOKEN', '')
     if len(token) < 32:
         raise SystemExit('Set EDGEORE_STORAGE_TOKEN to a random secret of at least 32 characters')
+    os.umask(0o077)  # the SQLite file and its journal are readable by this user only
     server = ThreadingHTTPServer(('127.0.0.1', 19844), Handler)
+    server.slots = threading.BoundedSemaphore(int(os.environ.get('EDGEORE_STORAGE_MAX_CONNECTIONS', '8')))
     server.token = token
     server.store = Store(os.environ.get('EDGEORE_STORAGE_DB', 'storage.sqlite3'), int(os.environ.get('EDGEORE_STORAGE_MAX_BYTES', '1000000000')))
     server.serve_forever()
