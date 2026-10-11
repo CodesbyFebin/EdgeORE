@@ -55,6 +55,24 @@ class EvidenceTests(unittest.TestCase):
     def test_symlink_refused(self):
         (self.root/'link.txt').symlink_to(self.root/'log.txt');self.doc['files'][0]['path']='link.txt';self.save()
         with self.assertRaises(ValueError):verify_bundle(self.root)
+    # Added in review: behaviours the README claims that had no test.
+    def refused(self):
+        self.save()
+        with self.assertRaises(ValueError): verify_bundle(self.root)
+    def test_absolute_path_refused(self):
+        self.doc['files'][0]['path'] = '/etc/hostname'; self.refused()
+    def test_size_mismatch_refused(self):
+        self.doc['files'][0]['bytes'] = 12; self.refused()
+    def test_malformed_hash_refused(self):
+        self.doc['files'][0]['sha256'] = self.doc['files'][0]['sha256'].upper(); self.refused()
+    def test_unknown_manifest_field_refused(self):
+        self.doc['signature'] = 'not checked, so not accepted'; self.refused()
+    def test_empty_file_list_refused(self):
+        self.doc['files'] = []; self.refused()
+    def test_symlinked_parent_directory_refused(self):
+        (self.root/'real').mkdir(); (self.root/'real'/'a.txt').write_bytes(b'fixture log')
+        (self.root/'sub').symlink_to(self.root/'real')
+        self.doc['files'][0]['path'] = 'sub/a.txt'; self.refused()
     def test_duplicate_json_refused(self):
         with self.assertRaises(ValueError):strict_json('{"version":1,"version":2}')
 

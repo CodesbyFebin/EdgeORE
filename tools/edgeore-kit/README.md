@@ -23,3 +23,7 @@ provenance. This tool supplements rather than replaces the existing signed recei
 
 Never export tokens, private keys, passphrases, raw documents or entire browser logs to an evidence
 bundle. This verifier does not detect credentials or redact files. Explicitly review selected files.
+
+`schemas/evidence-manifest-example.json` shows the shape only: its file list is empty and its commit is all zeros,
+so `verify-evidence` refuses it as-is (at least one listed file is required). `schemas/consent-example.json` expired
+at `expiresAt: 1`, so `plan` always refuses it; `hash-consent` still hashes it.
