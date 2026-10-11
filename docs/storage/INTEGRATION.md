@@ -72,7 +72,10 @@ bound the wait. Streams check coroutine cancellation between reads/writes.
 
 ## Remaining implementation
 
-1. Qualify Kotlin adapter compilation and malformed-response/redirect/timeout tests.
+1. Kotlin adapter compilation and its offline input-validation tests now pass on EdgeORE's build host
+   (evidence/unified-upgrade/). Still missing: malformed-response, redirect and timeout tests against a live
+   HTTPS server. The adapter uses the platform trust store with no certificate pinning, unlike EdgeORE's node
+   pairing, so an owner's self-signed certificate is refused; add SHA-256 certificate pinning before wiring it.
 2. Add explicit provider settings and consent; store credentials with Android Keystore protection.
    Inject OwnedGatewayBackupProvider into the coordinator only after configuration. Configured
    means a route was supplied, not that the server was reached.
