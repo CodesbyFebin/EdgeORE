@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("io.github.takahirom.roborazzi")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 fun git(vararg args: String): String = try {
@@ -28,9 +29,13 @@ android {
     }
 
     val storePass = System.getenv("EDGEORE_STORE_PASS").orEmpty()
+    // Release signing only when the owner's keystore is present (never committed) and the password is set.
+    // Otherwise assembleRelease produces an UNSIGNED, minified APK for R8/size checks only.
+    val releaseKeystore = rootProject.file("release.jks")
+    val canSignRelease = releaseKeystore.exists() && storePass.isNotEmpty()
     signingConfigs {
-        create("release") {
-            storeFile = rootProject.file("release.jks")
+        if (canSignRelease) create("release") {
+            storeFile = releaseKeystore
             storePassword = storePass
             keyAlias = "edgeore"
             keyPassword = storePass
@@ -40,8 +45,10 @@ android {
     buildTypes {
         release {
             // Password stays in the environment. The keystore is not committed.
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (canSignRelease) signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -132,3 +139,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner.lib)
     androidTestImplementation(libs.androidx.test.core.ktx.lib)
 }
+
+// Report-only static analysis (hardening backlog H6/H7). Findings are recorded, not gated, until a baseline is reviewed.
+detekt {
+    buildUponDefaultConfig = true
+    ignoreFailures = true
+    source.setFrom("src/main/java", "src/test/java")
+}
+dependencies { detektPlugins(libs.io.gitlab.arturbosch.detekt.detekt.formatting.lib) }

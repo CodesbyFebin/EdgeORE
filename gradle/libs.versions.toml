@@ -23,6 +23,7 @@ com-solanamobile-mobile-wallet-adapter-clientlib-ktx-lib = { module = "com.solan
 io-github-takahirom-roborazzi-roborazzi-compose-lib = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version = "1.36.0" }
 io-github-takahirom-roborazzi-roborazzi-junit-rule-lib = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version = "1.36.0" }
 io-github-takahirom-roborazzi-roborazzi-lib = { module = "io.github.takahirom.roborazzi:roborazzi", version = "1.36.0" }
+io-gitlab-arturbosch-detekt-detekt-formatting-lib = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version = "1.23.8" }
 junit-junit-lib = { module = "junit:junit", version = "4.13.2" }
 org-bouncycastle-bcprov-jdk18on-lib = { module = "org.bouncycastle:bcprov-jdk18on", version = "1.78.1" }
 org-jetbrains-kotlin-kotlin-reflect-lib = { module = "org.jetbrains.kotlin:kotlin-reflect", version = "2.0.21" }
@@ -32,6 +33,7 @@ org-json-json-lib = { module = "org.json:json", version = "20240303" }
 org-robolectric-robolectric-lib = { module = "org.robolectric:robolectric", version = "4.14.1" }
 
 [plugins]
+detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.8" }
 android-application = { id = "com.android.application", version = "8.7.3" }
 android-library = { id = "com.android.library", version = "8.7.3" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.0.21" }
