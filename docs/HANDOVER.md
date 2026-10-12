@@ -1,5 +1,9 @@
 # EdgeORE — Handover (2026-10-12)
 
+<!-- commit-stamp:begin -->
+Canonical source commit: `9a47e3a7368426077401e500f839ecd161dd29d1` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
+<!-- commit-stamp:end -->
+
 Scope: everything that was built and checked on the build machine, everything that was not, and what the owner still has to do.
 EdgeORE is **not production-ready**. Device, wallet, devnet, signing and store gates are NOT_RUN. No mining income, ORE or SKR
 integration is claimed; the ORE v3 board is a read-only observation of public account data with a text-only advisor that cannot
