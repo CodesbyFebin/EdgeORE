@@ -1,104 +1,68 @@
 # EdgeORE
+
+<!-- commit-stamp:begin -->
+Canonical source commit: `76cb0e8d53a7c6d51e18e36ad459c98b568396e7` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
+<!-- commit-stamp:end -->
 <img width="2172" height="724" alt="image" src="https://github.com/user-attachments/assets/52f6707b-7af5-4092-9bea-6e21f45054f7" />
 
-**Your Edge. Your AI. Your Proof.**
+**EdgeORE is an Android ORE client for Solana Seeker. Every ORE deploy is reviewed, capped, signed in your own wallet, and receipted.**
 
-> **Every wallet action on Seeker produces a signed receipt you can verify offline — including the ones you refuse.**
->
-> Pitch package (retrospective + dApp Store launch; submissions closed 8 Oct 2026): [`docs/pitch/EdgeORE-pitch.md`](docs/pitch/EdgeORE-pitch.md) · [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md)
-> Latest gate `84a788cbd926` ([evidence](evidence/build-84a788cbd926/summary.md)): Android 330 tests (325 passed, 5 skipped) · receipt checker 14 · gateway 17 · kit 22 · build-policy 12 · manifest-checker 9 · lint clean. Device gates NOT_RUN. Devnet only; no rewards, no token; not production-ready.
+Version `0.1.0-clockin` (versionCode 12) · package `com.edgeore.app` · Kotlin / Jetpack Compose · Solana Mobile Wallet Adapter · Built by **[CodesbyFebin](https://github.com/CodesbyFebin)**
 
-### Know what your wallet signs. Keep evidence of what happened.
+Hackathon package: [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md) · [`docs/pitch/EdgeORE-pitch.md`](docs/pitch/EdgeORE-pitch.md) · [`docs/submission/`](docs/submission/)
 
-EdgeORE is a native **Kotlin / Jetpack Compose Android app** for reviewing a supported Solana transaction before signing, submitting it as a separate action, and exporting a receipt that can be checked outside the app. It also includes clients for AI and nodes on infrastructure you own.
+## What is built
 
-Built by **[CodesbyFebin](https://github.com/CodesbyFebin)** · **Solana Mobile Wallet Adapter** · **Devnet**
-
-**Candidate:** `0.2.8-review` · versionCode `10` · debug APK  
-**Current `main`:** `111a3dba48c3` (evidence-only merge of PR #4) · **Tested source / APK stamp:** `d675002bd701` (`d675002bd701f94809cf776aaa0580b3cb9e83ef`).
-**Integration candidate (merged into `main` with its device gates still NOT_RUN):** branch `integration/0.2.9-candidate` (`0.2.9-review`, versionCode `11`) combines the wallet-authorization fix, Storage vault, on-device AI path and the `onchain/` prototype; see [`evidence/integration-0.2.9/`](evidence/integration-0.2.9/). The submitted candidate above is unchanged.
-
-> **Qualification:** source-side work has progressed; the wallet journey still needs runtime evidence. No confirmed transfer through EdgeORE, installed-app demo video or physical-device walkthrough is recorded here yet. This is a review candidate, not a production or ORE-earning release.
-
-[Explore source](https://github.com/CodesbyFebin/EdgeORE) · [Qualification ledger](docs/qualification-status.md) · [Releases](https://github.com/CodesbyFebin/EdgeORE/releases)
-
-## The problem
-
-A wallet approval is a critical decision, but users often have to connect three different views: what the app said it would do, what the wallet signed, and what the network eventually observed. A timeout makes that harder: retrying blindly can send an action twice, while an optimistic success label can hide an unknown outcome.
-
-EdgeORE connects those steps with an exact-message review, durable operation history and portable verification. Its core question is simple: **did the signed bytes match the action you reviewed, and what evidence supports the outcome?**
-
-## The core journey
-
-1. **Connect your wallet** through Mobile Wallet Adapter. Wallet private keys stay in the wallet app.
-2. **Review a devnet SOL transfer.** Inspect the sender, recipient, integer lamports, supported program, fee information, blockhash and message SHA-256. Unsupported messages are refused.
-3. **Sign the reviewed message.** Before opening the wallet, the app checks block height again. Returned message bytes must match the review, and the wallet's Ed25519 signature must verify.
-4. **Submit explicitly.** Signing and sending are separate actions. A durable submission-attempt record is written before the RPC send.
-5. **Observe and export.** Unknown outcomes remain unknown until observation resolves them. Export a receipt and check its signed contents with the in-app verifier or JVM checker.
-
-This journey is implemented in source. **Its end-to-end wallet run remains NOT_RUN.** The supported action is a devnet System Program transfer, not an ORE deploy, checkpoint, claim or SKR payment.
-
-## What makes the implementation different
-
-| Boundary | Implementation |
+| Feature | What it does |
 |---|---|
-| Review → wallet | Bind approval to the exact serialized message; reject changed bytes and invalid signatures. |
-| Signing → submission | Separate user actions; no broadcast implied by a wallet signature. |
-| Submission → recovery | Persist an attempt before sending. Restart recovery observes status and never automatically resends. |
-| Timeout → UI | Report outcome unknown rather than success or failure without evidence. |
-| Expiry → reservations | A sent operation that later expires stays unknown and retains its reservation. |
-| State → screen | A state transition is exposed only after persistence succeeds; damaged operation storage disables transfers. |
-| Receipt → verification | Check digests, app signatures, wallet evidence and chain structure; report provenance and completeness separately. |
+| Live ORE v3 board | Reads the mainnet Board and Round accounts and shows a 5×5 grid with per-square SOL, round and motherlode. |
+| Opt-in Mainnet switch | ORE Deploy starts on devnet. Mainnet only after you tap **Mainnet** and tick "I understand this deploy uses real SOL that I may lose". |
+| 0.01 SOL cap | Each mainnet deploy is capped at 0.01 SOL in total across the selected squares. An over-cap amount is refused before any message or wallet request exists. Account rent and network fees are additional; this is not a total-wallet-debit cap. |
+| Exact-message review | The review screen decodes the exact bytes: program, round, squares, amount per square, total, fee, blockhash and message SHA-256. Mainnet shows a copper warning panel. |
+| MWA signing | Your wallet signs through Mobile Wallet Adapter. The app never holds wallet private keys. The returned bytes must match the review, or the result is refused. |
+| Single submit | Submit is a separate tap. The attempt is recorded before sending. A timeout stays "outcome unknown". No automatic retry. |
+| Signed receipts | Every outcome becomes a receipt signed with an Android Keystore key (labelled weaker software fallback if Keystore is unavailable). |
+| Receipt checker | A standalone JVM checker verifies the integrity of signed receipt contents. It does not prove an on-chain outcome. |
+| Daily check-in | Streak and points saved on your phone. |
+| Optional extras | AI advisor host, node agent and storage gateway need your own setup. Until then they show a *Set up* step with the guidance. The AI advisor never signs or deploys. |
 
-## Submission evidence
+## Verified evidence
 
-Only link artifacts that actually exist. Missing entries below are submission work, not completed features.
+- **Tested against the live ORE mainnet program (local fork, LiteSVM), two runs.** `tools/ore-fork-sim` dumps the live mainnet ORE v3 program (sha256 `b16a10029a35e709956cfe42c4dc51cf2c59522f477eba10816a40bcaa7dd5bd`) and a read-only account snapshot. It then runs the app's exact Deploy bytes. Round 437646 and round 437756 both passed: +400,000 lamports on each of 25 squares for a 0.01 SOL deploy, and a stale-round deploy was rejected. The app's bytes match an independent Rust derivation from [regolith-labs/ore](https://github.com/regolith-labs/ore) @ `48c203bd`. This is a local fork run, not a live transaction: nothing was sent to any cluster. Details: [`docs/ore/MAINNET-DEPLOY.md`](docs/ore/MAINNET-DEPLOY.md).
+- **Devnet evidence:** [`evidence/devnet-session/`](evidence/devnet-session/README.md) has the receipt-settlement program, a receipt checkpoint, and a verified v3 receipt. That transfer and checkpoint were sent from a laptop CLI, not from the app.
+- **Pending device recording:** MWA signing of a mainnet deploy on a real device is pending device recording.
 
-| Artifact | Current status |
+### Historical tests
+
+These recorded counts describe prior source revisions, not the consolidated submission candidate. Fresh candidate results are recorded in `evidence/submission-hardening/`.
+
+| Suite | Result |
 |---|---|
-| Installable APK | `0.2.8-review` debug candidate supplied; attach the final tested APK to a Release with its SHA-256. |
-| Demo video | **Not supplied.** Record the installed Android app; label emulator footage explicitly. |
-| Pitch deck | **Not supplied.** Keep demonstrated capabilities separate from roadmap. |
-| On-chain action | **Not supplied.** Add the actual devnet signature, RPC confirmation result and Explorer link after the session. |
-| Real-transfer receipt | **Not supplied.** Export from that transaction and preserve original-PASS / signed-content-tamper-FAIL output. |
-| Hosted Android emulator — interactive APK preview | **Launch / navigation PASS** on Appetize (Pixel 7, Android 13 / **API 33**). Public link: [appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla](https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla). Session notes and screenshots: [`evidence/appetize-d675002bd701/SESSION.md`](evidence/appetize-d675002bd701/SESSION.md). **Launch and tab navigation only** — not wallet, transfer, recovery, or real-receipt evidence. |
-| Repository | [CodesbyFebin/EdgeORE](https://github.com/CodesbyFebin/EdgeORE) |
+| Android unit tests | 390 run · 382 passed · 8 skipped · 0 failed |
+| Receipt checker (JVM) | 17 passed |
+| LiteSVM receipt-settlement suite | 27 passed |
+| Live ORE mainnet program, local fork (`tools/ore-fork-sim`) | 2 passed |
 
-### Automated and manual checks
+Each suite is counted on its own. The counts are not added together.
 
-The following latest results are **maintainer-reported**. Preserve their logs and JUnit XML against the tested source revision before presenting them as reproducible release evidence.
+## Rules the app keeps
 
-| Check | Reported result | Scope |
-|---|---|---|
-| Android qualification suite | **164 tests: 163 passed, 0 failed, 1 skipped**; lint clean | JVM/build checks. Skipped test requires a live node agent. |
-| Standalone JVM checker | **7 tests, 7 passed** | Separate Gradle project; these tests are not included in the Android count. |
-| Export verification on `d675002` | Original **PASS**; copy with signed-body `lamports + 1` **FAIL**, exit `1` | Export content check; not yet an export from a demonstrated real transfer. |
-| Hosted Android emulator (Appetize) | Launch **PASS**; Mine/AI/Storage/Nodes/Receipts navigation **PASS**; About stamp observed `d675002bd701` | Pixel 7, Android 13 / **API 33**. Interactive APK preview only. See [`evidence/appetize-d675002bd701/SESSION.md`](evidence/appetize-d675002bd701/SESSION.md). |
-| Runtime wallet / recovery / video | **NOT_RUN** | Requires Android runtime, wallet and recorded session. |
+- One wallet approval per transaction. Every deploy is reviewed and signed by you.
+- You approve every deploy. No automatic retry or resend.
+- No reward, income or earnings claims. Deployed SOL may be lost entirely.
+- Hackathon build 0.1.0-clockin.
 
-### Hosted Android emulator — interactive APK preview
+## Next
 
-Judges (and anyone else) can open the verified `d675002bd701` APK in a browser through Appetize:
+- ORE checkpoint and claim, through the same review → sign → submit → receipt path.
+- More real-device testing across wallets and Seeker.
 
-- **Public link:** [https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla](https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla)
-- **Runtime label:** Hosted Android emulator (Pixel 7, Android 13 / **API 33**)
-- **What passed:** launch (no crash) and navigation of all five tabs; About text observed as `EdgeORE 0.2.8-review (d675002bd701). Solana devnet only.`
-- **What did not run:** wallet authorization (MWA), review → sign → separate submit, restart recovery, and real-transfer receipt verification remain **NOT_RUN**.
-- **Evidence:** [`evidence/appetize-d675002bd701/SESSION.md`](evidence/appetize-d675002bd701/SESSION.md) and the screenshots in that directory.
+## Research (exploratory; no timelines, no partnerships)
 
-The previously reported single-byte mutation experiment has no preserved script and output in the repository and is **not cited as evidence**.
-
-## Five native destinations
-
-| Destination | Purpose and current boundary |
-|---|---|
-| **Mine** | Opens with a *Now* overview (wallet, operations awaiting an outcome, receipts, vault), then the rock-and-pickaxe art with **Start Mining**: a contribution session on your own paired node and storage gateway (proof jobs, an encrypted chunk stored and read back), measured and receipted; the pickaxe swings only while it runs. See [docs/contribution/session.md](docs/contribution/session.md). No ORE, SKR, points or earnings. A central **ORE board** icon opens a read-only view of the live ORE v3 board on mainnet (per-square SOL, motherlode, round time) with a text-only advisor; EdgeORE has no ORE transaction path. See [docs/ore/README.md](docs/ore/README.md). |
-| **Private AI** | Ollama-compatible chat and document attachment to an owned host. On the integration candidate: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
-| **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. The device-bound vault is a design decision, not a defect: vault keys never leave this phone, so uninstalling makes the vault unrecoverable. Cross-device restore needs a separate passphrase-wrapped backup envelope, which is not built yet. |
-| **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
-| **Receipts** | Inspect, export and verify operation records with evidence dimensions kept separate. |
-
-A dedicated **Review** route controls wallet signing. Its destination and amount start empty. The address can be typed, pasted or read from a QR code: the camera permission is requested only when you tap *Scan QR*, and frames are decoded on the phone and never saved, or you can pick an image instead. An *In plain words* summary, derived from the decoded message bytes, sits above the exact-message fields and never replaces them. On first run a short introduction explains devnet-only, the wallet requirement and what EdgeORE does not do. These UX patterns are adapted from the owner's earlier Clearance prototype; see [docs/analysis/clearance-app-review.md](docs/analysis/clearance-app-review.md). Controls display their actual effect: **Enforced**, **Saved only** or **Unavailable**. A saved value is not presented as an enforced hardware limit.
+- An ORE SDK layer for other Android apps.
+- A Reserve viewer.
+- DePIN workloads on hardware the user owns.
+- TEE / ZK attestation of receipts.
 
 ## Build and install
 
@@ -140,53 +104,10 @@ For a meaningful tamper demo, preserve the original and change `lamports` inside
 
 **Verification boundary:** signatures protect signed receipt contents, not every descriptive field in the export. Self-contained integrity under an included key does not establish trusted provenance. Offline verification does not confirm a transaction on Solana or prove physical work, provider acknowledgement or payment.
 
-## Owned infrastructure
-
-**AI:** run an Ollama-compatible server on your computer, then:
-
-```bash
-adb reverse tcp:11434 tcp:11434
-```
-
-Configure `http://127.0.0.1:11434` in the app. Cleartext is allowed only to loopback; LAN hosts require HTTPS. Endpoint policy refuses public destinations. Prompts and attached document content go to the configured owned host; this is **private hosting, not on-phone inference**. A live reply and refusal session still need runtime evidence.
-
-**Nodes:** use the [pinned build script](scripts/build-node-agent.sh), [pin record](scripts/node-agent.pin) and [integration runner](scripts/node-agent-it.sh). The dependency binary is named `deproof-node`; its upstream lineage is retained for provenance. Android pairing and TLS behavior still need runtime qualification. Forward the actual configured agent port and use its live challenge, single-use code and certificate fingerprint.
-
-**Start Mining (contribution session):** pair the node with `RUN_PROOF_JOB` and an owner-pinned proof job, and set up your [storage gateway](services/storage-gateway/) with its SPKI pin in Storage. A session runs only with Edge Mode on, its gates passing and Wi-Fi observed, stops on **Stop**, and records signed receipts with measured numbers. A part that is not set up shows *Not configured* and is not counted. The [end-to-end run](scripts/session-e2e.sh) on the build machine is recorded in [`evidence/contribution-session/`](evidence/contribution-session/); on a phone it is NOT_RUN.
-
-## Architecture and trust boundaries
-
-The Compose app coordinates four distinct paths: MWA wallet signing, devnet RPC submission/observation, local receipt and vault storage, and owned-host AI/node clients.
-
-- **Wallet:** keeps private keys; returns signed bytes that EdgeORE verifies.
-- **Operation ledger:** persists reviewed bytes, submission attempts and observations. Unknown outcomes never trigger automatic resend.
-- **Receipt log:** appends exact body strings with digests, signatures and chain links. Full-chain exports carry a signed checkpoint; selected subsets do not claim completeness.
-- **JVM verifier:** checks exported records outside Android: it verifies the integrity of signed receipt contents, and separates integrity, key provenance, completeness and wallet-signature results.
-- **Owned host:** receives only explicitly requested AI or scoped node traffic; it is a separate trust boundary from the phone.
-
-Android Keystore protects device-held keys where available. Any software fallback is labeled as weaker protection. Vault keys are device-bound; an export is not a cross-device restore guarantee.
-
-The device-bound vault is a design decision, not a defect: local vault keys never leave the device; cross-device restore would need a separate passphrase-wrapped backup envelope, which is not built yet.
-
-## Deliberate limits and next milestones
-
-**Unavailable:** ORE deploy/checkpoint/claim, ORE earnings, SKR payments, VPN tunnel, cloud sync, bandwidth sharing and bandwidth rewards. EdgeORE issues no token and promises no income.
-
-The next milestone is a recorded Android session: wallet authorization → reviewed transfer → confirmed observation → restart recovery → real receipt export → second-machine verification. After that, qualify Keystore behavior, owned-host AI and Android node pairing. Broader export-signature coverage and embedded inference belong to later work.
-
 ## License and attribution
 
-No repository `LICENSE` was found in the inspected source snapshot. The owner must confirm or add a license before claiming MIT licensing for this project. Dependencies retain their own licenses; see [`NOTICE`](NOTICE) for Google AI Edge Gallery (Apache-2.0), LiteRT-LM (Apache-2.0) and ZXing core (Apache-2.0). The first-run introduction, Now overview, QR address entry and plain-language review layer are adapted from **Clearance**, CodesbyFebin's own earlier prior-work Android prototype; nothing from it that sends wallet data off the phone, claims SKR staking or rewards, or simulates signatures was carried over. Upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
+EdgeORE is licensed under the [Apache License 2.0](LICENSE) (added in the hardening-20 pass, Oct 2026). This was the reviewer-recommended default; the owner (CodesbyFebin) may still choose a different license before release. Dependencies retain their own licenses; see [`NOTICE`](NOTICE) for Google AI Edge Gallery (Apache-2.0), LiteRT-LM (Apache-2.0) and ZXing core (Apache-2.0). The first-run introduction, Now overview, QR address entry and plain-language review layer are adapted from **Clearance**, CodesbyFebin's own earlier prior-work Android prototype; nothing from it that sends wallet data off the phone, claims SKR staking or rewards, or simulates signatures was carried over. Upstream node-agent provenance is pinned separately: the `deproof-node` agent is built from [CodesbyFebin/DeProof--EdgeORE](https://github.com/CodesbyFebin/DeProof--EdgeORE) (MIT-licensed upstream) at the revision recorded in [`scripts/node-agent.pin`](scripts/node-agent.pin).
 
 ---
 
-**Built by CodesbyFebin.**  
-*A useful edge starts with clear permissions and inspectable results.*
-
-## Experimental extension kit
-
-Optional owned-storage gateway, build governance and offline consent/evidence tools are development candidates. Android integration and runtime qualification remain incomplete. No new payout, portable restore or production claim is implied.
-
-- [Fork and extension guide](FORK-GUIDE.md)
-- [Research and roadmap](docs/extensions/RESEARCH-AND-ROADMAP.md)
-- [Offline kit](tools/edgeore-kit/README.md)
+**Built by CodesbyFebin.** EdgeORE is not affiliated with Regolith Labs or Solana Mobile.

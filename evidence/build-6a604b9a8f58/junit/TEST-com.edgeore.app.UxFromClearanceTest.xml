@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.UxFromClearanceTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:55:23" hostname="grok-bot-vm-446931431" time="0.047">
+  <properties/>
+  <testcase name="anythingEdgeOreCannotBuildIsRefusedNotDropped" classname="com.edgeore.app.UxFromClearanceTest" time="0.002"/>
+  <testcase name="plainLanguageComesFromDecodedBytesNotInputs" classname="com.edgeore.app.UxFromClearanceTest" time="0.002"/>
+  <testcase name="plainAddressFillsDestinationOnly" classname="com.edgeore.app.UxFromClearanceTest" time="0.001"/>
+  <testcase name="reviewDefaultsAreEmpty" classname="com.edgeore.app.UxFromClearanceTest" time="0.001"/>
+  <testcase name="noQrInBlankImage" classname="com.edgeore.app.UxFromClearanceTest" time="0.01"/>
+  <testcase name="plainLanguageRefusesToExplainUnsupportedBytes" classname="com.edgeore.app.UxFromClearanceTest" time="0.001"/>
+  <testcase name="inlineChecksGatePrepareButNeverReplaceTheByteCheck" classname="com.edgeore.app.UxFromClearanceTest" time="0.001"/>
+  <testcase name="solanaPayTransferFillsDestinationAndAmount" classname="com.edgeore.app.UxFromClearanceTest" time="0.0"/>
+  <testcase name="qrRoundTripThroughZxingDecoder" classname="com.edgeore.app.UxFromClearanceTest" time="0.029"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

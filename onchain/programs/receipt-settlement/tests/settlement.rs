@@ -29,4 +29,6 @@ scenario_tests!(svm;
     close_assignment_only_after_refund_rent_to_node,
     close_job_requires_refund_and_no_open_accounts,
     recreated_job_rejects_replay_of_old_signature,
+    receipt_checkpoint_records_and_only_advances,
+    receipt_checkpoint_rejects_other_signer_and_zero_key,
 );

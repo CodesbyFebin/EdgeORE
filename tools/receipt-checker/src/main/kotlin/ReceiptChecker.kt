@@ -29,6 +29,8 @@ fun checkReceipt(args: Array<String>, out: PrintStream = System.out, err: PrintS
         out.println(if (report.accepted) "VERIFIED: PASS" else "VERIFIED: FAIL")
         out.println(report.summary)
         report.findings.forEach { out.println("Finding: $it") }
+        // Receipt schema v3: the device signature also names the descriptive fields; v1/v2 sign the body digest only.
+        out.println("Receipt signatures: v3 (descriptive fields bound in the signature) ${report.v3Receipts}, legacy digest-only (v1/v2) ${report.legacyReceipts}")
         // Hardening backlog H4: exports since integration 0.2.9 sign these fields in an "envelope"; older (or stripped) ones do not.
         // Exports that declare envelopeRequired=true are rejected above when the envelope is missing.
         when {

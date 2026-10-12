@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OreHomeStripTest" tests="6" skipped="1" failures="0" errors="0" timestamp="2026-10-12T12:37:27" hostname="grok-bot-vm-446931431" time="0.257">
+  <properties/>
+  <testcase name="freshnessIsLabelledHonestly" classname="com.edgeore.app.OreHomeStripTest" time="0.035"/>
+  <testcase name="liveReadShowsRealStatsAndNoPrices" classname="com.edgeore.app.OreHomeStripTest" time="0.081"/>
+  <testcase name="homePreview" classname="com.edgeore.app.OreHomeStripTest" time="0.033">
+    <skipped/>
+  </testcase>
+  <testcase name="staleAndLoadingStatesAreShown" classname="com.edgeore.app.OreHomeStripTest" time="0.046"/>
+  <testcase name="aPriceIsShownOnlyWithItsSource" classname="com.edgeore.app.OreHomeStripTest" time="0.024"/>
+  <testcase name="nothingReadShowsDashesNotZero" classname="com.edgeore.app.OreHomeStripTest" time="0.038"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

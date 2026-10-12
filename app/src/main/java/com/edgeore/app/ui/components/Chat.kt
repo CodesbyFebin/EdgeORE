@@ -1,6 +1,7 @@
 package com.edgeore.app.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +53,7 @@ fun ModelBubble(text: String, source: String) {
     Row(Modifier.fillMaxWidth().semantics(mergeDescendants = true) { contentDescription = "$source said: $text" }, horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm)) {
         ModelAvatar()
         Column(
-            Modifier.weight(1f, fill = false).background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
+            Modifier.weight(1f, fill = false).background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.card)).border(1.dp, EdgeColors.mint.copy(alpha = 0.25f), RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(source, style = MaterialTheme.typography.labelSmall, color = EdgeColors.mint)
@@ -67,11 +68,11 @@ fun UserBubble(text: String) {
     Row(Modifier.fillMaxWidth().semantics(mergeDescendants = true) { contentDescription = "You said: $text" }) {
         Spacer(Modifier.weight(1f).widthIn(min = 48.dp))
         Column(
-            Modifier.background(EdgeColors.textPrimary, RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
+            Modifier.background(EdgeColors.surfacePressed, RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            Text("You", style = MaterialTheme.typography.labelSmall, color = EdgeColors.background.copy(alpha = 0.75f))
-            Text(text, style = MaterialTheme.typography.bodyLarge, color = EdgeColors.background)
+            Text("You", style = MaterialTheme.typography.labelSmall, color = EdgeColors.mintSoft)
+            Text(text, style = MaterialTheme.typography.bodyLarge, color = EdgeColors.textPrimary)
         }
     }
 }
@@ -85,7 +86,7 @@ fun WorkingRow(text: String) {
     ) {
         ModelAvatar()
         Text(text, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted,
-            modifier = Modifier.background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp))
+            modifier = Modifier.background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.card)).border(1.dp, EdgeColors.mint.copy(alpha = 0.25f), RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp))
     }
 }
 

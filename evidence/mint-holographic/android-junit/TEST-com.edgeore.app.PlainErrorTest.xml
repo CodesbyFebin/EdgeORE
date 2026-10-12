@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.PlainErrorTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:43:20" hostname="070466fed5bf" time="0.002">
+  <properties/>
+  <testcase name="technicalErrorsGetAPlainHeadlineAndKeepTheOriginal" classname="com.edgeore.app.PlainErrorTest" time="0.001"/>
+  <testcase name="longDetailsAreCapped" classname="com.edgeore.app.PlainErrorTest" time="0.0"/>
+  <testcase name="plainSentencesPassThroughUnchanged" classname="com.edgeore.app.PlainErrorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

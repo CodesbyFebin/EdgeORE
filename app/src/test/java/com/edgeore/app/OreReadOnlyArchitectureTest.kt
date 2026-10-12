@@ -86,13 +86,21 @@ class OreReadOnlyArchitectureTest {
         for (b in listOf("signTransaction", "submit(", ".send(")) assertFalse(b, fn.contains(b))
     }
 
-    @Test fun deployIsDevnetOnlyAndMainnetFlagIsOff() {
+    /** Owner decision 2026-10-12: mainnet ORE Deploy is enabled, capped at 0.01 SOL, behind an explicit switch, devnet by default. */
+    @Test fun mainnetDeployIsCappedExplicitAndDevnetByDefault() {
         val gradle = File("build.gradle.kts").readText()
-        assertTrue(gradle.contains("buildConfigField(\"boolean\", \"ORE_MAINNET_DEPLOY\", \"false\")"))
-        assertFalse(Regex("""ORE_MAINNET_DEPLOY", "true"""").containsMatchIn(gradle))
-        assertFalse(com.edgeore.app.solana.OreDeployNetwork.MAINNET_ENABLED)
+        assertTrue(Regex("""ORE_MAINNET_DEPLOY", "true"""").containsMatchIn(gradle))
+        assertTrue(com.edgeore.app.solana.OreDeployNetwork.MAINNET_ENABLED)
+        assertEquals(10_000_000L, com.edgeore.app.solana.OreDeployLimits.MAINNET_CAP_LAMPORTS)
         assertEquals("https://api.devnet.solana.com", com.edgeore.app.solana.OreDeployNetwork.RPC)
-        val net = File(main, "solana/OreDeployReview.kt").readText()
-        assertFalse(net.contains("mainnet-beta"))
+        assertEquals("devnet", com.edgeore.app.solana.OreDeployNetwork.cluster(false))
+        assertFalse("devnet is the default", com.edgeore.app.OreDeployUi().mainnet)
+        val vm = File(main, "EdgeOreViewModel.kt").readText()
+        // Transfers stay devnet: the transfer path never names the mainnet cluster.
+        val transfer = vm.substring(vm.indexOf("fun prepareReview("), vm.indexOf("fun refuseReview("))
+        assertFalse(transfer.contains("MAINNET"))
+        // The cap is checked in prepareOreDeploy before a blockhash is fetched.
+        val fn = vm.substring(vm.indexOf("fun prepareOreDeploy()"))
+        assertTrue(fn.indexOf("MAINNET_CAP_LAMPORTS") in 0 until fn.indexOf("latestBlockhash()"))
     }
 }

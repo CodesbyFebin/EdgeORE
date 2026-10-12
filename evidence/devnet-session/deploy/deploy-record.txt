@@ -1,0 +1,12 @@
+started_utc: 2026-10-12T12:17:26Z
+rpc_url: https://solana-devnet.api.onfinality.io/public
+genesis_hash: EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG
+commit: 1e6bf237b9aaf874bbed73ab4bf78f704df46008
+deployer: 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk
+deployer_balance_before: 5 SOL
+program_id_keypair_pubkey: 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT
+declare_id: 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT
+built_so_sha256: a452bdfe37450c52981f99337a3c81e2b2d5e7cdc451ec92d5a7a85be7526234
+built_so_bytes: 300344
+built_so_elf_flags:  Flags: 0x3, CPU Version: 3
+deploy_signature: 5DKbCx8NwYw1EBM1sEWD8K6UgrrCUs8Rw3x8eYBNSRQNc6eQMn3gDo6qjcvxZoUpsXYVSabrhWzphsc6o3TUgQdU

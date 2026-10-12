@@ -1,0 +1,3 @@
+# Overrides on top of detekt's default config. Existing findings live in baseline.xml; new ones fail.
+build:
+  maxIssues: 0

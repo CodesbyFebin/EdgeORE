@@ -47,8 +47,8 @@ class MiningSessionPanelTest {
     @get:Rule val rule = createComposeRule()
 
     private val notConfigured = listOf(
-        PartView(PartKind.NODE_PROOF, PartStatus.NotConfigured("Not configured: pair a node (Nodes tab).")),
-        PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.NotConfigured("Not configured: set up your storage gateway (Storage tab).")),
+        PartView(PartKind.NODE_PROOF, PartStatus.NotConfigured("Set up: pair a node (Nodes tab).")),
+        PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.NotConfigured("Set up your storage gateway (Storage tab).")),
     )
     private val sent = Measurement("Sent to your gateway", 262_205, "bytes", "counted by this phone as written to the TLS stream")
 
@@ -83,8 +83,8 @@ class MiningSessionPanelTest {
 
     @Test fun notConfiguredPartsSayWhatToSetUpAndShowNoNumbers() {
         show()
-        rule.onNodeWithText("Not configured: pair a node (Nodes tab).").assertExists()
-        rule.onNodeWithText("Not configured: set up your storage gateway (Storage tab).").assertExists()
+        rule.onNodeWithText("Set up: pair a node (Nodes tab).").assertExists()
+        rule.onNodeWithText("Set up your storage gateway (Storage tab).").assertExists()
         val all = texts()
         assertFalse("no measurement line without a source: $all", all.any { it.contains(" bytes") || it.contains(" ms ·") || it.contains(" · this phone") })
     }
@@ -113,5 +113,11 @@ class MiningSessionPanelTest {
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText("Not started: an unmetered network (Wi-Fi) is not observed").assertExists()
         rule.onNodeWithText("Mine").assertHasClickAction()
+    }
+    @Test fun activeWithoutWorkerResultKeepsPickaxeStill() {
+        view = SessionView(SessionPhase.ACTIVE, listOf(PartView(PartKind.NODE_PROOF, PartStatus.Running)))
+        show()
+        assertEquals(MiningPose.RESTING.name, pose())
+        rule.onNodeWithText("Waiting for first worker result…").assertExists()
     }
 }

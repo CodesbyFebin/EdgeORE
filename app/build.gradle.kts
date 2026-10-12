@@ -9,6 +9,9 @@ fun git(vararg args: String): String = try {
     val p = ProcessBuilder(listOf("git") + args).directory(rootDir).redirectErrorStream(true).start()
     p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
 } catch (_: Exception) { "" }
+// Canonical source commit (scripts/commit-stamp.sh). "unstamped" when the file is missing.
+val sourceStamp: String = rootProject.file("evidence/COMMIT-STAMP.json").takeIf { it.exists() }?.readText()
+    ?.let { Regex("\"sourceCommit\"\\s*:\\s*\"([0-9a-f]{40})\"").find(it)?.groupValues?.get(1) } ?: "unstamped"
 val gitCommit: String = git("rev-parse", "--short=12", "HEAD").ifEmpty { "unknown" } +
     (if (git("status", "--porcelain", "--untracked-files=no").isNotEmpty()) "-dirty" else "")
 
@@ -24,30 +27,39 @@ android {
         versionName = "0.1.0-clockin"
         // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
+        buildConfigField("String", "SOURCE_STAMP", "\"$sourceStamp\"")
         // ORE v3 deploy targets devnet only. Mainnet deploy stays off; no build type turns it on.
-        buildConfigField("boolean", "ORE_MAINNET_DEPLOY", "false")
+        buildConfigField("boolean", "ORE_MAINNET_DEPLOY", "true") // owner-approved 2026-10-12; capped at 0.01 SOL per deploy, explicit switch, owner signs each
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     val storePass = System.getenv("EDGEORE_STORE_PASS").orEmpty()
     // Release signing only when the owner's keystore is present (never committed) and the password is set.
     // Otherwise assembleRelease produces an UNSIGNED, minified APK for R8/size checks only.
-    val releaseKeystore = rootProject.file("release.jks")
+    // EDGEORE_KEYSTORE: path to a keystore outside the repo (scripts/make-release-keystore.sh); release.jks is the legacy default.
+    val releaseKeystore = System.getenv("EDGEORE_KEYSTORE")?.takeIf { it.isNotBlank() }?.let { file(it) } ?: rootProject.file("release.jks")
+    val keyPass = System.getenv("EDGEORE_KEY_PASS").orEmpty().ifEmpty { storePass }
     val canSignRelease = releaseKeystore.exists() && storePass.isNotEmpty()
     signingConfigs {
         if (canSignRelease) create("release") {
             storeFile = releaseKeystore
             storePassword = storePass
             keyAlias = "edgeore"
-            keyPassword = storePass
+            keyPassword = keyPass
         }
     }
 
     buildTypes {
+        debug {
+            // Demo recordings: debug builds skip FLAG_SECURE so the screen can be recorded. Release keeps it.
+            buildConfigField("boolean", "SCREEN_CAPTURE_ALLOWED", "true")
+        }
         release {
+            buildConfigField("boolean", "SCREEN_CAPTURE_ALLOWED", "false")
             // Password stays in the environment. The keystore is not committed.
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Scan-only builds retain names for precise third-party finding attribution. Shipped release stays minified.
+            isMinifyEnabled = !project.hasProperty("securityScan")
+            isShrinkResources = !project.hasProperty("securityScan")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (canSignRelease) signingConfig = signingConfigs.getByName("release")
         }
@@ -108,6 +120,10 @@ dependencies {
 
     // Solana Mobile Wallet Adapter: wallet keys stay in the wallet app.
     implementation(libs.com.solanamobile.mobile.wallet.adapter.clientlib.ktx.lib)
+    // User-presence gate (biometric or device credential) before each MWA signing dispatch (hardening 15).
+    implementation(libs.androidx.biometric.biometric.lib)
+    // biometric 1.1.0 brings fragment 1.2.5; activity-result APIs in a FragmentActivity need fragment >= 1.3.0.
+    implementation(libs.androidx.fragment.fragment.lib)
     // Ed25519 for node-agent pairing keys and for verifying wallet-returned signatures.
     implementation(libs.org.bouncycastle.bcprov.jdk18on.lib)
     // On-device LLM runtime (LiteRT-LM, as used by Google AI Edge Gallery) behind a Java-only bridge module; see ondevice-llm/build.gradle.kts.

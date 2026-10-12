@@ -32,7 +32,7 @@ object OreBot {
     fun tips(walletConnected: Boolean, nodeOrGatewayConfigured: Boolean, checkInAvailable: Boolean, clusterLabel: String): List<String> = buildList {
         if (!walletConnected) add("Tap Connect to choose a Mobile Wallet Adapter wallet. EdgeORE never sees your seed phrase.")
         if (!nodeOrGatewayConfigured) add("Mine needs a paired node (Nodes) or your storage gateway (Storage) before it can run anything.")
-        if (checkInAvailable) add("A check-in slot is open. Checking in adds to your streak and points only. There is no token reward.")
+        if (checkInAvailable) add("A check-in slot is open. Checking in adds to your streak and points, saved on your phone.")
         add("Balances are read from $clusterLabel. Switch the network with the selector; nothing carries over between networks.")
         add("Deploy always opens the exact-message review. I can't sign, send or deploy anything for you.")
     }
@@ -57,7 +57,7 @@ object OreBot {
         val nm = ctx.getSystemService(NotificationManager::class.java) ?: return false
         if (Build.VERSION.SDK_INT >= 26) nm.createNotificationChannel(NotificationChannel(CHANNEL, "ORE Bot reminders", NotificationManager.IMPORTANCE_DEFAULT))
         nm.notify(7001, NotificationCompat.Builder(ctx, CHANNEL).setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setContentTitle("ORE Bot").setContentText("A check-in slot is available. Streak and points only, no token reward.")
+            .setContentTitle("ORE Bot").setContentText("A check-in slot is available. Streak and points saved on your phone.")
             .setAutoCancel(true).build())
         p.edit().putString(KEY_NOTIFIED, key).apply()
         return true

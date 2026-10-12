@@ -64,6 +64,7 @@ private val clock = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm").withZone(Zo
 
 @Composable
 fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExport: (StoredReceipt?, Boolean) -> Unit) {
+    com.edgeore.app.ui.components.SecureWindow()
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val verify by vm.verify.collectAsStateWithLifecycle()
     val damage by vm.receiptDamage.collectAsStateWithLifecycle()
@@ -137,7 +138,7 @@ fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExpo
         }
         if (activity.unreadable > 0) Notice("${activity.unreadable} receipt time(s) could not be read and are not plotted.", error = true)
     }
-    if (shown.isEmpty()) EdgeCard { Notice(if (receipts.isEmpty() && damage.isEmpty()) "No receipts yet." else if (receipts.isEmpty()) "No readable receipts. See the damage report above." else "No receipts match this search or filter.") }
+    if (shown.isEmpty()) com.edgeore.app.ui.components.EmptyState(EdgeIcons.Receipts, "Receipt log", if (receipts.isEmpty() && damage.isEmpty()) "No receipts yet." else if (receipts.isEmpty()) "No readable receipts. See the damage report above." else "No receipts match this search or filter.")
     shown.forEach { r ->
         val open = openId == r.id
         ReceiptCard(r) { openId = if (open) null else r.id }
@@ -285,6 +286,7 @@ fun ReceiptCard(r: StoredReceipt, onClick: () -> Unit) {
 
 @Composable
 fun ReceiptDetailScreen(r: StoredReceipt, onExport: () -> Unit) {
+    com.edgeore.app.ui.components.SecureWindow()
     SectionTitle(r.title, r.outcome.replace('_', ' '))
     EdgeCard {
         KeyValue("Receipt ID (immutable)", r.id, mono = true)

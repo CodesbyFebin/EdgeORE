@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directories: ["/", "/tools/receipt-checker"]
+    schedule: { interval: weekly }
+    groups:
+      gradle-all: { patterns: ["*"] }
+  - package-ecosystem: pip
+    directories: ["/services/storage-gateway", "/tools/edgeore-kit"]
+    schedule: { interval: weekly }
+    groups:
+      pip-all: { patterns: ["*"] }
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: weekly }
+    groups:
+      actions-all: { patterns: ["*"] }

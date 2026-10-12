@@ -38,7 +38,7 @@ class ReceiptV2Test {
         val e = arr.getJSONObject(index)
         val body = JSONObject(e.getString("body")).also(edit).toString()
         val sha = Sha256.hex(body)
-        e.put("body", body).put("sha256", sha).put("deviceSignature", Base64.getEncoder().encodeToString(signer.sign(sha.toByteArray())))
+        e.put("body", body).put("sha256", sha).put("deviceSignature", Base64.getEncoder().encodeToString(signer.sign(com.edgeore.app.receipts.receiptSignaturePayload(JSONObject(body.toString()), sha))))
         doc.put("bundleSha256", bundleDigest((0 until arr.length()).map { arr.getJSONObject(it).getString("sha256") }))
     }
 

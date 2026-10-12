@@ -253,10 +253,26 @@ fun StorageVaultSection(
     onDelete: (id: String) -> Unit,
     onAllowance: (Int) -> Unit,
 ) {
+    com.edgeore.app.ui.components.SecureWindow()
     var confirmExport by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var inspect by rememberSaveable { mutableStateOf<String?>(null) }
     var configure by rememberSaveable { mutableStateOf(false) }
+    // Hardening 16: the vault is created by the first import, so the loss warning is shown (and acknowledged) then.
+    val prefs = androidx.compose.ui.platform.LocalContext.current.getSharedPreferences("vault_ui", android.content.Context.MODE_PRIVATE)
+    var lossWarning by rememberSaveable { mutableStateOf(false) }
+    val startImport = { if (VaultLossWarning.needed(st.files.isEmpty(), prefs.getBoolean(VaultLossWarning.ACK_KEY, false))) lossWarning = true else onImport() }
+    if (lossWarning) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { lossWarning = false },
+            title = { Text(VaultLossWarning.TITLE) },
+            text = { Text(VaultLossWarning.BODY) },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                prefs.edit().putBoolean(VaultLossWarning.ACK_KEY, true).apply(); lossWarning = false; onImport()
+            }) { Text("I understand, create vault") } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { lossWarning = false }) { Text("Cancel") } },
+        )
+    }
     val free = st.device?.storageFree
     val allowanceBytes = st.allocationMb * 1024L * 1024L
 
@@ -273,7 +289,7 @@ fun StorageVaultSection(
         Slider(st.allocationMb.toFloat(), { onAllowance(it.toInt()) }, valueRange = 0f..2048f, modifier = Modifier.fillMaxWidth().height(48.dp),
             colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
         EffectNote(Control.VAULT_ALLOWANCE)
-        PrimaryAction(if (st.busy) "Working…" else "Import file", icon = EdgeIcons.Storage, enabled = !st.busy, loading = st.busy) { onImport() }
+        PrimaryAction(if (st.busy) "Working…" else "Import file", icon = EdgeIcons.Storage, enabled = !st.busy, loading = st.busy) { startImport() }
         Text("Only this installation's Keystore key can decrypt these files. Uninstalling the app, resetting the phone or losing the device-bound key makes them unrecoverable.",
             color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         if (st.note.isNotBlank()) Text(st.note, color = EdgeColors.textPrimary, style = MaterialTheme.typography.bodyMedium)
@@ -425,7 +441,7 @@ fun GatewaySetupCard(g: com.edgeore.app.GatewayState, onSave: (endpoint: String,
             Text("Set up: ${g.endpoint} · ${g.pinCount} SPKI pin${if (g.pinCount == 1) "" else "s"} · token ${if (g.tokenStored) "stored (Keystore-encrypted)" else "missing"}",
                 color = EdgeColors.mint, style = MaterialTheme.typography.bodyMedium)
         } else {
-            Text("Not configured: set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+            Text("Set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         }
         Text("Run services/storage-gateway on a host you own behind an HTTPS proxy. Enter its origin, its bearer token and the SHA-256 SPKI pin of its certificate (sha256/… as printed by openssl). Requests are refused in the TLS handshake unless the pin matches.",
             color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
@@ -440,4 +456,14 @@ fun GatewaySetupCard(g: com.edgeore.app.GatewayState, onSave: (endpoint: String,
             if (g.endpoint != null) SecondaryAction("Remove", danger = true, onClick = onRemove)
         }
     }
+}
+
+/** Vault-loss warning shown before the first import creates the vault. No recovery exists: the key is device-bound. */
+object VaultLossWarning {
+    const val ACK_KEY = "vault_loss_warning_ack_v1"
+    const val TITLE = "Files in this vault can be lost for good"
+    const val BODY = "The vault key lives only in this phone's Android Keystore. If you uninstall EdgeORE, clear its data, " +
+        "reset or lose the phone, or the Keystore key is invalidated, every file in the vault becomes unreadable. " +
+        "There is no recovery phrase and EdgeORE cannot restore them. Keep your own copy of anything important."
+    fun needed(vaultEmpty: Boolean, acknowledged: Boolean): Boolean = vaultEmpty && !acknowledged
 }

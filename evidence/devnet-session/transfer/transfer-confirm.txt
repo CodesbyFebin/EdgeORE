@@ -1,0 +1,28 @@
+RPC URL: https://solana-devnet.api.onfinality.io/public
+Default Signer Path: /home/box/secrets/devnet-test-wallet.json
+Commitment: confirmed
+
+Transaction executed in slot 510261843:
+  Block Time: 2026-10-12T12:20:44+00:00
+  Version: legacy
+  Recent Blockhash: BMyKhV1QF4SFjkNyk5V8CdG8obXZE8c1cPuG37H8YHPx
+  Signature 0: 4AYeQ2cUszdHgJZpsH5HRi2MsNR1k1tx6L4M7KmcNyLDFjMB6N2s2XPUsKaXFqXi2sqyY3ki6tZr4uPpoQXvo1zV
+  Account 0: srw- 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk (fee payer)
+  Account 1: -rw- 73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n
+  Account 2: -r-x 11111111111111111111111111111111
+  Instruction 0
+    Program:   11111111111111111111111111111111 (2)
+    Account 0: 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk (0)
+    Account 1: 73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n (1)
+    Transfer { lamports: 1000000 }
+  Status: Ok
+    Fee: ◎0.000005
+    Account 0 balance: ◎3.47103552 -> ◎3.47003052
+    Account 1 balance: ◎10 -> ◎10.001
+    Account 2 balance: ◎0.000000001
+  Compute Units Consumed: 150
+  Log Messages:
+    Program 11111111111111111111111111111111 invoke [1]
+    Program 11111111111111111111111111111111 success
+
+Finalized

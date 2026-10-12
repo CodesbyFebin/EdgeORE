@@ -13,3 +13,14 @@ review is not a runtime test. The offline artifact manifest checker does not pro
 Open a focused issue or pull request with the template. Do not paste keys, tokens, passphrases,
 private documents or unredacted wallet/browser logs. Respect NOTICE and the pending project-license
 decision before redistributing code. No broad auto-format or dependency upgrades in functional fixes.
+
+## Community policies
+
+Participation follows the [code of conduct](CODE_OF_CONDUCT.md). Report vulnerabilities through the
+[security policy](SECURITY.md), and report interface barriers using the
+[accessibility statement](ACCESSIBILITY.md). Accessibility targets and unrun runtime checks must
+remain distinct. The project license is still an owner decision; preserve upstream notices.
+
+Security and quality reviewers can use the [repository agent profiles](QUALITY.md#agent-profiles).
+[Tags, releases and packages](docs/releases-and-packages.md) describe source identity, debug review
+artifacts and draft-release preparation.

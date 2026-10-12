@@ -1,6 +1,6 @@
 # EdgeORE — production interface specification
 
-Version 2 · implementation target, not a qualification certificate · 10 October 2026
+Version 3 · mint holographic interface · implementation target, not a qualification certificate · 12 October 2026
 
 ## 1. Product and evidence contract
 
@@ -14,29 +14,29 @@ Every capability has two independent fields: implementation status and observati
 
 | Token | Value | Usage |
 |---|---|---|
-| Background | #101414 | Entire application canvas |
-| Surface | #1C2323 | Cards and sheets |
-| Inset | #121919 | Technical details and navigation |
-| Border | #3D4745 | 1 dp outlines and separators |
-| Primary text | #EEF2EF | Headings and content |
-| Muted text | #A6B2AC | Sources, timestamps, supporting copy |
-| Mint | #35E7C0 | Selection and verified-integrity accents |
-| Copper | #FFA365 | Primary intent and attention |
+| Background | #060D0C | Entire application canvas |
+| Surface | #0D1917 | Cards and sheets |
+| Inset | #142421 | Technical details and navigation |
+| Border | #2C4740 | 1 dp outlines and separators |
+| Primary text | #F2F7F5 | Headings and content |
+| Muted text | #ABBDB7 | Sources, timestamps, supporting copy |
+| Mint | #19E6BC | Selection and verified-integrity accents |
+| Copper | #FF963F | ORE wordmark, Mine selection and attention |
 | Copper deep | #E86D35 | Optional action gradient endpoint |
-| Danger | #FF8275 | Failure and destructive action |
-| On action | #111514 | Copper/mint button text |
+| Danger | #FF6B79 | Failure and destructive action |
+| On action | #111514 | Mint button text |
 
 Retain the native three-bar E mark in `ui/components/Components.kt`; do not replace it with a raster logo. Use system sans-serif for normal text and monospace only for hashes, addresses, byte counts and codes. Typography: screen heading 28/32 sp bold; card title 18/24 sp semibold; body 16/24 sp; supporting body 14/20 sp; metadata 12/16 sp medium. Do not shrink metadata below 12 sp. Text scales with Android font settings.
 
-Spacing uses 4 dp steps: 4, 8, 12, 16, 24, 32. Outer phone padding 16 dp; card padding 16 dp; card gap 16 dp; section gap 24 dp. Card radius 16 dp; sheet top radius 24 dp; badge radius 50 dp. Border 1 dp. Primary action minimum 56 dp high; secondary 48 dp; all interactive targets at least 48×48 dp. Never give a small inline icon a smaller hit area.
+Spacing uses 4 dp steps: 4, 8, 12, 16, 24, 32. Outer phone padding 16 dp; card padding 16 dp; card gap 16 dp; section gap 24 dp. Card radius 20 dp; sheet top radius 24 dp; badge radius 50 dp. Border 1 dp. Primary action minimum 56 dp high; secondary 48 dp; all interactive targets at least 48×48 dp. Never give a small inline icon a smaller hit area.
 
 ## 3. Shell and responsive layout
 
-Respect system bar, display cutout and keyboard insets. The top app row contains 30 dp E mark, 10 dp gap, wordmark, and a 48 dp About action. Below it, show a compact environment strip: “Devnet · Review candidate”, with build stamp available in About. Do not show a global green “secure” seal.
+Respect system bar, display cutout and keyboard insets. The top app row contains 30 dp E mark, 10 dp gap, wordmark, and 48 dp Review and Settings actions. Below it, show a compact environment strip: “Devnet · Review candidate”, with build stamp available in About. Do not show a global green “secure” seal.
 
 Below 600 dp use one scrolling content column and a five-item bottom navigation bar. Content width is at most 640 dp. At 600 dp and above, use a navigation rail and a centered content region; at 840 dp, two columns may separate a master list and details. Financial review remains a readable single column, at most 640 dp. Landscape and 200% font size must remain scrollable with actions reachable. Do not put two independent vertical scroll containers inside a single phone page.
 
-Navigation labels remain visible, not icon-only. Selected item uses copper icon/text with a 14% copper indicator. Back from Review returns to the previous destination without changing the operation state. Back from a wallet app is not authorization success. Browser routes and external links must show destination/origin before leaving.
+Navigation labels remain visible, not icon-only. Selected Mine uses orange icon/text; other destinations use mint. Selection has a visible indicator and label. Storage remains a first-class destination; it has not been replaced with a decorative central action. Back from Review returns to the previous destination without changing the operation state. Back from a wallet app is not authorization success. Browser routes and external links must show destination/origin before leaving.
 
 ## 4. Shared component contracts
 
@@ -54,9 +54,9 @@ Navigation labels remain visible, not icon-only. Selected item uses copper icon/
 
 ## 5. Mine destination
 
-Order: heading “Your edge, under your control”; status card; wallet card; supported action card; device readings; contribution controls; recent operations.
+Order: Mine heading; single wallet authorization card; balance-observation network selector; SOL/ORE/SKR cards; Edge Node session and contained mint ring; CPU/memory/storage/network cards; additional-worker readiness; daily campaign readiness; live read-only ORE board; review and contribution controls. ORE Bot and notification preferences are shared across destinations.
 
-Status card copy is “No qualified workload. Nothing ran.” unless an implemented, approved workload actually runs. Pause/resume represents policy scheduling, not mining. Do not animate a running ring without measured activity. The Mine art (rock and pickaxe, docs/design/mine-animation.md) swings only while a user-started contribution session is ACTIVE (docs/contribution/session.md): real, measured work on the owner's paired node and storage gateway. It rests otherwise and holds still under reduced motion. The button text "Start Mining" is the owner's choice; the copy beside it says what runs and that nothing is earned.
+Status card copy is “No qualified workload. Nothing ran.” unless an implemented, approved workload actually runs. Pause/resume represents policy scheduling, not mining. Do not animate a running ring without measured activity. The Mine art (rock and pickaxe, docs/design/mine-animation.md) swings only while a user-started contribution session is ACTIVE and at least one worker round has returned a result (docs/contribution/session.md): real, measured work on the owner's paired node and storage gateway. It rests otherwise and holds still under reduced motion. The button text "Start Mining" is the owner's choice; the copy beside it says what runs and that nothing is earned.
 
 Wallet card states: disconnected, opening wallet, authorization rejected, connected with balance pending, connected with balance unavailable, connected with observed balance, disconnecting. Show address, Devnet, wallet identity and balance observation time. Authorization failure shows code/stage/time. RPC failure never drops an authorized connection. Disconnect revokes authorization and confirms the result; if wallet revocation cannot be observed, say so.
 
@@ -135,3 +135,24 @@ Acceptance: all five destinations and Review are navigable; no clipping; sources
 ## 14. Release boundary
 
 A production release needs qualified device runs, owned-host tests, approved portable-backup implementation, deployed/tested settlement integration if advertised, owner release signing, license decision, privacy/retention policy, final dependency/license review, clean-clone build and published artifact identity. Feature scope can be reduced instead: hide unsupported production features and state the narrower supported contract. No prompt, ZIP, screenshot score or test count independently grants production readiness.
+
+
+## 15. Approved mint holographic implementation, 12 October 2026
+
+The supplied `DESIGN (2).md` is retained at [docs/design/mint-holographic-v2.md](docs/design/mint-holographic-v2.md) as the requested integration target. It is a specification, not evidence that integrations are running. This section records the actual implementation boundary; remaining requirements in the supplied specification remain acceptance work.
+
+Shared source: `ui/theme/Theme.kt` and `Tokens.kt`; rounded outline registry `ui/components/Icons.kt`; `EdgeCard`, `PrimaryAction`, `SecondaryAction`, `ResourceControl`, `StatusPill`, `TokenBalanceCard`, `WorkerStatusRow`, `WalletConnectSheet`, `LoadingState`, `EmptyState`, and `IconAction`. Cards use a restrained graphite gradient and a mint decorative border. Ordinary glyphs are local outline vectors. Neutral token icons are explicitly not official brand assets.
+
+Balance network is an **observation** selector. Devnet, Testnet and Mainnet use separate public HTTPS RPC endpoints and checked genesis hashes. Wallet authorization, exact-message review, signing, submission and restart recovery remain devnet-only. Selecting an observation network does not change a financial operation's cluster or invalidate its recovery ledger. The UI explains this boundary before any action. Full testnet/mainnet transaction support is not implemented.
+
+SOL is read via `getBalance`, with integer decimal formatting. Mainnet ORE's mint is pinned to `api/src/consts.rs` at upstream commit `48c203bd75db3cc45105ec29d8f8db719e5a2263`; mint owner and decimals are checked, then every matching owner token account is summed with arbitrary-precision integers. SKR has no verified registry entry yet and is unavailable. No ORE/SKR deployment is asserted on development networks. Reads refresh on connection, network observation change, activity resume and while Mine is visible. Generation/account/network guards discard superseded responses. Failed refreshes preserve previous observed amounts with a Stale label and timestamp. WebSocket subscriptions remain follow-up work.
+
+Resource cards sample Android logical CPU count, ActivityManager memory, StatFs accessible filesystem and ConnectivityManager connection type. UID TrafficStats measures only this app's aggregate bytes since boot. These readings are not worker throughput or whole-device utilisation. No fabricated progress bars. The screenshot suite uses an explicit unavailable-readings test seam; production uses native sources.
+
+The existing node/gateway session remains the only Mine execution path. The ring waits for a first worker result before moving, stops outside ACTIVE, when hidden or in the background, and respects reduced motion/power saving. Impact particles are decoration and never change balances. Bandwidth/cloud workers show Setup required. There is no server eligibility service or funded daily campaign: no local 0/5 counter, check-in payout or one-hour entitlement is invented.
+
+ORE's 25-cell mainnet board remains a validated read-only observer. Unobserved cells show dashes, not zero bids. Deploy is disabled regardless of wallet connection because an ORE transaction adapter has not been implemented. Detailed source/RPC/advisor controls remain available on the board route.
+
+ORE Bot offers deterministic, timestamped help grounded in current app state. It cannot sign, submit, alter limits or start work. Optional local Android reminders require an explicit toggle and Android notification permission. WorkManager handles background delivery around 10:00 local time, at most once per local day and outside 21:00–09:00 quiet hours. Android can delay delivery. The inbox states that no server inbox exists. Campaign eligibility notifications, configurable categories/hours, enhanced bot conversation and push delivery remain unconfigured.
+
+Device wallet, actual balance matching, notification delivery, TalkBack and live provider gates require saved runtime evidence. Compile/JVM/render results are not device qualification. See [implementation report](docs/design/mint-implementation-report.md).

@@ -35,9 +35,12 @@ interface ChainGateway {
  */
 class TransferCoordinator(
     private val store: OperationStore,
-    private val gateway: ChainGateway,
+    /** The gateway for an operation's own recorded cluster: a mainnet operation is never sent to or observed on devnet. */
+    private val gatewayFor: (cluster: String) -> ChainGateway,
     private val clock: () -> Instant = Instant::now,
 ) {
+    constructor(store: OperationStore, gateway: ChainGateway, clock: () -> Instant = Instant::now) : this(store, { _: String -> gateway }, clock)
+
     private val sendMutex = Mutex()
     private val observeMutex = Mutex()
 
@@ -94,22 +97,25 @@ class TransferCoordinator(
         val begun = beginSigning(id)
         if (begun !is Outcome.Done) return begun
         val op = begun.op
-        val height = try { gateway.blockHeight() } catch (e: CancellationException) {
+        val height = try { gatewayFor(op.cluster).blockHeight() } catch (e: CancellationException) {
             stored { recordRefusedOrThrow(id, "Signing was interrupted before the wallet opened") }; throw e
         } catch (e: Exception) { null }
-        if (height == null) {
-            val reason = "Block height unavailable, so the blockhash cannot be shown to be valid. Not signed; try again."
-            stored { recordRefusedOrThrow(id, reason) }.onFailure { return Outcome.NotAllowed(it.message!!) }
-            return Outcome.NotAllowed(reason)
-        }
-        if (height > op.lastValidBlockHeight - signingMarginBlocks) {
-            val reason = "Blockhash expired or about to expire (block height $height, last valid ${op.lastValidBlockHeight}). Nothing was signed or sent. Review again to build a new message."
-            stored {
-                store.transition(id, setOf(OpState.SIGNING), OpState.EXPIRED) {
-                    it.copy(reason = reason, lastObservation = "Block height $height checked before signing", lastObservedAt = now())
-                }
-            }.onFailure { return Outcome.NotAllowed(it.message!!) }
-            return Outcome.NotAllowed(reason)
+        when (val check = BlockhashCheckResult.of(height, op.lastValidBlockHeight, signingMarginBlocks)) {
+            BlockhashCheckResult.Unavailable -> {
+                val reason = "Block height unavailable, so the blockhash cannot be shown to be valid. Not signed; try again."
+                stored { recordRefusedOrThrow(id, reason) }.onFailure { return Outcome.NotAllowed(it.message!!) }
+                return Outcome.NotAllowed(reason)
+            }
+            is BlockhashCheckResult.Expired -> {
+                val reason = "Blockhash expired or about to expire (block height ${check.height}, last valid ${check.lastValidBlockHeight}). Nothing was signed or sent. Review again to build a new message."
+                stored {
+                    store.transition(id, setOf(OpState.SIGNING), OpState.EXPIRED) {
+                        it.copy(reason = reason, lastObservation = "Block height ${check.height} checked before signing", lastObservedAt = now())
+                    }
+                }.onFailure { return Outcome.NotAllowed(it.message!!) }
+                return Outcome.NotAllowed(reason)
+            }
+            is BlockhashCheckResult.Valid -> Unit
         }
         return Outcome.Done(op)
     }
@@ -142,7 +148,7 @@ class TransferCoordinator(
                 ?: return Outcome.NotAllowed("Only verified, never-sent bytes can be submitted (current: ${store.get(id)?.state ?: "missing"})")
             val bytes = op.signedTransaction ?: return Outcome.NotAllowed("No signed bytes recorded")
             val returned = try {
-                gateway.send(bytes)
+                gatewayFor(op.cluster).send(bytes)
             } catch (e: CancellationException) {
                 stored { store.transition(id, setOf(OpState.SUBMIT_ATTEMPTED), OpState.OUTCOME_UNKNOWN) { it.copy(reason = "Sending was interrupted; outcome unknown") } }
                 throw e
@@ -191,6 +197,7 @@ class TransferCoordinator(
         val op = store.get(id) ?: return Outcome.NotAllowed("Unknown operation")
         if (!op.state.needsObservation && op.state != OpState.SIGNED) return Outcome.NotAllowed("Nothing to observe in state ${op.state}")
         val observedAt = now()
+        val gateway = gatewayFor(op.cluster)
         val height = try { gateway.blockHeight() } catch (e: CancellationException) { throw e } catch (_: Exception) { null }
         if (op.state == OpState.SIGNED) {
             // Never handed to the network: expiry makes these bytes harmless, so the reservation can be released.

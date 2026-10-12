@@ -128,7 +128,7 @@ fun MineScreen(
         vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
     }
     ResourceGrid(hw.first, hw.second, diskReading, net, com.edgeore.app.ui.components.rememberReducedMotion())
-    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() },
+    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() }, onNetwork = vm::setOreDeployMainnet, snapshot = oreState.snapshot, nowMs = now,
         onDeploy = { vm.prepareOreDeploy(); onOpenReview() })
     OreGridCard(cluster, oreState, deploy) { i -> vm.editOreDeploy { it.copy(proMask = it.proMask xor (1 shl i)) } }
     ContributionToggles(settings.chargeOnly, settings.thermalGuard, settings.batteryReservePercent, effect = { it.effect.label },
@@ -348,11 +348,15 @@ fun MiningSessionPanel(
     view: SessionView, edgeModeResumed: Boolean, headline: String,
     onStart: () -> Unit, onStop: () -> Unit, onToggleEdgeMode: () -> Unit,
 ) {
+    val acknowledged = view.parts.any { it.rounds > 0 }
+    val motionPhase = if (view.phase == SessionPhase.ACTIVE && !acknowledged) SessionPhase.STARTING else view.phase
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         com.edgeore.app.ui.components.HoloRing(200.dp, bright = view.phase == SessionPhase.ACTIVE) {
-            MiningAnimation(view.phase, Modifier.size(width = 190.dp, height = 150.dp))
+            MiningAnimation(motionPhase, Modifier.size(width = 190.dp, height = 150.dp))
         }
         if (view.phase == SessionPhase.STARTING) Text("Starting… waiting for your node and gateway to acknowledge", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        // From PR #20: the pickaxe swings only after a part has reported a round, never on ACTIVE alone.
+        if (view.phase == SessionPhase.ACTIVE && !acknowledged) Text("Waiting for first worker result…", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         Text("Session: " + view.phase.label(), fontWeight = FontWeight.Bold, color = if (view.phase == SessionPhase.FAILED) EdgeColors.copper else EdgeColors.textPrimary,
             modifier = Modifier.semantics { contentDescription = "Contribution session ${view.phase.label()}" })
         when (view.phase) {
@@ -421,7 +425,10 @@ fun OreEntry(onOpen: () -> Unit) {
 
 /** CPU cores and a memory class, as Android reports them. Usage is not sampled. */
 object DeviceFacts {
+    @androidx.annotation.VisibleForTesting
+    @Volatile internal var testSource: ((android.content.Context) -> Pair<Int?, Int?>)? = null
     fun read(ctx: android.content.Context): Pair<Int?, Int?> {
+        testSource?.let { return it(ctx) }
         val cores = Runtime.getRuntime().availableProcessors().takeIf { it > 0 }
         val am = ctx.getSystemService(android.content.Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
         val mem = am?.let { val mi = android.app.ActivityManager.MemoryInfo(); it.getMemoryInfo(mi); mi.totalMem }?.takeIf { it > 0 }

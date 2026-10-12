@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OreDeployMessageTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-12T12:37:19" hostname="070466fed5bf" time="0.091">
+  <properties/>
+  <testcase name="reviewPreparesAnApprovableDraftOnlyWithinLimits" classname="com.edgeore.app.OreDeployMessageTest" time="0.038"/>
+  <testcase name="decodeAcceptsOnlyTheExactShapeForTheReviewedRound" classname="com.edgeore.app.OreDeployMessageTest" time="0.033"/>
+  <testcase name="walletReturningDifferentBytesIsRefused" classname="com.edgeore.app.OreDeployMessageTest" time="0.005"/>
+  <testcase name="builderRefusesBadInputs" classname="com.edgeore.app.OreDeployMessageTest" time="0.001"/>
+  <testcase name="buildMatchesTheSourceDerivedBytes" classname="com.edgeore.app.OreDeployMessageTest" time="0.01"/>
+  <testcase name="fixtureIdsMatchTheApp" classname="com.edgeore.app.OreDeployMessageTest" time="0.0"/>
+  <testcase name="devnetCheckNeverAssumesTheProgramIsThere" classname="com.edgeore.app.OreDeployMessageTest" time="0.002"/>
+  <testcase name="limitsCapMaxAndTheDeploy" classname="com.edgeore.app.OreDeployMessageTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

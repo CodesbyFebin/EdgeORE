@@ -17,6 +17,7 @@ import com.edgeore.app.scan.QrScanActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.SystemBarStyle
 import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -27,8 +28,13 @@ import com.edgeore.app.ui.theme.EdgeOreTheme
 import com.solana.mobilewalletadapter.clientlib.ActivityResultSender
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+// FragmentActivity (a ComponentActivity) so androidx.biometric can host its prompt before MWA dispatch.
+class MainActivity : androidx.fragment.app.FragmentActivity() {
     private val vm: EdgeOreViewModel by viewModels()
+
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        vm.setReminders(granted)
+    }
 
     // QR address scan for the review destination. Each launcher is registered before STARTED, as required.
     private val scanResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
@@ -52,13 +58,29 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+        )
         // Must be created before the Activity is STARTED (registers an activity-result launcher).
         val sender = ActivityResultSender(this)
         val actions = object : PlatformActions {
+            override fun setReminders(enabled: Boolean) {
+                if (enabled && android.os.Build.VERSION.SDK_INT >= 33 && !com.edgeore.app.notifications.OreReminders.permitted(this@MainActivity)) {
+                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else vm.setReminders(enabled)
+            }
             override fun connectWallet() { vm.connectWallet(sender) }
             override fun disconnectWallet() { vm.disconnectWallet(sender) }
-            override fun signReviewed() { vm.approveAndSign(sender) }
+            // Hardening 15: user presence (biometric or device credential) before the wallet is opened to sign.
+            override fun signReviewed() {
+                com.edgeore.app.wallet.UserPresenceGate.require(this@MainActivity) { r ->
+                    when (r) {
+                        com.edgeore.app.wallet.UserPresenceGate.Result.Passed -> vm.approveAndSign(sender)
+                        is com.edgeore.app.wallet.UserPresenceGate.Result.Refused -> Toast.makeText(this@MainActivity, r.reason, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
             override fun export(receipt: StoredReceipt?, hideDeviceKey: Boolean) { exportReceipts(receipt, hideDeviceKey) }
             override fun scanAddressQr() {
                 if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -75,6 +97,8 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         vm.refreshDevice()
+        vm.refreshPortfolio()
+        vm.refreshReminderPermission()
     }
 
     /** Downsamples the picked image (max 1600 px side), decodes it in memory and discards it. Nothing is stored. */

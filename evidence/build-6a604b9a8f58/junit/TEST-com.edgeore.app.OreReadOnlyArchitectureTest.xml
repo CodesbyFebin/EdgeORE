@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OreReadOnlyArchitectureTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:55:20" hostname="grok-bot-vm-446931431" time="0.057">
+  <properties/>
+  <testcase name="theMineDeployCardOnlyHandsOffToTheReview" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.003"/>
+  <testcase name="deployIsDevnetOnlyAndMainnetFlagIsOff" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.001"/>
+  <testcase name="theScreenOffersNoActingControls" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.001"/>
+  <testcase name="noSigningTransactionOrWalletApisInTheOrePath" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.019"/>
+  <testcase name="onlyTheAllowlistedFileBuildsAnOreInstruction" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.028"/>
+  <testcase name="theMineHomeStripOffersNoActingControlsOrHardcodedPrices" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.001"/>
+  <testcase name="theReaderTypesExposeOnlyReads" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.001"/>
+  <testcase name="theBuilderEncodesOnlyDeploy" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

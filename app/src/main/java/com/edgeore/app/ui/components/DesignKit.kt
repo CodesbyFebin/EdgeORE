@@ -137,9 +137,14 @@ fun FactCard(
 
 /** The compact environment line under the header (design.md §3): no global "secure" seal. */
 @Composable
-fun EnvironmentStrip(text: String = "Devnet · Review candidate") {
+fun EnvironmentStrip(mainnet: Boolean = false) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
-        StatusPill(text, tone = PillTone.COPPER, icon = EdgeIcons.Info)
-        StatusPill("Test SOL only", tone = PillTone.NEUTRAL)
+        if (mainnet) {
+            StatusPill("Mainnet", tone = PillTone.COPPER, icon = EdgeIcons.Globe)
+            StatusPill("Real SOL · capped 0.01", tone = PillTone.COPPER)
+        } else {
+            StatusPill("Devnet", tone = PillTone.MINT, icon = EdgeIcons.Globe)
+            StatusPill("Test SOL only", tone = PillTone.NEUTRAL)
+        }
     }
 }

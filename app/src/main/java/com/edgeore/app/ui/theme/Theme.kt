@@ -26,6 +26,8 @@ object EdgeColors {
     val copper = Color(0xFFFF963F)          // spec "orange"
     val orange = copper
     val copperDeep = Color(0xFFE8792A)
+    /** Mainnet warning copper (#FFA365): used only where real SOL is at stake (ORE mainnet deploy). */
+    val mainnetWarning = Color(0xFFFFA365)
     val textPrimary = Color(0xFFF2F7F5)
     /** Supporting text. The spec's text-secondary; used where the code says textMuted (keeps ≥4.5:1 on surface). */
     val textMuted = Color(0xFFABBDB7)
@@ -44,6 +46,10 @@ object EdgeColors {
     val holoGlow = mint.copy(alpha = 0.15f)
     val copperGradient = Brush.horizontalGradient(listOf(copper, Color(0xFFF07A2E)))
     val markGradient = Brush.linearGradient(listOf(mint, Color(0xFF0FB897)))
+    // From PR #20 (mint holographic design).
+    val ambient = Brush.verticalGradient(listOf(Color(0xFF0A211B), background, background))
+    val actionGradient = Brush.horizontalGradient(listOf(mintSoft, mint))
+    val cardGradient = Brush.linearGradient(listOf(surfaceInset, surface, background))
 }
 
 /** Shape and spacing tokens (spec "Layout and typography"). */
@@ -56,19 +62,34 @@ object EdgeShapes {
 }
 
 private val scheme = darkColorScheme(
-    primary = EdgeColors.copper,
+    primary = EdgeColors.mint,
     onPrimary = EdgeColors.onAction,
+    primaryContainer = EdgeColors.surfacePressed,
+    onPrimaryContainer = EdgeColors.mintSoft,
     secondary = EdgeColors.mint,
     onSecondary = EdgeColors.onAction,
+    secondaryContainer = EdgeColors.surfacePressed,
+    onSecondaryContainer = EdgeColors.mintSoft,
+    tertiary = EdgeColors.copper,
+    onTertiary = EdgeColors.onAction,
+    tertiaryContainer = Color(0xFF3E2515),
+    onTertiaryContainer = EdgeColors.warning,
+    surfaceTint = EdgeColors.mint,
+    outlineVariant = EdgeColors.border,
     background = EdgeColors.background,
     onBackground = EdgeColors.textPrimary,
     surface = EdgeColors.surface,
     onSurface = EdgeColors.textPrimary,
     surfaceVariant = EdgeColors.surfaceInset,
+    surfaceContainer = EdgeColors.surface,
+    surfaceContainerHigh = EdgeColors.surfaceInset,
+    surfaceContainerHighest = EdgeColors.surfacePressed,
     onSurfaceVariant = EdgeColors.textMuted,
     outline = EdgeColors.border,
     error = EdgeColors.danger,
     onError = EdgeColors.onAction,
+    errorContainer = Color(0xFF3F1622),
+    onErrorContainer = EdgeColors.danger,
 )
 
 private val typography = Typography(
@@ -81,5 +102,10 @@ private val typography = Typography(
 
 @Composable
 fun EdgeOreTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = scheme, typography = typography, content = content)
+    MaterialTheme(colorScheme = scheme, typography = typography, shapes = androidx.compose.material3.Shapes(
+        extraSmall = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+        extraLarge = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+        small = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+        medium = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+        large = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)), content = content)
 }

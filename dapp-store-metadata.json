@@ -1,0 +1,71 @@
+{
+  "_comment": "Solana dApp Store metadata TEMPLATE (hardening 20). Not submitted. Fill every TODO and replace previews with device captures before publisher submission.",
+  "schemaVersion": "edgeore.dapp-store-metadata.template.v1",
+  "name": "EdgeORE",
+  "packageName": "com.edgeore.app",
+  "versionName": "0.1.0-clockin",
+  "versionCode": 12,
+  "shortDescription": "Review Solana transactions byte-for-byte before your wallet signs, keep signed receipts, run private on-device AI and an encrypted vault.",
+  "shortDescriptionMaxChars": 150,
+  "category": "Tools",
+  "secondaryCategory": "Finance",
+  "website": "https://github.com/CodesbyFebin/EdgeORE",
+  "license": "Apache-2.0 (owner may change)",
+  "privacyPolicyUrl": "TODO: privacy policy URL (required for submission; not yet published)",
+  "supportEmail": "TODO",
+  "publisher": {
+    "name": "CodesbyFebin",
+    "verification": "TODO: publisher KYC not completed"
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/01-mine.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/02-ai.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/03-storage.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/04-nodes.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/05-receipts.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/06-review.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/07-onboarding.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    },
+    {
+      "path": "docs/screenshots/09-plain-language.png",
+      "label": "UI preview",
+      "note": "Robolectric render from source; not a device capture"
+    }
+  ],
+  "release": {
+    "apkSha256": "TODO: signed release APK SHA-256 (no release key yet; current release APK is unsigned)",
+    "signingCertificateSha256": "TODO"
+  },
+  "claims": {
+    "miningIncome": false,
+    "productionReady": false,
+    "note": "No earnings, rewards or production-readiness are claimed. Device, wallet and devnet gates are NOT_RUN."
+  }
+}

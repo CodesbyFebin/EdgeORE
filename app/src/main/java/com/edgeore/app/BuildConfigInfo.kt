@@ -6,4 +6,7 @@ object BuildConfigInfo {
     val VERSION_CODE: Int get() = BuildConfig.VERSION_CODE
     /** Short git commit the APK was built from, with "-dirty" when the tree had uncommitted changes. */
     val COMMIT: String get() = BuildConfig.GIT_COMMIT
+
+    /** Canonical source commit from evidence/COMMIT-STAMP.json (scripts/commit-stamp.sh), or "unstamped". */
+    val SOURCE_STAMP: String get() = BuildConfig.SOURCE_STAMP
 }

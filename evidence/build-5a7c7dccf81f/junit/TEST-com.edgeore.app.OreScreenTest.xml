@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OreScreenTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-12T13:11:21" hostname="grok-bot-vm-446931431" time="0.663">
+  <properties/>
+  <testcase name="proGridShowsTheRealPerSquareSolAndNoActingControls" classname="com.edgeore.app.OreScreenTest" time="0.281"/>
+  <testcase name="advisorNotConfiguredAndConfigured" classname="com.edgeore.app.OreScreenTest" time="0.091"/>
+  <testcase name="advisorConfiguredShowsBackendAndAsk" classname="com.edgeore.app.OreScreenTest" time="0.103"/>
+  <testcase name="liteShowsTotals" classname="com.edgeore.app.OreScreenTest" time="0.103"/>
+  <testcase name="nothingReadShowsNotObservedNeverZero" classname="com.edgeore.app.OreScreenTest" time="0.084"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

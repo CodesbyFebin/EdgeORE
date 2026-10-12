@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OrePreviewFrames" tests="1" skipped="1" failures="0" errors="0" timestamp="2026-10-12T12:37:27" hostname="grok-bot-vm-446931431" time="0.031">
+  <properties/>
+  <testcase name="frames" classname="com.edgeore.app.OrePreviewFrames" time="0.031">
+    <skipped/>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
