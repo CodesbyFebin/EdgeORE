@@ -37,7 +37,9 @@ class OreReadOnlyArchitectureTest {
     @Test fun theScreenOffersNoActingControls() {
         val ui = File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt").readText()
         for (chip in listOf("\"+0.01\"", "\"+0.1\"", "\"+1\"", "\"MAX\"", "\"ALL\"")) assertFalse(chip, ui.contains(chip))
-        assertTrue(ui.contains("enabled = false") && ui.contains("Deploy disabled in EdgeORE (read-only)"))
+        assertTrue(ui.contains("Deploy unavailable in this release (read-only)"))
+        assertTrue(ui.contains("Text(ORE_DEPLOY_UNAVAILABLE"))
+        assertFalse(ui.contains("PrimaryAction("))
         assertTrue(ui.contains("Read-only · mainnet observation"))
     }
 }
