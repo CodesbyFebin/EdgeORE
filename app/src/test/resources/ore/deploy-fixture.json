@@ -1,0 +1,76 @@
+{
+ "source": "regolith-labs/ore@48c203bd75db3cc45105ec29d8f8db719e5a2263 api/src/sdk.rs deploy(); entropy-api 0.1.4",
+ "programId": "oreV3EG1i9BEgiAJ8b177Z2S2rMarzak4NMv1kULvWv",
+ "entropyProgramId": "3jSkUuYBoJzQPMEzTvkDFXCZUBksPamrVhrnHR9igu2X",
+ "board": "BrcSxdp1nXFzou1YyDnQJcPNBNHgoypZmTsyKBSLLXzi",
+ "treasury": "45db2FSR4mcXdSVVZbKbwojU6uYDpMyhpEi7cC8nHaWG",
+ "config": "9c9X7aDRAF41faiDs94ELjT19UrGnn72wBW9hPsS4Awy",
+ "cases": [
+  {
+   "name": "lite-all-25",
+   "signer": "4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw",
+   "roundId": 437127,
+   "amountPerSquareLamports": 400000,
+   "squares": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ],
+   "mask": 33554431,
+   "blockhash": "H4H3amsfW5YmbKcJvqNpptgp9wbihPwdaxh8HbGqRFoD",
+   "accounts": {
+    "automation": "59vHGjxrXJaGdpRC8cyWnwcdSzvT8gHJNDFywJ69xRJF",
+    "miner": "Ga6hvMGKMXibdG5CY86jmwSVTxniRV5SQT1USm2ZHhRU",
+    "round": "DpBbp6nBgZfjUdn1k9KRsawtHQ9z6d3fn3xky846LqqQ",
+    "entropyVar": "BWCaDY96Xe4WkFq1M7UiCCRcChsJ3p51L5KrGzhxgm2E"
+   },
+   "dataHex": "06801a060000000000ffffff01",
+   "messageHex": "0100030b0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f203db7a38067b29782cf5f50e19a9f3aa210655c71d946efea4eac27c60b7e1fc0a14a68dbf82978869a3ddabb98c5e4450f473ca02b5da1bbd71acc857b47ac937fde74d77e519adb320243d456e8f3d8c4c1de3098bad374393c50d1c60a0080e759ebfdb68c6670c3eaa396856a814ae8c7a651634913f031143eb9e79d11cbbe6286debb816bed8c0834c016e7a6f39f52de98937bbf80dc439634caeb1d9f2dc2c0a9d09b91ffce5d75c5f0d22fe54a65eccbf13a185dcf7dd5a1d8da2e359c0fcc4a7cf0d9ba6733ecaf85f241f6e4fa403f9b2cd3b5bb79fa36eade9cbf00000000000000000000000000000000000000000000000000000000000000000c00da38cd944f5f9d39eaafa7b46ce52bd7edc3b9a276a4722c2e2aae3489432896e211c96b2535873167477fd31292f1f5bea8c6b68f42558fb67a2888e150ee91dff60eaf01df53a84d9dc6db7961f1b2f1be54a2aa5943e70fa5b57ae51001090c00000102030405060809070a0d06801a060000000000ffffff01",
+   "messageSha256": "dd85ae72d409f94086a5cb63eb09960fb0218f40a828981548ef46521a44f70f"
+  },
+  {
+   "name": "pro-3-squares",
+   "signer": "8oMdTTmCSvp1C8DSAA9jHzqu1v713a9XJF8QmgBWmiim",
+   "roundId": 7,
+   "amountPerSquareLamports": 1000000,
+   "squares": [
+    0,
+    12,
+    24
+   ],
+   "mask": 16781313,
+   "blockhash": "6XBkZEkveMxQi6ZHRa6pjk6i4Xq1pYxSvTrpR1zaCnw1",
+   "accounts": {
+    "automation": "9pH8MhE12iRWk2Gs8ithiDfKvxCFSmMRjKiDS5TGief9",
+    "miner": "A4ttkKct7dcMLHfxmLDM1ox6DMgPVcAKEXbCr4HaxA8C",
+    "round": "F8qTetDWBxMfEw1GouvAEugnkRm2ExMXuFGCjynKqQez",
+    "entropyVar": "BWCaDY96Xe4WkFq1M7UiCCRcChsJ3p51L5KrGzhxgm2E"
+   },
+   "dataHex": "0640420f000000000001100001",
+   "messageHex": "0100030b73e1d9b95580d93eda1a3e81b4ad5df0babb5e814e5e043ab5e6a23f718684ea82fa073286e927e2872561ac03201e53c95c1943ebb75625732d340f140782f0a14a68dbf82978869a3ddabb98c5e4450f473ca02b5da1bbd71acc857b47ac937fde74d77e519adb320243d456e8f3d8c4c1de3098bad374393c50d1c60a008086b8997576fd8ad8d7134d3d9589635a8a77b29b25c2c303db2fcf600aded3cdd20579db8466a3d713b291cfbe2b323549bb464dc8923d5a93e73319b489d6972dc2c0a9d09b91ffce5d75c5f0d22fe54a65eccbf13a185dcf7dd5a1d8da2e359c0fcc4a7cf0d9ba6733ecaf85f241f6e4fa403f9b2cd3b5bb79fa36eade9cbf00000000000000000000000000000000000000000000000000000000000000000c00da38cd944f5f9d39eaafa7b46ce52bd7edc3b9a276a4722c2e2aae3489432896e211c96b2535873167477fd31292f1f5bea8c6b68f42558fb67a2888e150520603dab32f367fc9d64f6664dceec5d3e6f033fc2dcb90cb1677e3553e5ff801090c00000102030405060809070a0d0640420f000000000001100001",
+   "messageSha256": "b221f6dd8f84fae9ed97d3163ed029aebd1fb6e6218adb6d65664ff435f51aee"
+  }
+ ]
+}

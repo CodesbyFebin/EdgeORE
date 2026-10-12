@@ -19,6 +19,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +67,7 @@ fun MineScreen(
     vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit, onReview: () -> Unit, onPreview: () -> Unit,
     onOpenReview: () -> Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -> Unit = {},
     onOre: () -> Unit = {},
+    onOreMode: (pro: Boolean) -> Unit = { onOre() },
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
@@ -82,6 +84,56 @@ fun MineScreen(
 
     // "Now" overview: what needs attention, each row opening the place that handles it.
     val waiting = com.edgeore.app.ui.NavBadges.waiting(ops)
+    com.edgeore.app.ui.components.SectionTitle("Mine", "Your device. Your resources. Your control.")
+    val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
+    val node by vm.node.collectAsStateWithLifecycle()
+    val gateway by vm.gateway.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
+    val deploy by vm.oreDeploy.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(Unit) { vm.checkOreDeployCluster() }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val hw = androidx.compose.runtime.remember(ctx) { DeviceFacts.read(ctx) }
+    val cluster by vm.cluster.collectAsStateWithLifecycle()
+    val bal by vm.balances.collectAsStateWithLifecycle()
+    val checkIn by vm.checkIn.collectAsStateWithLifecycle()
+    val reminders by vm.reminders.collectAsStateWithLifecycle()
+    val checkInMsg by vm.checkInMessage.collectAsStateWithLifecycle()
+    val oreState by vm.ore.collectAsStateWithLifecycle()
+    var now by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
+    var diskReading by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<com.edgeore.app.device.StorageReading?>(null) }
+    var net by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(com.edgeore.app.device.NetActivity.UNAVAILABLE) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        var prev: Long? = null
+        while (true) {
+            diskReading = com.edgeore.app.device.Telemetry.storage(ctx.filesDir)
+            val cur = com.edgeore.app.device.Telemetry.appTrafficBytes()
+            net = com.edgeore.app.device.Telemetry.activity(prev, cur); prev = cur
+            now = System.currentTimeMillis()
+            kotlinx.coroutines.delay(2_000)
+        }
+    }
+    androidx.compose.runtime.LaunchedEffect(wallet.address, cluster) { vm.refreshBalances() }
+    val notifPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { vm.setReminders(it) }
+    val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
+    NetworkSelector(cluster, vm::selectCluster)
+    WalletConnectRow(wallet.address, wallet.busy, cluster, onConnect = onConnect,
+        onCopy = { wallet.address?.let { clipboard.setText(androidx.compose.ui.text.AnnotatedString(it)) } },
+        onSwitch = onConnect, onDisconnect = onDisconnect)
+    BalanceRow(bal, now, wallet.address != null, if (cluster == com.edgeore.app.solana.Cluster.MAINNET) "ORE" else "Test ORE")
+    DailyCheckInCard(checkIn, now, reminders, checkInMsg,
+        com.edgeore.app.bot.OreBot.tips(wallet.address != null, sessionView.anyConfigured, com.edgeore.app.device.DailyCheckIn.available(checkIn, now), cluster.label),
+        onCheckIn = vm::checkInNow,
+        onReminders = { on -> if (on && android.os.Build.VERSION.SDK_INT >= 33 && !com.edgeore.app.bot.OreBot.notificationsAllowed(ctx)) notifPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else vm.setReminders(on) })
+    EdgeNodeCard(sessionView, settings.edgeModeResumed, eval.headline, vm::startSession, vm::stopSession) {
+        vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
+    }
+    ResourceGrid(hw.first, hw.second, diskReading, net, com.edgeore.app.ui.components.rememberReducedMotion())
+    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() },
+        onDeploy = { vm.prepareOreDeploy(); onOpenReview() })
+    OreGridCard(cluster, oreState, deploy) { i -> vm.editOreDeploy { it.copy(proMask = it.proMask xor (1 shl i)) } }
+    ContributionToggles(settings.chargeOnly, settings.thermalGuard, settings.batteryReservePercent, effect = { it.effect.label },
+        onChargeOnly = { v -> vm.updateSettings { it.copy(chargeOnly = v) } }, onThermal = { v -> vm.updateSettings { it.copy(thermalGuard = v) } })
+
     com.edgeore.app.ui.components.SectionTitle("Your edge, under your control", "What needs attention, your wallet, and the gates that decide when anything may run.")
     EdgeCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -159,17 +211,13 @@ fun MineScreen(
         }
     }
 
-    val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
-    val node by vm.node.collectAsStateWithLifecycle()
-    val gateway by vm.gateway.collectAsStateWithLifecycle()
-    androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
     OreEntry(onOre)
+    val ore by vm.ore.collectAsStateWithLifecycle()
+    var oreNow by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
+    androidx.compose.runtime.LaunchedEffect(ore.rpc) { while (true) { vm.refreshOre(); kotlinx.coroutines.delay(15_000) } }
+    androidx.compose.runtime.LaunchedEffect(Unit) { while (true) { kotlinx.coroutines.delay(1_000); oreNow = System.currentTimeMillis() } }
+    OreHomeStrip(ore, oreNow, onOpen = onOreMode)
 
-    MiningSessionPanel(
-        view = sessionView, edgeModeResumed = settings.edgeModeResumed, headline = eval.headline,
-        onStart = vm::startSession, onStop = vm::stopSession,
-        onToggleEdgeMode = { vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) } },
-    )
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")
@@ -277,7 +325,7 @@ private fun LabeledSlider(icon: androidx.compose.ui.graphics.vector.ImageVector,
 }
 
 /** Shown next to Start Mining: exactly what a session runs. The button text is the owner's; this copy is the substance. */
-const val SESSION_EXPLAINER = "Start Mining runs a session on your own equipment only: proof jobs on your paired node, and one 256 KiB " +
+const val SESSION_EXPLAINER = "Mine runs a session on your own equipment only: proof jobs on your paired node, and one 256 KiB " +
     "encrypted chunk stored on your storage gateway, sent and read back each round. It repeats until you tap Stop, up to " +
     "$MAX_ROUNDS rounds or ${MAX_DURATION_MS / 60_000} minutes, and only on Wi-Fi with Edge Mode on and your charge, heat and battery limits met. " +
     "Nothing is earned: no ORE, SKR, points or payment."
@@ -301,12 +349,15 @@ fun MiningSessionPanel(
     onStart: () -> Unit, onStop: () -> Unit, onToggleEdgeMode: () -> Unit,
 ) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        MiningAnimation(view.phase, Modifier.size(width = 280.dp, height = 210.dp))
+        com.edgeore.app.ui.components.HoloRing(200.dp, bright = view.phase == SessionPhase.ACTIVE) {
+            MiningAnimation(view.phase, Modifier.size(width = 190.dp, height = 150.dp))
+        }
+        if (view.phase == SessionPhase.STARTING) Text("Starting… waiting for your node and gateway to acknowledge", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         Text("Session: " + view.phase.label(), fontWeight = FontWeight.Bold, color = if (view.phase == SessionPhase.FAILED) EdgeColors.copper else EdgeColors.textPrimary,
             modifier = Modifier.semantics { contentDescription = "Contribution session ${view.phase.label()}" })
         when (view.phase) {
             SessionPhase.IDLE, SessionPhase.FAILED ->
-                PrimaryAction("Start Mining", Modifier.testTag("start-mining"), icon = EdgeIcons.Play, onClick = onStart)
+                PrimaryAction("Mine", Modifier.testTag("start-mining"), icon = EdgeIcons.Play, onClick = onStart)
             SessionPhase.STARTING, SessionPhase.ACTIVE ->
                 PrimaryAction("Stop", Modifier.testTag("stop-mining"), icon = EdgeIcons.Pause, onClick = onStop)
             SessionPhase.STOPPING -> PrimaryAction("Stopping…", Modifier.testTag("stopping-mining"), enabled = false, loading = true, onClick = {})
@@ -366,4 +417,16 @@ fun OreEntry(onOpen: () -> Unit) {
             Text("Read-only · mainnet observation", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         }
     }
+}
+
+/** CPU cores and a memory class, as Android reports them. Usage is not sampled. */
+object DeviceFacts {
+    fun read(ctx: android.content.Context): Pair<Int?, Int?> {
+        val cores = Runtime.getRuntime().availableProcessors().takeIf { it > 0 }
+        val am = ctx.getSystemService(android.content.Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
+        val mem = am?.let { val mi = android.app.ActivityManager.MemoryInfo(); it.getMemoryInfo(mi); mi.totalMem }?.takeIf { it > 0 }
+        return cores to mem?.let { gbClass(it) }
+    }
+    /** Total RAM rounded up to the next whole GB (kernel-reserved memory makes totalMem read a little low). */
+    fun gbClass(totalBytes: Long): Int = ((totalBytes + (1L shl 30) - 1) / (1L shl 30)).toInt()
 }

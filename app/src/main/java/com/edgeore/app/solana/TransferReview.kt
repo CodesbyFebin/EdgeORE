@@ -22,7 +22,7 @@ object TransferReview {
         val blockhash: String,
         val refusal: String?,
     ) {
-        val approvable: Boolean get() = refusal == null && decoded is SolanaMessage.Decoded.SupportedTransfer
+        val approvable: Boolean get() = refusal == null && (decoded is SolanaMessage.Decoded.SupportedTransfer || decoded is SolanaMessage.Decoded.OreDeploy)
     }
 
     fun prepare(

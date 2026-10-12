@@ -1,0 +1,22 @@
+checkedAtUtc 2026-10-12T10:58:01Z; accounts [ORE mint, SKR mint, ORE v3 program]
+== https://api.mainnet-beta.solana.com
+genesis: {"jsonrpc":"2.0","result":"5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d","id":1}
+
+slot 456021935
+  owner TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA exec False decimals 11 supply 50601975906859841 mintAuth BiN8KJqtGanTmHzgTyJA3ALwLaqygt5KzRydH7gX5rf4
+  owner TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA exec False decimals 6 supply 10653597568193281 mintAuth FMNn5sorEBbEoGQGrh7y3xSbYGt116F12FpL2VTsohiw
+  owner BPFLoaderUpgradeab1e11111111111111111111111 exec True decimals None supply None mintAuth None
+== https://api.testnet.solana.com
+genesis: {"jsonrpc":"2.0","result":"4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY","id":1}
+
+slot 451564669
+  null
+  null
+  null
+== https://solana-devnet.api.onfinality.io/public
+genesis: {"jsonrpc":"2.0","result":"EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG","id":1}
+
+slot 510241115
+  owner TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA exec False decimals 11 supply 3106769495264409 mintAuth Dh5ZkjGD8EVujR7C8mxMyYaE2LRVarJ9W6bMofTgNJFP
+  null
+  null

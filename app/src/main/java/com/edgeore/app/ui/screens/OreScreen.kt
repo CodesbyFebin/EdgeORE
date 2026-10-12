@@ -58,7 +58,7 @@ const val ORE_DEPLOY_UNAVAILABLE = "Deploy unavailable in this release (read-onl
 
 /** Opened from Mine. Reads the live ORE v3 board every 15 s while shown; there is no transaction path on this screen. */
 @Composable
-fun OreScreen(vm: EdgeOreViewModel) {
+fun OreScreen(vm: EdgeOreViewModel, initialPro: Boolean = true) {
     val ore by vm.ore.collectAsStateWithLifecycle()
     val advisor by vm.advisor.collectAsStateWithLifecycle()
     val ai by vm.ai.collectAsStateWithLifecycle()
@@ -67,7 +67,7 @@ fun OreScreen(vm: EdgeOreViewModel) {
     LaunchedEffect(ore.rpc) { while (true) { vm.refreshOre(); delay(15_000) } }
     LaunchedEffect(Unit) { while (true) { delay(1_000); now = System.currentTimeMillis() } }
     val backend = remember(ai.selectedModel, ai.endpoint, onDevice.selectedId, onDevice.downloaded) { vm.advisorBackend() }
-    OreContent(ore, advisor, backend, now, onRefresh = vm::refreshOre, onSetRpc = vm::setOreRpc, onAsk = vm::askAdvisor, onClear = vm::clearAdvisor)
+    OreContent(ore, advisor, backend, now, initialPro = initialPro, onRefresh = vm::refreshOre, onSetRpc = vm::setOreRpc, onAsk = vm::askAdvisor, onClear = vm::clearAdvisor)
 }
 
 private fun localTime(ms: Long): String =
@@ -76,9 +76,9 @@ private fun localTime(ms: Long): String =
 @Composable
 fun OreContent(
     ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long,
-    onRefresh: () -> Unit, onSetRpc: (String) -> Unit, onAsk: (String) -> Unit, onClear: () -> Unit,
+    onRefresh: () -> Unit, onSetRpc: (String) -> Unit, onAsk: (String) -> Unit, onClear: () -> Unit, initialPro: Boolean = true,
 ) {
-    var pro by rememberSaveable { mutableStateOf(true) }
+    var pro by rememberSaveable { mutableStateOf(initialPro) }
     val s = ore.snapshot
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

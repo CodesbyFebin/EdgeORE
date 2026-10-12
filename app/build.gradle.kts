@@ -24,6 +24,8 @@ android {
         versionName = "0.1.0-clockin"
         // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
+        // ORE v3 deploy targets devnet only. Mainnet deploy stays off; no build type turns it on.
+        buildConfigField("boolean", "ORE_MAINNET_DEPLOY", "false")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

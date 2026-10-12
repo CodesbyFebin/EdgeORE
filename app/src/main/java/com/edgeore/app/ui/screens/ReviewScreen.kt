@@ -119,6 +119,18 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                     KeyValue("Network fee", if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message")
                     KeyValue("Recent blockhash", d.blockhash, mono = true)
                 }
+                is SolanaMessage.Decoded.OreDeploy -> {
+                    KeyValue("Action", "ORE v3 · Deploy (instruction 6)")
+                    KeyValue("Program", com.edgeore.app.ore.OreV3.PROGRAM_ID, mono = true)
+                    KeyValue("Signer and authority", d.fromAddress, mono = true)
+                    KeyValue("Round", dec.deploy.roundId.toString())
+                    KeyValue("Squares", "${dec.deploy.squareCount} (mask 0x${Integer.toHexString(dec.deploy.mask)})")
+                    KeyValue("Per square", "${Format.sol(dec.deploy.amountPerSquareLamports)} (${dec.deploy.amountPerSquareLamports} lamports)")
+                    KeyValue("Total deployed", "${Format.sol(dec.deploy.totalLamports)} (${dec.deploy.totalLamports} lamports)")
+                    KeyValue("Network fee", if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message")
+                    KeyValue("Recent blockhash", d.blockhash, mono = true)
+                    Notice("Not financial advice. Deployed SOL may be lost; EdgeORE claims no income.")
+                }
                 is SolanaMessage.Decoded.Unsupported -> Notice("Unsupported: ${dec.reason}", error = true)
             }
             if (d.message.isNotEmpty()) {
