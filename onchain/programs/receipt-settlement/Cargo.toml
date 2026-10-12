@@ -5,7 +5,7 @@ description = "EdgeORE devnet-only, unaudited receipt-settlement prototype (not 
 edition.workspace = true
 rust-version.workspace = true
 publish = false
-license = "UNLICENSED"
+license = "Apache-2.0"
 
 [lib]
 crate-type = ["cdylib", "lib"]
