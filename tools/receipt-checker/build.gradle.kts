@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "2.4.21"
     application
     `maven-publish`
 }
@@ -16,8 +16,8 @@ sourceSets.main {
         "com/edgeore/app/io/SafeFiles.kt")
 }
 dependencies {
-    implementation("org.json:json:20240303")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.json:json:20260814")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     testImplementation("junit:junit:4.13.2")
 }
 tasks.test { testLogging { events("passed", "failed", "skipped") } }
