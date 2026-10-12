@@ -31,6 +31,8 @@ sealed class NodeResult<out T> {
 class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeoutMs: Int = 10_000) {
     val baseUrl: String
     private val pin: ByteArray
+    /** Set when the owner pinned the agent's public key (SPKI SHA-256) instead of the exact certificate. */
+    private val spkiPin: ByteArray?
 
     init {
         val uri = try { URI(endpoint.trim().trimEnd('/')) } catch (_: Exception) { throw IllegalArgumentException("Endpoint is not a valid URL") }
@@ -38,10 +40,22 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
         require(!uri.host.isNullOrBlank()) { "Endpoint needs a host" }
         require(uri.rawPath.isNullOrEmpty() && uri.rawQuery == null && uri.userInfo == null) { "Endpoint must be scheme://host:port only" }
         baseUrl = uri.toString()
-        val cleaned = certSha256Hex.trim().lowercase().replace(":", "")
-        require(cleaned.length == 64) { "Certificate SHA-256 must be 64 hex characters" }
-        pin = Hex.decode(cleaned)
+        val raw = certSha256Hex.trim()
+        if (raw.startsWith("sha256/")) {
+            // SPKI pin (hardening 8): survives a certificate re-issue that keeps the agent's key pair.
+            spkiPin = com.edgeore.app.storage.SpkiPinning.parse(raw)
+            pin = ByteArray(0)
+        } else {
+            val cleaned = raw.lowercase().replace(":", "")
+            require(cleaned.length == 64) { "Certificate SHA-256 must be 64 hex characters, or an SPKI pin sha256/<base64>" }
+            pin = Hex.decode(cleaned)
+            spkiPin = null
+        }
     }
+
+    /** Exact-certificate pin (legacy form) or SPKI pin; never CA trust. */
+    internal fun matches(leaf: X509Certificate): Boolean = spkiPin?.let { MessageDigest.isEqual(com.edgeore.app.storage.SpkiPinning.spkiSha256(leaf), it) }
+        ?: MessageDigest.isEqual(Sha256.digest(leaf.encoded), pin)
 
     // Deliberate: this is certificate pinning (exact leaf SHA-256), stricter than CA trust for a
     // self-signed, owner-run agent. It never accepts an unpinned certificate.
@@ -52,7 +66,7 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
         }
         override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
             val leaf = chain?.firstOrNull() ?: throw java.security.cert.CertificateException("No server certificate")
-            if (!MessageDigest.isEqual(Sha256.digest(leaf.encoded), pin)) {
+            if (!matches(leaf)) {
                 throw java.security.cert.CertificateException("Certificate does not match the pinned SHA-256")
             }
             leaf.checkValidity()
@@ -63,7 +77,7 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
     /** The pinned leaf replaces name-based trust (agent certs name only 127.0.0.1/localhost). */
     private val pinVerifier = HostnameVerifier { _: String?, session: SSLSession ->
         val leaf = session.peerCertificates.firstOrNull() as? X509Certificate
-        leaf != null && MessageDigest.isEqual(Sha256.digest(leaf.encoded), pin)
+        leaf != null && matches(leaf)
     }
 
     private val sslContext: SSLContext = SSLContext.getInstance("TLS").apply { init(null, arrayOf(trustManager), null) }
