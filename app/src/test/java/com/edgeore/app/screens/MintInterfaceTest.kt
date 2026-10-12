@@ -1,5 +1,6 @@
 package com.edgeore.app.screens
 
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -22,7 +23,8 @@ class MintInterfaceTest {
     private val out = System.getProperty("screens.out") ?: "build/screenshots"
     @Test fun connectShowsSolanaConsentWithoutSigning() {
         rule.onNodeWithText("Connect", substring = false).performScrollTo().performClick()
-        rule.onNodeWithText("Connect a Solana wallet", substring = false).assertExists()
+        // Merged Mine (#22) also titles its card "Connect a Solana wallet", so the sheet adds a second node.
+        rule.onAllNodesWithText("Connect a Solana wallet", substring = false).onLast().assertExists()
         rule.onNodeWithText("Continue to wallet", substring = false).assertExists()
         rule.onAllNodes(isRoot()).onLast().captureRoboImage("$out/mint/wallet-chooser.png")
     }
