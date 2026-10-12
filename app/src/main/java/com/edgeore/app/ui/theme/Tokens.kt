@@ -29,7 +29,7 @@ object EdgeSpacing {
 
 object EdgeRadius {
     val tile = 12.dp
-    val card = 16.dp
+    val card = 20.dp
     val sheet = 24.dp
     val pill = 50.dp
 }

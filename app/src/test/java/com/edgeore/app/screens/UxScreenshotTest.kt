@@ -58,7 +58,7 @@ class OnboardingScreenshotTest {
         assertTrue(rule.onAllNodes(hasText("Devnet only")).fetchSemanticsNodes().isNotEmpty())
         rule.onNode(hasText("I understand · continue") and hasClickAction()).performScrollTo().performClick()
         rule.waitForIdle()
-        assertTrue(rule.onAllNodes(hasText("Edge Mode")).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(rule.onAllNodes(hasText("Mine")).fetchSemanticsNodes().isNotEmpty())
         assertTrue(Onboarding.done(ApplicationProvider.getApplicationContext()))
     }
 }

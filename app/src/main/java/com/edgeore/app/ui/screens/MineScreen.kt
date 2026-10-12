@@ -19,6 +19,17 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
+import com.edgeore.app.ui.components.TokenBalanceCard
+import com.edgeore.app.ui.components.WorkerStatusRow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +72,7 @@ import com.edgeore.app.ui.components.ResourceControl
 import com.edgeore.app.ui.components.SecondaryAction
 import com.edgeore.app.ui.theme.EdgeColors
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun MineScreen(
     vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit, onReview: () -> Unit, onPreview: () -> Unit,
@@ -80,37 +92,32 @@ fun MineScreen(
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val storage by vm.storage.collectAsStateWithLifecycle()
 
-    // "Now" overview: what needs attention, each row opening the place that handles it.
-    val waiting = com.edgeore.app.ui.NavBadges.waiting(ops)
-    com.edgeore.app.ui.components.SectionTitle("Your edge, under your control", "What needs attention, your wallet, and the gates that decide when anything may run.")
-    EdgeCard {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Now", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })
-            Text("Solana devnet · test SOL only", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
-        }
-        StatusRow(EdgeIcons.Wallet, "Wallet", wallet.address?.let { "Connected · ${Format.short(it)}" } ?: "Not connected · tap to connect",
-            attention = wallet.address == null, onClick = if (wallet.address == null) onConnect else onOpenReview)
-        StatusRow(EdgeIcons.Clock, "Awaiting an outcome", if (waiting == 0) "Nothing waiting" else "$waiting operation${if (waiting == 1) "" else "s"} · observe status",
-            attention = waiting > 0, onClick = onOpenReview)
-        StatusRow(EdgeIcons.Receipts, "Receipt log", if (receipts.isEmpty()) "None yet" else "${receipts.size} stored on this phone",
-            attention = false, onClick = { onOpenTab(com.edgeore.app.ui.Destination.Receipts) })
-        StatusRow(EdgeIcons.Lock, "Vault", if (storage.files.isEmpty()) "Empty · encrypt a file in Storage" else "${storage.files.size} encrypted file${if (storage.files.size == 1) "" else "s"}",
-            attention = false, onClick = { onOpenTab(com.edgeore.app.ui.Destination.Storage) })
-    }
-
-    FactCard(
-        EdgeIcons.Wallet, "Connect Solana Wallets",
-        wallet.address?.let { Format.short(it) } ?: "Authorize securely through your wallet",
-        status = {
-            when {
-                wallet.busy -> StatusPill("Waiting", tone = PillTone.COPPER)
-                wallet.address != null -> StatusPill("Connected", tone = PillTone.MINT, icon = EdgeIcons.Check)
-                else -> StatusPill("Not connected", tone = PillTone.NEUTRAL)
+    com.edgeore.app.ui.components.SectionTitle("Mine", "Your device. Your resources. Your control.")
+    val portfolio by vm.portfolio.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    var telemetry by remember { mutableStateOf(com.edgeore.app.device.ResourceTelemetry()) }
+    LaunchedEffect(lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                telemetry = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { com.edgeore.app.device.ResourceTelemetryReader.read(context) }.getOrDefault(com.edgeore.app.device.ResourceTelemetry(connection = "Unavailable")) }
+                delay(15_000)
             }
-        },
-    ) {
-        if (wallet.address == null) {
-            SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", Modifier.fillMaxWidth(), enabled = !wallet.busy, onClick = onConnect)
+        }
+    }
+    LaunchedEffect(lifecycle, wallet.address, portfolio.network) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) { vm.refreshPortfolio(); delay(60_000) }
+        }
+    }
+    EdgeCard {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.weight(1f)) {
+                Text("Connect Solana wallets", style = MaterialTheme.typography.titleMedium)
+                Text(wallet.address?.let { Format.short(it) } ?: "Not connected", color = EdgeColors.textMuted)
+            }
+            if (wallet.address == null) SecondaryAction(if (wallet.busy) "Waiting…" else "Connect", enabled = !wallet.busy, onClick = onConnect)
+            else StatusPill("Connected", tone = PillTone.MINT, icon = EdgeIcons.Check)
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(WalletDisplay.statusLine(wallet), color = if (wallet.error != null && wallet.address == null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
@@ -148,22 +155,31 @@ fun MineScreen(
         }
     }
 
-    EdgeCard(onClick = onPreview) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(EdgeIcons.Nodes, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(28.dp))
-            Column(Modifier.weight(1f)) {
-                Text("Edge Mode", style = MaterialTheme.typography.titleMedium)
-                Text("Your device. Your resources. Your control.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+    EdgeCard {
+        Text("Balance network", style = MaterialTheme.typography.titleSmall)
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            com.edgeore.app.solana.ObservationNetwork.entries.forEach { n ->
+                androidx.compose.material3.FilterChip(selected = portfolio.network == n, onClick = { vm.selectObservationNetwork(n) }, label = { Text(n.label) }, enabled = !wallet.busy)
             }
-            Icon(EdgeIcons.Chevron, contentDescription = null, tint = EdgeColors.textMuted)
+        }
+        Text("Read-only balance selection. Wallet authorization, review and submission remain on Devnet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodySmall)
+    }
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth()) {
+        if (maxWidth < 320.dp) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                portfolio.assets.forEach { TokenBalanceCard(it, loading = portfolio.loading) }
+            }
+        } else Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            portfolio.assets.forEach { TokenBalanceCard(it, Modifier.weight(1f), portfolio.loading) }
         }
     }
+    portfolio.error?.let { com.edgeore.app.ui.components.Notice(it, error = true) }
+    portfolio.observedAt?.let { Text("${portfolio.network.label} · ${Format.time(it)} · account ${portfolio.account?.let { a -> Format.short(a) }}", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted) }
 
     val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
     val node by vm.node.collectAsStateWithLifecycle()
     val gateway by vm.gateway.collectAsStateWithLifecycle()
     androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
-    OreEntry(onOre)
 
     MiningSessionPanel(
         view = sessionView, edgeModeResumed = settings.edgeModeResumed, headline = eval.headline,
@@ -172,23 +188,29 @@ fun MineScreen(
     )
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Cpu, "Compute", if (sessionView.phase == SessionPhase.ACTIVE) "Session active" else if (eval.state == EdgeState.PAUSED) "Paused" else eval.state.label, "Not measured on this phone",
-            if (sessionView.phase == SessionPhase.ACTIVE) "Work runs on your node and gateway" else "No workload is running")
+        ObservationCard(Modifier.weight(1f), EdgeIcons.Cpu, "CPU", telemetry.cores?.let { "$it logical cores" }, "Unavailable", "Android runtime · capacity")
+        ObservationCard(Modifier.weight(1f), EdgeIcons.Memory, "Memory", telemetry.memoryTotal?.let { bytes(it) }, "Unavailable", telemetry.memoryAvailable?.let { "${bytes(it)} available · ActivityManager" })
     }
-
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ObservationCard(Modifier.weight(1f), EdgeIcons.Storage, "Storage", telemetry.storageTotal?.let { bytes(it) }, "Unavailable", telemetry.storageFree?.let { "${bytes(it)} free · app filesystem" })
+        ObservationCard(Modifier.weight(1f), EdgeIcons.Wifi, "Network", telemetry.connection, "Unavailable", "ConnectivityManager · connection, not workload")
+    }
+    Text(telemetry.at?.let { "Phone sample ${Format.time(it)}. App traffic since boot: received ${telemetry.appRx?.let(::bytes) ?: "unavailable"}, sent ${telemetry.appTx?.let(::bytes) ?: "unavailable"}. No throughput is inferred." } ?: "Phone telemetry not observed.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     EdgeCard {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Workload & resources", style = MaterialTheme.typography.titleMedium)
-            Text("No live telemetry", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
-        }
-        Text("CPU, memory, storage and network are not sampled in this build. Missing readings are not shown as zero.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MetricTile(EdgeIcons.Cpu, "CPU")
-            MetricTile(EdgeIcons.Pulse, "Memory")
-            MetricTile(EdgeIcons.Storage, "Storage")
-            MetricTile(EdgeIcons.Wifi, "Network")
-        }
+        Text("Additional workers", style = MaterialTheme.typography.titleMedium)
+        WorkerStatusRow(EdgeIcons.Wifi, "Bandwidth", "Setup required", "No relay provider is configured")
+        WorkerStatusRow(EdgeIcons.Cloud, "Cloud hosting", "Setup required", "No cloud workload provider is linked")
+        Text("Mine starts the configured node and gateway session only. It does not provision hosting or authorize costs.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodySmall)
+    }
+    EdgeCard {
+        Text("Daily contribution", style = MaterialTheme.typography.titleMedium)
+        com.edgeore.app.ui.components.StatusPill("Rewards unavailable", tone = PillTone.NEUTRAL, icon = EdgeIcons.Gift)
+        Text("No funded campaign or eligibility server is configured. Daily check-in, five starts per UTC day and one-hour turns are planned policy, not active ORE protocol rules.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+    }
+    EdgeCard {
+        Text("ORE Mining", style = MaterialTheme.typography.titleMedium)
+        OreScreen(vm, compact = true)
+        SecondaryAction("Open board details & advisor", Modifier.fillMaxWidth(), onClick = onOre)
     }
 
     PrimaryAction("Preview session", icon = EdgeIcons.Play, onClick = onPreview)
@@ -301,14 +323,21 @@ fun MiningSessionPanel(
     onStart: () -> Unit, onStop: () -> Unit, onToggleEdgeMode: () -> Unit,
 ) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        MiningAnimation(view.phase, Modifier.size(width = 280.dp, height = 210.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text("Edge node", style = MaterialTheme.typography.titleLarge)
+            StatusPill(view.phase.label(), tone = if (view.phase == SessionPhase.ACTIVE) PillTone.MINT else PillTone.COPPER)
+        }
+        val acknowledged = view.parts.any { it.rounds > 0 }
+        val motionPhase = if (view.phase == SessionPhase.ACTIVE && !acknowledged) SessionPhase.STARTING else view.phase
+        MiningAnimation(motionPhase, Modifier.size(200.dp))
+        if (view.phase == SessionPhase.STARTING || (view.phase == SessionPhase.ACTIVE && !acknowledged)) com.edgeore.app.ui.components.LoadingState("Waiting for first worker result…")
         Text("Session: " + view.phase.label(), fontWeight = FontWeight.Bold, color = if (view.phase == SessionPhase.FAILED) EdgeColors.copper else EdgeColors.textPrimary,
             modifier = Modifier.semantics { contentDescription = "Contribution session ${view.phase.label()}" })
         when (view.phase) {
             SessionPhase.IDLE, SessionPhase.FAILED ->
                 PrimaryAction("Start Mining", Modifier.testTag("start-mining"), icon = EdgeIcons.Play, onClick = onStart)
             SessionPhase.STARTING, SessionPhase.ACTIVE ->
-                PrimaryAction("Stop", Modifier.testTag("stop-mining"), icon = EdgeIcons.Pause, onClick = onStop)
+                PrimaryAction("Stop", Modifier.testTag("stop-mining"), icon = EdgeIcons.Stop, onClick = onStop)
             SessionPhase.STOPPING -> PrimaryAction("Stopping…", Modifier.testTag("stopping-mining"), enabled = false, loading = true, onClick = {})
         }
         Text(SESSION_EXPLAINER, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
@@ -367,3 +396,5 @@ fun OreEntry(onOpen: () -> Unit) {
         }
     }
 }
+
+private fun bytes(value: Long): String = java.math.BigDecimal(value).divide(java.math.BigDecimal(1024L * 1024 * 1024), 2, java.math.RoundingMode.HALF_UP).toPlainString() + " GiB"

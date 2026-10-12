@@ -11,6 +11,21 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.platform.LocalView
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import android.os.PowerManager
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,6 +34,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
@@ -119,7 +135,14 @@ fun MiningAnimation(
     modifier: Modifier = Modifier,
     reducedMotion: Boolean = rememberReducedMotion(),
 ) {
-    val pose = MiningMotion.pose(phase, reducedMotion)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycleState by lifecycle.currentStateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val view = LocalView.current
+    var visible by remember { mutableStateOf(true) }
+    val savingPower = context.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
+    val displayedPhase = if (visible && lifecycleState.isAtLeast(Lifecycle.State.STARTED)) phase else SessionPhase.IDLE
+    val pose = MiningMotion.pose(displayedPhase, reducedMotion || savingPower)
     val rock = ImageBitmap.imageResource(R.drawable.mine_rock)
     val veins = ImageBitmap.imageResource(R.drawable.mine_rock_veins)
     val pick = ImageBitmap.imageResource(R.drawable.mine_pickaxe)
@@ -139,17 +162,38 @@ fun MiningAnimation(
         MiningPose.RESTING -> MiningMotion.REST_DEG
     }
     Canvas(
-        modifier.testTag("mining-animation").semantics {
+        modifier.onGloballyPositioned { coordinates ->
+            val b = coordinates.boundsInWindow()
+            visible = b.bottom > 0 && b.top < view.rootView.height && b.right > 0 && b.left < view.rootView.width
+        }.testTag("mining-animation").semantics {
             contentDescription = MiningMotion.description(pose)
             stateDescription = pose.name
             miningSwing = angle
         },
     ) {
         val t = cycle
-        drawMine(rock, veins, pick, angle,
-            shake = t?.let(MiningMotion::shake) ?: 0f,
-            glow = t?.let(MiningMotion::glow) ?: if (pose == MiningPose.STILL_ON) 0.25f else 0f,
-            sparkLife = t?.let(MiningMotion::sparks))
+        val radius = minOf(size.width, size.height) * 0.46f
+        val center = Offset(size.width / 2, size.height / 2)
+        drawCircle(Brush.radialGradient(listOf(EdgeColors.mint.copy(alpha = 0.16f), Color.Transparent), center, radius * 1.2f), radius * 1.2f, center)
+        drawCircle(EdgeColors.mint.copy(alpha = 0.24f), radius, center, style = Stroke(1.dp.toPx()))
+        drawCircle(EdgeColors.mint, radius * 0.90f, center, style = Stroke(1.4.dp.toPx()))
+        drawCircle(EdgeColors.mintSoft.copy(alpha = 0.60f), radius * 0.80f, center, style = Stroke(1.dp.toPx()))
+        listOf(0f, 90f, 210f).forEach { deg ->
+            val a = deg * PI.toFloat() / 180f
+            drawCircle(EdgeColors.mintSoft, 3.dp.toPx(), center + Offset(cos(a) * radius * 0.9f, sin(a) * radius * 0.9f))
+        }
+        clipPath(Path().apply { addOval(Rect(center - Offset(radius * 0.77f, radius * 0.77f), center + Offset(radius * 0.77f, radius * 0.77f))) }) {
+            val art = radius * 1.40f
+            translate(center.x - art / 2, center.y - art / 2) {
+                val outer = size
+                // Existing geometry uses the draw scope size; scale a compact art layer into the ring.
+                withTransform({ scale(art / outer.width, art / outer.height, pivot = Offset.Zero) }) {
+                    drawMine(rock, veins, pick, angle, t?.let(MiningMotion::shake) ?: 0f,
+                        t?.let(MiningMotion::glow) ?: if (pose == MiningPose.STILL_ON) 0.25f else 0f,
+                        t?.let(MiningMotion::sparks))
+                }
+            }
+        }
     }
 }
 

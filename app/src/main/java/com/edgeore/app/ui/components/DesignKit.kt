@@ -139,7 +139,7 @@ fun FactCard(
 @Composable
 fun EnvironmentStrip(text: String = "Devnet · Review candidate") {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
-        StatusPill(text, tone = PillTone.COPPER, icon = EdgeIcons.Info)
+        StatusPill(text, tone = PillTone.MINT, icon = EdgeIcons.Globe)
         StatusPill("Test SOL only", tone = PillTone.NEUTRAL)
     }
 }

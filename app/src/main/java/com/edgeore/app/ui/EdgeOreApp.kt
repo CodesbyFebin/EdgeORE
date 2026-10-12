@@ -1,6 +1,11 @@
 package com.edgeore.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,6 +63,7 @@ enum class Destination(val label: String, val icon: ImageVector) {
 
 /** Platform actions the UI needs from the Activity (wallet sender and share sheet). */
 interface PlatformActions {
+    fun setReminders(enabled: Boolean) {}
     fun connectWallet()
     fun disconnectWallet()
     fun signReviewed()
@@ -72,11 +78,19 @@ interface PlatformActions {
 fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     var tab by rememberSaveable { mutableStateOf(Destination.Mine) }
     var route by rememberSaveable { mutableStateOf<String?>(null) } // "review", "preview", "browser", "ore", "receipt:<id>"
+    var walletSheet by rememberSaveable { mutableStateOf(false) }
+    var help by rememberSaveable { mutableStateOf(false) }
+    var inbox by rememberSaveable { mutableStateOf(false) }
+    val requestConnect = { walletSheet = true }
     var about by rememberSaveable { mutableStateOf(false) }
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val ops by vm.operations.collectAsStateWithLifecycle()
     val damage by vm.receiptDamage.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val reminders by vm.reminders.collectAsStateWithLifecycle()
+    val wallet by vm.walletState.collectAsStateWithLifecycle()
+    val session by vm.contributionSession.collectAsStateWithLifecycle()
+    val portfolio by vm.portfolio.collectAsStateWithLifecycle()
     var onboarded by rememberSaveable { mutableStateOf(Onboarding.done(context)) }
 
     if (!onboarded) {
@@ -90,8 +104,12 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
 
     Scaffold(
         containerColor = EdgeColors.background,
+        floatingActionButton = {
+            androidx.compose.material3.SmallFloatingActionButton(onClick = { help = true }, modifier = Modifier.size(48.dp),
+                containerColor = EdgeColors.surfaceInset, contentColor = EdgeColors.mint) { Icon(EdgeIcons.Bot, contentDescription = "ORE Bot help") }
+        },
         bottomBar = {
-            NavigationBar(containerColor = EdgeColors.surfaceInset) {
+            NavigationBar(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp)), containerColor = EdgeColors.surface) {
                 val badges = NavBadges.of(ops, damage.size)
                 Destination.entries.forEach { d ->
                     val badge = badges[d]
@@ -105,8 +123,8 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         },
                         label = { Text(d.label) },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = EdgeColors.copper, selectedTextColor = EdgeColors.copper,
-                            indicatorColor = EdgeColors.copper.copy(alpha = 0.14f),
+                            selectedIconColor = if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint, selectedTextColor = if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint,
+                            indicatorColor = EdgeColors.mint.copy(alpha = 0.14f),
                             unselectedIconColor = EdgeColors.textMuted, unselectedTextColor = EdgeColors.textMuted,
                         ),
                     )
@@ -116,10 +134,10 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     ) { inner ->
         Row(Modifier.fillMaxSize().padding(inner), horizontalArrangement = Arrangement.Center) {
             Column(
-                Modifier.widthIn(max = 640.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
+                Modifier.widthIn(max = 640.dp).fillMaxSize().background(EdgeColors.ambient).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 72.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                EdgeOreHeader(onSettings = { about = true })
+                EdgeOreHeader(onSettings = { about = true }, onReview = { route = "review" })
                 EnvironmentStrip()
                 if (route != null) {
                     TextButton(onClick = { route = null }) {
@@ -128,7 +146,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                 }
                 val r = route
                 when {
-                    r == "review" -> ReviewScreen(vm, onSign = actions::signReviewed, onConnect = actions::connectWallet,
+                    r == "review" -> ReviewScreen(vm, onSign = actions::signReviewed, onConnect = requestConnect,
                         onScanQr = actions::scanAddressQr, onPickQrImage = actions::pickQrImage)
                     r == "preview" -> ConceptPreviewScreen()
                     r == "browser" -> BrowserScreen()
@@ -137,13 +155,17 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         val rec = receipts.firstOrNull { it.id == r.removePrefix("receipt:") }
                         if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }
                     }
-                    tab == Destination.Mine -> MineScreen(vm, actions::connectWallet, actions::disconnectWallet,
+                    tab == Destination.Mine -> MineScreen(vm, requestConnect, actions::disconnectWallet,
                         onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" },
                         onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" })
                     tab == Destination.AI -> AiScreen(vm)
                     tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)
                     tab == Destination.Receipts -> ReceiptsScreen(vm, onOpen = { route = "receipt:" + it.id }, onExport = actions::export)
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    com.edgeore.app.ui.components.SecondaryAction("ORE Bot · Help", Modifier.weight(1f), onClick = { help = true })
+                    com.edgeore.app.ui.components.IconAction(EdgeIcons.Bell, "Notification inbox", onClick = { inbox = true })
                 }
                 Text("Built by CodesbyFebin · ORE × SKR research scope · no token issuance", style = MaterialTheme.typography.labelSmall,
                     color = EdgeColors.textMuted, modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -153,10 +175,11 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
 
     if (about) AlertDialog(
         onDismissRequest = { about = false },
-        title = { Text("About this build") },
+        title = { Text("Settings & build") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("EdgeORE ${BuildConfigInfo.VERSION} (${BuildConfigInfo.COMMIT}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")
+                com.edgeore.app.ui.components.ResourceControl(EdgeIcons.Bell, "Optional daily reminder", "Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android.", reminders, "Local notification · no eligibility or reward claim", onChange = actions::setReminders)
                 Text("Receipts signed with: ${vm.receiptSignerProtection}.")
                 Text("Not store-ready. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")
             }
@@ -164,4 +187,25 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         confirmButton = { TextButton(onClick = { about = false }) { Text("Close") } },
         dismissButton = { TextButton(onClick = { about = false; Onboarding.set(context, false); onboarded = false }) { Text("Show introduction") } },
     )
+    if (walletSheet) com.edgeore.app.ui.components.WalletConnectSheet(onDismiss = { walletSheet = false }, onConnect = { walletSheet = false; actions.connectWallet() })
+    if (help) AlertDialog(
+        onDismissRequest = { help = false }, title = { Text("ORE Bot · Basic help") },
+        text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("Current app state · ${com.edgeore.app.ui.Format.time(AppClock.nowMs())}", style = MaterialTheme.typography.labelSmall)
+            Text(if (wallet.address == null) "Wallet: not connected. Use Connect, then authorize in your installed Solana wallet." else "Wallet: connected. Connection alone does not approve a transaction.")
+            Text("Balances: ${portfolio.network.label}, ${if (portfolio.loading) "reading" else portfolio.error ?: "${portfolio.assets.count { it.amount != null }} of 3 assets observed"}. Missing balances are never assumed to be zero.")
+            Text("Node session: ${session.phase.name.lowercase()}. ${session.failure ?: session.note ?: "Inspect each worker before starting. Configure your node in Nodes and gateway in Storage."}")
+            Text("Review: check recipient, integer lamports, fees and exact message hash. Signing and submission are separate. An unknown result must be observed, never resent.")
+            Text("Receipts: ${receipts.size} stored. Verification checks signed contents; it does not independently confirm payment.")
+            Text("ORE: the 5×5 mainnet board is read-only. No ORE deployment or reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model.")
+        } }, confirmButton = { TextButton(onClick = { help = false }) { Text("Close") } },
+    )
+    if (inbox) AlertDialog(onDismissRequest = { inbox = false }, title = { Text("Notifications") },
+        text = { Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text("Optional reminders are ${if (reminders) "enabled" else "off"}. No backend notification inbox is configured.")
+            Text("Reminders contain general help only. No balances, wallet addresses or private jobs appear on your lock screen.")
+            Text("Android notification settings control delivery. You can disable reminders in Settings at any time.")
+        } }, confirmButton = { TextButton(onClick = { inbox = false; about = true }) { Text("Preferences") } },
+        dismissButton = { TextButton(onClick = { inbox = false }) { Text("Close") } })
+
 }

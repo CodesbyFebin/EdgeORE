@@ -45,7 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.edgeore.app.ui.theme.EdgeColors
 
-val CardShape = RoundedCornerShape(16.dp)
+val CardShape = RoundedCornerShape(20.dp)
+val ControlShape = RoundedCornerShape(14.dp)
 
 /** Three-bar E mark drawn natively (no raster artwork). */
 @Composable
@@ -67,21 +68,23 @@ fun EMark(size: Dp = 32.dp) {
 }
 
 @Composable
-fun EdgeOreHeader(onSettings: (() -> Unit)? = null) {
+fun EdgeOreHeader(onSettings: (() -> Unit)? = null, onReview: (() -> Unit)? = null) {
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         EMark(30.dp)
         Spacer(Modifier.width(10.dp))
         Text(
             buildAnnotatedString {
                 withStyle(SpanStyle(color = EdgeColors.textPrimary)) { append("Edge") }
-                withStyle(SpanStyle(color = EdgeColors.mint)) { append("ORE") }
+                withStyle(SpanStyle(color = EdgeColors.copper)) { append("ORE") }
             },
             fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.weight(1f),
         )
+        if (onReview != null) {
+            IconAction(EdgeIcons.Review, "Review a transaction", onReview)
+            Spacer(Modifier.width(8.dp))
+        }
         if (onSettings != null) {
-            Box(Modifier.size(48.dp).clip(CardShape).clickable(role = Role.Button, onClickLabel = "About this build", onClick = onSettings), contentAlignment = Alignment.Center) {
-                Icon(EdgeIcons.Info, contentDescription = "About this build", tint = EdgeColors.textMuted)
-            }
+            IconAction(EdgeIcons.Settings, "Settings and build", onSettings)
         }
     }
 }
@@ -116,8 +119,8 @@ fun CapabilityBadge(cap: Capability, text: String = cap.label) {
 
 @Composable
 fun EdgeCard(modifier: Modifier = Modifier, inset: Boolean = false, onClick: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
-    var m = modifier.fillMaxWidth().clip(CardShape).background(if (inset) EdgeColors.surfaceInset else EdgeColors.surface)
-        .border(BorderStroke(1.dp, EdgeColors.border), CardShape)
+    var m = modifier.fillMaxWidth().clip(CardShape).background(if (inset) androidx.compose.ui.graphics.SolidColor(EdgeColors.surfaceInset) else EdgeColors.cardGradient)
+        .border(BorderStroke(1.dp, EdgeColors.mint.copy(alpha = 0.30f)), CardShape)
     if (onClick != null) m = m.clickable(role = Role.Button, onClick = onClick)
     Column(m.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
 }
@@ -147,8 +150,8 @@ fun ObservationCard(modifier: Modifier, icon: ImageVector, title: String, value:
 fun PrimaryAction(text: String, modifier: Modifier = Modifier, icon: ImageVector? = null, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
     val active = enabled && !loading
     Row(
-        modifier.fillMaxWidth().heightIn(min = 56.dp).clip(CardShape)
-            .background(if (active) EdgeColors.copperGradient else androidx.compose.ui.graphics.SolidColor(EdgeColors.border))
+        modifier.fillMaxWidth().heightIn(min = 56.dp).clip(ControlShape)
+            .background(if (active) EdgeColors.actionGradient else androidx.compose.ui.graphics.SolidColor(EdgeColors.disabledSurface))
             .clickable(enabled = active, role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
@@ -162,9 +165,9 @@ fun PrimaryAction(text: String, modifier: Modifier = Modifier, icon: ImageVector
 
 @Composable
 fun SecondaryAction(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, danger: Boolean = false, onClick: () -> Unit) {
-    val c = if (!enabled) EdgeColors.border else if (danger) EdgeColors.danger else EdgeColors.mint
+    val c = if (!enabled) EdgeColors.textMuted else if (danger) EdgeColors.danger else EdgeColors.mint
     Box(
-        modifier.heightIn(min = 48.dp).clip(CardShape).border(1.dp, c, CardShape)
+        modifier.heightIn(min = 48.dp).clip(ControlShape).border(1.dp, c, ControlShape)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center,
     ) { Text(text, color = if (enabled) c else EdgeColors.textMuted, fontWeight = FontWeight.SemiBold) }
@@ -197,7 +200,7 @@ fun ResourceControl(icon: ImageVector, label: String, explanation: String, check
         }
         Switch(
             checked = checked, onCheckedChange = onChange, enabled = enabled,
-            colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction),
+            colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.textPrimary),
             modifier = Modifier.semantics { contentDescription = label },
         )
     }

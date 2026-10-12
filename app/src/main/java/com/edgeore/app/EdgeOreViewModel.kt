@@ -132,6 +132,43 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val walletState: StateFlow<WalletState> = walletConnection.state
     private val _balance = MutableStateFlow<RpcObservation?>(null)
     val balance: StateFlow<RpcObservation?> = _balance.asStateFlow()
+    private val _reminders = MutableStateFlow(com.edgeore.app.notifications.OreReminders.prefs(app).getBoolean("enabled", false) && com.edgeore.app.notifications.OreReminders.permitted(app))
+    val reminders = _reminders.asStateFlow()
+    fun setReminders(enabled: Boolean) {
+        com.edgeore.app.notifications.OreReminders.set(getApplication(), enabled)
+        _reminders.value = com.edgeore.app.notifications.OreReminders.prefs(getApplication()).getBoolean("enabled", false)
+    }
+    fun refreshReminderPermission() {
+        if (!com.edgeore.app.notifications.OreReminders.permitted(getApplication()) && _reminders.value) setReminders(false)
+    }
+    private val _portfolio = MutableStateFlow(com.edgeore.app.solana.WalletPortfolio(network =
+        runCatching { com.edgeore.app.solana.ObservationNetwork.valueOf(prefs.getString("wallet.observationNetwork", "DEVNET") ?: "DEVNET") }.getOrDefault(com.edgeore.app.solana.ObservationNetwork.DEVNET)))
+    val portfolio = _portfolio.asStateFlow()
+    private var portfolioRequest: Job? = null
+    private var portfolioGeneration = 0L
+    fun selectObservationNetwork(network: com.edgeore.app.solana.ObservationNetwork) {
+        portfolioRequest?.cancel()
+        prefs.edit().putString("wallet.observationNetwork", network.name).apply()
+        _portfolio.value = com.edgeore.app.solana.WalletPortfolio(network = network)
+        refreshPortfolio()
+    }
+    fun refreshPortfolio() {
+        val generation = ++portfolioGeneration
+        portfolioRequest?.cancel()
+        val account = _wallet.value.address
+        val network = _portfolio.value.network
+        if (account == null) { _portfolio.value = com.edgeore.app.solana.WalletPortfolio(network = network); return }
+        val previous = _portfolio.value.takeIf { it.account == account && it.network == network }
+        _portfolio.value = (previous ?: com.edgeore.app.solana.WalletPortfolio(account, network)).copy(loading = true, error = null)
+        portfolioRequest = viewModelScope.launch {
+            val result = runCatching { com.edgeore.app.solana.PortfolioRpc(network).read(account) }
+            if (generation != portfolioGeneration || _wallet.value.address != account || _portfolio.value.network != network) return@launch
+            _portfolio.value = result.getOrNull()?.retainFailedAssets(previous) ?: run {
+                (previous ?: com.edgeore.app.solana.WalletPortfolio(account, network)).copy(loading = false, error = if (result.exceptionOrNull()?.message == "NETWORK_MISMATCH") "NETWORK_MISMATCH: endpoint identity does not match the selected network." else "RPC unavailable; no balance was inferred.",
+                    assets = (previous?.assets ?: com.edgeore.app.solana.WalletPortfolio().assets).map { a -> a.copy(status = if (a.amount != null) "Stale · last successful read" else "RPC unavailable") })
+            }
+        }
+    }
     private val _node = MutableStateFlow(NodeState(record = loadNode(), ops = loadOps()))
     val node: StateFlow<NodeState> = _node.asStateFlow()
     private val _ai = MutableStateFlow(AiState(
@@ -486,18 +523,23 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun connectWallet(sender: ActivityResultSender) = viewModelScope.launch {
         // The connection state is published by WalletConnection only; a balance (RPC) failure below
         // is shown on its own line and never changes an authorized connection.
-        if (walletConnection.connect { wallet.connect(sender) }) _wallet.value.address?.let { refreshBalance(it) }
+        if (walletConnection.connect { wallet.connect(sender) }) {
+            _wallet.value.address?.let { refreshBalance(it) }
+            refreshPortfolio()
+        }
     }
 
     fun disconnectWallet(sender: ActivityResultSender) = viewModelScope.launch {
         val confirmed = wallet.disconnect(sender)
         walletConnection.disconnected(confirmed)
         _balance.value = null
+        refreshPortfolio()
     }
 
     fun refreshBalance(address: String? = _wallet.value.address) = viewModelScope.launch {
         if (address == null) { _balance.value = null; return@launch }
-        _balance.value = rpc.balance(address)
+        val result = rpc.balance(address)
+        if (_wallet.value.address == address) _balance.value = result
     }
 
     // ---------- review route ----------
