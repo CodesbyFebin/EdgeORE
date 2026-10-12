@@ -27,7 +27,8 @@ import com.edgeore.app.ui.theme.EdgeOreTheme
 import com.solana.mobilewalletadapter.clientlib.ActivityResultSender
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+// FragmentActivity (a ComponentActivity) so androidx.biometric can host its prompt before MWA dispatch.
+class MainActivity : androidx.fragment.app.FragmentActivity() {
     private val vm: EdgeOreViewModel by viewModels()
 
     // QR address scan for the review destination. Each launcher is registered before STARTED, as required.
@@ -58,7 +59,15 @@ class MainActivity : ComponentActivity() {
         val actions = object : PlatformActions {
             override fun connectWallet() { vm.connectWallet(sender) }
             override fun disconnectWallet() { vm.disconnectWallet(sender) }
-            override fun signReviewed() { vm.approveAndSign(sender) }
+            // Hardening 15: user presence (biometric or device credential) before the wallet is opened to sign.
+            override fun signReviewed() {
+                com.edgeore.app.wallet.UserPresenceGate.require(this@MainActivity) { r ->
+                    when (r) {
+                        com.edgeore.app.wallet.UserPresenceGate.Result.Passed -> vm.approveAndSign(sender)
+                        is com.edgeore.app.wallet.UserPresenceGate.Result.Refused -> Toast.makeText(this@MainActivity, r.reason, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
             override fun export(receipt: StoredReceipt?, hideDeviceKey: Boolean) { exportReceipts(receipt, hideDeviceKey) }
             override fun scanAddressQr() {
                 if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {

@@ -1,6 +1,7 @@
 {
   "libraries": [
     "androidx.activity:activity-compose:1.9.3",
+    "androidx.biometric:biometric:1.1.0",
     "androidx.compose.material3:material3",
     "androidx.compose.ui:ui",
     "androidx.compose.ui:ui-test-junit4",
@@ -79,6 +80,10 @@
       [
         "implementation",
         "androidx.activity:activity-compose:1.9.3"
+      ],
+      [
+        "implementation",
+        "androidx.biometric:biometric:1.1.0"
       ],
       [
         "implementation",

@@ -108,6 +108,8 @@ dependencies {
 
     // Solana Mobile Wallet Adapter: wallet keys stay in the wallet app.
     implementation(libs.com.solanamobile.mobile.wallet.adapter.clientlib.ktx.lib)
+    // User-presence gate (biometric or device credential) before each MWA signing dispatch (hardening 15).
+    implementation(libs.androidx.biometric.biometric.lib)
     // Ed25519 for node-agent pairing keys and for verifying wallet-returned signatures.
     implementation(libs.org.bouncycastle.bcprov.jdk18on.lib)
     // On-device LLM runtime (LiteRT-LM, as used by Google AI Edge Gallery) behind a Java-only bridge module; see ondevice-llm/build.gradle.kts.
