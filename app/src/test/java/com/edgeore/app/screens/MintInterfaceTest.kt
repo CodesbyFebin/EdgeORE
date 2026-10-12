@@ -51,5 +51,7 @@ class MintLargeTextTest {
         rule.onNodeWithText("Review a supported action", substring = false).performScrollTo().performClick()
         rule.onAllNodesWithText("Review", substring = true).onFirst().assertExists()
         rule.onAllNodes(isRoot()).onLast().captureRoboImage("${System.getProperty("screens.out")}/mint/review-200percent.png")
+        rule.onNodeWithTag("nav-Receipts").performScrollTo().assertIsDisplayed().performClick()
+        rule.onNodeWithText("No receipts yet.", substring = false).assertExists()
     }
 }

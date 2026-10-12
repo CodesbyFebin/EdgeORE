@@ -1,6 +1,12 @@
 package com.edgeore.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.selected
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.layout.width
@@ -81,6 +87,7 @@ interface PlatformActions {
 fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     var tab by rememberSaveable { mutableStateOf(Destination.Mine) }
     var route by rememberSaveable { mutableStateOf<String?>(null) } // "review", "preview", "browser", "ore", "receipt:<id>"
+    var signerDetails by rememberSaveable { mutableStateOf(false) }
     var walletSheet by rememberSaveable { mutableStateOf(false) }
     var help by rememberSaveable { mutableStateOf(false) }
     var inbox by rememberSaveable { mutableStateOf(false) }
@@ -113,14 +120,36 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                 containerColor = EdgeColors.surfaceInset, contentColor = EdgeColors.mint) { Icon(EdgeIcons.Bot, contentDescription = "ORE Bot help") }
         },
         bottomBar = {
-            NavigationBar(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp)).then(if (largeText) Modifier.horizontalScroll(rememberScrollState()) else Modifier), containerColor = EdgeColors.surface) {
+            if (largeText) {
+                val badges = NavBadges.of(ops, damage.size)
+                Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(28.dp)).background(EdgeColors.surface)
+                    .border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp))
+                    .horizontalScroll(rememberScrollState()).navigationBarsPadding()) {
+                    Destination.entries.forEach { d ->
+                        val selected = tab == d && route == null
+                        val tint = if (!selected) EdgeColors.textMuted else if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint
+                        val badge = badges[d]
+                        Column(Modifier.width(144.dp).heightIn(min = 96.dp).testTag("nav-${d.label}")
+                            .background(if (selected) EdgeColors.surfacePressed else EdgeColors.surface)
+                            .clickable(role = androidx.compose.ui.semantics.Role.Tab, onClick = { tab = d; route = null })
+                            .semantics { this.selected = selected; badge?.let { stateDescription = it.spoken } }
+                            .padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (badge == null) Icon(d.icon, null, tint = tint, modifier = Modifier.size(24.dp))
+                            else BadgedBox(badge = { CountBadge(badge.count, tone = badge.tone) }) { Icon(d.icon, null, tint = tint, modifier = Modifier.size(24.dp)) }
+                            Text(d.label, color = tint, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
+                }
+            } else {
+            NavigationBar(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp)), containerColor = EdgeColors.surface) {
                 val badges = NavBadges.of(ops, damage.size)
                 Destination.entries.forEach { d ->
                     val badge = badges[d]
                     NavigationBarItem(
                         selected = tab == d && route == null,
                         onClick = { tab = d; route = null },
-                        modifier = (if (largeText) Modifier.width(160.dp) else Modifier).then(if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier),
+                        modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier,
                         icon = {
                             if (badge == null) Icon(d.icon, contentDescription = null)
                             else BadgedBox(badge = { CountBadge(badge.count, tone = badge.tone) }) { Icon(d.icon, contentDescription = null) }
@@ -133,6 +162,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         ),
                     )
                 }
+            }
             }
         },
     ) { inner ->
@@ -184,7 +214,9 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("EdgeORE ${BuildConfigInfo.VERSION} (${BuildConfigInfo.COMMIT}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")
                 com.edgeore.app.ui.components.ResourceControl(EdgeIcons.Bell, "Optional daily reminder", "Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android.", reminders, "Local notification · no eligibility or reward claim", onChange = actions::setReminders)
-                Text("Receipts signed with: ${vm.receiptSignerProtection}.")
+                Text("Receipts signed with: ${vm.receiptSignerProtection.substringBefore(" · key ")}.")
+                com.edgeore.app.ui.components.SecondaryAction(if (signerDetails) "Hide signer identity" else "Signer identity", onClick = { signerDetails = !signerDetails })
+                if (signerDetails) Text(vm.receiptSignerProtection, style = MaterialTheme.typography.bodySmall)
                 Text("Not store-ready. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")
             }
         },
