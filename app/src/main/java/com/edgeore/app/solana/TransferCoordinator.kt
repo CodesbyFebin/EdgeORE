@@ -97,19 +97,22 @@ class TransferCoordinator(
         val height = try { gateway.blockHeight() } catch (e: CancellationException) {
             stored { recordRefusedOrThrow(id, "Signing was interrupted before the wallet opened") }; throw e
         } catch (e: Exception) { null }
-        if (height == null) {
-            val reason = "Block height unavailable, so the blockhash cannot be shown to be valid. Not signed; try again."
-            stored { recordRefusedOrThrow(id, reason) }.onFailure { return Outcome.NotAllowed(it.message!!) }
-            return Outcome.NotAllowed(reason)
-        }
-        if (height > op.lastValidBlockHeight - signingMarginBlocks) {
-            val reason = "Blockhash expired or about to expire (block height $height, last valid ${op.lastValidBlockHeight}). Nothing was signed or sent. Review again to build a new message."
-            stored {
-                store.transition(id, setOf(OpState.SIGNING), OpState.EXPIRED) {
-                    it.copy(reason = reason, lastObservation = "Block height $height checked before signing", lastObservedAt = now())
-                }
-            }.onFailure { return Outcome.NotAllowed(it.message!!) }
-            return Outcome.NotAllowed(reason)
+        when (val check = BlockhashCheckResult.of(height, op.lastValidBlockHeight, signingMarginBlocks)) {
+            BlockhashCheckResult.Unavailable -> {
+                val reason = "Block height unavailable, so the blockhash cannot be shown to be valid. Not signed; try again."
+                stored { recordRefusedOrThrow(id, reason) }.onFailure { return Outcome.NotAllowed(it.message!!) }
+                return Outcome.NotAllowed(reason)
+            }
+            is BlockhashCheckResult.Expired -> {
+                val reason = "Blockhash expired or about to expire (block height ${check.height}, last valid ${check.lastValidBlockHeight}). Nothing was signed or sent. Review again to build a new message."
+                stored {
+                    store.transition(id, setOf(OpState.SIGNING), OpState.EXPIRED) {
+                        it.copy(reason = reason, lastObservation = "Block height ${check.height} checked before signing", lastObservedAt = now())
+                    }
+                }.onFailure { return Outcome.NotAllowed(it.message!!) }
+                return Outcome.NotAllowed(reason)
+            }
+            is BlockhashCheckResult.Valid -> Unit
         }
         return Outcome.Done(op)
     }
