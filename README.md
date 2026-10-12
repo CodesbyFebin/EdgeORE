@@ -1,7 +1,7 @@
 # EdgeORE
 
 <!-- commit-stamp:begin -->
-Canonical source commit: `b44bb50989c04585635ff4a8a75590aed9a68b80` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
+Canonical source commit: `ad152da2de5e334e35b9def456722ce21746bd71` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
 <!-- commit-stamp:end -->
 <img width="2172" height="724" alt="image" src="https://github.com/user-attachments/assets/52f6707b-7af5-4092-9bea-6e21f45054f7" />
 
