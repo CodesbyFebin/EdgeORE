@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ContributionSessionE2ETest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T09:05:32" hostname="grok-bot-vm-446931431" time="1.728">
+  <properties/>
+  <testcase name="realSessionOnOwnedNodeAndGatewayThenCancelledSession" classname="com.edgeore.app.ContributionSessionE2ETest" time="1.728"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
