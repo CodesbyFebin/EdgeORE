@@ -2,10 +2,8 @@ package com.edgeore.app.ui.screens
 
 import com.edgeore.app.ui.components.EffectNote
 import com.edgeore.app.settings.Control
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -24,10 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -53,6 +46,7 @@ import com.edgeore.app.ui.components.StatCell
 import com.edgeore.app.ui.components.StatusPill
 import com.edgeore.app.ui.components.EdgeIcons
 import com.edgeore.app.ui.components.ObservationCard
+import com.edgeore.app.ui.components.MiningAnimation
 import com.edgeore.app.ui.components.PrimaryAction
 import com.edgeore.app.ui.components.ResourceControl
 import com.edgeore.app.ui.components.SecondaryAction
@@ -156,27 +150,25 @@ fun MineScreen(
     }
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Box(
-            Modifier.size(200.dp).clip(CircleShape)
-                .clickable(role = Role.Button, onClickLabel = if (settings.edgeModeResumed) "Pause Edge Mode" else "Resume Edge Mode") {
+        // The user's rock-and-pickaxe art replaces the Edge Mode ring. It is the same toggle (edgeModeResumed) and is
+        // bound to the same evaluated EdgeState: it swings only while Edge Mode is on and its gates pass.
+        val resumed = settings.edgeModeResumed
+        Column(
+            Modifier.fillMaxWidth().clip(com.edgeore.app.ui.components.CardShape)
+                .clickable(role = Role.Button, onClickLabel = if (resumed) "Pause Edge Mode" else "Resume Edge Mode") {
                     vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
                 }
-                .semantics { contentDescription = "Edge Mode ${eval.state.label}. ${eval.headline}" },
-            contentAlignment = Alignment.Center,
+                .semantics(mergeDescendants = true) { contentDescription = "Edge Mode ${eval.state.label}. ${eval.headline}" },
+            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Canvas(Modifier.size(200.dp)) {
-                val stroke = 14.dp.toPx()
-                val inset = stroke / 2
-                val arcSize = Size(size.width - stroke, size.height - stroke)
-                drawArc(EdgeColors.border, 0f, 360f, false, Offset(inset, inset), arcSize, style = Stroke(stroke))
-                drawArc(EdgeColors.copperDeep, 120f, 300f, false, Offset(inset, inset), arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
-                if (eval.state == EdgeState.IDLE) drawArc(EdgeColors.mint, -90f, 40f, false, Offset(inset, inset), arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(if (eval.state == EdgeState.PAUSED) EdgeIcons.Pause else EdgeIcons.Play, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(40.dp))
-                Text(eval.state.label.uppercase(), fontWeight = FontWeight.Bold, color = EdgeColors.textPrimary)
+            MiningAnimation(eval.state, Modifier.size(width = 280.dp, height = 210.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(if (resumed) EdgeIcons.Pause else EdgeIcons.Play, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(24.dp))
+                Text(if (resumed) "PAUSE" else "MINE", fontWeight = FontWeight.Bold, color = EdgeColors.copper)
+                Text("· " + eval.state.label.uppercase(), fontWeight = FontWeight.Bold, color = EdgeColors.textPrimary)
             }
         }
+        Text("Animation only: the pickaxe swings while Edge Mode is on. No workload runs and nothing is earned.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         Text("Protocol qualification required", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Text(eval.headline, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
     }

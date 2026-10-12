@@ -30,6 +30,12 @@ Clearance (prior work by CodesbyFebin)
   exact-message review. Its cloud transaction audit, SKR staking/claims, DePIN reward tasks, simulated wallet
   signatures and RPC fallbacks were not carried over. See docs/analysis/clearance-app-review.md.
 
+Mine screen art (user-supplied)
+  app/src/main/res/drawable-nodpi/mine_rock.webp, mine_rock_veins.webp and mine_pickaxe.webp are derived from two
+  images supplied by the repository owner (CodesbyFebin) for this app: background removed, cropped, scaled and
+  exported by tools/art/mine_cutout.py and tools/art/mine_export.py. Not third-party stock art.
+  See docs/design/mine-animation.md for the source image hashes.
+
 OptimAI Agentic for Android
   https://github.com/CodesbyFebin/Agentic-android (upstream: OptimaiNetwork/optimai-agentic-android), commit 94b6db3
   Copyright (c) 2026 OptimAI Agentic contributors. Licensed under the MIT License (text below).

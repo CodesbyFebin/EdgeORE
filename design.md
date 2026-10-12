@@ -56,7 +56,7 @@ Navigation labels remain visible, not icon-only. Selected item uses copper icon/
 
 Order: heading “Your edge, under your control”; status card; wallet card; supported action card; device readings; contribution controls; recent operations.
 
-Status card copy is “No qualified workload. Nothing ran.” unless an implemented, approved workload actually runs. Pause/resume represents policy scheduling, not mining. Do not animate a running ring without measured activity.
+Status card copy is “No qualified workload. Nothing ran.” unless an implemented, approved workload actually runs. Pause/resume represents policy scheduling, not mining. Do not animate a running ring without measured activity. Owner exception (2026-10-12): the Mine art (rock and pickaxe, docs/design/mine-animation.md) may swing while Edge Mode is resumed and its gates pass, captioned as an animation only that runs no workload and earns nothing; it rests when paused and holds still under reduced motion.
 
 Wallet card states: disconnected, opening wallet, authorization rejected, connected with balance pending, connected with balance unavailable, connected with observed balance, disconnecting. Show address, Devnet, wallet identity and balance observation time. Authorization failure shows code/stage/time. RPC failure never drops an authorized connection. Disconnect revokes authorization and confirms the result; if wallet revocation cannot be observed, say so.
 

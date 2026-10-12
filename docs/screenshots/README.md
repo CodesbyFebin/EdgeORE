@@ -71,3 +71,14 @@ Intentional re-record of every app-shell baseline after the redesign that adapts
 `07-onboarding*.png` and `09-plain-language.png` did not change (onboarding has no shell header; the plain-language card is rendered alone).
 The new chart, chat bubbles and badges only appear with real local data, so no baseline shows them with values; their logic is covered by
 `ChartsAndActivityTest`, `MarkdownTest`, `PlainErrorTest` and `NavBadgesTest`.
+
+### Re-record: Mine rock-and-pickaxe art (feature/mine-pickaxe-animation)
+
+Intentional. The Edge Mode ring on Mine is replaced by the owner's rock-and-pickaxe art (`docs/design/mine-animation.md`).
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| `full/01-mine-full.png` | Ring replaced by the rock and pickaxe in its **idle frame**: fresh install has Edge Mode paused, so the pickaxe rests at its 24° tilt and nothing moves. Under it: the **MINE · PAUSED** toggle label and the caption "Animation only: the pickaxe swings while Edge Mode is on. No workload runs and nothing is earned." | `ui/screens/MineScreen.kt`, `ui/components/MiningAnimation.kt`, `res/drawable-nodpi/mine_*.webp` |
+
+`01-mine.png` (Pixel 7 viewport) did not change: the art sits below its fold. No other baseline changed. No baseline shows the
+swinging pose; the running, paused and reduced-motion poses are covered by `MiningMotionTest` and `MiningAnimationComposeTest`.
