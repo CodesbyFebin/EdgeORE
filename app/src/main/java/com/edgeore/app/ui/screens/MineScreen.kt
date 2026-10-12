@@ -84,6 +84,26 @@ fun MineScreen(
 
     // "Now" overview: what needs attention, each row opening the place that handles it.
     val waiting = com.edgeore.app.ui.NavBadges.waiting(ops)
+    com.edgeore.app.ui.components.SectionTitle("Mine", "Your device. Your resources. Your control.")
+    val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
+    val node by vm.node.collectAsStateWithLifecycle()
+    val gateway by vm.gateway.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
+    val deploy by vm.oreDeploy.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(Unit) { vm.checkOreDeployCluster() }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val hw = androidx.compose.runtime.remember(ctx) { DeviceFacts.read(ctx) }
+    MineWalletRow(wallet.address, wallet.busy, onConnect)
+    MineBalanceCards(wallet.address != null, balance)
+    EdgeNodeCard(sessionView, settings.edgeModeResumed, eval.headline, vm::startSession, vm::stopSession) {
+        vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
+    }
+    DeviceCards(hw.first, hw.second)
+    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() },
+        onDeploy = { vm.prepareOreDeploy(); onOpenReview() })
+    ContributionToggles(settings.chargeOnly, settings.thermalGuard, settings.batteryReservePercent, effect = { it.effect.label },
+        onChargeOnly = { v -> vm.updateSettings { it.copy(chargeOnly = v) } }, onThermal = { v -> vm.updateSettings { it.copy(thermalGuard = v) } })
+
     com.edgeore.app.ui.components.SectionTitle("Your edge, under your control", "What needs attention, your wallet, and the gates that decide when anything may run.")
     EdgeCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -161,10 +181,6 @@ fun MineScreen(
         }
     }
 
-    val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
-    val node by vm.node.collectAsStateWithLifecycle()
-    val gateway by vm.gateway.collectAsStateWithLifecycle()
-    androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
     OreEntry(onOre)
     val ore by vm.ore.collectAsStateWithLifecycle()
     var oreNow by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
@@ -172,11 +188,6 @@ fun MineScreen(
     androidx.compose.runtime.LaunchedEffect(Unit) { while (true) { kotlinx.coroutines.delay(1_000); oreNow = System.currentTimeMillis() } }
     OreHomeStrip(ore, oreNow, onOpen = onOreMode)
 
-    MiningSessionPanel(
-        view = sessionView, edgeModeResumed = settings.edgeModeResumed, headline = eval.headline,
-        onStart = vm::startSession, onStop = vm::stopSession,
-        onToggleEdgeMode = { vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) } },
-    )
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")
@@ -373,4 +384,16 @@ fun OreEntry(onOpen: () -> Unit) {
             Text("Read-only · mainnet observation", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         }
     }
+}
+
+/** CPU cores and a memory class, as Android reports them. Usage is not sampled. */
+object DeviceFacts {
+    fun read(ctx: android.content.Context): Pair<Int?, Int?> {
+        val cores = Runtime.getRuntime().availableProcessors().takeIf { it > 0 }
+        val am = ctx.getSystemService(android.content.Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
+        val mem = am?.let { val mi = android.app.ActivityManager.MemoryInfo(); it.getMemoryInfo(mi); mi.totalMem }?.takeIf { it > 0 }
+        return cores to mem?.let { gbClass(it) }
+    }
+    /** Total RAM rounded up to the next whole GB (kernel-reserved memory makes totalMem read a little low). */
+    fun gbClass(totalBytes: Long): Int = ((totalBytes + (1L shl 30) - 1) / (1L shl 30)).toInt()
 }

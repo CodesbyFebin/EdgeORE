@@ -13,6 +13,7 @@ object PlainLanguage {
 
     fun explain(draft: TransferReview.Draft, feeKnown: Boolean, feeLamports: Long?, cluster: String = SolanaRpc.CLUSTER): Explanation {
         val dec = draft.decoded
+        if (dec is SolanaMessage.Decoded.OreDeploy) return oreDeploy(dec.deploy, feeKnown, feeLamports, cluster)
         if (dec !is SolanaMessage.Decoded.SupportedTransfer) {
             val why = (dec as SolanaMessage.Decoded.Unsupported).reason
             return Explanation(
@@ -41,6 +42,22 @@ object PlainLanguage {
         }
         return Explanation(if (self) "Self-transfer of $amount" else "Send $amount to ${short(to)}", points, supported = true)
     }
+
+    private fun oreDeploy(d: OreDeployMessage.Deploy, feeKnown: Boolean, feeLamports: Long?, cluster: String): Explanation {
+        val total = sol(d.totalLamports)
+        return Explanation("ORE v3 Deploy of $total on round ${d.roundId}", listOf(
+            "Deploys $total into ORE v3 round ${d.roundId}: ${sol(d.amountPerSquareLamports)} on each of ${d.squareCount} square${if (d.squareCount == 1) "" else "s"}.",
+            "Program ${OreV3Ids.PROGRAM}. Runs on Solana $cluster only; devnet SOL is test currency with no market value.",
+            "The deployed SOL goes into the ORE round. It may be lost entirely; the ORE program, not EdgeORE, decides any outcome. EdgeORE claims no income. Not financial advice.",
+            if (feeKnown && feeLamports != null) "Your wallet also pays a network fee of ${sol(feeLamports)} ($feeLamports lamports), as priced by the RPC for these exact bytes."
+            else "The network fee is unknown because the RPC could not price these bytes. Your wallet shows the fee it will charge.",
+            "A first deploy may create your ORE miner account, which costs rent from your balance.",
+            "It is one ORE Deploy instruction and nothing else: no token approval, no delegate, no automation.",
+            "It is valid only until its recent blockhash expires. Once the cluster accepts it, it cannot be reversed. EdgeORE never resends it.",
+        ), supported = true)
+    }
+
+    private object OreV3Ids { const val PROGRAM = com.edgeore.app.ore.OreV3.PROGRAM_ID }
 
     private fun sol(lamports: Long): String = BigDecimal(lamports).movePointLeft(9).stripTrailingZeros().toPlainString() + " SOL"
     private fun short(s: String): String = if (s.length <= 9) s else s.take(4) + "…" + s.takeLast(4)

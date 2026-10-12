@@ -8,7 +8,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 
-/** The ORE code path has no way to build, sign or submit a transaction, and no ORE instruction builder. */
+/**
+ * The ORE observation path (ore/, OreScreen, OreHomeStrip, the account reader) has no way to build, sign or submit a
+ * transaction. Exactly one allowlisted file builds an ORE instruction (solana/OreDeployMessage.kt, Deploy only), and
+ * only the reviewed signing path (OreDeployReview -> EdgeOreViewModel review -> MWA -> TransferReview check -> submit) uses it.
+ */
 class OreReadOnlyArchitectureTest {
     private val sources = File("src/main/java/com/edgeore/app/ore").listFiles()!!.toList() +
         File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt") + File("src/main/java/com/edgeore/app/ui/screens/OreHomeStrip.kt") + File("src/main/java/com/edgeore/app/solana/AccountReader.kt") + File("src/main/java/com/edgeore/app/solana/JsonRpcHttp.kt")
@@ -47,5 +51,46 @@ class OreReadOnlyArchitectureTest {
         assertFalse("no hardcoded dollar amounts", Regex(""""\$\d""").containsMatchIn(ui))
         val mine = File("src/main/java/com/edgeore/app/ui/screens/MineScreen.kt").readText()
         assertFalse(mine.contains("PriceQuote("))
+    }
+
+    private val main = File("src/main/java/com/edgeore/app")
+    private fun rel(f: File) = f.relativeTo(main).path
+    private val all = main.walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
+
+    @Test fun onlyTheAllowlistedFileBuildsAnOreInstruction() {
+        val builders = all.filter { Regex("""DEPLOY_DISCRIMINATOR|ProgramDerivedAddress|"automation"\.toByteArray|"miner"\.toByteArray""").containsMatchIn(it.readText()) }.map(::rel).toSet()
+        assertEquals(setOf("solana/OreDeployMessage.kt", "ore/OreV3.kt"), builders) // OreV3.kt: the PDA helper used for read-only round addresses
+        assertFalse(File(main, "ore/OreV3.kt").readText().contains("DEPLOY_DISCRIMINATOR"))
+        val usesBuilder = all.filter { Regex("""OreDeployMessage\.(build|data|keys)\(""").containsMatchIn(it.readText()) }.map(::rel).toSet()
+        assertEquals(setOf("solana/OreDeployReview.kt"), usesBuilder)
+        val usesReview = all.filter { it.readText().contains("OreDeployReview.prepare(") }.map(::rel).toSet()
+        assertEquals(setOf("EdgeOreViewModel.kt"), usesReview)
+    }
+
+    @Test fun theBuilderEncodesOnlyDeploy() {
+        val src = File(main, "solana/OreDeployMessage.kt").readText()
+        assertTrue(src.contains("const val DEPLOY_DISCRIMINATOR = 6"))
+        for (other in listOf("Automate", "Checkpoint", "ClaimSOL", "ClaimORE", "Close", "Buyback", "Bury", "Wrap", "UpdateProtocolConfig", "Liq"))
+            assertFalse(other, Regex("""\b$other\b""").containsMatchIn(src))
+        for (b in listOf("sendTransaction", "signTransaction", "MobileWalletAdapter")) assertFalse(b, src.contains(b))
+    }
+
+    @Test fun theMineDeployCardOnlyHandsOffToTheReview() {
+        val ui = File(main, "ui/screens/MineDeploy.kt").readText()
+        for (b in listOf("sendTransaction", "signTransaction", "OreDeployMessage", "SolanaRpc(", "TransferCoordinator", "wallet.sign")) assertFalse(b, ui.contains(b))
+        assertTrue(ui.contains("Not financial advice"))
+        val vm = File(main, "EdgeOreViewModel.kt").readText()
+        val fn = vm.substring(vm.indexOf("fun prepareOreDeploy()"), vm.indexOf("/** Which AI path the advisor would use"))
+        for (b in listOf("signTransaction", "submit(", ".send(")) assertFalse(b, fn.contains(b))
+    }
+
+    @Test fun deployIsDevnetOnlyAndMainnetFlagIsOff() {
+        val gradle = File("build.gradle.kts").readText()
+        assertTrue(gradle.contains("buildConfigField(\"boolean\", \"ORE_MAINNET_DEPLOY\", \"false\")"))
+        assertFalse(Regex("""ORE_MAINNET_DEPLOY", "true"""").containsMatchIn(gradle))
+        assertFalse(com.edgeore.app.solana.OreDeployNetwork.MAINNET_ENABLED)
+        assertEquals("https://api.devnet.solana.com", com.edgeore.app.solana.OreDeployNetwork.RPC)
+        val net = File(main, "solana/OreDeployReview.kt").readText()
+        assertFalse(net.contains("mainnet-beta"))
     }
 }

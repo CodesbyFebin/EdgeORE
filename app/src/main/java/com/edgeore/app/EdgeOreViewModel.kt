@@ -358,6 +358,57 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         refreshOre()
     }
 
+    // ---------- ORE v3 Deploy: devnet only, each deploy reviewed, signed in the wallet and submitted separately ----------
+    private val _oreDeploy = MutableStateFlow(OreDeployUi())
+    val oreDeploy: StateFlow<OreDeployUi> = _oreDeploy.asStateFlow()
+
+    /** Reads the devnet cluster for the ORE program and its accounts. Never falls back to mainnet. */
+    fun checkOreDeployCluster() = viewModelScope.launch {
+        if (_oreDeploy.value.availability is com.edgeore.app.ore.OreDeployAvailability.Checking) return@launch
+        _oreDeploy.update { it.copy(availability = com.edgeore.app.ore.OreDeployAvailability.Checking) }
+        val a = com.edgeore.app.ore.OreDeployCheck.check(ReadOnlyAccountRpc(com.edgeore.app.solana.OreDeployNetwork.RPC))
+        _oreDeploy.update { it.copy(availability = a) }
+    }
+
+    fun editOreDeploy(f: (OreDeployUi) -> OreDeployUi) = _oreDeploy.update { f(it).copy(message = null) }
+
+    /** Builds the exact Deploy message and hands it to the same review as a transfer. Nothing is signed or sent here. */
+    fun prepareOreDeploy() = viewModelScope.launch {
+        val ui = _oreDeploy.value
+        val avail = ui.availability as? com.edgeore.app.ore.OreDeployAvailability.Available
+            ?: run { _oreDeploy.update { it.copy(message = "ORE v3 is not confirmed on devnet, so Deploy is off") }; return@launch }
+        val from = _wallet.value.publicKey ?: run { _oreDeploy.update { it.copy(message = "Wallet required. Connect a Solana wallet to deploy.") }; return@launch }
+        val store = opStore ?: run { _oreDeploy.update { it.copy(message = operationsUnavailable) }; return@launch }
+        operationsUnavailable?.let { why -> _oreDeploy.update { it.copy(message = why) }; return@launch }
+        if (_review.value.phase == ReviewPhase.PREPARING) return@launch
+        abandonCurrentDraft()
+        _review.update { ReviewState(phase = ReviewPhase.PREPARING) }
+        try {
+            val bh = rpc.latestBlockhash()
+            val balance = (_balance.value as? RpcObservation.Fresh)?.lamports
+            val draft = com.edgeore.app.solana.OreDeployReview.prepare(from, avail.roundId, ui.totalLamports ?: 0, ui.mask, bh.blockhash,
+                balance, spentTodayLamports(), _settings.value.dailyLimitLamports)
+            val fee = if (draft.message.isNotEmpty()) rpc.feeForMessage(draft.message) else null
+            if (!draft.approvable) {
+                _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = draft.refusal) }
+                return@launch
+            }
+            val reserved = withContext(Dispatchers.IO) {
+                store.reserve(SolanaRpc.CLUSTER, Base58.encode(from), draft.toAddress, draft.lamports, draft.message, draft.messageSha256,
+                    draft.blockhash, bh.lastValidBlockHeight, _settings.value.dailyLimitLamports, externalLamports = legacySpentToday())
+            }
+            when (reserved) {
+                is OperationStore.ReserveResult.Refused ->
+                    _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = reserved.reason) }
+                is OperationStore.ReserveResult.Reserved ->
+                    _review.update { it.copy(phase = ReviewPhase.READY, draft = draft, feeLamports = fee, feeKnown = fee != null, message = null, operationId = reserved.op.id, operation = reserved.op) }
+            }
+            flushOperationReceipts()
+        } catch (e: CancellationException) { throw e } catch (e: Exception) {
+            _review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a devnet blockhash: ${e.message}") }
+        }
+    }
+
     /** Which AI path the advisor would use, or null ("Not configured"). The owned host is preferred when a model is chosen. */
     fun advisorBackend(): String? {
         val a = _ai.value

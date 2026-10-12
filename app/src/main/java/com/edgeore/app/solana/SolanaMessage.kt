@@ -20,6 +20,8 @@ object SolanaMessage {
     sealed interface Decoded {
         data class SupportedTransfer(val transfer: Transfer) : Decoded
         data class Unsupported(val reason: String) : Decoded
+        /** Only produced by [OreDeployReview] after [OreDeployMessage.decode] re-derived and rebuilt the exact bytes. */
+        data class OreDeploy(val deploy: OreDeployMessage.Deploy) : Decoded
     }
 
     fun buildTransfer(from: ByteArray, to: ByteArray, lamports: Long, recentBlockhash: ByteArray): ByteArray {

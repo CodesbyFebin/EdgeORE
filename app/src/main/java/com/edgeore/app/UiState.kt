@@ -109,3 +109,15 @@ data class StorageState(
 
 /** The owner's storage gateway as set up on this phone. The token is never part of UI state. */
 data class GatewayState(val endpoint: String? = null, val pinCount: Int = 0, val tokenStored: Boolean = false, val error: String? = null, val note: String? = null)
+
+/** Mine page ORE Mining card inputs. Amounts are whole lamports; nothing is prefilled from a guess. */
+data class OreDeployUi(
+    val availability: com.edgeore.app.ore.OreDeployAvailability = com.edgeore.app.ore.OreDeployAvailability.NotChecked,
+    val pro: Boolean = false,
+    val totalLamports: Long? = null,
+    /** Lite deploys across all 25 squares; Pro uses the squares picked on the grid. */
+    val proMask: Int = 0,
+    val message: String? = null,
+) {
+    val mask: Int get() = if (pro) proMask else com.edgeore.app.solana.OreDeployMessage.ALL_SQUARES_MASK
+}
