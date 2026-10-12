@@ -28,3 +28,7 @@ Skipped Android cases require a live node/gateway/proxy or optional preview capt
 The 200% text interaction now scrolls horizontally to Receipts and opens it. Sheet/dialog snapshots choose their own window root. Settings hides the varying receipt key identity behind **Signer identity**; the identity remains accessible. Help-clock and unavailable-telemetry seams are confined to tests. No mock balances or successful reward handlers were introduced.
 
 Open engineering/configuration work remains in `docs/design/mint-implementation-report.md`. In particular, SKR registry, mainnet/testnet transactions, ORE deployment, funded check-in rewards, server eligibility/leases, bandwidth/cloud providers and push inbox are not implemented by these gates.
+
+## Judge Project #3
+
+Prepared judge README, field/view mapping, nine cards and apply script are in `docs/judges/project-3/`. Public title/readme were inspected. The apply attempt failed before mutations at the owner/project GraphQL preflight: Forbidden, exit 1 (`project-edit-attempt.txt`). The live Project remains unchanged. Script syntax and its local plan were checked; this is not a live API pass. Repository source and judge package are proposed in draft PR #20.
