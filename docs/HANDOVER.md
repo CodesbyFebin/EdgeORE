@@ -86,3 +86,9 @@ Android 330 tests (325 passed, 5 skipped) · receipt checker 14 passed · gatewa
 - Release APK, unsigned, R8: sha256 `2b3823a75efc0d40acd2ad8dd7e47bc11b565cf15f82a860a4ac1fa5288fb54c`, 45,825,046 bytes
 - Evidence: `evidence/build-260222e318d8/`
 - PRs: #14, #15, #16 marked merged by GitHub through #18; #17 closed as superseded (its commits are on main).
+
+## Hardening-20 pass (Oct 12, 2026)
+See [HARDENING-20.md](HARDENING-20.md) for per-item status. New owner steps: choose to keep or change the Apache-2.0
+LICENSE; run `scripts/make-release-keystore.sh` and sign; run `scripts/mobsf-scan.sh` where docker exists; follow
+[DEVNET-RUNBOOK.md](DEVNET-RUNBOOK.md) after approving a devnet deploy. `scripts/handover.sh` now also runs the commit
+stamp check and `scripts/lint-static.sh`.
