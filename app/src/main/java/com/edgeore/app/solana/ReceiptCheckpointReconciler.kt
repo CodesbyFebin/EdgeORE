@@ -17,27 +17,43 @@ class ReceiptCheckpointReconciler(
 ) {
     sealed interface Result {
         data object Ready : Result
-        data class Blocked(val uncertainIds: List<String>, val reason: String) : Result
+
+        data class Blocked(
+            val uncertainIds: List<String>,
+            val reason: String,
+        ) : Result
     }
 
-    private fun uncertain(): List<PendingOperation> = operations().filter {
-        when (OperationOutcome.of(it.state)) {
-            OperationOutcome.Unknown, OperationOutcome.Submitted -> true
-            is OperationOutcome.NotSent, is OperationOutcome.NeverSent, is OperationOutcome.Landed, OperationOutcome.Failed -> false
+    private fun uncertain(): List<PendingOperation> =
+        operations().filter {
+            when (OperationOutcome.of(it.state)) {
+                OperationOutcome.Unknown, OperationOutcome.Submitted -> true
+                is OperationOutcome.NotSent, is OperationOutcome.NeverSent,
+                is OperationOutcome.Landed, OperationOutcome.Failed,
+                -> false
+            }
         }
-    }
 
     suspend fun prepare(userRequestedRepoll: Boolean): Result {
         val pending = uncertain()
-        if (pending.isEmpty()) return Result.Ready
-        if (!userRequestedRepoll) return Result.Blocked(pending.map { it.id }, "Outcome unknown for ${pending.size} operation(s). Re-check them on chain before checkpointing.")
-        for (before in pending) {
-            observe(before.id)
-            val after = find(before.id) ?: continue
-            if (after.state != before.state) emitReceiptUpdate(before, after)
+        if (pending.isNotEmpty() && userRequestedRepoll) {
+            for (before in pending) {
+                observe(before.id)
+                val after = find(before.id)
+                if (after != null && after.state != before.state) emitReceiptUpdate(before, after)
+            }
         }
-        val still = uncertain()
-        return if (still.isEmpty()) Result.Ready
-        else Result.Blocked(still.map { it.id }, "Still not observed on chain after re-check; the checkpoint waits. Unknown is never resolved automatically.")
+        val still = if (pending.isEmpty()) pending else uncertain()
+        return when {
+            still.isEmpty() -> Result.Ready
+            !userRequestedRepoll -> Result.Blocked(still.map { it.id }, BLOCKED_NEEDS_REPOLL)
+            else -> Result.Blocked(still.map { it.id }, BLOCKED_AFTER_REPOLL)
+        }
+    }
+
+    companion object {
+        const val BLOCKED_NEEDS_REPOLL = "Outcome unknown. Re-check these operations on chain before checkpointing."
+        const val BLOCKED_AFTER_REPOLL =
+            "Still not observed on chain after re-check; the checkpoint waits. Unknown is never resolved automatically."
     }
 }
