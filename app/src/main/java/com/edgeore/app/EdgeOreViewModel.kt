@@ -15,6 +15,13 @@ import com.edgeore.app.contribution.JobState
 import com.edgeore.app.contribution.LastRun
 import com.edgeore.app.contribution.LastRunStore
 import com.edgeore.app.ai.OwnedHostModelClient
+import com.edgeore.app.ore.AdvisorMessage
+import com.edgeore.app.ore.AdvisorState
+import com.edgeore.app.ore.OreAdvisor
+import com.edgeore.app.ore.OreClock
+import com.edgeore.app.ore.OreObserver
+import com.edgeore.app.ore.OreState
+import com.edgeore.app.solana.ReadOnlyAccountRpc
 import com.edgeore.app.crypto.Base58
 import com.edgeore.app.crypto.Sha256
 import com.edgeore.app.device.DeviceObservations
@@ -324,6 +331,73 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         _gateway.value = gatewayState(note = "Gateway removed from this phone. Chunks already stored stay on your gateway.")
         session.refresh()
     }
+
+    // ---------- ORE v3: read-only mainnet observation and a text-only advisor (no transaction path) ----------
+    private val _ore = MutableStateFlow(OreState(prefs.getString("ore.rpc", null) ?: OreState.DEFAULT_RPC))
+    val ore: StateFlow<OreState> = _ore.asStateFlow()
+    private val _advisor = MutableStateFlow(AdvisorState())
+    val advisor: StateFlow<AdvisorState> = _advisor.asStateFlow()
+    private var oreJob: Job? = null
+
+    fun refreshOre() {
+        if (oreJob?.isActive == true) return
+        val rpc = _ore.value.rpc
+        _ore.update { it.copy(loading = true) }
+        oreJob = viewModelScope.launch {
+            val r = runCatching { OreObserver(ReadOnlyAccountRpc(rpc)).read() }
+            _ore.update { st -> r.fold({ st.copy(snapshot = it, loading = false, error = null) }, { st.copy(loading = false, error = "Read failed: ${it.message ?: it.javaClass.simpleName}") }) }
+        }
+    }
+
+    fun setOreRpc(url: String) {
+        val u = url.trim()
+        val err = runCatching { ReadOnlyAccountRpc(u) }.exceptionOrNull()?.message
+        if (err != null) { _ore.update { it.copy(rpcError = err) }; return }
+        prefs.edit().putString("ore.rpc", u).apply()
+        _ore.update { OreState(rpc = u) }
+        refreshOre()
+    }
+
+    /** Which AI path the advisor would use, or null ("Not configured"). The owned host is preferred when a model is chosen. */
+    fun advisorBackend(): String? {
+        val a = _ai.value
+        if (a.selectedModel != null && a.endpoint.isNotBlank()) return "${a.selectedModel} on your owned host (${a.location ?: a.endpoint})"
+        val d = onDeviceAi.state.value
+        if (d.selectedDownloaded) return "${d.selected?.name} on this phone"
+        return null
+    }
+
+    fun askAdvisor(question: String) {
+        val snap = _ore.value.snapshot
+        val q = question.trim()
+        if (q.isEmpty() || _advisor.value.busy) return
+        if (snap == null) { _advisor.update { it.copy(error = "No board snapshot yet. Refresh first; nothing was sent.") }; return }
+        if (advisorBackend() == null) { _advisor.update { it.copy(error = OreAdvisor.NOT_CONFIGURED) }; return }
+        val clock = OreClock.label(OreClock.at(snap.board, snap.roundSlot, System.currentTimeMillis() - snap.observedAtMs, snap.slotRate))
+        val prompt = OreAdvisor.prompt(snap, clock, q)
+        _advisor.update { it.copy(busy = true, error = null, messages = it.messages + AdvisorMessage(true, q, System.currentTimeMillis())) }
+        viewModelScope.launch {
+            val r = runCatching {
+                val a = _ai.value
+                val model = a.selectedModel
+                if (model != null && a.endpoint.isNotBlank()) {
+                    val decision = withContext(Dispatchers.IO) { EndpointPolicy.check(a.endpoint) }
+                    if (decision !is EndpointPolicy.Decision.Allowed) error("Owned host refused at send time: ${(decision as EndpointPolicy.Decision.Refused).reason}. Nothing was sent.")
+                    OwnedHostModelClient(decision).chat(model, OreAdvisor.SYSTEM_PROMPT, prompt)
+                } else {
+                    onDeviceAi.generateOnce(OreAdvisor.SYSTEM_PROMPT, prompt) ?: error("The on-device model is busy or not downloaded. Nothing ran.")
+                }
+            }
+            _advisor.update { st ->
+                r.fold(
+                    { answer -> st.copy(busy = false, messages = st.messages + AdvisorMessage(false, OreAdvisor.check(answer, prompt).text, System.currentTimeMillis())) },
+                    { e -> st.copy(busy = false, error = e.message ?: e.javaClass.simpleName) },
+                )
+            }
+        }
+    }
+
+    fun clearAdvisor() = _advisor.update { AdvisorState() }
 
     // ---------- receipts ----------
     private fun refreshReceipts() = viewModelScope.launch(Dispatchers.IO) {

@@ -71,7 +71,7 @@ interface PlatformActions {
 @Composable
 fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     var tab by rememberSaveable { mutableStateOf(Destination.Mine) }
-    var route by rememberSaveable { mutableStateOf<String?>(null) } // "review", "preview", "receipt:<id>"
+    var route by rememberSaveable { mutableStateOf<String?>(null) } // "review", "preview", "browser", "ore", "receipt:<id>"
     var about by rememberSaveable { mutableStateOf(false) }
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val ops by vm.operations.collectAsStateWithLifecycle()
@@ -132,13 +132,14 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         onScanQr = actions::scanAddressQr, onPickQrImage = actions::pickQrImage)
                     r == "preview" -> ConceptPreviewScreen()
                     r == "browser" -> BrowserScreen()
+                    r == "ore" -> com.edgeore.app.ui.screens.OreScreen(vm)
                     r != null && r.startsWith("receipt:") -> {
                         val rec = receipts.firstOrNull { it.id == r.removePrefix("receipt:") }
                         if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }
                     }
                     tab == Destination.Mine -> MineScreen(vm, actions::connectWallet, actions::disconnectWallet,
                         onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" },
-                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null })
+                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" })
                     tab == Destination.AI -> AiScreen(vm)
                     tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)
@@ -155,7 +156,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         title = { Text("About this build") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("EdgeORE ${BuildConfigInfo.VERSION} (${BuildConfigInfo.COMMIT}) · Solana devnet only.")
+                Text("EdgeORE ${BuildConfigInfo.VERSION} (${BuildConfigInfo.COMMIT}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")
                 Text("Receipts signed with: ${vm.receiptSignerProtection}.")
                 Text("Not store-ready. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")
             }

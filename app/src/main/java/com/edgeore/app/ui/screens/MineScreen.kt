@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +65,7 @@ import com.edgeore.app.ui.theme.EdgeColors
 fun MineScreen(
     vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit, onReview: () -> Unit, onPreview: () -> Unit,
     onOpenReview: () -> Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -> Unit = {},
+    onOre: () -> Unit = {},
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
@@ -161,6 +163,8 @@ fun MineScreen(
     val node by vm.node.collectAsStateWithLifecycle()
     val gateway by vm.gateway.collectAsStateWithLifecycle()
     androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
+    OreEntry(onOre)
+
     MiningSessionPanel(
         view = sessionView, edgeModeResumed = settings.edgeModeResumed, headline = eval.headline,
         onStart = vm::startSession, onStop = vm::stopSession,
@@ -345,4 +349,21 @@ fun measurementLine(m: Measurement): String {
         else -> "${m.value} " + if (m.value == 1L && m.unit.endsWith("s")) m.unit.dropLast(1) else m.unit
     }
     return "${m.label}: $v · ${m.source}"
+}
+
+/** The central ORE icon on Mine: opens the read-only ORE v3 board. */
+@Composable
+fun OreEntry(onOpen: () -> Unit) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier.clip(androidx.compose.foundation.shape.CircleShape).clickable(role = Role.Button, onClick = onOpen)
+                .testTag("open-ore").semantics(mergeDescendants = true) { contentDescription = "Open the ORE v3 board, read-only" }
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(EdgeIcons.Ore, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(40.dp))
+            Text("ORE board", fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
+            Text("Read-only · mainnet observation", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        }
+    }
 }

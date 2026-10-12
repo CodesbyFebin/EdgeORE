@@ -96,3 +96,9 @@ the setup it needs.
 
 No baseline shows a running session: the ACTIVE panel and the swing are covered by `MiningSessionPanelTest`,
 `MiningAnimationComposeTest` and `MiningMotionTest`, and previewed (not as a baseline) from the real end-to-end run.
+
+### Re-record: read-only ORE v3 board (feature/ore-grid-readonly)
+
+Intentional: `full/01-mine-full.png` (the central "ORE board · Read-only · mainnet observation" entry above the session panel),
+`07-onboarding.png`, `full/07-onboarding-full.png`, `full/07-onboarding-fontscale-1.5.png` (the onboarding line now reads
+"No mainnet transactions and no real money (the ORE board only reads mainnet)"). No other baseline changed in the record run.
