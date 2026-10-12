@@ -23,7 +23,7 @@
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate(s: ResourceSettings, d: DeviceSnapshot?): EdgeEvaluation</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
-    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
+    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>CyclomaticComplexMethod:MineHolo.kt$@Composable fun OreGridCard(cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit)</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
@@ -102,11 +102,14 @@
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun EdgeNodeCard(view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineBalanceCards(connected: Boolean, balance: RpcObservation?)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineWalletRow(address: String?, busy: Boolean, onConnect: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun Line(label: String, value: String, note: String)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun RowScope.Chip(text: String, enabled: Boolean = true, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun SmallCard(label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun SquarePicker(mask: Int, onChange: (Int) -&gt; Unit)</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable private fun Stat(value: String, label: String, color: Color, modifier: Modifier, tag: String)</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable private fun StepButton(text: String, enabled: Boolean, tag: String, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable private fun StepRow(label: String, value: String, enabled: Boolean, tag: String, note: String? = null, onAll: (() -&gt; Unit)? = null, onMinus: () -&gt; Unit = {}, onPlus: () -&gt; Unit = {})</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun ToggleRow(label: String, effect: String, checked: Boolean, onChange: (Boolean) -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun ToggleTab(text: String, selected: Boolean, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable fun BalanceRow(b: Balances, nowMs: Long, connected: Boolean, oreLabel: String)</ID>
@@ -164,7 +167,7 @@
     <ID>LongMethod:AiScreen.kt$@Composable fun AiScreen(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:ContributionSessionE2ETest.kt$ContributionSessionE2ETest$@Test fun realSessionOnOwnedNodeAndGatewayThenCancelledSession()</ID>
     <ID>LongMethod:EdgeOreApp.kt$@Composable fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions)</ID>
-    <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
     <ID>LongMethod:NodesScreen.kt$@Composable fun NodesScreen(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:OreScreen.kt$@Composable fun OreContent( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
@@ -180,8 +183,9 @@
     <ID>LongParameterList:ContributionSession.kt$ContributionSession$( private val scope: CoroutineScope, private val parts: () -&gt; List&lt;SessionPart&gt;, private val blockedBy: () -&gt; String?, private val record: suspend (ReceiptDraft) -&gt; Unit, private val watchMs: Long = 2_000, val maxRounds: Int = MAX_ROUNDS, val maxDurationMs: Long = MAX_DURATION_MS, private val nowMs: () -&gt; Long = { System.nanoTime() / 1_000_000 }, private val newId: () -&gt; String = { UUID.randomUUID().toString().replace("-", "") }, )</ID>
     <ID>LongParameterList:DesignKit.kt$( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:DurableSpendTest.kt$DurableSpendTest$(s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0)</ID>
-    <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>LongParameterList:MineDeploy.kt$(chargeOnly: Boolean, thermalGuard: Boolean, batteryReservePercent: Int, effect: (com.edgeore.app.settings.Control) -&gt; String, onChargeOnly: (Boolean) -&gt; Unit, onThermal: (Boolean) -&gt; Unit)</ID>
+    <ID>LongParameterList:MineDeploy.kt$(label: String, value: String, enabled: Boolean, tag: String, note: String? = null, onAll: (() -&gt; Unit)? = null, onMinus: () -&gt; Unit = {}, onPlus: () -&gt; Unit = {})</ID>
     <ID>LongParameterList:MineDeploy.kt$(label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String)</ID>
     <ID>LongParameterList:MineDeploy.kt$(view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit)</ID>
     <ID>LongParameterList:MineHolo.kt$(address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit)</ID>
@@ -306,11 +310,12 @@
     <ID>MagicNumber:LocalVault.kt$VaultException.TooLarge$1_000_000</ID>
     <ID>MagicNumber:MainActivity.kt$MainActivity$1600</ID>
     <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$33</ID>
-    <ID>MagicNumber:MineDeploy.kt$0xFFF58A4E</ID>
     <ID>MagicNumber:MineDeploy.kt$1.6f</ID>
     <ID>MagicNumber:MineDeploy.kt$100_000_000</ID>
     <ID>MagicNumber:MineDeploy.kt$10_000_000</ID>
     <ID>MagicNumber:MineDeploy.kt$1_000_000_000</ID>
+    <ID>MagicNumber:MineDeploy.kt$24</ID>
+    <ID>MagicNumber:MineDeploy.kt$25</ID>
     <ID>MagicNumber:MineDeploy.kt$4</ID>
     <ID>MagicNumber:MineDeploy.kt$5</ID>
     <ID>MagicNumber:MineDeploy.kt$50</ID>
@@ -1128,17 +1133,17 @@
     <ID>MaxLineLength:MarkdownTest.kt$MarkdownTest$assertTrue(a.spanStyles.any { it.item.fontFamily == FontFamily.Monospace &amp;&amp; a.text.substring(it.start, it.end) == "code" })</ID>
     <ID>MaxLineLength:MarkdownTest.kt$MarkdownTest$assertTrue(a.spanStyles.any { it.item.fontWeight == FontWeight.Bold &amp;&amp; a.text.substring(it.start, it.end) == "bold" })</ID>
     <ID>MaxLineLength:MineDeploy.kt$.</ID>
-    <ID>MaxLineLength:MineDeploy.kt$/** The ORE Mining card: Lite / Pro, amount chips, ROUNDS, PER ROUND and Deploy. Deploy only opens the exact-message review. */</ID>
+    <ID>MaxLineLength:MineDeploy.kt$/** The ORE Mining card, laid out like the ORE web app: stats, Lite/Pro, amount, chips, steppers, Deploy. Deploy only opens the review. */</ID>
     <ID>MaxLineLength:MineDeploy.kt$Box</ID>
     <ID>MaxLineLength:MineDeploy.kt$Chip("MAX", enabled = maxBal != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(maxBal, OreDeployNetwork.cluster(it.mainnet))) } }</ID>
     <ID>MaxLineLength:MineDeploy.kt$Column</ID>
-    <ID>MaxLineLength:MineDeploy.kt$Icon(EdgeIcons.Ore, contentDescription = "ORE emblem", tint = EdgeColors.copper, modifier = Modifier.size(52.dp))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Line</ID>
     <ID>MaxLineLength:MineDeploy.kt$PrimaryAction("Deploy", Modifier.fillMaxWidth().testTag("ore-deploy"), enabled = blocker == null, onClick = onDeploy)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Row</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("CPU", cores?.let { "$it cores" } ?: "Not read", "Usage not sampled", Modifier.weight(1f), big = true, tag = "mine-cpu")</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("Memory", memoryGbClass?.let { "$it GB class" } ?: "Not read", "Usage not sampled", Modifier.weight(1f), big = true, tag = "mine-mem")</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("ORE", "Not observed", "ORE token balance is not read in this build", Modifier.weight(1f), tag = "mine-ore")</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Stat("⬡ " + stats.motherlode, "MOTHERLODE", EdgeColors.mainnetWarning, Modifier.weight(1f), "stat-motherlode")</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("Check ${netLabel.lowercase()} again", color = EdgeColors.mint, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("Edge node", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })</ID>
@@ -1151,22 +1156,23 @@
     <ID>MaxLineLength:MineDeploy.kt$Text(effect, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(label, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(net, color = if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("ore-deploy-network"))</ID>
-    <ID>MaxLineLength:MineDeploy.kt$Text(sol(total), color = if (total == 0L) EdgeColors.textMuted else EdgeColors.textPrimary, fontSize = 40.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("ore-amount"))</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text(sol(total), color = if (total == 0L) EdgeColors.textMuted else EdgeColors.textPrimary, fontSize = 56.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("ore-amount"))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(text, color = if (enabled) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(text, color = if (selected) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(value, color = EdgeColors.textPrimary, fontWeight = if (big) FontWeight.Bold else FontWeight.Normal, fontSize = if (big) 18.sp else 15.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$androidx.compose.material3</ID>
     <ID>MaxLineLength:MineDeploy.kt$color = if (blocker != null) EdgeColors.copper else EdgeColors.textMuted</ID>
+    <ID>MaxLineLength:MineDeploy.kt$color = if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.textMuted</ID>
     <ID>MaxLineLength:MineDeploy.kt$const val MAINNET_DISCLAIMER = "Mainnet: deploying risks real SOL, which may be lost entirely. Capped at 0.01 SOL per deploy. EdgeORE claims no income, return or production readiness."</ID>
     <ID>MaxLineLength:MineDeploy.kt$const val ORE_DEPLOY_NFA = "Not financial advice. SOL deployed into an ORE round may be lost entirely; EdgeORE claims no income or return."</ID>
     <ID>MaxLineLength:MineDeploy.kt$contentAlignment = Alignment.Center</ID>
-    <ID>MaxLineLength:MineDeploy.kt$else</ID>
     <ID>MaxLineLength:MineDeploy.kt$fun</ID>
     <ID>MaxLineLength:MineDeploy.kt$if</ID>
     <ID>MaxLineLength:MineDeploy.kt$if (address == null) Text("Mobile Wallet Adapter · no wallet session", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
-    <ID>MaxLineLength:MineDeploy.kt$if (ui.pro) Text("Pro: pick squares on the ORE grid below.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineDeploy.kt$is OreDeployAvailability.Unavailable -&gt; "Deploy off: ${a.reason} (${net.lowercase()}). EdgeORE does not fall back to another network."</ID>
+    <ID>MaxLineLength:MineDeploy.kt$is com.edgeore.app.ore.RoundClock.Live -&gt; clock.secondsLeft?.let { com.edgeore.app.ore.OreClock.mmss(it) } ?: "${clock.slotsLeft} slots"</ID>
     <ID>MaxLineLength:MineDeploy.kt$modifier = Modifier.background(if (active) EdgeColors.mint else EdgeColors.copper, RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 4.dp).testTag("edge-node-badge")</ID>
+    <ID>MaxLineLength:MineDeploy.kt$onMinus = { onEdit { it.copy(proMask = stepTiles(it.proMask, -1)) } }</ID>
     <ID>MaxLineLength:MineDeploy.kt$private</ID>
     <ID>MaxLineLength:MineDeploy.kt$private fun Modifier.mineCard()</ID>
     <ID>MaxLineLength:MineDeploy.kt$when { fresh != null -&gt; "Devnet · slot ${fresh.slot}"; connected -&gt; "Devnet · not read yet"; else -&gt; "Devnet · not read" }</ID>
@@ -1233,7 +1239,7 @@
     <ID>MaxLineLength:MineHolo.kt$private fun hm(ms: Long)</ID>
     <ID>MaxLineLength:MineHolo.kt$s == null -&gt; Text(if (ore.loading) "Reading the mainnet board…" else ore.error ?: "Not observed yet.", color = EdgeColors.warning, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:MineHolo.kt$s?.let { Text("Round ${it.round.id} · slot ${it.roundSlot} · read ${hm(it.observedAtMs)} from ${it.rpc}", color = EdgeColors.textTertiary, fontSize = 11.sp) }</ID>
-    <ID>MaxLineLength:MineHolo.kt$s?.let { Text(OreFormat.sol(it.round.deployedLamports[i]), color = EdgeColors.textPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.BottomEnd)) }</ID>
+    <ID>MaxLineLength:MineHolo.kt$s?.let { Text("◎" + OreFormat.sol(it.round.deployedLamports[i]), color = if (picked) EdgeColors.mint else EdgeColors.textPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.BottomEnd)) }</ID>
     <ID>MaxLineLength:MineHolo.kt$val a = if (dot == NetActivity.IDLE &amp;&amp; !reducedMotion) rememberInfiniteTransition(label = "idle-dot").animateFloat(0.25f, 1f, infiniteRepeatable(tween(1400), RepeatMode.Reverse), label = "a").value else 1f</ID>
     <ID>MaxLineLength:MineHolo.kt$when { i &lt; used - 1 || (i == used - 1 &amp;&amp; until == null) -&gt; EdgeColors.mint.copy(alpha = 0.55f); i == used - 1 -&gt; EdgeColors.mint; else -&gt; EdgeColors.surfaceRaised }</ID>
     <ID>MaxLineLength:MineScreen.kt$"$MAX_ROUNDS rounds or ${MAX_DURATION_MS / 60_000} minutes, and only on Wi-Fi with Edge Mode on and your charge, heat and battery limits met. "</ID>
@@ -1619,6 +1625,14 @@
     <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val</ID>
     <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val d = OreDeployReview.prepare(signer, roundId, OreDeployLimits.MAINNET_CAP_LAMPORTS, all, bh, rich, 0, 1_000_000_000, mainnet)</ID>
     <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val ui = OreDeployUi(availability = available(), mainnet = true, totalLamports = 5_000_000, mainnetBalanceLamports = rich)</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$OreGridCard(Cluster.MAINNET, OreState(snapshot = snap), ui) { i -&gt; ui = ui.copy(proMask = ui.proMask xor (1 shl i)) }</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$OreMiningCard(ui, true, null, onEdit = { ui = it(ui) }, onCheck = {}, onDeploy = {}, snapshot = snap, nowMs = 1_000L)</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$OreV3.decodeTreasury(f.treasury.owner, f.treasury.data)</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$assertEquals(0, stepTiles(0, -1))</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$private</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$rule.setContent { EdgeOreTheme { OreMiningCard(ui, true, null, onEdit = { ui = it(ui) }, onCheck = {}, onDeploy = {}, snapshot = snap, nowMs = 1_000L) } }</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$var ui by mutableStateOf(OreDeployUi(availability = avail, mainnet = true, riskAcknowledged = true, mainnetBalanceLamports = 50_000_000, totalLamports = 10_000_000))</ID>
+    <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$var ui by mutableStateOf(OreDeployUi(availability = avail, mainnet = true, riskAcknowledged = true, mainnetBalanceLamports = 5_000_000_000))</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$*</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$/** Owner decision 2026-10-12: mainnet ORE Deploy is enabled, capped at 0.01 SOL, behind an explicit switch, devnet by default. */</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt")</ID>

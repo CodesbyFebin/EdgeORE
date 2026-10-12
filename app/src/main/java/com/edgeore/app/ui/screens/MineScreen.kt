@@ -128,7 +128,7 @@ fun MineScreen(
         vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
     }
     ResourceGrid(hw.first, hw.second, diskReading, net, com.edgeore.app.ui.components.rememberReducedMotion())
-    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() }, onNetwork = vm::setOreDeployMainnet,
+    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() }, onNetwork = vm::setOreDeployMainnet, snapshot = oreState.snapshot, nowMs = now,
         onDeploy = { vm.prepareOreDeploy(); onOpenReview() })
     OreGridCard(cluster, oreState, deploy) { i -> vm.editOreDeploy { it.copy(proMask = it.proMask xor (1 shl i)) } }
     ContributionToggles(settings.chargeOnly, settings.thermalGuard, settings.batteryReservePercent, effect = { it.effect.label },

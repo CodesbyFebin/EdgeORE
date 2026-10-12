@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -234,13 +235,13 @@ fun OreGridCard(cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: 
             for (c in 0 until 5) {
                 val i = r * 5 + c
                 val picked = deploy.pro && deploy.proMask and (1 shl i) != 0
-                Box(Modifier.weight(1f).aspectRatio(1.15f).background(if (picked) EdgeColors.mint.copy(alpha = 0.18f) else EdgeColors.surfaceInset, EdgeShapes.control)
-                    .border(1.dp, if (picked) EdgeColors.mint else EdgeColors.border, EdgeShapes.control)
+                Box(Modifier.weight(1f).aspectRatio(1.15f).background(if (picked) EdgeColors.mint.copy(alpha = 0.18f) else EdgeColors.surfaceInset, RoundedCornerShape(10.dp))
+                    .border(1.dp, if (picked) EdgeColors.mint else EdgeColors.border, RoundedCornerShape(10.dp))
                     .then(if (deploy.pro) Modifier.clickable(role = Role.Checkbox) { onToggle(i) } else Modifier)
                     .semantics { contentDescription = "Square ${i + 1}" + (s?.let { ", ${OreFormat.sol(it.round.deployedLamports[i])} SOL" } ?: "") + if (picked) ", selected for the deploy draft" else "" }
                     .padding(4.dp).testTag("grid-$i")) {
                     Text("${i + 1}", color = EdgeColors.textTertiary, fontSize = 9.sp, modifier = Modifier.align(Alignment.TopStart))
-                    s?.let { Text(OreFormat.sol(it.round.deployedLamports[i]), color = EdgeColors.textPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.BottomEnd)) }
+                    s?.let { Text("◎" + OreFormat.sol(it.round.deployedLamports[i]), color = if (picked) EdgeColors.mint else EdgeColors.textPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.align(Alignment.BottomEnd)) }
                 }
             }
         }
