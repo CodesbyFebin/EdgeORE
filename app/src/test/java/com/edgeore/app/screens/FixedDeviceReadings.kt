@@ -11,12 +11,13 @@ import org.junit.rules.ExternalResource
  */
 class FixedDeviceReadings : ExternalResource() {
     override fun before() {
+        com.edgeore.app.ore.OreObserver.testSource = { throw IllegalStateException("Not observed in JVM render") }
         com.edgeore.app.ui.AppClock.testBuildStamp = "JVM render"
         com.edgeore.app.ui.AppClock.testNow = { 1_791_763_200_000L }
         com.edgeore.app.device.ResourceTelemetryReader.testSource = { com.edgeore.app.device.ResourceTelemetry() }
         DeviceResourcesReader.testSource = { UNOBSERVED.copy(observedAtElapsedMs = android.os.SystemClock.elapsedRealtime()) }
     }
-    override fun after() { DeviceResourcesReader.testSource = null; com.edgeore.app.device.ResourceTelemetryReader.testSource = null; com.edgeore.app.ui.AppClock.testNow = null; com.edgeore.app.ui.AppClock.testBuildStamp = null }
+    override fun after() { com.edgeore.app.ore.OreObserver.testSource = null; DeviceResourcesReader.testSource = null; com.edgeore.app.device.ResourceTelemetryReader.testSource = null; com.edgeore.app.ui.AppClock.testNow = null; com.edgeore.app.ui.AppClock.testBuildStamp = null }
 
     companion object {
         val UNOBSERVED = DeviceResources(
