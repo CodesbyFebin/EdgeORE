@@ -2,6 +2,8 @@
 
 Response to the external "Review & Hardening Guide" (Oct 2026). Status words: **DONE** (in code, machine gates run),
 **NOT_RUN** (prepared, needs an owner step or a tool missing here), **BLOCKED** (cannot be done from this repo).
+This document records the original branch pass; current consolidation and scanner triage are recorded in [`../evidence/submission-hardening/`](../evidence/submission-hardening/README.md).
+
 Nothing here is a production-readiness or earnings claim. Device, wallet and devnet gates remain NOT_RUN.
 
 | # | Item | Status | Commit(s) |

@@ -57,8 +57,9 @@ android {
         release {
             buildConfigField("boolean", "SCREEN_CAPTURE_ALLOWED", "false")
             // Password stays in the environment. The keystore is not committed.
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Scan-only builds retain names for precise third-party finding attribution. Shipped release stays minified.
+            isMinifyEnabled = !project.hasProperty("securityScan")
+            isShrinkResources = !project.hasProperty("securityScan")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (canSignRelease) signingConfig = signingConfigs.getByName("release")
         }

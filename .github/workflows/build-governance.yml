@@ -20,11 +20,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (tag resolved 2026-10-10)
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5 (tag resolved 2026-10-10)
         with:
           python-version: '3.12'
+      - run: bash scripts/commit-stamp.sh check
       - run: python3 scripts/build-policy.py
       - run: python3 scripts/test_build_policy.py -v
+      - run: python3 scripts/test_mobsf_policy.py
       - run: python3 -m unittest discover -s services/storage-gateway -v
       - run: python3 -m unittest discover -s tools/edgeore-kit -v
   static-analysis:
@@ -124,26 +127,3 @@ jobs:
           name: release-r8-${{ github.sha }}
           path: |
             app/build/outputs/mapping/release/
-
-  record-submission-visuals:
-    # Generate reviewable proposed baselines; verifyRoborazzi remains an independent required check.
-    if: github.head_ref == 'submission/harden-and-merge'
-    needs: policy-and-gateway
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          persist-credentials: false
-      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
-        with:
-          distribution: temurin
-          java-version: '17'
-      - run: bash gradlew --no-daemon :app:recordRoborazziDebug -Pscreens
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: proposed-submission-visuals-${{ github.sha }}
-          path: |
-            docs/screenshots/
-            app/build/test-results/

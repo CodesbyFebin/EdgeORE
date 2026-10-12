@@ -15,7 +15,7 @@ class PolicyTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'network.xml'
             path.write_text(config or '<network-security-config><base-config cleartextTrafficPermitted="false"/><domain-config cleartextTrafficPermitted="true"><domain includeSubdomains="false">127.0.0.1</domain></domain-config></network-security-config>')
-            report = {'code_analysis': {'findings': {'cbc_padding_oracle': {'files': files or {}}}}}
+            report = {'package_name': 'com.edgeore.app', 'code_analysis': {'findings': {'cbc_padding_oracle': {'files': files or {}}}}}
             return policy.evaluate(report, {'high': [{'title': title}]}, path)
 
     def test_loopback_is_explicitly_reviewed(self):
@@ -37,6 +37,8 @@ class PolicyTest(unittest.TestCase):
     def test_missing_scorecard_is_error(self):
         with self.assertRaises(ValueError):
             policy.evaluate({}, {}, 'unused')
+        with self.assertRaises(ValueError):
+            policy.evaluate({}, {'high': []}, 'unused')
 
 
 if __name__ == '__main__':

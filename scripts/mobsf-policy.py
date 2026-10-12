@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 def evaluate(report, scorecard, config):
+    if report.get('package_name') != 'com.edgeore.app' or not isinstance(report.get('code_analysis', {}).get('findings'), dict):
+        raise ValueError('Report package or code findings missing')
     findings = scorecard.get('high')
     if not isinstance(findings, list):
         raise ValueError('Scorecard high findings missing')

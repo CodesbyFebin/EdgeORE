@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 APK="${1:-app/build/outputs/apk/release/app-release-unsigned.apk}"
 OUT="${2:-evidence/mobsf/$(git rev-parse --short=12 HEAD)}"
-IMAGE="${MOBSF_IMAGE:-opensecurity/mobile-security-framework-mobsf:v4.3.0}"
+IMAGE="${MOBSF_IMAGE:-opensecurity/mobile-security-framework-mobsf:v4.3.0@sha256:0675141685f32f08fa40a751fd3929d4fd0e3066f674338916a9c9ba38682dbf}"
 PORT="${MOBSF_PORT:-18000}"
 command -v docker >/dev/null && docker info >/dev/null 2>&1 || { echo "NOT_RUN: docker is not available"; exit 2; }
 [ -f "$APK" ] || { echo "NOT_RUN: APK not found: $APK"; exit 2; }

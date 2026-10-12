@@ -12,6 +12,6 @@ test_wrapper_mutation_fails (__main__.PolicyTests.test_wrapper_mutation_fails) .
 test_wrong_scope_fails (__main__.PolicyTests.test_wrong_scope_fails) ... ok
 
 ----------------------------------------------------------------------
-Ran 12 tests in 0.023s
+Ran 12 tests in 0.022s
 
 OK

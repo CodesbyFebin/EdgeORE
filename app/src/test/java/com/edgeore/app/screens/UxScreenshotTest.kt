@@ -55,7 +55,7 @@ class OnboardingScreenshotTest {
     @Test fun onboardingThenTabs() {
         rule.onRoot().captureRoboImage("$out/07-onboarding.png", roborazziOptions = options)
         assertTrue(rule.onAllNodes(hasText("What it does not do")).fetchSemanticsNodes().isNotEmpty())
-        assertTrue(rule.onAllNodes(hasText("Devnet only")).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(rule.onAllNodes(hasText("Devnet by default")).fetchSemanticsNodes().isNotEmpty())
         rule.onNode(hasText("I understand · continue") and hasClickAction()).performScrollTo().performClick()
         rule.waitForIdle()
         assertTrue(rule.onAllNodes(hasText("Mine")).fetchSemanticsNodes().isNotEmpty())

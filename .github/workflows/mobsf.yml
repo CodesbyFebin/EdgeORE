@@ -1,5 +1,5 @@
 name: MobSF static scan (local container)
-# Builds a signed debug review APK (not production signing) and scans it with a MobSF container started inside the runner.
+# Scans an unminified release variant signed with a disposable CI key, never the owner release key.
 # No repository secrets are used; the MobSF API key is random per run and the report is only an artifact.
 on:
   workflow_dispatch:
@@ -19,9 +19,17 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - run: bash gradlew --no-daemon :app:assembleDebug
+      - run: bash gradlew --no-daemon :app:assembleRelease -PsecurityScan
+      - name: Sign scanner input with disposable CI key
+        run: |
+          python3 -c 'import secrets; print(secrets.token_hex(32))' > "$RUNNER_TEMP/scan.pass"
+          trap 'rm -f "$RUNNER_TEMP/scan.pass" "$RUNNER_TEMP/scan.jks"' EXIT
+          keytool -genkeypair -keystore "$RUNNER_TEMP/scan.jks" -storepass:file "$RUNNER_TEMP/scan.pass" -keypass:file "$RUNNER_TEMP/scan.pass" -alias scan -keyalg RSA -keysize 2048 -validity 1 -dname 'CN=Disposable CI scanner input' >/dev/null 2>&1
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          "$signer" sign --ks "$RUNNER_TEMP/scan.jks" --ks-pass "file:$RUNNER_TEMP/scan.pass" --key-pass "file:$RUNNER_TEMP/scan.pass" --out app/build/outputs/apk/release/app-release-scan.apk app/build/outputs/apk/release/app-release-unsigned.apk
+          "$signer" verify app/build/outputs/apk/release/app-release-scan.apk
       - run: python3 scripts/test_mobsf_policy.py
-      - run: bash scripts/mobsf-scan.sh app/build/outputs/apk/debug/app-debug.apk evidence/mobsf/ci
+      - run: bash scripts/mobsf-scan.sh app/build/outputs/apk/release/app-release-scan.apk evidence/mobsf/ci
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (tag resolved 2026-10-10)
         if: always()
         with:

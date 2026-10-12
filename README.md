@@ -17,9 +17,9 @@ Hackathon package: [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md) · [`doc
 |---|---|
 | Live ORE v3 board | Reads the mainnet Board and Round accounts and shows a 5×5 grid with per-square SOL, round and motherlode. |
 | Opt-in Mainnet switch | ORE Deploy starts on devnet. Mainnet only after you tap **Mainnet** and tick "I understand this deploy uses real SOL that I may lose". |
-| 0.01 SOL cap | Each mainnet deploy is capped at 0.01 SOL in total across the selected squares. An over-cap amount is refused before any message or wallet request exists. |
+| 0.01 SOL cap | Each mainnet deploy is capped at 0.01 SOL in total across the selected squares. An over-cap amount is refused before any message or wallet request exists. Account rent and network fees are additional; this is not a total-wallet-debit cap. |
 | Exact-message review | The review screen decodes the exact bytes: program, round, squares, amount per square, total, fee, blockhash and message SHA-256. Mainnet shows a copper warning panel. |
-| MWA signing | Your wallet signs through Mobile Wallet Adapter. The app never holds keys. The returned bytes must match the review, or the result is refused. |
+| MWA signing | Your wallet signs through Mobile Wallet Adapter. The app never holds wallet private keys. The returned bytes must match the review, or the result is refused. |
 | Single submit | Submit is a separate tap. The attempt is recorded before sending. A timeout stays "outcome unknown". No automatic retry. |
 | Signed receipts | Every outcome becomes a receipt signed with an Android Keystore key (labelled weaker software fallback if Keystore is unavailable). |
 | Receipt checker | A standalone JVM checker verifies the integrity of signed receipt contents. It does not prove an on-chain outcome. |
@@ -32,7 +32,9 @@ Hackathon package: [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md) · [`doc
 - **Devnet evidence:** [`evidence/devnet-session/`](evidence/devnet-session/README.md) has the receipt-settlement program, a receipt checkpoint, and a verified v3 receipt. That transfer and checkpoint were sent from a laptop CLI, not from the app.
 - **Pending device recording:** MWA signing of a mainnet deploy on a real device is pending device recording.
 
-### Tests
+### Historical tests
+
+These recorded counts describe prior source revisions, not the consolidated submission candidate. Fresh candidate results are recorded in `evidence/submission-hardening/`.
 
 | Suite | Result |
 |---|---|
@@ -101,16 +103,6 @@ Exit codes: **0 accepted**, **1 rejected**, **2 invocation/read/build error**. A
 For a meaningful tamper demo, preserve the original and change `lamports` inside one receipt's signed `body` in a copy, keeping valid JSON and leaving the recorded digest and signature unchanged.
 
 **Verification boundary:** signatures protect signed receipt contents, not every descriptive field in the export. Self-contained integrity under an included key does not establish trusted provenance. Offline verification does not confirm a transaction on Solana or prove physical work, provider acknowledgement or payment.
-
-## Verify a receipt outside Android
-
-```bash
-bash gradlew -p tools/receipt-checker test installDist
-bash scripts/verify-receipt.sh original.json
-bash scripts/verify-receipt.sh original.json --trusted-key device-spki.der
-```
-
-Exit codes: **0 accepted**, **1 rejected**, **2 invocation/read/build error**. The checker verifies the integrity of signed receipt contents. It does not confirm a transaction on Solana. See [checker instructions](tools/receipt-checker/README.md).
 
 ## License and attribution
 

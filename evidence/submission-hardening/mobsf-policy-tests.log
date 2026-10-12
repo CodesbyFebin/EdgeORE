@@ -1,6 +1,6 @@
 .....
 ----------------------------------------------------------------------
-Ran 5 tests in 0.002s
+Ran 5 tests in 0.001s
 
 OK
 REVIEWED: AndroidX Biometric CryptoObjectUtils platform authentication helper; app vault/key wrapping uses AES-GCM

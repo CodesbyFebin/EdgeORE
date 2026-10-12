@@ -1,6 +1,6 @@
-# Qualification status: `0.2.8-review` (`main`)
+# Historical qualification status: `0.2.8-review`
 
-This is the **current** ledger. Every claim names the source that implements it and the evidence that checked it.
+This is a **historical** ledger. Current consolidation evidence is in [`../evidence/submission-hardening/`](../evidence/submission-hardening/README.md). Every claim names the source that implements it and the evidence that checked it.
 Older documents (`final-qualification.md`, `qualification-report.md`, `release-baseline.md`, `submission-checklist.md`,
 `device-commands.md`, `device-walkthrough.md`, `acceptance-matrix.md`, `roadmap.md`, `demo-storyboard.md`) describe the
 frozen `0.2.6-review` candidate and are kept as history.
