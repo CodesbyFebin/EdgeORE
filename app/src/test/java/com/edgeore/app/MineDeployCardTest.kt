@@ -46,7 +46,7 @@ class MineDeployCardTest {
     @Test fun unavailableOnDevnetKeepsDeployOffWithTheReason() {
         show(OreDeployUi(availability = OreDeployAvailability.Unavailable("https://api.devnet.solana.com", "ORE v3 program oreV3EG1… is not deployed on this cluster", 0)), true, 1_000_000_000)
         rule.onNodeWithTag("ore-deploy").assertIsNotEnabled()
-        rule.onNodeWithText("Deploy off: ORE v3 program oreV3EG1… is not deployed on this cluster (devnet). EdgeORE does not fall back to mainnet.").assertExists()
+        rule.onNodeWithText("Deploy off: ORE v3 program oreV3EG1… is not deployed on this cluster (devnet). EdgeORE does not fall back to another network.").assertExists()
         rule.onNodeWithText(ORE_DEPLOY_NFA).assertExists()
     }
 

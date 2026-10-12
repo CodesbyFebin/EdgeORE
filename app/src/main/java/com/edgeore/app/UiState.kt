@@ -118,6 +118,11 @@ data class OreDeployUi(
     /** Lite deploys across all 25 squares; Pro uses the squares picked on the grid. */
     val proMask: Int = 0,
     val message: String? = null,
+    /** Explicit owner switch to mainnet-beta (off by default, reset on every switch). */
+    val mainnet: Boolean = false,
+    /** The owner ticked "I understand this risks real SOL" for the current mainnet session. */
+    val riskAcknowledged: Boolean = false,
+    val mainnetBalanceLamports: Long? = null,
 ) {
     val mask: Int get() = if (pro) proMask else com.edgeore.app.solana.OreDeployMessage.ALL_SQUARES_MASK
 }

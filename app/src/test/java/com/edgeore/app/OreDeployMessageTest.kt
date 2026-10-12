@@ -96,8 +96,11 @@ class OreDeployMessageTest {
         assertTrue(ok.decoded is SolanaMessage.Decoded.OreDeploy)
         assertFalse(OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, null, 0, 50_000_000).approvable)
         assertFalse(OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 40_000_000, 50_000_000).approvable) // daily budget
-        assertEquals("ORE deploy is devnet-only in this build",
-            OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "mainnet-beta").refusal)
+        // Mainnet is enabled in this build but 0.025 SOL is above the 0.01 SOL mainnet cap, so no message is built.
+        val over = OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "mainnet-beta")
+        assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", over.refusal); assertEquals(0, over.message.size)
+        assertEquals("ORE deploy supports devnet or mainnet-beta only",
+            OreDeployReview.prepare(signer, 1, 5_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "testnet").refusal)
     }
 
     @Test fun walletReturningDifferentBytesIsRefused() {

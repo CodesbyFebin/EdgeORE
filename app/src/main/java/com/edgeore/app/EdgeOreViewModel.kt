@@ -117,7 +117,10 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     private val opStore: OperationStore? = try { OperationStore(File(app.filesDir, "operations/operations.json")) } catch (_: Exception) { null }
     /** Non-null when financial actions must be refused: the store could not be read, or a write failed (latched). */
     val operationsUnavailable: String? get() = if (opStore == null) "The wallet operation store could not be read. Transfers are disabled so unknown outcomes are not hidden." else opStore.unavailableReason
-    private val coordinator: TransferCoordinator? = opStore?.let { TransferCoordinator(it, rpc) }
+    /** Used only for an owner-switched, owner-signed ORE v3 Deploy on mainnet (capped at 0.01 SOL). Transfers never use it. */
+    private val mainnetRpc = SolanaRpc(SolanaRpc.MAINNET, cluster = SolanaRpc.MAINNET_CLUSTER)
+    private fun rpcFor(cluster: String): SolanaRpc = if (cluster == SolanaRpc.MAINNET_CLUSTER) mainnetRpc else rpc
+    private val coordinator: TransferCoordinator? = opStore?.let { TransferCoordinator(it, { c: String -> rpcFor(c) }) }
     private val _operations = MutableStateFlow(opStore?.all().orEmpty())
     val operations: StateFlow<List<PendingOperation>> = _operations.asStateFlow()
     private val receiptMutex = Mutex()
@@ -389,16 +392,28 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         refreshOre()
     }
 
-    // ---------- ORE v3 Deploy: devnet only, each deploy reviewed, signed in the wallet and submitted separately ----------
+    // ---------- ORE v3 Deploy: devnet by default, owner-switched mainnet capped at 0.01 SOL; each deploy reviewed, signed in the wallet and submitted separately ----------
     private val _oreDeploy = MutableStateFlow(OreDeployUi())
     val oreDeploy: StateFlow<OreDeployUi> = _oreDeploy.asStateFlow()
 
-    /** Reads the devnet cluster for the ORE program and its accounts. Never falls back to mainnet. */
+    /** Reads the selected deploy cluster for the ORE program and its accounts. Never falls back to another cluster. */
     fun checkOreDeployCluster() = viewModelScope.launch {
         if (_oreDeploy.value.availability is com.edgeore.app.ore.OreDeployAvailability.Checking) return@launch
+        val mainnet = _oreDeploy.value.mainnet
         _oreDeploy.update { it.copy(availability = com.edgeore.app.ore.OreDeployAvailability.Checking) }
-        val a = com.edgeore.app.ore.OreDeployCheck.check(ReadOnlyAccountRpc(com.edgeore.app.solana.OreDeployNetwork.RPC))
-        _oreDeploy.update { it.copy(availability = a) }
+        val a = com.edgeore.app.ore.OreDeployCheck.check(ReadOnlyAccountRpc(com.edgeore.app.solana.OreDeployNetwork.rpc(mainnet)))
+        val bal = if (mainnet) _wallet.value.address?.let { (mainnetRpc.balance(it) as? RpcObservation.Fresh)?.lamports } else null
+        // Discard if the owner switched networks while reading.
+        _oreDeploy.update { if (it.mainnet != mainnet) it else it.copy(availability = a, mainnetBalanceLamports = bal) }
+    }
+
+    /**
+     * The explicit devnet / mainnet switch for ORE Deploy. Switching resets the cluster check, the amount and the risk
+     * acknowledgement, so nothing prepared for one network carries over to the other. Off unless the build flag is on.
+     */
+    fun setOreDeployMainnet(on: Boolean) {
+        if (on && !com.edgeore.app.solana.OreDeployNetwork.MAINNET_ENABLED) return
+        _oreDeploy.update { OreDeployUi(pro = it.pro, proMask = it.proMask, mainnet = on) }
     }
 
     fun editOreDeploy(f: (OreDeployUi) -> OreDeployUi) = _oreDeploy.update { f(it).copy(message = null) }
@@ -406,8 +421,14 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     /** Builds the exact Deploy message and hands it to the same review as a transfer. Nothing is signed or sent here. */
     fun prepareOreDeploy() = viewModelScope.launch {
         val ui = _oreDeploy.value
+        val cluster = com.edgeore.app.solana.OreDeployNetwork.cluster(ui.mainnet)
         val avail = ui.availability as? com.edgeore.app.ore.OreDeployAvailability.Available
-            ?: run { _oreDeploy.update { it.copy(message = "ORE v3 is not confirmed on devnet, so Deploy is off") }; return@launch }
+            ?: run { _oreDeploy.update { it.copy(message = "ORE v3 is not confirmed on $cluster, so Deploy is off") }; return@launch }
+        if (ui.mainnet && !ui.riskAcknowledged) { _oreDeploy.update { it.copy(message = "Confirm that you understand this deploy risks real SOL") }; return@launch }
+        // Cap first: an over-cap mainnet amount is refused here, before a blockhash is fetched or any message or wallet request exists.
+        if (ui.mainnet && (ui.totalLamports ?: 0) > com.edgeore.app.solana.OreDeployLimits.MAINNET_CAP_LAMPORTS) {
+            _oreDeploy.update { it.copy(message = "Above the mainnet per-deploy cap of 0.01 SOL") }; return@launch
+        }
         val from = _wallet.value.publicKey ?: run { _oreDeploy.update { it.copy(message = "Wallet required. Connect a Solana wallet to deploy.") }; return@launch }
         val store = opStore ?: run { _oreDeploy.update { it.copy(message = operationsUnavailable) }; return@launch }
         operationsUnavailable?.let { why -> _oreDeploy.update { it.copy(message = why) }; return@launch }
@@ -415,18 +436,20 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         abandonCurrentDraft()
         _review.update { ReviewState(phase = ReviewPhase.PREPARING) }
         try {
-            val bh = rpc.latestBlockhash()
-            val balance = (_balance.value as? RpcObservation.Fresh)?.lamports
+            val net = rpcFor(cluster)
+            val bh = net.latestBlockhash()
+            val balance = if (ui.mainnet) (net.balance(Base58.encode(from)) as? RpcObservation.Fresh)?.lamports else (_balance.value as? RpcObservation.Fresh)?.lamports
+            val spent = if (ui.mainnet) opStore.exposure(Base58.encode(from), cluster) else spentTodayLamports()
             val draft = com.edgeore.app.solana.OreDeployReview.prepare(from, avail.roundId, ui.totalLamports ?: 0, ui.mask, bh.blockhash,
-                balance, spentTodayLamports(), _settings.value.dailyLimitLamports)
-            val fee = if (draft.message.isNotEmpty()) rpc.feeForMessage(draft.message) else null
+                balance, spent, _settings.value.dailyLimitLamports, cluster)
+            val fee = if (draft.message.isNotEmpty()) net.feeForMessage(draft.message) else null
             if (!draft.approvable) {
                 _review.update { it.copy(phase = ReviewPhase.REFUSED, draft = draft, feeLamports = fee, feeKnown = fee != null, message = draft.refusal) }
                 return@launch
             }
             val reserved = withContext(Dispatchers.IO) {
-                store.reserve(SolanaRpc.CLUSTER, Base58.encode(from), draft.toAddress, draft.lamports, draft.message, draft.messageSha256,
-                    draft.blockhash, bh.lastValidBlockHeight, _settings.value.dailyLimitLamports, externalLamports = legacySpentToday())
+                store.reserve(cluster, Base58.encode(from), draft.toAddress, draft.lamports, draft.message, draft.messageSha256,
+                    draft.blockhash, bh.lastValidBlockHeight, _settings.value.dailyLimitLamports, externalLamports = if (ui.mainnet) 0 else legacySpentToday())
             }
             when (reserved) {
                 is OperationStore.ReserveResult.Refused ->
@@ -436,7 +459,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             }
             flushOperationReceipts()
         } catch (e: CancellationException) { throw e } catch (e: Exception) {
-            _review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a devnet blockhash: ${e.message}") }
+            _review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a $cluster blockhash: ${e.message}") }
         }
     }
 
@@ -779,7 +802,8 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         }
         syncReview(id)
         _review.update { it.copy(message = "Waiting for wallet signature…") }
-        val result = try { wallet.signTransaction(sender, SolanaMessage.unsignedTransaction(d.message)) } catch (e: CancellationException) {
+        val onMainnet = st.operation?.cluster == SolanaRpc.MAINNET_CLUSTER
+        val result = try { wallet.signTransaction(sender, SolanaMessage.unsignedTransaction(d.message), mainnet = onMainnet) } catch (e: CancellationException) {
             c.recordRefused(id, "Signing was interrupted; no bytes were received"); throw e
         } catch (e: Exception) { WalletCoordinator.SignResult.Refused("Wallet unavailable") }
         when (result) {
@@ -883,15 +907,15 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
                 local = Evidence("CHECKED", "No bytes were sent; reservation released"))
             OpState.SIGNED -> d("SIGNED_NOT_BROADCAST", "Signed after exact-message review", "Wallet signature verified over the reviewed bytes. Not broadcast.", "Mobile Wallet Adapter",
                 local = Evidence("CHECKED", "Returned message bytes identical to reviewed bytes; Ed25519 signature valid for connected account"))
-            OpState.SUBMITTED -> d("SUBMITTED", "Submitted to devnet", "RPC accepted the verified bytes (attempt ${op.submitAttempts}). Settlement not yet observed.", SolanaRpc.DEVNET,
+            OpState.SUBMITTED -> d("SUBMITTED", "Submitted to ${op.cluster}", "RPC accepted the verified bytes (attempt ${op.submitAttempts}). Settlement not yet observed.", SolanaRpc.endpointFor(op.cluster),
                 payment = "SUBMITTED_NOT_CONFIRMED", local = Evidence("CHECKED", "RPC returned the same signature as the verified wallet signature"))
-            OpState.OUTCOME_UNKNOWN -> d("OUTCOME_UNKNOWN", "Submission outcome unknown", op.reason ?: "The bytes may have reached the cluster", SolanaRpc.DEVNET,
+            OpState.OUTCOME_UNKNOWN -> d("OUTCOME_UNKNOWN", "Submission outcome unknown", op.reason ?: "The bytes may have reached the cluster", SolanaRpc.endpointFor(op.cluster),
                 local = Evidence("CHECKED", "Send attempt recorded before the network call; no acknowledgement observed"))
-            OpState.CONFIRMED, OpState.FINALIZED -> d("STATUS_OBSERVED", "Devnet status observed", "Signature status: ${op.state}", SolanaRpc.DEVNET,
-                payment = "OBSERVED_${op.state}", provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.DEVNET}"))
-            OpState.FAILED -> d("STATUS_OBSERVED", "Devnet reported failure", op.lastObservation ?: "FAILED", SolanaRpc.DEVNET,
-                provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.DEVNET} reported an error"))
-            OpState.EXPIRED -> d("EXPIRED", "Blockhash expired", op.reason ?: "Never sent; blockhash expired. Reservation released.", SolanaRpc.DEVNET,
+            OpState.CONFIRMED, OpState.FINALIZED -> d("STATUS_OBSERVED", "${op.cluster} status observed", "Signature status: ${op.state}", SolanaRpc.endpointFor(op.cluster),
+                payment = "OBSERVED_${op.state}", provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.endpointFor(op.cluster)}"))
+            OpState.FAILED -> d("STATUS_OBSERVED", "${op.cluster} reported failure", op.lastObservation ?: "FAILED", SolanaRpc.endpointFor(op.cluster),
+                provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.endpointFor(op.cluster)} reported an error"))
+            OpState.EXPIRED -> d("EXPIRED", "Blockhash expired", op.reason ?: "Never sent; blockhash expired. Reservation released.", SolanaRpc.endpointFor(op.cluster),
                 provider = Evidence("NOT_AVAILABLE", op.lastObservation ?: "Not observed before expiry"))
         }
     }

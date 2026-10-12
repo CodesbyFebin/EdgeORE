@@ -23,7 +23,7 @@
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate(s: ResourceSettings, d: DeviceSnapshot?): EdgeEvaluation</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
-    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MineHolo.kt$@Composable fun OreGridCard(cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit)</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
@@ -33,6 +33,7 @@
     <ID>CyclomaticComplexMethod:NodesScreen.kt$@Composable fun NodesScreen(vm: EdgeOreViewModel)</ID>
     <ID>CyclomaticComplexMethod:OnDeviceModels.kt$OnDeviceCatalog$fun parse(json: String): List&lt;OnDeviceModel&gt;</ID>
     <ID>CyclomaticComplexMethod:Operations.kt$OperationStore$fun reserve( cluster: String, signer: String, recipient: String, lamports: Long, message: ByteArray, messageSha256: String, blockhash: String, lastValidBlockHeight: Long, dailyLimit: Long, externalLamports: Long = 0, ): ReserveResult</ID>
+    <ID>CyclomaticComplexMethod:OreDeployReview.kt$OreDeployReview$fun prepare( signer: ByteArray, roundId: Long, totalLamports: Long, mask: Int, recentBlockhash: ByteArray, balanceLamports: Long?, spentTodayLamports: Long, dailyLimitLamports: Long, cluster: String = OreDeployNetwork.CLUSTER, ): TransferReview.Draft</ID>
     <ID>CyclomaticComplexMethod:OreScreen.kt$@Composable fun OreContent( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>CyclomaticComplexMethod:OwnedHostModel.kt$OwnedHostModelClient$private fun request(method: String, path: String, body: String?): String</ID>
     <ID>CyclomaticComplexMethod:ReceiptChecker.kt$fun checkReceipt(args: Array&lt;String&gt;, out: PrintStream = System.out, err: PrintStream = System.err): Int</ID>
@@ -101,7 +102,7 @@
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun EdgeNodeCard(view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineBalanceCards(connected: Boolean, balance: RpcObservation?)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineWalletRow(address: String?, busy: Boolean, onConnect: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun Line(label: String, value: String, note: String)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun RowScope.Chip(text: String, enabled: Boolean = true, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun SmallCard(label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String)</ID>
@@ -163,6 +164,7 @@
     <ID>LongMethod:AiScreen.kt$@Composable fun AiScreen(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:ContributionSessionE2ETest.kt$ContributionSessionE2ETest$@Test fun realSessionOnOwnedNodeAndGatewayThenCancelledSession()</ID>
     <ID>LongMethod:EdgeOreApp.kt$@Composable fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions)</ID>
+    <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
     <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
     <ID>LongMethod:NodesScreen.kt$@Composable fun NodesScreen(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:OreScreen.kt$@Composable fun OreContent( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
@@ -178,7 +180,7 @@
     <ID>LongParameterList:ContributionSession.kt$ContributionSession$( private val scope: CoroutineScope, private val parts: () -&gt; List&lt;SessionPart&gt;, private val blockedBy: () -&gt; String?, private val record: suspend (ReceiptDraft) -&gt; Unit, private val watchMs: Long = 2_000, val maxRounds: Int = MAX_ROUNDS, val maxDurationMs: Long = MAX_DURATION_MS, private val nowMs: () -&gt; Long = { System.nanoTime() / 1_000_000 }, private val newId: () -&gt; String = { UUID.randomUUID().toString().replace("-", "") }, )</ID>
     <ID>LongParameterList:DesignKit.kt$( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:DurableSpendTest.kt$DurableSpendTest$(s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0)</ID>
-    <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:MineDeploy.kt$(chargeOnly: Boolean, thermalGuard: Boolean, batteryReservePercent: Int, effect: (com.edgeore.app.settings.Control) -&gt; String, onChargeOnly: (Boolean) -&gt; Unit, onThermal: (Boolean) -&gt; Unit)</ID>
     <ID>LongParameterList:MineDeploy.kt$(label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String)</ID>
     <ID>LongParameterList:MineDeploy.kt$(view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit)</ID>
@@ -477,6 +479,7 @@
     <ID>MagicNumber:ResourceSettingsStore.kt$ResourceSettingsStore$20</ID>
     <ID>MagicNumber:ResourceSettingsStore.kt$ResourceSettingsStore$50</ID>
     <ID>MagicNumber:ResourceSettingsStore.kt$ResourceSettingsStore$50_000_000L</ID>
+    <ID>MagicNumber:ReviewScreen.kt$25</ID>
     <ID>MagicNumber:ReviewScreen.kt$3f</ID>
     <ID>MagicNumber:ReviewScreen.kt$4</ID>
     <ID>MagicNumber:ReviewScreen.kt$4f</ID>
@@ -547,6 +550,7 @@
     <ID>MagicNumber:Theme.kt$EdgeColors$0xFFF2F7F5</ID>
     <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFF6B79</ID>
     <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFF963F</ID>
+    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFFA365</ID>
     <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFFB65C</ID>
     <ID>MagicNumber:Theme.kt$EdgeShapes$50</ID>
     <ID>MagicNumber:Tokens.kt$EdgeType$12</ID>
@@ -859,10 +863,10 @@
     <ID>MaxLineLength:EdgeOreApp.kt$Text</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Balances: ${portfolio.network.label}, ${if (portfolio.loading) "reading" else portfolio.error ?: "${portfolio.assets.count { it.amount != null &amp;&amp; it.status.startsWith("Observed") }} of 3 assets observed"}. Missing balances are never assumed to be zero.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Current app state · ${com.edgeore.app.ui.Format.time(AppClock.nowMs())}", style = MaterialTheme.typography.labelSmall)</ID>
-    <ID>MaxLineLength:EdgeOreApp.kt$Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · wallet transfers on Solana devnet only; ORE Deploy is devnet by default, with an explicit owner-signed mainnet option capped at 0.01 SOL.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Node session: ${session.phase.name.lowercase()}. ${session.failure ?: session.note ?: "Inspect each worker before starting. Configure your node in Nodes and gateway in Storage."}")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Not store-ready. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")</ID>
-    <ID>MaxLineLength:EdgeOreApp.kt$Text("ORE: the 5×5 mainnet board is read-only. No ORE deployment or reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model.")</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$Text("ORE: the 5×5 board reads mainnet. ORE Deploy (Mine) is reviewed and signed by you in your wallet; mainnet deploys are capped at 0.01 SOL and risk that SOL. No reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Optional reminders are ${if (reminders) "enabled" else "off"}. No backend notification inbox is configured.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Receipts: ${receipts.size} stored. Verification checks signed contents; it does not independently confirm payment.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Reminders contain general help only. No balances, wallet addresses or private jobs appear on your lock screen.")</ID>
@@ -895,8 +899,10 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Closes the socket so this phone stops waiting at once. The host is not asked to stop and does not acknowledge. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Lamports counted against today's budget (UTC day) for the connected account: each operation once, plus legacy receipts. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Start Mining: turns Edge Mode on if it was paused, then starts one session (refused with a reason if a gate fails). */</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Used only for an owner-switched, owner-signed ORE v3 Deploy on mainnet (capped at 0.01 SOL). Transfers never use it. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Which AI path the advisor would use, or null ("Not configured"). The owned host is preferred when a model is chosen. */</ID>
-    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// ---------- ORE v3 Deploy: devnet only, each deploy reviewed, signed in the wallet and submitted separately ----------</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// ---------- ORE v3 Deploy: devnet by default, owner-switched mainnet capped at 0.01 SOL; each deploy reviewed, signed in the wallet and submitted separately ----------</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// Cap first: an over-cap mainnet amount is refused here, before a blockhash is fetched or any message or wallet request exists.</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// Durable wallet operations. A damaged store fails closed: transfers are disabled, never reset to "nothing pending".</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// Keystore first. If it is unavailable, a persisted (weaker, labelled) software key keeps the same identity across restarts.</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$?:</ID>
@@ -933,6 +939,7 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_ore.update { st -&gt; r.fold({ st.copy(snapshot = it, loading = false, error = null) }, { st.copy(loading = false, error = "Read failed: ${it.message ?: it.javaClass.simpleName}") }) }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_portfolio.value = (previous ?: com.edgeore.app.solana.WalletPortfolio(account, network)).copy(loading = true, error = null)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_receiptDamage.value = listOf(DamagedLine(0, "Receipt log could not be read: ${e.message ?: e.javaClass.simpleName}"))</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a $cluster blockhash: ${e.message}") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a devnet blockhash: ${e.message}") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_review.update { it.copy(phase = ReviewPhase.PREPARING, message = null, draft = null, verified = null, operationId = null, operation = null) }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_review.update { it.copy(phase = ReviewPhase.READY, draft = draft, feeLamports = fee, feeKnown = fee != null, message = null, operationId = reserved.op.id, operation = reserved.op) }</ID>
@@ -975,6 +982,7 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (mints.any { it.symbol == "SKR" }) com.edgeore.app.solana.BalanceRead.Failed(why, last(prev?.skr)) else com.edgeore.app.solana.BalanceRead.NotOnCluster(c)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (snap == null) { _advisor.update { it.copy(error = "No board snapshot yet. Refresh first; nothing was sent.") }; return }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (text == null) { _verify.value = VerifyOutcome(false, "Could not read file (missing or larger than 4 MB)", emptyList()); return@launch }</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (ui.mainnet &amp;&amp; !ui.riskAcknowledged) { _oreDeploy.update { it.copy(message = "Confirm that you understand this deploy risks real SOL") }; return@launch }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$is BoundedInput.TextResult.Refused -&gt; _ai.update { it.copy(statusDetail = "Document not attached: ${read.reason}") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$is EndpointPolicy.Decision.Refused -&gt; _ai.update { it.copy(status = AiStatus.NO_ENDPOINT, statusDetail = decision.reason) }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$is NodeResult.Refused</ID>
@@ -1008,6 +1016,7 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$private val _checkIn = MutableStateFlow(com.edgeore.app.device.CheckInState.fromJson(checkInPrefs.getString(com.edgeore.app.bot.OreBot.KEY_STATE, null)))</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$private val session = ContributionSession(viewModelScope, ::sessionParts, ::sessionBlocker, { d -&gt; record(d); Unit })</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$private val storageController = StorageController(fileVault, backupJobs, NotConfiguredBackupProvider, storageAudit, onEvent = { recordStorage(it) })</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$provider = Evidence("OBSERVED", "getSignatureStatuses from ${SolanaRpc.endpointFor(op.cluster)} reported an error")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$providerAcknowledgement = e.providerObservation?.let { Evidence("OBSERVED", it) } ?: Evidence.NOT_AVAILABLE</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$ramBytes = { app.getSystemService(android.app.ActivityManager::class.java)?.let { am -&gt; android.app.ActivityManager.MemoryInfo().also { am.getMemoryInfo(it) }.totalMem } ?: 0L }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$record</ID>
@@ -1025,7 +1034,9 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$suspend</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$try { NodeAgentClient(rec.endpoint, rec.certSha256).command(rec.sessionId, key, action) } catch (e: Exception) { NodeResult.Unreachable(e.message ?: "error") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val</ID>
-    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val a = com.edgeore.app.ore.OreDeployCheck.check(ReadOnlyAccountRpc(com.edgeore.app.solana.OreDeployNetwork.RPC))</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val a = com.edgeore.app.ore.OreDeployCheck.check(ReadOnlyAccountRpc(com.edgeore.app.solana.OreDeployNetwork.rpc(mainnet)))</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val bal = if (mainnet) _wallet.value.address?.let { (mainnetRpc.balance(it) as? RpcObservation.Fresh)?.lamports } else null</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val balance = if (ui.mainnet) (net.balance(Base58.encode(from)) as? RpcObservation.Fresh)?.lamports else (_balance.value as? RpcObservation.Fresh)?.lamports</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val clock = OreClock.label(OreClock.at(snap.board, snap.roundSlot, System.currentTimeMillis() - snap.observedAtMs, snap.slotRate))</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val cm = runCatching { getApplication&lt;Application&gt;().getSystemService(ConnectivityManager::class.java) }.getOrNull()</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val device = withContext(Dispatchers.IO) { runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull() }</ID>
@@ -1118,16 +1129,19 @@
     <ID>MaxLineLength:MineDeploy.kt$.</ID>
     <ID>MaxLineLength:MineDeploy.kt$/** The ORE Mining card: Lite / Pro, amount chips, ROUNDS, PER ROUND and Deploy. Deploy only opens the exact-message review. */</ID>
     <ID>MaxLineLength:MineDeploy.kt$Box</ID>
-    <ID>MaxLineLength:MineDeploy.kt$Chip("MAX", enabled = balanceLamports != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(balanceLamports)) } }</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Chip("MAX", enabled = maxBal != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(maxBal, OreDeployNetwork.cluster(it.mainnet))) } }</ID>
     <ID>MaxLineLength:MineDeploy.kt$Column</ID>
     <ID>MaxLineLength:MineDeploy.kt$Icon(EdgeIcons.Ore, contentDescription = "ORE emblem", tint = EdgeColors.copper, modifier = Modifier.size(52.dp))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Line</ID>
     <ID>MaxLineLength:MineDeploy.kt$PrimaryAction("Deploy", Modifier.fillMaxWidth().testTag("ore-deploy"), enabled = blocker == null, onClick = onDeploy)</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Row</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("CPU", cores?.let { "$it cores" } ?: "Not read", "Usage not sampled", Modifier.weight(1f), big = true, tag = "mine-cpu")</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("Memory", memoryGbClass?.let { "$it GB class" } ?: "Not read", "Usage not sampled", Modifier.weight(1f), big = true, tag = "mine-mem")</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("ORE", "Not observed", "ORE token balance is not read in this build", Modifier.weight(1f), tag = "mine-ore")</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text("Check ${netLabel.lowercase()} again", color = EdgeColors.mint, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("Edge node", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text("I understand this deploy uses real SOL that I may lose.", color = EdgeColors.textPrimary, style = MaterialTheme.typography.labelMedium)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("ORE Mining", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, modifier = Modifier.fillMaxWidth().semantics { heading() })</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("These gate Edge Mode and the Mine session on this phone. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(ORE_DEPLOY_NFA, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.testTag("ore-nfa"))</ID>
@@ -1135,19 +1149,22 @@
     <ID>MaxLineLength:MineDeploy.kt$Text(effect(com.edgeore.app.settings.Control.BATTERY_RESERVE), color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(effect, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(label, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))</ID>
-    <ID>MaxLineLength:MineDeploy.kt$Text(net, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("ore-deploy-network"))</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text(net, color = if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("ore-deploy-network"))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(sol(total), color = if (total == 0L) EdgeColors.textMuted else EdgeColors.textPrimary, fontSize = 40.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("ore-amount"))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(text, color = if (enabled) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(text, color = if (selected) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(value, color = EdgeColors.textPrimary, fontWeight = if (big) FontWeight.Bold else FontWeight.Normal, fontSize = if (big) 18.sp else 15.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$androidx.compose.material3</ID>
     <ID>MaxLineLength:MineDeploy.kt$color = if (blocker != null) EdgeColors.copper else EdgeColors.textMuted</ID>
+    <ID>MaxLineLength:MineDeploy.kt$const val MAINNET_DISCLAIMER = "Mainnet: deploying risks real SOL, which may be lost entirely. Capped at 0.01 SOL per deploy. EdgeORE claims no income, return or production readiness."</ID>
     <ID>MaxLineLength:MineDeploy.kt$const val ORE_DEPLOY_NFA = "Not financial advice. SOL deployed into an ORE round may be lost entirely; EdgeORE claims no income or return."</ID>
     <ID>MaxLineLength:MineDeploy.kt$contentAlignment = Alignment.Center</ID>
+    <ID>MaxLineLength:MineDeploy.kt$else</ID>
     <ID>MaxLineLength:MineDeploy.kt$fun</ID>
     <ID>MaxLineLength:MineDeploy.kt$if</ID>
     <ID>MaxLineLength:MineDeploy.kt$if (address == null) Text("Mobile Wallet Adapter · no wallet session", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineDeploy.kt$if (ui.pro) Text("Pro: pick squares on the ORE grid below.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
+    <ID>MaxLineLength:MineDeploy.kt$is OreDeployAvailability.Unavailable -&gt; "Deploy off: ${a.reason} (${net.lowercase()}). EdgeORE does not fall back to another network."</ID>
     <ID>MaxLineLength:MineDeploy.kt$modifier = Modifier.background(if (active) EdgeColors.mint else EdgeColors.copper, RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 4.dp).testTag("edge-node-badge")</ID>
     <ID>MaxLineLength:MineDeploy.kt$private</ID>
     <ID>MaxLineLength:MineDeploy.kt$private fun Modifier.mineCard()</ID>
@@ -1164,7 +1181,7 @@
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$com.edgeore.app.ui.screens.WalletConnectRow(null, false, com.edgeore.app.solana.Cluster.DEVNET, {}, {}, {}, {})</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$if (p.getString("status") == "Running") com.edgeore.app.contribution.PartStatus.Running else com.edgeore.app.contribution.PartStatus.Waiting</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$rule.onNodeWithTag("chip-+1").performClick()</ID>
-    <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$rule.onNodeWithText("Deploy off: ORE v3 program oreV3EG1… is not deployed on this cluster (devnet). EdgeORE does not fall back to mainnet.").assertExists()</ID>
+    <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$rule.onNodeWithText("Deploy off: ORE v3 program oreV3EG1… is not deployed on this cluster (devnet). EdgeORE does not fall back to another network.").assertExists()</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$rule.setContent { EdgeOreTheme { OreMiningCard(ui, wallet, balance, onEdit = { f -&gt; ui = f(ui) }, onCheck = {}, onDeploy = {}) } }</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$show(OreDeployUi(availability = OreDeployAvailability.Unavailable("https://api.devnet.solana.com", "ORE v3 program oreV3EG1… is not deployed on this cluster", 0)), true, 1_000_000_000)</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$val deploy = OreDeployUi(availability = OreDeployAvailability.Unavailable("https://api.devnet.solana.com", "ORE v3 program oreV3EG1… is not deployed on this cluster", 0))</ID>
@@ -1461,7 +1478,8 @@
     <ID>MaxLineLength:OnboardingScreen.kt$"Encrypts files in a vault on this phone. Vault keys stay on this device by design, so uninstalling makes the vault unrecoverable."</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$"Install a Mobile Wallet Adapter wallet set to devnet. EdgeORE asks it to connect and to sign; the keys stay in the wallet."</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$"Keeps signed receipts of reviews, refusals and outcomes. Anyone can check them offline with the receipt checker."</ID>
-    <ID>MaxLineLength:OnboardingScreen.kt$"No mainnet transactions and no real money (the ORE board only reads mainnet). Nothing here is a store-ready or production release."</ID>
+    <ID>MaxLineLength:OnboardingScreen.kt$"ORE Deploy can be switched to mainnet by you. It is capped at 0.01 SOL, signed in your wallet, and the SOL may be lost."</ID>
+    <ID>MaxLineLength:OnboardingScreen.kt$"Transfers are devnet only. The one mainnet action is an optional ORE Deploy you switch on, review and sign yourself, capped at 0.01 SOL, which may be lost. Nothing here is a store-ready or production release."</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$Modifier.widthIn(max = 640.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp)</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$Text("A one-minute read before you start. You can open it again from About.", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)</ID>
     <ID>MaxLineLength:OnboardingScreen.kt$Text("Built by CodesbyFebin", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted, modifier = Modifier.align(Alignment.CenterHorizontally))</ID>
@@ -1534,7 +1552,7 @@
     <ID>MaxLineLength:OreDeployMessage.kt$OreDeployMessage.Deploy$data</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$/** ORE v3 Deploy encoding against fixtures derived independently (tools/ore-fixtures/gen_deploy_fixture.py) from the ORE source. */</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$// Flipping an amount or mask byte is a different, valid deploy; the decoder reports it as such (and the wallet-bytes check refuses it).</ID>
-    <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "mainnet-beta").refusal</ID>
+    <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$OreDeployReview.prepare(signer, 1, 5_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "testnet").refusal</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$assertEquals</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$assertEquals("Above your balance minus the 0.01 SOL fee reserve", OreDeployLimits.refusal(45_000_000, 25, 50_000_000))</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$assertEquals(c.getString("name"), c.getString("dataHex"), OreDeployMessage.data(d.amountPerSquareLamports, d.mask).joinToString("") { "%02x".format(it) })</ID>
@@ -1549,15 +1567,20 @@
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$val ok = OreDeployCheck.check(Fake(listOf(prog, f.board, f.treasury, RawAccount(OreV3.PROGRAM_ID, ByteArray(8))))) as OreDeployAvailability.Available</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$val ok = OreDeployReview.prepare(signer, 437127, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000)</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$val other = OreDeployMessage.build(OreDeployMessage.Deploy(signer, 437127, 2_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh))</ID>
+    <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest$val over = OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "mainnet-beta")</ID>
     <ID>MaxLineLength:OreDeployMessageTest.kt$OreDeployMessageTest.Fake$override suspend fun accounts(addresses: List&lt;String&gt;): AccountsAt</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployLimits$/** MAX: the balance minus the fee reserve, never above the per-deploy cap, never negative. Null when the balance is not read. */</ID>
+    <ID>MaxLineLength:OreDeployReview.kt$OreDeployLimits$// The mainnet cap is checked first, before anything else, so an over-cap amount is refused even with no balance read.</ID>
+    <ID>MaxLineLength:OreDeployReview.kt$OreDeployLimits$cluster == OreDeployNetwork.MAINNET_CLUSTER &amp;&amp; totalLamports &gt; MAINNET_CAP_LAMPORTS -&gt; "Above the mainnet per-deploy cap of 0.01 SOL"</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployLimits$fun</ID>
-    <ID>MaxLineLength:OreDeployReview.kt$OreDeployNetwork$/** Build flag ORE_MAINNET_DEPLOY, false in every build type in app/build.gradle.kts. Nothing reads mainnet for deploy while it is off. */</ID>
+    <ID>MaxLineLength:OreDeployReview.kt$OreDeployLimits$fun cap(cluster: String): Long</ID>
+    <ID>MaxLineLength:OreDeployReview.kt$OreDeployNetwork$*</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$/** Prepares an ORE v3 Deploy as a [TransferReview.Draft], so it uses the same review, signing, wallet-bytes check, submit and receipt. */</ID>
+    <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$// Every limit, including the 0.01 SOL mainnet cap, is checked BEFORE a message (and so any wallet request) exists.</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$balanceLamports: Long?</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$fun refused(why: String)</ID>
-    <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$if (cluster != SolanaRpc.CLUSTER &amp;&amp; !OreDeployNetwork.MAINNET_ENABLED) return refused("ORE deploy is devnet-only in this build")</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$if (decoded == null || !decoded.signer.contentEquals(signer) || decoded.amountPerSquareLamports != per || decoded.mask != mask) refusal = "Decoded message does not match the requested deploy"</ID>
+    <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$if (deploy.totalLamports &gt; OreDeployLimits.cap(cluster)) return refused("Encoded total exceeds the per-deploy cap")</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$if (refusal == null &amp;&amp; !EdgeOreCore.eligible(deploy.totalLamports, spentTodayLamports, dailyLimitLamports)) refusal = "Daily budget would be exceeded"</ID>
     <ID>MaxLineLength:OreDeployReview.kt$OreDeployReview$return</ID>
     <ID>MaxLineLength:OreHomeStrip.kt$.</ID>
@@ -1585,7 +1608,18 @@
     <ID>MaxLineLength:OreHomeStripTest.kt$OreHomeStripTest$private</ID>
     <ID>MaxLineLength:OreHomeStripTest.kt$OreHomeStripTest$val</ID>
     <ID>MaxLineLength:OreHomeStripTest.kt$OreHomeStripTest$val idle = com.edgeore.app.contribution.SessionView(com.edgeore.app.contribution.SessionPhase.IDLE, active.parts.map { com.edgeore.app.contribution.PartView(it.kind, com.edgeore.app.contribution.PartStatus.Ready) })</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$*</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$// regolith-labs/ore @48c203bd api/src/consts.rs VAR_ADDRESS; deploy.rs checks var_info.has_address(&amp;VAR_ADDRESS).</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", OreDeployLimits.refusal(total, 25, rich, mainnet))</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", deployBlocker(ui.copy(riskAcknowledged = true, totalLamports = 10_000_001), true, rich))</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$assertEquals("Above your balance minus the 0.01 SOL fee reserve", OreDeployLimits.refusal(10_000_000, 25, 15_000_000, mainnet))</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$assertEquals("cap first, even with no balance", "Above the mainnet per-deploy cap of 0.01 SOL", OreDeployLimits.refusal(total, 1, null, mainnet))</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$assertFalse(OreDeployReview.prepare(signer, 1, 10_000_000, all, bh, rich, 45_000_000, 50_000_000, mainnet).approvable)</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val d = OreDeployReview.prepare(signer, roundId, OreDeployLimits.MAINNET_CAP_LAMPORTS, all, bh, rich, 0, 1_000_000_000, mainnet)</ID>
+    <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val ui = OreDeployUi(availability = available(), mainnet = true, totalLamports = 5_000_000, mainnetBalanceLamports = rich)</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$*</ID>
+    <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$/** Owner decision 2026-10-12: mainnet ORE Deploy is enabled, capped at 0.01 SOL, behind an explicit switch, devnet by default. */</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt")</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$Regex("""\bChainGateway\b""")</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$Regex("""\bEd25519\b|KeyPair|Signer\b""")</ID>
@@ -1895,7 +1929,9 @@
     <ID>MaxLineLength:ResourceTelemetry.kt$ResourceTelemetryReader$val memory = runCatching { ActivityManager.MemoryInfo().also { context.getSystemService(ActivityManager::class.java).getMemoryInfo(it) } }.getOrNull()</ID>
     <ID>MaxLineLength:ReviewInput.kt$ReviewInput$/** Inline form checks for the review route. They only gate "Prepare"; TransferReview still decides on the real bytes. */</ID>
     <ID>MaxLineLength:ReviewInput.kt$ReviewInput$AddressQr.isAddress(v) -&gt; Check(true, false, "Valid Solana address format. Format alone does not prove who owns it.")</ID>
+    <ID>MaxLineLength:ReviewScreen.kt$(0 until 25).filter { dec.deploy.mask and (1 shl it) != 0 }.joinToString(", ") { "${it + 1}" }</ID>
     <ID>MaxLineLength:ReviewScreen.kt$CapabilityBadge(if (d.approvable) Capability.AVAILABLE else Capability.UNAVAILABLE, if (d.approvable) "Supported" else "Approval disabled")</ID>
+    <ID>MaxLineLength:ReviewScreen.kt$Column</ID>
     <ID>MaxLineLength:ReviewScreen.kt$Icon(if (plain.supported) EdgeIcons.Info else EdgeIcons.Cross, contentDescription = null, tint = if (plain.supported) EdgeColors.mint else EdgeColors.danger, modifier = Modifier.size(20.dp))</ID>
     <ID>MaxLineLength:ReviewScreen.kt$KeyValue("Daily budget", "${Format.sol(settings.dailyLimitLamports)} · spent today ${Format.sol(vm.spentTodayLamports())}")</ID>
     <ID>MaxLineLength:ReviewScreen.kt$KeyValue("Network fee", if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message")</ID>
@@ -1978,9 +2014,12 @@
     <ID>MaxLineLength:SolanaMessageTest.kt$SolanaMessageTest$assertFalse(TransferReview.prepare(payer.publicKey, Base58.encode(other), "0", blockhash, 0, 50_000_000).approvable)</ID>
     <ID>MaxLineLength:SolanaMessageTest.kt$SolanaMessageTest$assertFalse(TransferReview.prepare(payer.publicKey, Base58.encode(other), "0.0000000001", blockhash, 0, 50_000_000).approvable)</ID>
     <ID>MaxLineLength:SolanaMessageTest.kt$SolanaMessageTest$assertTrue(TransferReview.verifyWalletReturn(d.message, payer.publicKey, byteArrayOf(5)) is TransferReview.WalletReturn.Refused)</ID>
+    <ID>MaxLineLength:SolanaRpc.kt$SolanaRpc$*</ID>
+    <ID>MaxLineLength:SolanaRpc.kt$SolanaRpc$class</ID>
     <ID>MaxLineLength:SolanaRpc.kt$SolanaRpc$val r = call("getFeeForMessage", JSONArray().put(Base64.getEncoder().encodeToString(message)).put(JSONObject().put("commitment", "confirmed")))</ID>
     <ID>MaxLineLength:SolanaRpc.kt$SolanaRpc$val r = call("getSignatureStatuses", JSONArray().put(JSONArray().put(signature)).put(JSONObject().put("searchTransactionHistory", true)))</ID>
     <ID>MaxLineLength:SolanaRpc.kt$SolanaRpc$val result = call("getBalance", JSONArray().put(address).put(JSONObject().put("commitment", "confirmed"))).getJSONObject("result")</ID>
+    <ID>MaxLineLength:SolanaRpc.kt$SolanaRpc.Companion$/** Used ONLY for an owner-approved ORE v3 Deploy (capped at OreDeployLimits.MAINNET_CAP_LAMPORTS). Transfers stay devnet. */</ID>
     <ID>MaxLineLength:SolanaRpc.kt$if (v !is JSONObject) return ChainStatus.Unavailable("Malformed status response: status is ${v?.javaClass?.simpleName ?: "absent"}")</ID>
     <ID>MaxLineLength:SolanaRpc.kt$if (value.length() != 1) return ChainStatus.Unavailable("Malformed status response: expected 1 status, got ${value.length()}")</ID>
     <ID>MaxLineLength:SolanaRpc.kt$val cs = v.opt("confirmationStatus") as? String ?: return ChainStatus.Unavailable("Malformed status response: confirmationStatus missing")</ID>
@@ -2086,12 +2125,14 @@
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply { init(ks, password.toCharArray()) }</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$write("HTTP/1.1 $code X\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n".toByteArray())</ID>
     <ID>MaxLineLength:Tokens.kt$EdgeType$TextStyle(fontSize = size.coerceAtLeast(12).sp, fontWeight = weight, fontFamily = FontFamily.Monospace, lineHeight = (size.coerceAtLeast(12) * 1.34f).sp)</ID>
+    <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$/** The gateway for an operation's own recorded cluster: a mainnet operation is never sent to or observed on devnet. */</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$?:</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$ChainStatus.Confirmed -&gt; store.transition(id, from, OpState.CONFIRMED) { it.copy(lastObservation = "CONFIRMED", lastObservedAt = observedAt, reason = null) }</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$ChainStatus.Finalized -&gt; store.transition(id, from, OpState.FINALIZED) { it.copy(lastObservation = "FINALIZED", lastObservedAt = observedAt, reason = null) }</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$OpState.REVIEWED -&gt; store.transition(op.id, setOf(OpState.REVIEWED), OpState.ABANDONED) { it.copy(reason = "App restarted before signing. Review again.") }</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$OpState.SUBMIT_ATTEMPTED</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$Outcome.NotAllowed("The bytes were handed to the RPC, but the result could not be stored. Outcome unknown. " + it.message)</ID>
+    <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$constructor(store: OperationStore, gateway: ChainGateway, clock: () -&gt; Instant = Instant::now) : this(store, { _: String -&gt; gateway }, clock)</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$fun recordRefused(id: String, reason: String): PendingOperation?</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$if</ID>
     <ID>MaxLineLength:TransferCoordinator.kt$TransferCoordinator$if (!op.state.needsObservation &amp;&amp; op.state != OpState.SIGNED) return Outcome.NotAllowed("Nothing to observe in state ${op.state}")</ID>
@@ -2186,8 +2227,11 @@
     <ID>MaxLineLength:WalletConnectSheet.kt$val discovered = context.packageManager.queryIntentActivities(intent, 0).map { it.loadLabel(context.packageManager).toString() }.distinct()</ID>
     <ID>MaxLineLength:WalletConnection.kt$WalletConnection$WalletCoordinator.ConnectResult.Failed(WalletAuthorization.classifyThrowable(e, sentAuthToken = false, now = now()))</ID>
     <ID>MaxLineLength:WalletConnection.kt$WalletConnection$status = if (walletConfirmed) "Disconnected. The wallet confirmed deauthorization." else "Disconnected in EdgeORE. The wallet did not confirm deauthorization."</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$*</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$is WalletAuthorization.AccountCheck.Invalid -&gt; ConnectResult.Failed(ConnectFailure(check.code, Instant.now().toString(), null))</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$is WalletAuthorization.AccountCheck.Valid -&gt; ConnectResult.Authorized(check.publicKey, check.label, accounts?.size ?: 0)</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$suspend</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$val result = try { adapter.transact(sender) { _ -&gt; signTransactions(arrayOf(unsignedTransaction)) } } finally { adapter.blockchain = Solana.Devnet }</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator.ConnectResult$Authorized : ConnectResult</ID>
     <ID>MaxLineLength:WalletPortfolio.kt$AssetBalance</ID>
     <ID>MaxLineLength:WalletPortfolio.kt$PortfolioRpc$WalletPortfolio(account, network, listOf(solAsset, ore, AssetBalance("SKR", status = "Mint registry not verified")), System.currentTimeMillis())</ID>

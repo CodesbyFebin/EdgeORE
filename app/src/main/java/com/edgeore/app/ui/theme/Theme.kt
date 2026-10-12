@@ -26,6 +26,8 @@ object EdgeColors {
     val copper = Color(0xFFFF963F)          // spec "orange"
     val orange = copper
     val copperDeep = Color(0xFFE8792A)
+    /** Mainnet warning copper (#FFA365): used only where real SOL is at stake (ORE mainnet deploy). */
+    val mainnetWarning = Color(0xFFFFA365)
     val textPrimary = Color(0xFFF2F7F5)
     /** Supporting text. The spec's text-secondary; used where the code says textMuted (keeps ≥4.5:1 on surface). */
     val textMuted = Color(0xFFABBDB7)

@@ -1,5 +1,9 @@
 package com.edgeore.app.ui.screens
 
+import androidx.compose.ui.platform.testTag
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -121,6 +125,17 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                     KeyValue("Recent blockhash", d.blockhash, mono = true)
                 }
                 is SolanaMessage.Decoded.OreDeploy -> {
+                    if (st.operation?.cluster == com.edgeore.app.solana.SolanaRpc.MAINNET_CLUSTER) {
+                        Column(Modifier.fillMaxWidth().border(2.dp, EdgeColors.mainnetWarning, RoundedCornerShape(12.dp)).padding(12.dp).testTag("review-mainnet-warning"),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text("MAINNET · REAL SOL", color = EdgeColors.mainnetWarning, fontWeight = FontWeight.Bold)
+                            Text("Deploy ${Format.sol(dec.deploy.totalLamports)} SOL on Solana mainnet-beta · round ${dec.deploy.roundId} · squares " +
+                                (0 until 25).filter { dec.deploy.mask and (1 shl it) != 0 }.joinToString(", ") { "${it + 1}" },
+                                color = EdgeColors.mainnetWarning, style = MaterialTheme.typography.bodyMedium)
+                            Text("Deploying risks this SOL: it may be lost entirely. Capped at 0.01 SOL per deploy. Nothing is sent until you approve, sign in your wallet, and then tap Submit.",
+                                color = EdgeColors.mainnetWarning, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
                     KeyValue("Action", "ORE v3 · Deploy (instruction 6)")
                     KeyValue("Program", com.edgeore.app.ore.OreV3.PROGRAM_ID, mono = true)
                     KeyValue("Signer and authority", d.fromAddress, mono = true)

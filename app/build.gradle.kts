@@ -29,7 +29,7 @@ android {
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
         buildConfigField("String", "SOURCE_STAMP", "\"$sourceStamp\"")
         // ORE v3 deploy targets devnet only. Mainnet deploy stays off; no build type turns it on.
-        buildConfigField("boolean", "ORE_MAINNET_DEPLOY", "false")
+        buildConfigField("boolean", "ORE_MAINNET_DEPLOY", "true") // owner-approved 2026-10-12; capped at 0.01 SOL per deploy, explicit switch, owner signs each
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

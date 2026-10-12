@@ -51,11 +51,12 @@ fun OnboardingScreen(onDone: () -> Unit) {
             ))
             Section(EdgeIcons.Cross, EdgeColors.danger, "What it does not do", listOf(
                 "No mining income, ORE rewards, SKR payments or token. \$EdgeORE is a product name, not a token.",
-                "No mainnet transactions and no real money (the ORE board only reads mainnet). Nothing here is a store-ready or production release.",
+                "Transfers are devnet only. The one mainnet action is an optional ORE Deploy you switch on, review and sign yourself, capped at 0.01 SOL, which may be lost. Nothing here is a store-ready or production release.",
                 "It never sees your wallet keys and never sends a transaction you have not reviewed and approved.",
             ))
-            Section(EdgeIcons.Pulse, EdgeColors.copper, "Devnet only", listOf(
+            Section(EdgeIcons.Pulse, EdgeColors.copper, "Devnet by default", listOf(
                 "Every transfer goes to Solana devnet. Devnet SOL is free test currency with no market value.",
+                "ORE Deploy can be switched to mainnet by you. It is capped at 0.01 SOL, signed in your wallet, and the SOL may be lost.",
             ))
             Section(EdgeIcons.Wallet, EdgeColors.copper, "A wallet is required to sign", listOf(
                 "Install a Mobile Wallet Adapter wallet set to devnet. EdgeORE asks it to connect and to sign; the keys stay in the wallet.",

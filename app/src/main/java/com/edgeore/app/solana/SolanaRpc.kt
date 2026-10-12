@@ -16,13 +16,18 @@ sealed interface RpcObservation {
 class RpcException(message: String) : Exception(message)
 
 /**
- * Minimal JSON-RPC client for wallet actions. Devnet only in this build: transactions never target mainnet.
+ * Minimal JSON-RPC client for wallet actions. Transfers are devnet only. The single exception is an ORE v3 Deploy the
+ * owner explicitly switches to mainnet, reviews and signs in their own wallet (capped at 0.01 SOL, see OreDeployLimits).
  * (Read-only observation of other clusters uses [ReadOnlyAccountRpc], which has no transaction methods.)
  */
-class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000) : ChainGateway {
+class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000, val cluster: String = CLUSTER) : ChainGateway {
     companion object {
         const val DEVNET = "https://api.devnet.solana.com"
         const val CLUSTER = "devnet"
+        /** Used ONLY for an owner-approved ORE v3 Deploy (capped at OreDeployLimits.MAINNET_CAP_LAMPORTS). Transfers stay devnet. */
+        const val MAINNET = "https://api.mainnet-beta.solana.com"
+        const val MAINNET_CLUSTER = "mainnet-beta"
+        fun endpointFor(cluster: String): String = if (cluster == MAINNET_CLUSTER) MAINNET else DEVNET
         private const val MAX_RESPONSE = 256 * 1024
     }
 
@@ -33,7 +38,7 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
             val amount = result.getLong("value")
             val slot = result.getJSONObject("context").getLong("slot")
             if (amount < 0 || slot < 0) throw RpcException("Malformed RPC result")
-            RpcObservation.Fresh(amount, slot, System.currentTimeMillis(), CLUSTER)
+            RpcObservation.Fresh(amount, slot, System.currentTimeMillis(), cluster)
         } catch (e: IllegalArgumentException) {
             RpcObservation.Unavailable("Invalid address")
         } catch (e: Exception) {

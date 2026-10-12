@@ -73,8 +73,13 @@ class WalletCoordinator {
     }
 
     /** Asks the wallet to sign (not send) one transaction. The caller must verify returned bytes. */
-    suspend fun signTransaction(sender: ActivityResultSender, unsignedTransaction: ByteArray): SignResult {
-        val result = adapter.transact(sender) { _ -> signTransactions(arrayOf(unsignedTransaction)) }
+    /**
+     * [mainnet] is true only for an owner-reviewed, capped ORE v3 Deploy: the session is authorized for solana:mainnet so
+     * the wallet shows and simulates the transaction on the right cluster. The adapter returns to devnet afterwards.
+     */
+    suspend fun signTransaction(sender: ActivityResultSender, unsignedTransaction: ByteArray, mainnet: Boolean = false): SignResult {
+        adapter.blockchain = if (mainnet) Solana.Mainnet else Solana.Devnet
+        val result = try { adapter.transact(sender) { _ -> signTransactions(arrayOf(unsignedTransaction)) } } finally { adapter.blockchain = Solana.Devnet }
         return when (result) {
             is TransactionResult.Success -> {
                 val payloads = result.payload.signedPayloads

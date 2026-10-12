@@ -213,7 +213,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         title = { Text("Settings & build") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")
+                Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · wallet transfers on Solana devnet only; ORE Deploy is devnet by default, with an explicit owner-signed mainnet option capped at 0.01 SOL.")
                 com.edgeore.app.ui.components.ResourceControl(EdgeIcons.Bell, "Optional daily reminder", "Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android.", reminders, "Local notification · no eligibility or reward claim", onChange = actions::setReminders)
                 Text("Receipts signed with: ${vm.receiptSignerProtection.substringBefore(" · key ")}.")
                 com.edgeore.app.ui.components.SecondaryAction(if (signerDetails) "Hide signer identity" else "Signer identity", onClick = { signerDetails = !signerDetails })
@@ -234,7 +234,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
             Text("Node session: ${session.phase.name.lowercase()}. ${session.failure ?: session.note ?: "Inspect each worker before starting. Configure your node in Nodes and gateway in Storage."}")
             Text("Review: check recipient, integer lamports, fees and exact message hash. Signing and submission are separate. An unknown result must be observed, never resent.")
             Text("Receipts: ${receipts.size} stored. Verification checks signed contents; it does not independently confirm payment.")
-            Text("ORE: the 5×5 mainnet board is read-only. No ORE deployment or reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model.")
+            Text("ORE: the 5×5 board reads mainnet. ORE Deploy (Mine) is reviewed and signed by you in your wallet; mainnet deploys are capped at 0.01 SOL and risk that SOL. No reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model.")
         } }, confirmButton = { TextButton(onClick = { help = false }) { Text("Close") } },
     )
     if (inbox) AlertDialog(onDismissRequest = { inbox = false }, title = { Text("Notifications") },

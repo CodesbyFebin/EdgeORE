@@ -114,20 +114,33 @@ fun DeviceCards(cores: Int?, memoryGbClass: Int?) {
 }
 
 /** Why Deploy is off, or null when it may be pressed. Order: cluster, wallet, then the amount limits. */
-fun deployBlocker(ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?): String? = when (val a = ui.availability) {
-    OreDeployAvailability.NotChecked -> "Devnet not checked for ORE v3 yet."
-    OreDeployAvailability.Checking -> "Checking devnet for ORE v3…"
-    is OreDeployAvailability.Unavailable -> "Deploy off: ${a.reason} (devnet). EdgeORE does not fall back to mainnet."
-    is OreDeployAvailability.Available -> when {
-        !walletConnected -> WALLET_REQUIRED
-        else -> OreDeployLimits.refusal(ui.totalLamports ?: 0, Integer.bitCount(ui.mask), balanceLamports)
+fun deployBlocker(ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?): String? {
+    val net = if (ui.mainnet) "Mainnet" else "Devnet"
+    val cluster = OreDeployNetwork.cluster(ui.mainnet)
+    // On mainnet the deploy limit uses the mainnet balance, never the devnet one.
+    val bal = if (ui.mainnet) ui.mainnetBalanceLamports else balanceLamports
+    return when (val a = ui.availability) {
+        OreDeployAvailability.NotChecked -> "$net not checked for ORE v3 yet."
+        OreDeployAvailability.Checking -> "Checking ${net.lowercase()} for ORE v3…"
+        is OreDeployAvailability.Unavailable -> "Deploy off: ${a.reason} (${net.lowercase()}). EdgeORE does not fall back to another network."
+        is OreDeployAvailability.Available -> when {
+            !walletConnected -> WALLET_REQUIRED
+            ui.mainnet && !ui.riskAcknowledged -> MAINNET_ACK_REQUIRED
+            else -> OreDeployLimits.refusal(ui.totalLamports ?: 0, Integer.bitCount(ui.mask), bal, cluster)
+        }
     }
 }
+
+const val MAINNET_ACK_REQUIRED = "Tick the mainnet risk confirmation to enable Deploy."
+const val MAINNET_DISCLAIMER = "Mainnet: deploying risks real SOL, which may be lost entirely. Capped at 0.01 SOL per deploy. EdgeORE claims no income, return or production readiness."
+
 
 /** Adds a chip amount, clamped to MAX (balance minus the fee reserve, at most the per-deploy cap) when MAX is known. */
 fun addChip(ui: OreDeployUi, addLamports: Long, balanceLamports: Long?): OreDeployUi {
     val next = (ui.totalLamports ?: 0) + addLamports
-    val max = OreDeployLimits.max(balanceLamports) ?: OreDeployLimits.PER_DEPLOY_CAP_LAMPORTS
+    val cluster = OreDeployNetwork.cluster(ui.mainnet)
+    val bal = if (ui.mainnet) ui.mainnetBalanceLamports else balanceLamports
+    val max = OreDeployLimits.max(bal, cluster) ?: OreDeployLimits.cap(cluster)
     return ui.copy(totalLamports = next.coerceAtMost(max))
 }
 
@@ -136,6 +149,7 @@ fun addChip(ui: OreDeployUi, addLamports: Long, balanceLamports: Long?): OreDepl
 fun OreMiningCard(
     ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?,
     onEdit: ((OreDeployUi) -> OreDeployUi) -> Unit, onCheck: () -> Unit, onDeploy: () -> Unit,
+    onNetwork: (mainnet: Boolean) -> Unit = {},
 ) {
     val total = ui.totalLamports ?: 0
     val blocker = deployBlocker(ui, walletConnected, balanceLamports)
@@ -144,6 +158,22 @@ fun OreMiningCard(
         Box(Modifier.size(112.dp).border(3.dp, Brush.sweepGradient(listOf(EdgeColors.copper, Color(0xFFF58A4E), EdgeColors.mint, EdgeColors.copper)), CircleShape)
             .padding(10.dp).background(EdgeColors.surfaceInset, CircleShape), contentAlignment = Alignment.Center) {
             Icon(EdgeIcons.Ore, contentDescription = "ORE emblem", tint = EdgeColors.copper, modifier = Modifier.size(52.dp))
+        }
+        if (OreDeployNetwork.MAINNET_ENABLED) {
+            // Explicit network switch: devnet by default; mainnet only when the owner taps it.
+            Row(Modifier.border(1.dp, if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.border, RoundedCornerShape(50)).padding(3.dp).testTag("ore-network-switch")) {
+                ToggleTab("Devnet", !ui.mainnet) { onNetwork(false) }
+                ToggleTab("Mainnet", ui.mainnet) { onNetwork(true) }
+            }
+            if (ui.mainnet) {
+                Text(MAINNET_DISCLAIMER, color = EdgeColors.mainnetWarning, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center,
+                    modifier = Modifier.testTag("ore-mainnet-disclaimer"))
+                Row(Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable(role = Role.Checkbox) { onEdit { it.copy(riskAcknowledged = !it.riskAcknowledged) } }
+                    .testTag("ore-mainnet-ack"), verticalAlignment = Alignment.CenterVertically) {
+                    androidx.compose.material3.Checkbox(ui.riskAcknowledged, null)
+                    Text("I understand this deploy uses real SOL that I may lose.", color = EdgeColors.textPrimary, style = MaterialTheme.typography.labelMedium)
+                }
+            }
         }
         Row(Modifier.border(1.dp, EdgeColors.border, RoundedCornerShape(50)).padding(3.dp)) {
             ToggleTab("Lite", !ui.pro) { onEdit { it.copy(pro = false) } }
@@ -157,7 +187,8 @@ fun OreMiningCard(
             Chip("+0.01") { onEdit { addChip(it, 10_000_000, balanceLamports) } }
             Chip("+0.1") { onEdit { addChip(it, 100_000_000, balanceLamports) } }
             Chip("+1") { onEdit { addChip(it, 1_000_000_000, balanceLamports) } }
-            Chip("MAX", enabled = balanceLamports != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(balanceLamports)) } }
+            val maxBal = if (ui.mainnet) ui.mainnetBalanceLamports else balanceLamports
+            Chip("MAX", enabled = maxBal != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(maxBal, OreDeployNetwork.cluster(it.mainnet))) } }
         }
         if (ui.pro) Text("Pro: pick squares on the ORE grid below.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         val squares = Integer.bitCount(ui.mask)
@@ -169,17 +200,19 @@ fun OreMiningCard(
             color = if (blocker != null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center,
             modifier = Modifier.testTag("ore-deploy-hint"))
         ui.message?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.labelSmall) }
+        val netLabel = if (ui.mainnet) "Mainnet" else "Devnet"
         val net = when (val a = ui.availability) {
-            is OreDeployAvailability.Available -> "Devnet: ORE v3 found · round ${a.roundId} at slot ${a.slot}"
-            is OreDeployAvailability.Unavailable -> "Devnet: ORE v3 not available"
-            OreDeployAvailability.Checking -> "Devnet: checking…"
-            OreDeployAvailability.NotChecked -> "Devnet: not checked"
+            is OreDeployAvailability.Available -> "$netLabel: ORE v3 found · round ${a.roundId} at slot ${a.slot}"
+            is OreDeployAvailability.Unavailable -> "$netLabel: ORE v3 not available"
+            OreDeployAvailability.Checking -> "$netLabel: checking…"
+            OreDeployAvailability.NotChecked -> "$netLabel: not checked"
         } + if (OreDeployNetwork.MAINNET_ENABLED) "" else " · mainnet deploy is disabled in this build"
-        Text(net, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("ore-deploy-network"))
+        Text(net, color = if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("ore-deploy-network"))
         if (ui.availability !is OreDeployAvailability.Checking) Box(Modifier.heightIn(min = 44.dp).clickable(role = Role.Button, onClick = onCheck).padding(horizontal = 12.dp, vertical = 10.dp)) {
-            Text("Check devnet again", color = EdgeColors.mint, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+            Text("Check ${netLabel.lowercase()} again", color = EdgeColors.mint, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         }
-        Text("Limits: up to 0.1 SOL per deploy, and MAX keeps 0.01 SOL back for fees and account rent. Your daily budget also applies.",
+        Text(if (ui.mainnet) "Limits: up to 0.01 SOL per mainnet deploy, and MAX keeps 0.01 SOL back for fees and account rent. Your daily budget also applies."
+            else "Limits: up to 0.1 SOL per deploy, and MAX keeps 0.01 SOL back for fees and account rent. Your daily budget also applies.",
             color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
         Text(ORE_DEPLOY_NFA, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.testTag("ore-nfa"))
     }

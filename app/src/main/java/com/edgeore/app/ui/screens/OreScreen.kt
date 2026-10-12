@@ -85,7 +85,7 @@ fun OreContent(
             Text("ORE v3 board", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics { heading() })
             StatusPill(ORE_READ_ONLY_LABEL, Modifier.testTag("ore-read-only"), tone = PillTone.MINT)
         }
-        if (!compact) Text("Live state of the ORE v3 program on Solana mainnet, read with getMultipleAccounts. EdgeORE cannot deploy, sign or send anything here, and nothing on this screen is earned.",
+        if (!compact) Text("Live state of the ORE v3 program on Solana mainnet, read with getMultipleAccounts. Nothing on this screen deploys, signs or sends (Deploy lives on Mine, behind review and your wallet), and nothing here is earned.",
             color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
 
         val clock = s?.let { OreClock.at(it.board, it.roundSlot, nowMs - it.observedAtMs, it.slotRate) }
