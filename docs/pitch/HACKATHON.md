@@ -8,7 +8,7 @@
 
 **Evidence:** tests against the live ORE mainnet program (local fork, LiteSVM, not live transactions) (two runs, rounds 437646 and 437756, program sha256 `b16a1002…a7dd5bd`). Devnet evidence is in [`evidence/devnet-session/`](../../evidence/devnet-session/README.md). Device mainnet signing: pending device recording.
 
-**Tests (separate, never summed):** Android 386 run / 379 passed / 7 skipped · receipt checker 17 · LiteSVM 27 · live ORE mainnet program, local fork 2.
+**Tests (separate, never summed):** Android 390 run / 382 passed / 8 skipped · receipt checker 17 · LiteSVM 27 · live ORE mainnet program, local fork 2.
 
 **Rules:** one approval per transaction, you approve every deploy, no reward or income claims, Hackathon build 0.1.0-clockin.
 

@@ -14,7 +14,7 @@ EdgeORE is a Kotlin/Compose Android app for ORE v3 on Solana. It shows the live 
 - Tested against the live ORE mainnet program (local fork, not a live transaction): two runs (rounds 437646 and 437756), program sha256 `b16a1002…a7dd5bd`. Both passed. Nothing was sent.
 - Devnet evidence: `evidence/devnet-session/` (sent from a laptop CLI, not the app).
 - Device mainnet MWA signing: [FILL IN after recording: "shown in the demo video, tx <signature>" OR "pending device recording"].
-- Tests (separate, never summed): Android 386 run / 379 passed / 7 skipped · receipt checker 17 · LiteSVM 27 · live ORE mainnet program, local fork 2.
+- Tests (separate, never summed): Android 390 run / 382 passed / 8 skipped · receipt checker 17 · LiteSVM 27 · live ORE mainnet program, local fork 2.
 
 **APK link:** [FILL IN: publish the draft release (assets EdgeORE-76eea59-demo-debug.apk / .zip) or link another public APK. A draft link is not installable by judges.]
 

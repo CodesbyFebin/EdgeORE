@@ -27,7 +27,7 @@ ORE on mobile means spending real SOL from a phone. Users need to know exactly w
 ## Tests (each suite separate, never summed)
 | Suite | Result |
 |---|---|
-| Android unit tests | 386 run · 379 passed · 7 skipped |
+| Android unit tests | 390 run · 382 passed · 8 skipped |
 | Receipt checker | 17 passed |
 | LiteSVM receipt-settlement | 27 passed |
 | Live ORE mainnet program, local fork | 2 passed |

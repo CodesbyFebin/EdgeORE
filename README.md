@@ -36,7 +36,7 @@ Hackathon package: [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md) · [`doc
 
 | Suite | Result |
 |---|---|
-| Android unit tests | 386 run · 379 passed · 7 skipped · 0 failed |
+| Android unit tests | 390 run · 382 passed · 8 skipped · 0 failed |
 | Receipt checker (JVM) | 17 passed |
 | LiteSVM receipt-settlement suite | 27 passed |
 | Live ORE mainnet program, local fork (`tools/ore-fork-sim`) | 2 passed |
