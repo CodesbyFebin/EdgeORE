@@ -23,10 +23,11 @@ jobs:
       - name: Sign scanner input with disposable CI key
         run: |
           python3 -c 'import secrets; print(secrets.token_hex(32))' > "$RUNNER_TEMP/scan.pass"
-          trap 'rm -f "$RUNNER_TEMP/scan.pass" "$RUNNER_TEMP/scan.jks"' EXIT
+          cp "$RUNNER_TEMP/scan.pass" "$RUNNER_TEMP/scan-key.pass"
+          trap 'rm -f "$RUNNER_TEMP/scan.pass" "$RUNNER_TEMP/scan-key.pass" "$RUNNER_TEMP/scan.jks"' EXIT
           keytool -genkeypair -keystore "$RUNNER_TEMP/scan.jks" -storepass:file "$RUNNER_TEMP/scan.pass" -keypass:file "$RUNNER_TEMP/scan.pass" -alias scan -keyalg RSA -keysize 2048 -validity 1 -dname 'CN=Disposable CI scanner input' >/dev/null 2>&1
           signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
-          "$signer" sign --ks "$RUNNER_TEMP/scan.jks" --ks-pass "file:$RUNNER_TEMP/scan.pass" --key-pass "file:$RUNNER_TEMP/scan.pass" --out app/build/outputs/apk/release/app-release-scan.apk app/build/outputs/apk/release/app-release-unsigned.apk
+          "$signer" sign --ks "$RUNNER_TEMP/scan.jks" --ks-pass "file:$RUNNER_TEMP/scan.pass" --key-pass "file:$RUNNER_TEMP/scan-key.pass" --out app/build/outputs/apk/release/app-release-scan.apk app/build/outputs/apk/release/app-release-unsigned.apk
           "$signer" verify app/build/outputs/apk/release/app-release-scan.apk
       - run: python3 scripts/test_mobsf_policy.py
       - run: bash scripts/mobsf-scan.sh app/build/outputs/apk/release/app-release-scan.apk evidence/mobsf/ci
