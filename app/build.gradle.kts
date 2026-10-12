@@ -9,6 +9,9 @@ fun git(vararg args: String): String = try {
     val p = ProcessBuilder(listOf("git") + args).directory(rootDir).redirectErrorStream(true).start()
     p.inputStream.bufferedReader().readText().trim().also { p.waitFor() }
 } catch (_: Exception) { "" }
+// Canonical source commit (scripts/commit-stamp.sh). "unstamped" when the file is missing.
+val sourceStamp: String = rootProject.file("evidence/COMMIT-STAMP.json").takeIf { it.exists() }?.readText()
+    ?.let { Regex("\"sourceCommit\"\\s*:\\s*\"([0-9a-f]{40})\"").find(it)?.groupValues?.get(1) } ?: "unstamped"
 val gitCommit: String = git("rev-parse", "--short=12", "HEAD").ifEmpty { "unknown" } +
     (if (git("status", "--porcelain", "--untracked-files=no").isNotEmpty()) "-dirty" else "")
 
@@ -24,6 +27,7 @@ android {
         versionName = "0.1.0-clockin"
         // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
+        buildConfigField("String", "SOURCE_STAMP", "\"$sourceStamp\"")
         // ORE v3 deploy targets devnet only. Mainnet deploy stays off; no build type turns it on.
         buildConfigField("boolean", "ORE_MAINNET_DEPLOY", "false")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

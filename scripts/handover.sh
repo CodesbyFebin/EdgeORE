@@ -16,6 +16,8 @@ for p in glob.glob(sys.argv[1]+'/TEST-*.xml'):
 print(f"tests={t} passed={t-f-e-s} failed={f} errors={e} skipped={s}")
 P
 }
+gate "commit stamp"            bash scripts/commit-stamp.sh check
+gate "static analysis (detekt, ktlint)" bash scripts/lint-static.sh
 gate "build-policy"            python3 scripts/build-policy.py
 gate "build-policy tests"      python3 scripts/test_build_policy.py -v
 gate "manifest-checker tests"  python3 scripts/test_check_manifest.py -v
@@ -27,7 +29,7 @@ gate "release R8 build (unsigned)" bash gradlew --no-daemon :app:assembleRelease
 if [ "${SESSION_E2E:-0}" = 1 ]; then gate "contribution session e2e" bash scripts/session-e2e.sh "evidence/contribution-session/e2e-$(git rev-parse --short=12 HEAD)"
 else R+=("NOT_RUN contribution session e2e (set SESSION_E2E=1; needs node agent + gateway toolchain)"); fi
 for g in "device runbook gates 0-10" "wallet (MWA) session on Seeker" "devnet transfer (owner-approved)" \
-         "release signing (owner key)" "MobSF scan" "dApp Store publish (publisher KYC)" "demo video"; do
+         "release signing (owner key)" "MobSF scan (scripts/mobsf-scan.sh; needs docker)" "dApp Store publish (publisher KYC)" "demo video"; do
   R+=("NOT_RUN $g (owner step)"); done
 echo; echo "== EdgeORE handover gates @ $(git rev-parse --short=12 HEAD) =="
 printf '%s\n' "${R[@]}"
