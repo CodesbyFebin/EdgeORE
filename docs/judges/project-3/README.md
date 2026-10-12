@@ -27,7 +27,7 @@ Review an exact Solana message, sign in your wallet, submit separately, and keep
 
 ## Recorded evidence — counts are separate
 
-Tested implementation: `fefa81facc95`. Evidence commit: `bf94e26a86ae`. Later documentation commits do not become new tested source results.
+Tested implementation: `164f04e4b846`. Evidence: `evidence/mint-holographic/RESULTS.md` on the draft PR branch. Later documentation commits do not become new tested source results.
 
 | Check | Recorded result | Scope |
 |---|---|---|
@@ -39,7 +39,7 @@ Tested implementation: `fefa81facc95`. Evidence commit: `bf94e26a86ae`. Later do
 | Manifest self-tests and inspection | **9/9 PASS; manifest PASS** | Separate policy check |
 | Physical Seeker / real transfer / real receipt / video | **NOT_RUN** | No device success implied |
 
-APK SHA-256: `5d572f2b2d3006411b4a07e5afeee475fa3cfa4b9cd8e750f77c83a264867e15`. Build stamp: `fefa81facc95-dirty` (intentional screenshot/evidence refresh; see gate report). Debug-signed, package `com.edgeore.app`.
+APK SHA-256: `1b832497f3454b00b75ed290187a208b5984d3f9fc738e8dcf688d13429992a8`. Build stamp: `164f04e4b846-dirty` (intentional screenshot/evidence refresh; see gate report). Debug-signed, package `com.edgeore.app`.
 
 ## Product boundaries
 
@@ -57,7 +57,7 @@ APK SHA-256: `5d572f2b2d3006411b4a07e5afeee475fa3cfa4b9cd8e750f77c83a264867e15`.
 | Artifact | Availability |
 |---|---|
 | Latest source, design contract and evidence | Draft PR #20 and its branch |
-| Latest APK identity | Recorded in the evidence; debug candidate, not a store release |
+| Latest APK identity | Recorded in the evidence; debug candidate, not a store release. The existing Android CI artifact is configured to include review APKs after a successful run. |
 | Latest UI screenshots | JVM renders; see below |
 | Historical hosted Android preview | [Appetize](https://appetize.io/app/l63ubf6tbb4fei2fpezkz5fvla), **older `d675002bd701`**: launch/navigation only; not the mint refinement or wallet proof |
 | Pitch deck | Linked above; distinguish pitch/roadmap from device evidence |

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.screens.DefaultStateWalkTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:53:25" hostname="070466fed5bf" time="7.366">
+<testsuite name="com.edgeore.app.screens.DefaultStateWalkTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:42:29" hostname="070466fed5bf" time="7.936">
   <properties/>
-  <testcase name="walksAllDestinations" classname="com.edgeore.app.screens.DefaultStateWalkTest" time="7.366"/>
+  <testcase name="walksAllDestinations" classname="com.edgeore.app.screens.DefaultStateWalkTest" time="7.936"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

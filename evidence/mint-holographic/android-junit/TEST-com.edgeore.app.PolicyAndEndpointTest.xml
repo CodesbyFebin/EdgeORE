@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.PolicyAndEndpointTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:55:12" hostname="070466fed5bf" time="0.003">
+<testsuite name="com.edgeore.app.PolicyAndEndpointTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:43:20" hostname="070466fed5bf" time="0.002">
   <properties/>
-  <testcase name="batteryReserveAndThermalEnforced" classname="com.edgeore.app.PolicyAndEndpointTest" time="0.001"/>
+  <testcase name="batteryReserveAndThermalEnforced" classname="com.edgeore.app.PolicyAndEndpointTest" time="0.0"/>
   <testcase name="missingReadingsFailClosed" classname="com.edgeore.app.PolicyAndEndpointTest" time="0.0"/>
   <testcase name="pausedByUserByDefault" classname="com.edgeore.app.PolicyAndEndpointTest" time="0.0"/>
   <testcase name="loopbackAllowedPublicRefused" classname="com.edgeore.app.PolicyAndEndpointTest" time="0.001"/>

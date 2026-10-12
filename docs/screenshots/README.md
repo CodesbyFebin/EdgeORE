@@ -105,6 +105,6 @@ Intentional: `full/01-mine-full.png` (the central "ORE board · Read-only · mai
 
 ## Mint holographic re-record (12 October 2026)
 
-All screen baselines intentionally change with the new palette, card/control shapes, icon family and Mine layout. The native routes and review handlers remain intact. New `mint/` renders cover the MWA chooser, Settings, Basic help and review at 200% font size on a 360×800 dp viewport. The navigation becomes horizontally scrollable with wider targets at large text sizes. Dialog/sheet renders select their own root window, not a simulated phone capture. Help time and unavailable telemetry are fixed only through explicit test seams.
+All screen baselines intentionally change with the new palette, card/control shapes, icon family and Mine layout. The native routes and review handlers remain intact. New `mint/` renders cover the MWA chooser, Settings, Basic help and review at 200% font size on a 360×800 dp viewport. The navigation becomes horizontally scrollable with wider targets at large text sizes. Dialog/sheet renders select their own root window, not a simulated phone capture. Help time and unavailable telemetry are fixed only through explicit test seams. Settings uses the explicit **JVM render** build label in tests; it never substitutes that label on a device.
 
 See `docs/design/mint-implementation-report.md` and `evidence/mint-holographic/RESULTS.md` for the exact source and final commands. These images are JVM layout evidence only.

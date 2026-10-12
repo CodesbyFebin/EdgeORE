@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.MiningMotionTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:55:08" hostname="070466fed5bf" time="0.008">
+<testsuite name="com.edgeore.app.MiningMotionTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:43:17" hostname="070466fed5bf" time="0.003">
   <properties/>
-  <testcase name="swingIsContinuousAndStrikesAtImpact" classname="com.edgeore.app.MiningMotionTest" time="0.004"/>
+  <testcase name="swingIsContinuousAndStrikesAtImpact" classname="com.edgeore.app.MiningMotionTest" time="0.002"/>
   <testcase name="impactEffectsOnlyAfterTheStrike" classname="com.edgeore.app.MiningMotionTest" time="0.0"/>
-  <testcase name="descriptionsMakeNoEarningsClaim" classname="com.edgeore.app.MiningMotionTest" time="0.0"/>
+  <testcase name="descriptionsMakeNoEarningsClaim" classname="com.edgeore.app.MiningMotionTest" time="0.001"/>
   <testcase name="swingsOnlyWhileASessionIsActive" classname="com.edgeore.app.MiningMotionTest" time="0.0"/>
   <testcase name="idleStartingStoppingAndFailedRest" classname="com.edgeore.app.MiningMotionTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>

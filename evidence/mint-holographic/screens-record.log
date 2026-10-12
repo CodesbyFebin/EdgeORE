@@ -52,8 +52,8 @@ Warning: SDK processing. This version only understands SDK XML versions up to 3 
 w: file:///workspace/EdgeORE/app/src/main/java/com/edgeore/app/device/DeviceResources.kt:49:23 'val allNetworks: (Array<Network!>..Array<out Network!>)' is deprecated. Deprecated in Java.
 
 > Task :app:compileDebugJavaWithJavac
-> Task :app:bundleDebugClassesToRuntimeJar
 > Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
 > Task :app:processDebugJavaRes UP-TO-DATE
 
 > Task :app:compileDebugUnitTestKotlin
@@ -73,5 +73,5 @@ Picked up JAVA_TOOL_OPTIONS:  -Duser.home=/workspace/edgeore-env/user -Djava.uti
 > Task :app:finalizeTestRoborazziDebug
 > Task :app:recordRoborazziDebug
 
-BUILD SUCCESSFUL in 1m 34s
+BUILD SUCCESSFUL in 1m 42s
 44 actionable tasks: 8 executed, 36 up-to-date

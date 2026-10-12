@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.screens.MintInterfaceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:53:41" hostname="070466fed5bf" time="1.041">
+<testsuite name="com.edgeore.app.screens.MintInterfaceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:42:46" hostname="070466fed5bf" time="0.975">
   <properties/>
-  <testcase name="helpShowsCurrentStateWithoutClaimingEarnings" classname="com.edgeore.app.screens.MintInterfaceTest" time="0.362"/>
-  <testcase name="settingsUseOptInRemindersAndScrollableBuildDisclosure" classname="com.edgeore.app.screens.MintInterfaceTest" time="0.291"/>
-  <testcase name="connectShowsSolanaConsentWithoutSigning" classname="com.edgeore.app.screens.MintInterfaceTest" time="0.388"/>
+  <testcase name="helpShowsCurrentStateWithoutClaimingEarnings" classname="com.edgeore.app.screens.MintInterfaceTest" time="0.322"/>
+  <testcase name="settingsUseOptInRemindersAndScrollableBuildDisclosure" classname="com.edgeore.app.screens.MintInterfaceTest" time="0.281"/>
+  <testcase name="connectShowsSolanaConsentWithoutSigning" classname="com.edgeore.app.screens.MintInterfaceTest" time="0.372"/>
   <system-out><![CDATA[Roborazzi: basic-help.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=1534680, width=945, height=1624) changed:false
 Roborazzi: settings.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=1423170, width=945, height=1506) changed:false
 Roborazzi: wallet-chooser.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=1984500, width=945, height=2100) changed:false

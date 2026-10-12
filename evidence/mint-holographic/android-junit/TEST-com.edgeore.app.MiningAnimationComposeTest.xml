@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.MiningAnimationComposeTest" tests="5" skipped="1" failures="0" errors="0" timestamp="2026-10-12T10:55:05" hostname="070466fed5bf" time="3.782">
+<testsuite name="com.edgeore.app.MiningAnimationComposeTest" tests="5" skipped="1" failures="0" errors="0" timestamp="2026-10-12T11:43:14" hostname="070466fed5bf" time="3.345">
   <properties/>
-  <testcase name="frames" classname="com.edgeore.app.MiningAnimationComposeTest" time="2.907">
+  <testcase name="frames" classname="com.edgeore.app.MiningAnimationComposeTest" time="2.555">
     <skipped/>
   </testcase>
-  <testcase name="pausedRestsWithoutMotion" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.49"/>
-  <testcase name="runningSwings" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.262"/>
-  <testcase name="removeAnimationsSettingIsRead" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.059"/>
-  <testcase name="reducedMotionHoldsAStaticFrame" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.063"/>
+  <testcase name="pausedRestsWithoutMotion" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.448"/>
+  <testcase name="runningSwings" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.217"/>
+  <testcase name="removeAnimationsSettingIsRead" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.079"/>
+  <testcase name="reducedMotionHoldsAStaticFrame" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.046"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[System.logW: A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
 java.lang.Throwable: Explicit termination method 'close' not called

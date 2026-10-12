@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.screens.PlainLanguageRenderTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:53:44" hostname="070466fed5bf" time="0.29">
+<testsuite name="com.edgeore.app.screens.PlainLanguageRenderTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:42:49" hostname="070466fed5bf" time="0.279">
   <properties/>
-  <testcase name="plainLanguageCard" classname="com.edgeore.app.screens.PlainLanguageRenderTest" time="0.29"/>
+  <testcase name="plainLanguageCard" classname="com.edgeore.app.screens.PlainLanguageRenderTest" time="0.279"/>
   <system-out><![CDATA[Roborazzi: 09-plain-language.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=2052512, width=1078, height=1904) changed:false
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>

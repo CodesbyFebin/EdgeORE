@@ -1,8 +1,8 @@
 # Mint holographic refinement — recorded gates
 
-Tested implementation: `fefa81facc95bd08eb72e1a74875473699c87474`. Base: `bca02efea46a19b928c127eb13fcbd7156a095a4`. Linux build host, JDK 17 / Android SDK 35 / Gradle 8.9. Gate logs record their start/end and commands. Evidence recorded 12 October 2026 (IST); machine timestamps in logs are UTC.
+Tested implementation: `164f04e4b846c158d2cd782c5f235c218aefa0d8`. Original workspace base: `260222e318d8a1deccff15abcdbdbe11ca4e11e4`; current main `bca02efea46a19b928c127eb13fcbd7156a095a4` was merged before this final gate. Linux build host, JDK 17 / Android SDK 35 / Gradle 8.9. Gate logs record their start/end and commands. Evidence recorded 12 October 2026 (IST); machine timestamps in logs are UTC.
 
-The APK stamp is `fefa81facc95-dirty`: the tracked screenshot baselines and their README were intentionally being refreshed; no uncommitted production-source changes existed at the final gate. Later evidence/documentation commits do not imply a new tested source result.
+The APK stamp is `164f04e4b846-dirty`: the tracked screenshot baselines and their README were intentionally being refreshed; no uncommitted production-source changes existed at the final gate. Later evidence/documentation commits do not imply a new tested source result.
 
 | Gate | Recorded result | Evidence |
 |---|---|---|
@@ -21,7 +21,7 @@ The APK stamp is `fefa81facc95-dirty`: the tracked screenshot baselines and thei
 | Public Solana RPC access | BLOCKED: CONNECT forbidden (403) | `rpc-access.txt` |
 | Device MWA, real balances, recovery, notifications, TalkBack, real provider session | NOT_RUN | No runtime evidence claimed |
 
-APK SHA-256: `5d572f2b2d3006411b4a07e5afeee475fa3cfa4b9cd8e750f77c83a264867e15`. Package `com.edgeore.app`, debug-signed review candidate. This APK is not a signed production release or store publication.
+APK SHA-256: `1b832497f3454b00b75ed290187a208b5984d3f9fc738e8dcf688d13429992a8`. Package `com.edgeore.app`, `0.1.0-clockin`, versionCode 12, debug-signed review candidate. This APK is not a signed production release or store publication.
 
 Skipped Android cases require a live node/gateway/proxy or optional preview capture: ContributionSessionE2ETest, GatewayProxyIntegrationTest, NodeAgentIntegrationTest, MiningAnimationComposeTest.frames and OrePreviewFrames.frames. They are not included as passes.
 
@@ -32,3 +32,5 @@ Open engineering/configuration work remains in `docs/design/mint-implementation-
 ## Judge Project #3
 
 Prepared judge README, field/view mapping, nine cards and apply script are in `docs/judges/project-3/`. Public title/readme were inspected. The apply attempt failed before mutations at the owner/project GraphQL preflight: Forbidden, exit 1 (`project-edit-attempt.txt`). The live Project remains unchanged. Script syntax and its local plan were checked; this is not a live API pass. Repository source and judge package are proposed in draft PR #20.
+
+Final integrated candidate retains upstream current-main changes. Settings screenshot build identity is explicitly labelled **JVM render** through a test-only display seam, so CI comparisons do not depend on a changing git stamp. Runtime uses the actual BuildConfig stamp. New Android/screenshot gates were rerun after integration; the verifier source did not change, and its recorded 14-test rerun remains separately scoped.

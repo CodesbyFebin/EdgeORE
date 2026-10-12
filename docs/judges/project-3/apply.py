@@ -12,7 +12,7 @@ EXPECTED_ID = "PVT_kwHOBeCae84BmrFH"
 TITLE = "EdgeORE — Solana Mobile Judge Review"
 DESCRIPTION = "Native Solana Android review candidate: exact-message review, separate sign/submit and portable receipt integrity. Recorded build evidence; device gates NOT_RUN. Read-only ORE board. No earnings or token."
 BRANCH = "https://github.com/CodesbyFebin/EdgeORE/blob/feature/mint-holographic-design/"
-SOURCE = "fefa81facc95"
+SOURCE = "164f04e4b846"
 GATES = BRANCH + "evidence/mint-holographic/RESULTS.md"
 BOUNDARIES = BRANCH + "docs/design/mint-implementation-report.md"
 

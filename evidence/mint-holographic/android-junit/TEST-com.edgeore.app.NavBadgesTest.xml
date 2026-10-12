@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.edgeore.app.NavBadgesTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:55:09" hostname="070466fed5bf" time="0.016">
+<testsuite name="com.edgeore.app.NavBadgesTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:43:18" hostname="070466fed5bf" time="0.016">
   <properties/>
   <testcase name="badgesComeOnlyFromLocalStateAndHideAtZero" classname="com.edgeore.app.NavBadgesTest" time="0.016"/>
   <system-out><![CDATA[]]></system-out>

@@ -4,7 +4,7 @@ Date: 12 October 2026. This report describes source work and recorded checks, no
 
 ## Source and scope
 
-Branch: `feature/mint-holographic-design`. Base: `bca02efea46a19b928c127eb13fcbd7156a095a4`. Initial implementation commit: `cbc4b395ef03de0ae4e9958e449e5203a4b4dd45`; final tested implementation: `fefa81facc95bd08eb72e1a74875473699c87474`. Later commits only carry screenshots, documentation and evidence.
+Branch: `feature/mint-holographic-design`. Original workspace base: `260222e318d8a1deccff15abcdbdbe11ca4e11e4`. Current `main` (`bca02efea46a19b928c127eb13fcbd7156a095a4`) was integrated before final qualification. Initial implementation commit: `cbc4b395ef03de0ae4e9958e449e5203a4b4dd45`; final tested implementation: `164f04e4b846c158d2cd782c5f235c218aefa0d8`. The upstream `0.1.0-clockin` / versionCode 12 and explicit read-only ORE unavailability are retained. Later commits only carry screenshots, documentation and evidence.
 
 The user explicitly requested the design implementation; this authorizes the Android edits despite the historical handoff's device freeze. The uploaded specification is a desired target, not a record of completed work. Exact-message binding, durable submission and observation-only recovery remain unchanged. No transaction, deployment, reward payout or release publication was performed.
 
@@ -35,7 +35,7 @@ The user explicitly requested the design implementation; this authorizes the And
 | Daily five-start/one-hour server policy | NOT_IMPLEMENTED; no local eligibility counter | Server/auth/lease integration needed |
 | Daily check-in / official ORE payout | NOT_IMPLEMENTED; Rewards unavailable | Campaign rules, sponsor treasury and verified payout path needed |
 | 25-cell ORE mainnet board | Existing validated observer retained; unknown cells stay unknown | BLOCKED here — public RPC denied |
-| Interactive ORE transaction deployment | NOT_IMPLEMENTED; Deploy disabled | Protocol adapter and full review/integration gates needed |
+| Interactive ORE transaction deployment | NOT_IMPLEMENTED; explicit unavailable label | Protocol adapter and full review/integration gates needed |
 | Local reminder scheduling | Implemented; opt-in, permission, quiet hours, deduplication | Delivery NOT_RUN on device |
 | Backend notification inbox / push | NOT_IMPLEMENTED; explicitly disclosed | Provider/configuration needed |
 | ORE Bot basic help | Implemented, deterministic, no financial authority | JVM interaction checks; device NOT_RUN |
@@ -58,7 +58,7 @@ python3 scripts/test_check_manifest.py
 python3 scripts/check-manifest.py app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml
 ```
 
-Screenshot baselines are intentionally updated for this design; they are Robolectric renders, **not phone captures**. The unavailable-telemetry and fixed help-clock seams are test-only. No successful balance or reward fixture is used on the live interface.
+Screenshot baselines are intentionally updated for this design; they are Robolectric renders, **not phone captures**. The unavailable-telemetry, fixed help-clock and clearly labelled JVM build-stamp seams are test-only. Runtime Settings still shows the real APK build stamp. No successful balance or reward fixture is used on the live interface.
 
 On a device, install the exact debug APK, compare its digest and Settings build stamp, then run the wallet/device runbook. Tap **Signer identity** to reveal the receipt key identity for Gate 8; the default Settings disclosure shows protection without the changing key ID. Approve a specific devnet transfer separately before signing or submitting. Public balance observations require reachable Solana RPC endpoints; this environment's CONNECT policy denies them. Never work around that policy.
 
@@ -69,3 +69,5 @@ Reminders: Settings → Optional daily reminder → Android permission. Disable 
 ## Recorded verification
 
 Final commands, counts, logs and APK identity are recorded in `evidence/mint-holographic/RESULTS.md` after the final gates finish. A successful compile or render does not close the integration matrix above.
+
+The existing Android CI evidence artifact now also includes the debug APK and instrumented-test APK; it is not a release publication. CI artifacts carry their own build digest/stamp and must not be conflated with the build-host APK.
