@@ -59,7 +59,7 @@ reads. That is an inference from dates, **not a tested fact**.
 The allowlist parser fails closed: a non-commit pin, a path in the file name, a non-`.litertlm` file, a missing
 SHA-256 on an ungated entry, a non-positive size or a duplicate id rejects the whole list.
 
-## Flow in the app (Private AI screen, "On-device model (LiteRT-LM)" card)
+## Flow in the app (Private AI screen, "On-device model" card (LiteRT-LM))
 
 1. Choose a model chip. Each shows size and `not downloaded` / `downloaded` / `gated`.
 2. **Download … ** opens a consent dialog: size in GB and exact bytes, source repo, commit, license, free space,

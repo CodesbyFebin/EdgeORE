@@ -12,7 +12,7 @@ import java.util.Base64
  */
 object NodeAgentProtocol {
     const val POLICY = "node-policy-v1"
-    val KNOWN_SCOPES = listOf("READ_NODE", "EXPORT_PUBLIC_RECORDS")
+    val KNOWN_SCOPES = listOf("READ_NODE", "EXPORT_PUBLIC_RECORDS", "RUN_PROOF_JOB")
 
     data class Challenge(val id: String, val nonce: String, val fingerprint: String, val expiresAt: String)
 
@@ -79,6 +79,10 @@ object NodeAgentProtocol {
         "BAD_COMMAND_SIGNATURE" -> "Node rejected the command signature."
         "INVALID_DEADLINE" -> "Node rejected the command deadline. Check the phone and host clocks."
         "REPLAYED_OPERATION" -> "Node refused a replayed operation."
+        "PROOF_BACKEND_UNAVAILABLE" -> "The node has no proof job configured (start deproof-node with -proof-tool, -proof-job and -proof-owner)."
+        "PROOF_ALREADY_RUNNING" -> "A proof job is already running on the node."
+        "PROOF_CANCELLED_OR_DEADLINE" -> "The proof job was cancelled or hit the node's 60-second limit."
+        "PROOF_JOB_VALIDATION_OR_EXECUTION_FAILED" -> "The node refused or failed the pinned proof job."
         "REDIRECT_REFUSED" -> "The node answered with a redirect. EdgeORE does not follow redirects for signed commands; nothing was sent elsewhere."
         else -> "Node refused: $code"
     }

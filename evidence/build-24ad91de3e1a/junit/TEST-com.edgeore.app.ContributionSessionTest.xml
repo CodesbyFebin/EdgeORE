@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ContributionSessionTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-12T06:22:06" hostname="grok-bot-vm-446931431" time="0.234">
+  <properties/>
+  <testcase name="stopCancelsTheRunningPartAndReturnsToIdle" classname="com.edgeore.app.ContributionSessionTest" time="0.053"/>
+  <testcase name="blockedAtStartFailsWithTheReasonAndRunsNothing" classname="com.edgeore.app.ContributionSessionTest" time="0.001"/>
+  <testcase name="aPartNotConfiguredOnTheRemoteSideIsNotCounted" classname="com.edgeore.app.ContributionSessionTest" time="0.004"/>
+  <testcase name="noMeasurementWithoutARealSource" classname="com.edgeore.app.ContributionSessionTest" time="0.001"/>
+  <testcase name="idleStartingActiveStoppingIdle" classname="com.edgeore.app.ContributionSessionTest" time="0.003"/>
+  <testcase name="durationLimitEndsTheSession" classname="com.edgeore.app.ContributionSessionTest" time="0.002"/>
+  <testcase name="allPartsFailingIsFailedWithTheReason" classname="com.edgeore.app.ContributionSessionTest" time="0.002"/>
+  <testcase name="aGateFailingMidSessionStopsItAsFailed" classname="com.edgeore.app.ContributionSessionTest" time="0.002"/>
+  <testcase name="stopAfterCompletedRoundsStillRecordsThem" classname="com.edgeore.app.ContributionSessionTest" time="0.001"/>
+  <testcase name="nothingConfiguredFailsAndShowsWhatToSetUp" classname="com.edgeore.app.ContributionSessionTest" time="0.004"/>
+  <testcase name="nodeSignedResultsAreCheckedAgainstThePairedKey" classname="com.edgeore.app.ContributionSessionTest" time="0.16"/>
+  <testcase name="realPartsExplainWhatIsMissing" classname="com.edgeore.app.ContributionSessionTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

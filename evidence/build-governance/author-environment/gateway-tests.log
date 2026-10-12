@@ -1,0 +1,13 @@
+test_bounds_and_identifier (test_gateway.GatewayTests.test_bounds_and_identifier) ... ok
+test_cancel_blocks_retrieval_and_reupload (test_gateway.GatewayTests.test_cancel_blocks_retrieval_and_reupload) ... ok
+test_modified_content_refused (test_gateway.GatewayTests.test_modified_content_refused) ... ok
+test_repeated_upload_is_idempotent (test_gateway.GatewayTests.test_repeated_upload_is_idempotent) ... ok
+test_reusing_job_for_different_content_fails (test_gateway.GatewayTests.test_reusing_job_for_different_content_fails) ... ok
+test_store_survives_restart (test_gateway.GatewayTests.test_store_survives_restart) ... ok
+test_auth_required (test_gateway.HttpTests.test_auth_required) ... ok
+test_upload_observe_retrieve_cancel (test_gateway.HttpTests.test_upload_observe_retrieve_cancel) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.024s
+
+OK

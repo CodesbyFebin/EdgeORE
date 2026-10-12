@@ -51,7 +51,8 @@ fun NodesScreen(vm: EdgeOreViewModel) {
     SectionTitle("Owned Nodes", "Use your phone or Ubuntu host.")
 
     EdgeCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.edgeore.app.ui.components.IconTile(EdgeIcons.Nodes, tint = if (rec == null) EdgeColors.copper else EdgeColors.mint)
             Column(Modifier.weight(1f)) {
                 Text("Ubuntu host", style = MaterialTheme.typography.titleMedium)
                 Text(if (rec == null) "No node paired" else Format.short(rec.fingerprint, 8), color = if (rec == null) EdgeColors.copper else EdgeColors.textPrimary, fontFamily = FontFamily.Monospace)
@@ -74,7 +75,7 @@ fun NodesScreen(vm: EdgeOreViewModel) {
     }
 
     node.status?.let { Notice(it) }
-    node.error?.let { Notice(it, error = true) }
+    node.error?.let { com.edgeore.app.ui.components.PlainNotice(it, com.edgeore.app.ui.components.PlainError.Area.NODE) }
 
     if (rec == null) PairingForm(vm, node.busy)
 
@@ -143,6 +144,7 @@ private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
     var challenge by rememberSaveable { mutableStateOf("") }
     var code by rememberSaveable { mutableStateOf("") }
     var exportScope by rememberSaveable { mutableStateOf(false) }
+    var proofScope by rememberSaveable { mutableStateOf(false) }
     val parsed = runCatching { NodeAgentProtocol.parseChallenge(challenge) }
 
     EdgeCard {
@@ -150,7 +152,7 @@ private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
             androidx.compose.material3.Icon(EdgeIcons.Link, null, tint = EdgeColors.copper)
             Text("Scoped pairing", style = MaterialTheme.typography.titleMedium)
         }
-        Text("On your Ubuntu host run the DeProof node agent: deproof-node -pair-scopes READ_NODE. It prints a 2-minute challenge, a single-use code and its TLS certificate SHA-256. The agent listens on loopback only; reach it with `adb reverse tcp:9843 tcp:9843` or an SSH tunnel.",
+        Text("On your Ubuntu host run the DeProof node agent: deproof-node -pair-scopes READ_NODE (add ,RUN_PROOF_JOB and -proof-tool/-proof-job/-proof-owner for Start Mining's proof job). It prints a 2-minute challenge, a single-use code and its TLS certificate SHA-256. The agent listens on loopback only; reach it with `adb reverse tcp:9843 tcp:9843` or an SSH tunnel.",
             style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
         val shape = RoundedCornerShape(24.dp)
         OutlinedTextField(endpoint, { endpoint = it }, label = { Text("Node endpoint (https)") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
@@ -166,8 +168,10 @@ private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
         // The whole row (box + label) is one 48dp+ toggle, so TalkBack reads the label with the checked state.
         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = exportScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = { exportScope = it }),
             verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = exportScope, onCheckedChange = null); Text("EXPORT_PUBLIC_RECORDS (optional; host must allow)") }
+        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = proofScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = { proofScope = it }),
+            verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = proofScope, onCheckedChange = null); Text("RUN_PROOF_JOB (optional; lets Start Mining run the node's pinned proof job)") }
         PrimaryAction("Pair your node", icon = EdgeIcons.Link, enabled = parsed.isSuccess && cert.isNotBlank() && code.isNotBlank(), loading = busy) {
-            vm.pairNode(endpoint, cert, challenge, code, listOfNotNull("READ_NODE", if (exportScope) "EXPORT_PUBLIC_RECORDS" else null))
+            vm.pairNode(endpoint, cert, challenge, code, listOfNotNull("READ_NODE", if (exportScope) "EXPORT_PUBLIC_RECORDS" else null, if (proofScope) "RUN_PROOF_JOB" else null))
         }
     }
 }

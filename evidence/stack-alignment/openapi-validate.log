@@ -1,0 +1,2 @@
+services/storage-gateway/openapi.yaml: OK
+validator: openapi-spec-validator 0.7.1 (Apache-2.0), installed in a throwaway venv on the build host, not a project dependency

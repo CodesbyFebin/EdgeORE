@@ -42,5 +42,6 @@ object EdgeIcons {
     val Wifi = outline("wifi", "M2 9a15 15 0 0 1 20 0", "M5 13a10 10 0 0 1 14 0", "M8.5 16.5a5 5 0 0 1 7 0", "M12 20h.01")
     val Check = outline("check", "M5 12l5 5 9-10")
     val Cross = outline("cross", "M6 6l12 12", "M18 6L6 18")
+    val Ore = outline("ore", "M12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16z", "M5 19L19 5")
     val Clock = outline("clock", "M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z", "M12 7v5l3 2")
 }

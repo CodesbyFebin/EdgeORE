@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -85,6 +86,9 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
         onDelete = vm::deleteVault,
         onAllowance = vm::setAllocationMb,
     )
+
+    val gateway by vm.gateway.collectAsStateWithLifecycle()
+    GatewaySetupCard(gateway, onSave = vm::saveGateway, onRemove = vm::removeGateway)
 
     EdgeCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -403,5 +407,37 @@ private fun BackupStatusDetail(f: VaultFileView) {
         j?.restoreDetail?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }
         if (j == null) Text("No backup job exists for this file.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Text("Device-bound encrypted backup only: cross-device recovery is not implemented.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+/**
+ * Setup for the owner's storage gateway (services/storage-gateway behind an HTTPS proxy). Used by Start Mining's
+ * encrypted-chunk round trip. SPKI pins are required: without one the part stays "Not configured".
+ */
+@Composable
+fun GatewaySetupCard(g: com.edgeore.app.GatewayState, onSave: (endpoint: String, token: String, pins: String) -> Unit, onRemove: () -> Unit) {
+    var endpoint by rememberSaveable { mutableStateOf(g.endpoint ?: "") }
+    var token by remember { mutableStateOf("") }
+    var pins by rememberSaveable { mutableStateOf("") }
+    EdgeCard {
+        Text("Your storage gateway", style = MaterialTheme.typography.titleMedium)
+        if (g.endpoint != null) {
+            Text("Set up: ${g.endpoint} · ${g.pinCount} SPKI pin${if (g.pinCount == 1) "" else "s"} · token ${if (g.tokenStored) "stored (Keystore-encrypted)" else "missing"}",
+                color = EdgeColors.mint, style = MaterialTheme.typography.bodyMedium)
+        } else {
+            Text("Not configured: set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+        }
+        Text("Run services/storage-gateway on a host you own behind an HTTPS proxy. Enter its origin, its bearer token and the SHA-256 SPKI pin of its certificate (sha256/… as printed by openssl). Requests are refused in the TLS handshake unless the pin matches.",
+            color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        OutlinedTextField(endpoint, { endpoint = it }, label = { Text("Gateway origin (https://host:port)") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(token, { token = it }, label = { Text("Bearer token (32+ characters)") }, singleLine = true,
+            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(pins, { pins = it }, label = { Text("SPKI pins, one per line") }, minLines = 2, modifier = Modifier.fillMaxWidth())
+        g.error?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium) }
+        g.note?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SecondaryAction("Save gateway", enabled = endpoint.isNotBlank() && token.isNotBlank() && pins.isNotBlank()) { onSave(endpoint, token, pins); token = "" }
+            if (g.endpoint != null) SecondaryAction("Remove", danger = true, onClick = onRemove)
+        }
     }
 }

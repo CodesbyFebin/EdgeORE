@@ -1,0 +1,68 @@
+{
+  "phase": "ACTIVE",
+  "parts": [
+    {
+      "kind": "NODE_PROOF",
+      "rounds": 1,
+      "status": "Running",
+      "measurements": [
+        {
+          "unit": "jobs",
+          "label": "Proof jobs verified",
+          "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+          "value": 1
+        },
+        {
+          "unit": "ms",
+          "label": "Proof job time, total",
+          "source": "this phone's monotonic clock",
+          "value": 176
+        },
+        {
+          "unit": "ms",
+          "label": "Current proof job",
+          "source": "this phone's monotonic clock, waiting for the node",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "kind": "GATEWAY_ROUND_TRIP",
+      "rounds": 1,
+      "status": "Waiting",
+      "measurements": [
+        {
+          "unit": "bytes",
+          "label": "Sent to your gateway",
+          "source": "counted by this phone as written to the TLS stream",
+          "value": 262205
+        },
+        {
+          "unit": "bytes",
+          "label": "Stored on your gateway",
+          "source": "one chunk; gateway acknowledged SHA-256 13324144eaea\u2026 at 2026-10-12T03:31:28.494435+00:00",
+          "value": 262205
+        },
+        {
+          "unit": "bytes",
+          "label": "Read back from your gateway",
+          "source": "counted by this phone as read from the TLS stream",
+          "value": 262205
+        },
+        {
+          "unit": "round trips",
+          "label": "Round trips verified",
+          "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+          "value": 1
+        },
+        {
+          "unit": "ms",
+          "label": "Transfer time, total",
+          "source": "this phone's monotonic clock",
+          "value": 48
+        }
+      ]
+    }
+  ],
+  "tMs": -1
+}

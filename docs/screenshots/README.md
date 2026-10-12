@@ -54,3 +54,51 @@ The suite now orders an `OnboardingSeen` rule before the Compose rule, so the ex
 | new `09-plain-language.png` | `PlainLanguageCard` over a real `TransferReview.prepare` draft built from a fixed test key, destination and blockhash (no wallet, no RPC, so the fee reads *unknown*), and over an unsupported draft. | `PlainLanguage.kt` |
 
 `02-ai`, `03-storage` and `05-receipts` (and their `full/` versions) are unchanged. These are JVM renders, not device screenshots.
+
+### Re-record: agentic redesign (feature/agentic-redesign)
+
+Intentional re-record of every app-shell baseline after the redesign that adapts patterns from OptimAI Agentic for Android
+(see `docs/analysis/agentic-android-review.md`). Fresh-install state is unchanged: no wallet, node, host, model or receipts.
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| all `0[1-6]-*.png`, all `full/0[1-6]-*-full.png`, `full/08-review-filled-full.png` | The shell now shows the "Devnet · Review candidate" / "Test SOL only" strip under the header (design.md §3), which moves every screen down. | `ui/EdgeOreApp.kt`, `ui/components/DesignKit.kt` |
+| `01-mine*.png` | Heading "Your edge, under your control"; Now rows use icon tiles; the wallet card is a fact card with a "Not connected" pill. | `ui/screens/MineScreen.kt` |
+| `02-ai*.png` | Execution and on-device cards use the fact-card layout and status pills; empty conversation text instead of a blank area. | `ui/screens/AiScreen.kt`, `ui/components/Chat.kt` |
+| `04-nodes*.png` | Host card gains an icon tile. | `ui/screens/NodesScreen.kt` |
+| `05-receipts*.png` | New "Receipt activity" card; with no receipts it shows "Nothing to plot yet" and draws no chart. | `ui/screens/ReceiptsScreen.kt`, `ui/components/Charts.kt` |
+
+`07-onboarding*.png` and `09-plain-language.png` did not change (onboarding has no shell header; the plain-language card is rendered alone).
+The new chart, chat bubbles and badges only appear with real local data, so no baseline shows them with values; their logic is covered by
+`ChartsAndActivityTest`, `MarkdownTest`, `PlainErrorTest` and `NavBadgesTest`.
+
+### Re-record: Mine rock-and-pickaxe art (feature/mine-pickaxe-animation)
+
+Intentional. The Edge Mode ring on Mine is replaced by the owner's rock-and-pickaxe art (`docs/design/mine-animation.md`).
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| `full/01-mine-full.png` | Ring replaced by the rock and pickaxe in its **idle frame**: fresh install has Edge Mode paused, so the pickaxe rests at its 24° tilt and nothing moves. Under it: the **MINE · PAUSED** toggle label and the caption "Animation only: the pickaxe swings while Edge Mode is on. No workload runs and nothing is earned." | `ui/screens/MineScreen.kt`, `ui/components/MiningAnimation.kt`, `res/drawable-nodpi/mine_*.webp` |
+
+`01-mine.png` (Pixel 7 viewport) did not change: the art sits below its fold. No other baseline changed. No baseline shows the
+swinging pose; the running, paused and reduced-motion poses are covered by `MiningMotionTest` and `MiningAnimationComposeTest`.
+
+### Re-record: Start Mining contribution session (feature/contribution-session)
+
+Intentional. The Mine art now follows a real contribution session (`docs/contribution/session.md`); Storage and Nodes gain
+the setup it needs.
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| `full/01-mine-full.png` | Under the resting pickaxe: **Session: Idle**, the **Start Mining** button, the copy saying what a session runs and that nothing is earned, "Nothing to run yet", and *What this session runs* with both parts **Not configured** (fresh install: no node, no gateway). The art is no longer a toggle; **Resume Edge Mode** is a separate button. The "Animation only" caption is gone. | `ui/screens/MineScreen.kt` (`MiningSessionPanel`), `ui/components/MiningAnimation.kt` |
+| `full/03-storage-full.png` | New *Your storage gateway* card (Not configured; origin, token, SPKI pins) after the vault section. | `ui/screens/StorageScreen.kt` (`GatewaySetupCard`) |
+| `04-nodes.png`, `full/04-nodes-full.png` | Pairing hint mentions `RUN_PROOF_JOB` and the proof flags; new optional **RUN_PROOF_JOB** checkbox. | `ui/screens/NodesScreen.kt` |
+
+No baseline shows a running session: the ACTIVE panel and the swing are covered by `MiningSessionPanelTest`,
+`MiningAnimationComposeTest` and `MiningMotionTest`, and previewed (not as a baseline) from the real end-to-end run.
+
+### Re-record: read-only ORE v3 board (feature/ore-grid-readonly)
+
+Intentional: `full/01-mine-full.png` (the central "ORE board · Read-only · mainnet observation" entry above the session panel),
+`07-onboarding.png`, `full/07-onboarding-full.png`, `full/07-onboarding-fontscale-1.5.png` (the onboarding line now reads
+"No mainnet transactions and no real money (the ORE board only reads mainnet)"). No other baseline changed in the record run.

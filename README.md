@@ -3,6 +3,11 @@
 
 **Your Edge. Your AI. Your Proof.**
 
+> **Every wallet action on Seeker produces a signed receipt you can verify offline — including the ones you refuse.**
+>
+> Pitch package (retrospective + dApp Store launch; submissions closed 8 Oct 2026): [`docs/pitch/EdgeORE-pitch.md`](docs/pitch/EdgeORE-pitch.md) · [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md)
+> Latest gate `84a788cbd926` ([evidence](evidence/build-84a788cbd926/summary.md)): Android 330 tests (325 passed, 5 skipped) · receipt checker 14 · gateway 17 · kit 22 · build-policy 12 · manifest-checker 9 · lint clean. Device gates NOT_RUN. Devnet only; no rewards, no token; not production-ready.
+
 ### Know what your wallet signs. Keep evidence of what happened.
 
 EdgeORE is a native **Kotlin / Jetpack Compose Android app** for reviewing a supported Solana transaction before signing, submitting it as a separate action, and exporting a receipt that can be checked outside the app. It also includes clients for AI and nodes on infrastructure you own.
@@ -87,7 +92,7 @@ The previously reported single-byte mutation experiment has no preserved script 
 
 | Destination | Purpose and current boundary |
 |---|---|
-| **Mine** | Opens with a *Now* overview (wallet, operations awaiting an outcome, receipts, vault), then Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
+| **Mine** | Opens with a *Now* overview (wallet, operations awaiting an outcome, receipts, vault), then the rock-and-pickaxe art with **Start Mining**: a contribution session on your own paired node and storage gateway (proof jobs, an encrypted chunk stored and read back), measured and receipted; the pickaxe swings only while it runs. See [docs/contribution/session.md](docs/contribution/session.md). No ORE, SKR, points or earnings. A central **ORE board** icon opens a read-only view of the live ORE v3 board on mainnet (per-square SOL, motherlode, round time) with a text-only advisor; EdgeORE has no ORE transaction path. See [docs/ore/README.md](docs/ore/README.md). |
 | **Private AI** | Ollama-compatible chat and document attachment to an owned host. On the integration candidate: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
 | **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. The device-bound vault is a design decision, not a defect: vault keys never leave this phone, so uninstalling makes the vault unrecoverable. Cross-device restore needs a separate passphrase-wrapped backup envelope, which is not built yet. |
 | **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
@@ -147,6 +152,8 @@ Configure `http://127.0.0.1:11434` in the app. Cleartext is allowed only to loop
 
 **Nodes:** use the [pinned build script](scripts/build-node-agent.sh), [pin record](scripts/node-agent.pin) and [integration runner](scripts/node-agent-it.sh). The dependency binary is named `deproof-node`; its upstream lineage is retained for provenance. Android pairing and TLS behavior still need runtime qualification. Forward the actual configured agent port and use its live challenge, single-use code and certificate fingerprint.
 
+**Start Mining (contribution session):** pair the node with `RUN_PROOF_JOB` and an owner-pinned proof job, and set up your [storage gateway](services/storage-gateway/) with its SPKI pin in Storage. A session runs only with Edge Mode on, its gates passing and Wi-Fi observed, stops on **Stop**, and records signed receipts with measured numbers. A part that is not set up shows *Not configured* and is not counted. The [end-to-end run](scripts/session-e2e.sh) on the build machine is recorded in [`evidence/contribution-session/`](evidence/contribution-session/); on a phone it is NOT_RUN.
+
 ## Architecture and trust boundaries
 
 The Compose app coordinates four distinct paths: MWA wallet signing, devnet RPC submission/observation, local receipt and vault storage, and owned-host AI/node clients.
@@ -175,3 +182,11 @@ No repository `LICENSE` was found in the inspected source snapshot. The owner mu
 
 **Built by CodesbyFebin.**  
 *A useful edge starts with clear permissions and inspectable results.*
+
+## Experimental extension kit
+
+Optional owned-storage gateway, build governance and offline consent/evidence tools are development candidates. Android integration and runtime qualification remain incomplete. No new payout, portable restore or production claim is implied.
+
+- [Fork and extension guide](FORK-GUIDE.md)
+- [Research and roadmap](docs/extensions/RESEARCH-AND-ROADMAP.md)
+- [Offline kit](tools/edgeore-kit/README.md)

@@ -84,9 +84,9 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
         }
     }
 
-    fun command(sessionId: String, key: Ed25519.KeyPair, action: String, now: Instant = Instant.now()): NodeResult<JSONObject> {
+    fun command(sessionId: String, key: Ed25519.KeyPair, action: String, now: Instant = Instant.now(), paramsJson: String = "{}"): NodeResult<JSONObject> {
         val op = NodeAgentProtocol.newOperationId()
-        val payload = NodeAgentProtocol.commandPayload(sessionId, op, now.plusSeconds(30), action).toByteArray(Charsets.UTF_8)
+        val payload = NodeAgentProtocol.commandPayload(sessionId, op, now.plusSeconds(30), action, paramsJson).toByteArray(Charsets.UTF_8)
         val body = NodeAgentProtocol.signedEnvelope(payload, key.sign(payload))
         val digest = Sha256.hex(payload)
         return when (val r = post("/command", body)) {

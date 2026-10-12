@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.NavBadgesTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-10T20:47:33" hostname="grok-bot-vm-446931431" time="0.013">
+  <properties/>
+  <testcase name="badgesComeOnlyFromLocalStateAndHideAtZero" classname="com.edgeore.app.NavBadgesTest" time="0.013"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

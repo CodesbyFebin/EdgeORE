@@ -151,6 +151,18 @@ class LocalVault(
         return BackupBlob(id, sealed, Sha256.hex(sealed), sealed.size.toLong(), Sha256.hex(plain), plain.size.toLong())
     }
 
+    /**
+     * Seals [plain] as a detached EOV2 object (fresh random id, empty name) with the vault key without storing it on
+     * this phone. Used for the contribution session's gateway chunk; [openEnvelope] with the returned id reads it back.
+     */
+    fun sealDetached(plain: ByteArray): BackupBlob {
+        if (plain.size > maxPlainBytes) throw VaultException.TooLarge(maxPlainBytes)
+        val id = Hex.encode(ByteArray(16).also(random::nextBytes))
+        val key = try { keyProvider() } catch (_: Exception) { throw VaultException.KeyUnavailable() }
+        val sealed = seal(key, Hex.decode(id), ByteArray(0), plain)
+        return BackupBlob(id, sealed, Sha256.hex(sealed), sealed.size.toLong(), Sha256.hex(plain), plain.size.toLong())
+    }
+
     /** SHA-256 of the stored encrypted object (never of plaintext), for receipts. */
     fun objectSha256(id: String): String {
         val f = fileFor(id)

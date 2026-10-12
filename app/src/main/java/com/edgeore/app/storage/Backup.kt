@@ -14,7 +14,8 @@ import java.time.Instant
 /*
  * Optional device-bound encrypted backup: Android -> authenticated EdgeORE backend -> owned IPFS node.
  *
- * No EdgeORE backend exists in this repository, so the app ships only [NotConfiguredBackupProvider].
+ * The app ships only [NotConfiguredBackupProvider]. An optional prototype client for the owned gateway in
+ * services/storage-gateway exists ([OwnedGatewayBackupProvider]) but nothing in the app constructs it.
  * Everything below is the contract and the client-side state machine a real backend client must
  * plug into. It never simulates an upload: with the shipped provider every remote action is refused.
  *

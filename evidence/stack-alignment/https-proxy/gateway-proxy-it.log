@@ -1,0 +1,18 @@
+caddy v2.11.7, gateway quota 4096 bytes, proxy https://127.0.0.1:18443 (loopback only)
+PASS TLS refused without trusting the self-signed cert (expected 000, got 000)
+PASS TLS refused with a wrong SPKI pin (expected 000, got 000)
+PASS auth: no token -> 401 (expected 401, got 401)
+PASS auth: wrong token -> 401 (expected 401, got 401)
+PASS capabilities -> 200 (expected 200, got 200)
+PASS upload -> 200 (expected 200, got 200)
+PASS status -> 200 acknowledged (expected acknowledged, got acknowledged)
+PASS download -> 200 (expected 200, got 200)
+PASS download bytes match (expected 66723e4b35f8cbcf87837cb79a02a3bdc3bd85103cf36b1a2db7b2e04f823505, got 66723e4b35f8cbcf87837cb79a02a3bdc3bd85103cf36b1a2db7b2e04f823505)
+PASS quota exceeded -> 409 (expected 409, got 409)
+PASS body over 8,001,024 bytes -> 413 from the proxy (expected 413, got 413)
+PASS undocumented path -> 404 at the proxy (expected 404, got 404)
+PASS cancel -> 200 (expected 200, got 200)
+PASS download after cancel -> 404 (expected 404, got 404)
+curl checks: 14 passed, 0 failed
+suites=1 tests=1 passed=1 failures=0 errors=0 skipped=0
+JVM provider test exit: 0

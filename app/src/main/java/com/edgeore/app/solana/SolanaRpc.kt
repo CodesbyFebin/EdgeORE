@@ -5,9 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.Base64
 
 /** Read-only observations carry their source and freshness; failures are explicit, never zero. */
@@ -19,7 +16,8 @@ sealed interface RpcObservation {
 class RpcException(message: String) : Exception(message)
 
 /**
- * Minimal JSON-RPC client. Devnet only in this build: the app never targets mainnet.
+ * Minimal JSON-RPC client for wallet actions. Devnet only in this build: transactions never target mainnet.
+ * (Read-only observation of other clusters uses [ReadOnlyAccountRpc], which has no transaction methods.)
  */
 class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: Int = 10_000) : ChainGateway {
     companion object {
@@ -83,39 +81,9 @@ class SolanaRpc(private val endpoint: String = DEVNET, private val timeoutMs: In
         h
     }
 
-    private fun call(method: String, params: JSONArray): JSONObject {
-        val body = JSONObject().put("jsonrpc", "2.0").put("id", 1).put("method", method).put("params", params).toString()
-        val conn = URL(endpoint).openConnection() as HttpURLConnection
-        try {
-            conn.requestMethod = "POST"
-            conn.instanceFollowRedirects = false
-            conn.connectTimeout = timeoutMs
-            conn.readTimeout = timeoutMs
-            conn.doOutput = true
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
-            val code = conn.responseCode
-            if (code != 200) throw RpcException("RPC HTTP $code")
-            val bytes = conn.inputStream.use { readBounded(it) }
-            val json = JSONObject(String(bytes, Charsets.UTF_8))
-            if (json.has("error")) throw RpcException("RPC error: " + json.getJSONObject("error").optString("message", "unknown"))
-            return json
-        } finally {
-            conn.disconnect()
-        }
-    }
+    private val http = JsonRpcHttp(endpoint, timeoutMs, MAX_RESPONSE)
 
-    private fun readBounded(stream: java.io.InputStream): ByteArray {
-        val out = ByteArrayOutputStream()
-        val buf = ByteArray(8192)
-        while (true) {
-            val n = stream.read(buf)
-            if (n < 0) break
-            if (out.size() + n > MAX_RESPONSE) throw RpcException("RPC response too large")
-            out.write(buf, 0, n)
-        }
-        return out.toByteArray()
-    }
+    private fun call(method: String, params: JSONArray): JSONObject = http.call(method, params)
 
 }
 

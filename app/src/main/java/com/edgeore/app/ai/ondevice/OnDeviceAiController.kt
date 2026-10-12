@@ -190,6 +190,25 @@ class OnDeviceAiController(
         }
     }
 
+    /**
+     * One prompt with a caller-supplied system prompt (the ORE advisor), on the selected downloaded model, outside the
+     * chat history. Returns null when no downloaded model is selected or a run is already in progress.
+     */
+    suspend fun generateOnce(system: String, prompt: String): String? {
+        val st = _state.value
+        val m = st.selected ?: return null
+        if (!st.selectedDownloaded || st.phase != OnDevicePhase.IDLE) return null
+        return runtimeLock.withLock {
+            withContext(io) {
+                if (runtimeId != m.id) {
+                    runCatching { runtime?.close() }; runtime = null; runtimeId = null
+                    runtime = runtimeLoader.load(store.fileFor(m), m); runtimeId = m.id
+                }
+                runtime!!.generate(system, prompt.take(MAX_PROMPT_CHARS * 4))
+            }
+        }
+    }
+
     /** Asks LiteRT-LM to stop the current generation. */
     fun cancelGeneration(): Boolean {
         val stopped = runtime?.cancel() ?: false

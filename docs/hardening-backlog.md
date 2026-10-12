@@ -14,3 +14,35 @@ at `d675002bd701`. These are known properties of the **debug review candidate**;
 | H5 | AI tab copy: "On-device execution" | Observed on Appetize (API 33) against the `d675002bd701` APK: the Private AI tab shows the label **On-device execution**, although this build talks to an owned Ollama-compatible host and has no embedded AI runtime. See [`evidence/appetize-d675002bd701/SESSION.md`](../evidence/appetize-d675002bd701/SESSION.md). | Post-submission UI copy fix so the label matches the owned-host architecture; do not treat the current label as an on-device inference claim. |
 
 Not in this list: the runtime qualification items (wallet, devnet transfer, restart recovery, device Keystore, video). Those are tracked as NOT_RUN in `evidence/SUBMISSION-MANIFEST.md` and `docs/qualification-status.md`.
+
+## Added for the dApp Store launch package (2026-10-12, `84a788cbd926`)
+
+| # | Item | Status | Planned action |
+|---|---|---|---|
+| H6 | Detekt | DESIGN | Add the Gradle plugin at a pinned version via the version catalog; baseline current findings; fail CI on new ones. |
+| H7 | ktlint | DESIGN | Pinned ktlint check task in CI; format-only commits kept separate from logic. |
+| H8 | MobSF static scan | NOT_RUN | Scan the release APK; record report hash under `evidence/`; triage findings here. |
+| H9 | Release signing | BLOCKED (owner key) | See H3. Key held outside the repo; record cert SHA-256 only. |
+| H10 | bundletool | NOT_RUN | Build an AAB, `bundletool build-apks` + `validate`, record outputs and sizes. |
+| H11 | Solana dApp Store flow | NOT_RUN | Publisher/app NFT mint via the dApp Store publishing CLI, listing copy matching the pitch labels, privacy policy, store screenshots. |
+| H12 | Store declarations | DESIGN | Declare `CAMERA` (QR entry, optional), `INTERNET`; no analytics/tracking SDKs; data-safety text consistent with on-device vault. |
+| H13 | LICENSE | Missing | Repo has `NOTICE` only; owner chooses a licence before listing. |
+| D1 | BLE, mesh, WebRTC, libp2p transports | Deferred | Not in scope until device gates pass. |
+
+## Toolchain backlog (2026-10-12; not added to the build yet)
+
+Build stack today (`gradle/libs.versions.toml`, `gradle/wrapper/gradle-wrapper.properties`): Gradle 8.9, AGP 8.7.3,
+Kotlin 2.0.21, Compose BOM 2024.12.01, MWA `mobile-wallet-adapter-clientlib-ktx` 2.0.3. Nothing below is wired; each item
+needs its own branch, a pinned version in the catalog, the build policy updated and the gates re-run.
+
+| # | Item | Compatibility / status | Planned action |
+|---|---|---|---|
+| T1 | Detekt | detekt 1.23.8 is built against Kotlin 2.0.21; its compatibility table lists Gradle 8.12.1 / AGP 8.8.1 as tested and the plugin needs Gradle ≥ 6.8.3 ([detekt.dev compatibility](https://detekt.dev/docs/introduction/compatibility/)). Expected to work on Gradle 8.9 / AGP 8.7.3, **not verified here**. detekt 2.0 needs Gradle ≥ 8.14.3, so it is out until a Gradle upgrade. | Add `io.gitlab.arturbosch.detekt` 1.23.8 with a committed baseline (no new findings gate), report its findings separately. |
+| T2 | ktlint | `org.jlleitschuh.gradle.ktlint` 12.1.2 needs Gradle ≥ 7.4 and AGP ≥ 4.1.0 ([ktlint-gradle](https://github.com/jlleitschuh/ktlint-gradle)); the ktlint engine version must be pinned (the plugin's default can change between patches). Alternatively detekt-formatting 1.23.8 wraps ktlint. **Not verified on this build.** | Choose one formatter path, pin it, run it once as report-only, then gate. |
+| T3 | MobSF | Static scan of the release APK; not run. | Run MobSF as a pre-release scan of the signed release artifact; record its version, the APK hash and the report; triage findings into this file. Not a CI dependency. |
+| T4 | Release signing and bundletool | No release key or signed release exists (H3). | Owner-held key outside the repo; signed `bundleRelease`; `bundletool build-apks` / `get-size total` and an install test from the generated APK set; record hashes in `release/checksums.txt`. |
+| T5 | Google Play declarations | Not filed. EdgeORE has wallet review/sign/submit (devnet) and a WorkManager scheduler. | Before any Play listing: the financial-features declaration (describe the devnet-only wallet review, no custody, no lending or trading), and, only if a foreground service is ever added, its FGS type and justification (none is declared today; verify in the merged manifest first). |
+| T6 | Solana dApp Store | Not published. | Follow the dApp Store publisher flow (publisher NFT, app and release NFTs via the publishing CLI, signed release APK, policy review) once T3–T4 are done and the device gates have evidence. Owner authorization required. |
+
+Deferred (no design or build planned in this release): BLE transport, Meshrabiya mesh, WebRTC and libp2p peer links. They
+would add new network surfaces and consent questions; revisit only with a threat model and a qualified use case.

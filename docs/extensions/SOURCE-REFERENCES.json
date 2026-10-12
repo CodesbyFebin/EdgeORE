@@ -1,0 +1,29 @@
+{
+  "reviewDate": "2026-10-11",
+  "references": [
+    {
+      "repository": "RunanywhereAI/runanywhere-sdks",
+      "readme_blob": "b0f2837b7412048bd0d7e043d860abaa2fd2ad21",
+      "url": "https://github.com/RunanywhereAI/runanywhere-sdks/blob/main/README.md",
+      "scope": "README review; no upstream source copied"
+    },
+    {
+      "repository": "pojntfx/gon2n",
+      "readme_blob": "98852b953e319f5ec5900fca75809c5136d1af70",
+      "url": "https://github.com/pojntfx/gon2n/blob/main/README.md",
+      "scope": "README review; no upstream source copied"
+    },
+    {
+      "repository": "maidsafe/autonomi",
+      "readme_blob": "2d82f63fc17fbcdbcbc674db1d5d427eb365abfe",
+      "url": "https://github.com/maidsafe/autonomi/blob/main/README.md",
+      "scope": "README review; no upstream source copied"
+    },
+    {
+      "repository": "CrossPaste/crosspaste-desktop",
+      "readme_blob": "e5fc1623d2986c75f77a3bf3d634bde2f738ba0c",
+      "url": "https://github.com/CrossPaste/crosspaste-desktop/blob/main/README.md",
+      "scope": "README review; no upstream source copied"
+    }
+  ]
+}

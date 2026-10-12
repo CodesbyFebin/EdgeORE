@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "workload": "ai.inference",
+  "destination": "on-device",
+  "dataCategories": ["prompt"],
+  "maxBytes": 4096,
+  "maxSeconds": 30,
+  "retentionSeconds": 0,
+  "expiresAt": 1,
+  "revocationId": "EXAMPLE-EXPIRED-NOT-AUTHORIZATION"
+}

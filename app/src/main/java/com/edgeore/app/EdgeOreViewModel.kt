@@ -15,12 +15,29 @@ import com.edgeore.app.contribution.JobState
 import com.edgeore.app.contribution.LastRun
 import com.edgeore.app.contribution.LastRunStore
 import com.edgeore.app.ai.OwnedHostModelClient
+import com.edgeore.app.ore.AdvisorMessage
+import com.edgeore.app.ore.AdvisorState
+import com.edgeore.app.ore.OreAdvisor
+import com.edgeore.app.ore.OreClock
+import com.edgeore.app.ore.OreObserver
+import com.edgeore.app.ore.OreState
+import com.edgeore.app.solana.ReadOnlyAccountRpc
 import com.edgeore.app.crypto.Base58
 import com.edgeore.app.crypto.Sha256
 import com.edgeore.app.device.DeviceObservations
 import com.edgeore.app.device.DeviceResourcesReader
 import com.edgeore.app.device.DeviceSnapshot
 import com.edgeore.app.device.KeystoreReceiptSigner
+import com.edgeore.app.contribution.ContributionSession
+import com.edgeore.app.contribution.GatewayRoundTripPart
+import com.edgeore.app.contribution.GatewaySetup
+import com.edgeore.app.contribution.NodeProofPart
+import com.edgeore.app.contribution.PairedNode
+import com.edgeore.app.contribution.SessionPart
+import com.edgeore.app.contribution.SessionView
+import com.edgeore.app.device.EdgePolicy
+import com.edgeore.app.device.GatewayCredentialVault
+import com.edgeore.app.storage.OwnedGatewayBackupProvider
 import com.edgeore.app.device.NodeKeyVault
 import com.edgeore.app.device.ResourceSettings
 import com.edgeore.app.device.ResourceSettingsStore
@@ -152,6 +169,13 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val lastContributionRun: StateFlow<LastRun?> = _lastContributionRun.asStateFlow()
     private var jobWatch: Job? = null
 
+    // User-started contribution session (Mine → Start Mining). Runs only on the owner's paired node and gateway.
+    private val gatewayVault = GatewayCredentialVault(app)
+    private val _gateway = MutableStateFlow(gatewayState())
+    val gateway: StateFlow<GatewayState> = _gateway.asStateFlow()
+    private val session = ContributionSession(viewModelScope, ::sessionParts, ::sessionBlocker, { d -> record(d); Unit })
+    val contributionSession: StateFlow<SessionView> = session.view
+
     private var documentText: String? = null
     // On-device LLM (LiteRT-LM, the Google AI Edge Gallery runtime). Weights are downloaded only after consent.
     private val onDeviceAi = OnDeviceAiController(
@@ -222,6 +246,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         }
         ResourceSettingsStore.save(prefs, s)
         _settings.value = s
+        if (old.edgeModeResumed && !s.edgeModeResumed) session.stop()
         if (ContributionPolicy.shouldSchedule(old) != ContributionPolicy.shouldSchedule(s)) applyContributionSchedule(s)
     }
 
@@ -255,6 +280,124 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         }
         _lastContributionRun.value = LastRunStore.read(prefs)
     }
+
+    // ---------- contribution session ----------
+    private fun gatewayState(error: String? = null, note: String? = null) =
+        GatewayState(gatewayVault.endpoint, gatewayVault.pins.size, gatewayVault.token() != null, error, note)
+
+    private fun gatewaySetup(): GatewaySetup? = gatewayVault.endpoint?.let { GatewaySetup(it, gatewayVault.pins) { gatewayVault.token() } }
+
+    private fun sessionParts(): List<SessionPart> = listOf(
+        NodeProofPart(_node.value.record?.let { PairedNode(it.endpoint, it.certSha256, it.fingerprint, it.sessionId, it.scopes) }, { vault.load() }),
+        GatewayRoundTripPart(gatewaySetup(), { fileVault }),
+    )
+
+    /** Null while a session may run: Edge Mode on, every policy gate passes and an unmetered network is observed. */
+    private fun sessionBlocker(): String? {
+        refreshDevice()
+        val s = _settings.value
+        if (!s.edgeModeResumed) return "Edge Mode is paused"
+        EdgePolicy.evaluate(s, _device.value).gates.firstOrNull { !it.allowed }?.let { return "${it.name}: ${it.explanation}" }
+        if (_unmetered.value != true) return "an unmetered network (Wi-Fi) is not observed"
+        return null
+    }
+
+    fun refreshSession() = session.refresh()
+
+    /** Start Mining: turns Edge Mode on if it was paused, then starts one session (refused with a reason if a gate fails). */
+    fun startSession() {
+        if (!_settings.value.edgeModeResumed) updateSettings { it.copy(edgeModeResumed = true) }
+        session.start()
+    }
+
+    fun stopSession() = session.stop()
+
+    /** Saves the gateway origin, its SPKI pins (one per line) and the bearer token. Pins are required before use. */
+    fun saveGateway(endpoint: String, token: String, pinsText: String) {
+        val pins = pinsText.lines().map { it.trim() }.filter { it.isNotEmpty() }
+        val error = runCatching {
+            require(pins.isNotEmpty()) { "Add at least one SPKI pin (sha256/… or 64 hex characters)" }
+            require(token.length >= 32 && token.all { it.code in 33..126 }) { "The token must be at least 32 printable characters" }
+            OwnedGatewayBackupProvider(endpoint.trim(), { token }, pins) // validates the HTTPS origin and every pin
+        }.exceptionOrNull()?.message
+        if (error != null) { _gateway.value = gatewayState(error = error); return }
+        gatewayVault.save(endpoint.trim().trimEnd('/'), pins, token)
+        _gateway.value = gatewayState(note = "Saved. The token is encrypted with an Android Keystore key and is not shown again.")
+        session.refresh()
+    }
+
+    fun removeGateway() {
+        gatewayVault.clear()
+        _gateway.value = gatewayState(note = "Gateway removed from this phone. Chunks already stored stay on your gateway.")
+        session.refresh()
+    }
+
+    // ---------- ORE v3: read-only mainnet observation and a text-only advisor (no transaction path) ----------
+    private val _ore = MutableStateFlow(OreState(prefs.getString("ore.rpc", null) ?: OreState.DEFAULT_RPC))
+    val ore: StateFlow<OreState> = _ore.asStateFlow()
+    private val _advisor = MutableStateFlow(AdvisorState())
+    val advisor: StateFlow<AdvisorState> = _advisor.asStateFlow()
+    private var oreJob: Job? = null
+
+    fun refreshOre() {
+        if (oreJob?.isActive == true) return
+        val rpc = _ore.value.rpc
+        _ore.update { it.copy(loading = true) }
+        oreJob = viewModelScope.launch {
+            val r = runCatching { OreObserver(ReadOnlyAccountRpc(rpc)).read() }
+            _ore.update { st -> r.fold({ st.copy(snapshot = it, loading = false, error = null) }, { st.copy(loading = false, error = "Read failed: ${it.message ?: it.javaClass.simpleName}") }) }
+        }
+    }
+
+    fun setOreRpc(url: String) {
+        val u = url.trim()
+        val err = runCatching { ReadOnlyAccountRpc(u) }.exceptionOrNull()?.message
+        if (err != null) { _ore.update { it.copy(rpcError = err) }; return }
+        prefs.edit().putString("ore.rpc", u).apply()
+        _ore.update { OreState(rpc = u) }
+        refreshOre()
+    }
+
+    /** Which AI path the advisor would use, or null ("Not configured"). The owned host is preferred when a model is chosen. */
+    fun advisorBackend(): String? {
+        val a = _ai.value
+        if (a.selectedModel != null && a.endpoint.isNotBlank()) return "${a.selectedModel} on your owned host (${a.location ?: a.endpoint})"
+        val d = onDeviceAi.state.value
+        if (d.selectedDownloaded) return "${d.selected?.name} on this phone"
+        return null
+    }
+
+    fun askAdvisor(question: String) {
+        val snap = _ore.value.snapshot
+        val q = question.trim()
+        if (q.isEmpty() || _advisor.value.busy) return
+        if (snap == null) { _advisor.update { it.copy(error = "No board snapshot yet. Refresh first; nothing was sent.") }; return }
+        if (advisorBackend() == null) { _advisor.update { it.copy(error = OreAdvisor.NOT_CONFIGURED) }; return }
+        val clock = OreClock.label(OreClock.at(snap.board, snap.roundSlot, System.currentTimeMillis() - snap.observedAtMs, snap.slotRate))
+        val prompt = OreAdvisor.prompt(snap, clock, q)
+        _advisor.update { it.copy(busy = true, error = null, messages = it.messages + AdvisorMessage(true, q, System.currentTimeMillis())) }
+        viewModelScope.launch {
+            val r = runCatching {
+                val a = _ai.value
+                val model = a.selectedModel
+                if (model != null && a.endpoint.isNotBlank()) {
+                    val decision = withContext(Dispatchers.IO) { EndpointPolicy.check(a.endpoint) }
+                    if (decision !is EndpointPolicy.Decision.Allowed) error("Owned host refused at send time: ${(decision as EndpointPolicy.Decision.Refused).reason}. Nothing was sent.")
+                    OwnedHostModelClient(decision).chat(model, OreAdvisor.SYSTEM_PROMPT, prompt)
+                } else {
+                    onDeviceAi.generateOnce(OreAdvisor.SYSTEM_PROMPT, prompt) ?: error("The on-device model is busy or not downloaded. Nothing ran.")
+                }
+            }
+            _advisor.update { st ->
+                r.fold(
+                    { answer -> st.copy(busy = false, messages = st.messages + AdvisorMessage(false, OreAdvisor.check(answer, prompt).text, System.currentTimeMillis())) },
+                    { e -> st.copy(busy = false, error = e.message ?: e.javaClass.simpleName) },
+                )
+            }
+        }
+    }
+
+    fun clearAdvisor() = _advisor.update { AdvisorState() }
 
     // ---------- receipts ----------
     private fun refreshReceipts() = viewModelScope.launch(Dispatchers.IO) {

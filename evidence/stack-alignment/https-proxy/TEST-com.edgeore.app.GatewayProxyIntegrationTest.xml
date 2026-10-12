@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.GatewayProxyIntegrationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-11T10:01:43" hostname="grok-bot-vm-446931431" time="0.319">
+  <properties/>
+  <testcase name="uploadObserveDownloadQuotaAuthThroughHttpsProxy" classname="com.edgeore.app.GatewayProxyIntegrationTest" time="0.319"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

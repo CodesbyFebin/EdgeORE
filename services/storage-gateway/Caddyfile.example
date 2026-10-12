@@ -1,0 +1,56 @@
+# Sample Caddy (v2.11.x) front end for services/storage-gateway. Development sample, not a hardened deployment.
+# The gateway itself listens on plain HTTP at 127.0.0.1:19844; Caddy terminates TLS and enforces limits in front.
+#
+# Required environment:
+#   EDGEORE_PROXY_ADDR  listen address, e.g. 127.0.0.1:8443 (bind a public address only on a host you control)
+#   EDGEORE_TLS_CERT    PEM certificate (self-signed is fine; clients pin its SPKI SHA-256)
+#   EDGEORE_TLS_KEY     PEM private key for that certificate. Keep it out of version control.
+{
+	admin off
+	auto_https off
+	servers {
+		# Bound the time a client may take to send headers and the whole request (slow-client protection).
+		timeouts {
+			read_header 10s
+			read_body 60s
+			write 60s
+			idle 30s
+		}
+		max_header_size 16KB
+	}
+}
+
+https://{$EDGEORE_PROXY_ADDR} {
+	tls {$EDGEORE_TLS_CERT} {$EDGEORE_TLS_KEY} {
+		protocols tls1.2 tls1.3
+	}
+
+	# The gateway refuses bodies above 8,001,024 bytes; refuse them here first so they never reach it.
+	# A declared Content-Length over the limit gets a clean 413 before any body is forwarded. request_body max_size is
+	# the backstop for bodies without a Content-Length: Caddy cuts those off mid-stream, which the client sees as 502.
+	@too_large expression `{http.request.header.Content-Length}.matches("^[0-9]+$") && int({http.request.header.Content-Length}) > 8001024`
+	handle @too_large {
+		respond 413
+	}
+	request_body {
+		max_size 8001024
+	}
+
+	# Only the documented routes are forwarded (services/storage-gateway/openapi.yaml). Everything else gets 404 here.
+	@api path /v1/capabilities /v1/jobs/* /v1/objects/*
+	handle @api {
+		reverse_proxy 127.0.0.1:19844 {
+			# One upstream, no retries: an upload is never resent automatically.
+			lb_retries 0
+		}
+	}
+	handle {
+		respond 404
+	}
+
+	# No access log: request lines carry job ids and object digests, and headers carry the bearer token.
+	log {
+		output discard
+	}
+	header -Server
+}

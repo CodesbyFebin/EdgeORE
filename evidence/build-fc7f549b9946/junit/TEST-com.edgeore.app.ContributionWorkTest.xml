@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ContributionWorkTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-12T03:33:27" hostname="grok-bot-vm-446931431" time="4.376">
+  <properties/>
+  <testcase name="requestRequiresUnmeteredChargingAndBatteryNotLow" classname="com.edgeore.app.ContributionWorkTest" time="3.997"/>
+  <testcase name="workerRunsNothingWithoutQualifiedWorkload" classname="com.edgeore.app.ContributionWorkTest" time="0.071"/>
+  <testcase name="workerSkipsWhenNotOptedIn" classname="com.edgeore.app.ContributionWorkTest" time="0.042"/>
+  <testcase name="jobDoesNotRunUntilConstraintsAreMetThenOnlyReports" classname="com.edgeore.app.ContributionWorkTest" time="0.096"/>
+  <testcase name="workerRespectsUserPause" classname="com.edgeore.app.ContributionWorkTest" time="0.032"/>
+  <testcase name="optOutOrPauseCancelsTheJob" classname="com.edgeore.app.ContributionWorkTest" time="0.034"/>
+  <testcase name="settingsRoundTripIncludesOptIn" classname="com.edgeore.app.ContributionWorkTest" time="0.025"/>
+  <testcase name="workerCancelsItsOwnJobIfUserPausedMeanwhile" classname="com.edgeore.app.ContributionWorkTest" time="0.05"/>
+  <testcase name="workerRespectsSafetyGates" classname="com.edgeore.app.ContributionWorkTest" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Intent = Intent { act=android.intent.action.BATTERY_CHANGED (has extras) }; Matching wrappers: []
+Intent = Intent { act=android.intent.action.BATTERY_CHANGED (has extras) }; Matching wrappers: []
+Intent = Intent { act=android.intent.action.BATTERY_CHANGED (has extras) }; Matching wrappers: []
+]]></system-err>
+</testsuite>

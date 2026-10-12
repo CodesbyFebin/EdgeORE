@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.ChartsAndActivityTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-12T06:22:06" hostname="grok-bot-vm-446931431" time="0.013">
+  <properties/>
+  <testcase name="flatSeriesGetsAUnitDomainInsteadOfDividingByZero" classname="com.edgeore.app.ChartsAndActivityTest" time="0.0"/>
+  <testcase name="noReceiptsMeansAnEmptySeriesNotASampleTrend" classname="com.edgeore.app.ChartsAndActivityTest" time="0.005"/>
+  <testcase name="plotPointsSpanTheRectAndPutZeroOnTheFloor" classname="com.edgeore.app.ChartsAndActivityTest" time="0.002"/>
+  <testcase name="monotoneCurveIsFlatAtLocalExtremesAndDoesNotOvershoot" classname="com.edgeore.app.ChartsAndActivityTest" time="0.0"/>
+  <testcase name="receiptActivityCountsOnlyRealTimestampsPerDay" classname="com.edgeore.app.ChartsAndActivityTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

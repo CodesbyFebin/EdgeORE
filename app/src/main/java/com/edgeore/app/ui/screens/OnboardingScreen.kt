@@ -51,7 +51,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
             ))
             Section(EdgeIcons.Cross, EdgeColors.danger, "What it does not do", listOf(
                 "No mining income, ORE rewards, SKR payments or token. \$EdgeORE is a product name, not a token.",
-                "No mainnet and no real money. Nothing here is a store-ready or production release.",
+                "No mainnet transactions and no real money (the ORE board only reads mainnet). Nothing here is a store-ready or production release.",
                 "It never sees your wallet keys and never sends a transaction you have not reviewed and approved.",
             ))
             Section(EdgeIcons.Pulse, EdgeColors.copper, "Devnet only", listOf(
