@@ -40,8 +40,18 @@ object EdgeColors {
 private val scheme = darkColorScheme(
     primary = EdgeColors.mint,
     onPrimary = EdgeColors.onAction,
+    primaryContainer = EdgeColors.surfacePressed,
+    onPrimaryContainer = EdgeColors.mintSoft,
     secondary = EdgeColors.mint,
     onSecondary = EdgeColors.onAction,
+    secondaryContainer = EdgeColors.surfacePressed,
+    onSecondaryContainer = EdgeColors.mintSoft,
+    tertiary = EdgeColors.copper,
+    onTertiary = EdgeColors.onAction,
+    tertiaryContainer = Color(0xFF3E2515),
+    onTertiaryContainer = EdgeColors.warning,
+    surfaceTint = EdgeColors.mint,
+    outlineVariant = EdgeColors.border,
     background = EdgeColors.background,
     onBackground = EdgeColors.textPrimary,
     surface = EdgeColors.surface,
@@ -54,6 +64,8 @@ private val scheme = darkColorScheme(
     outline = EdgeColors.border,
     error = EdgeColors.danger,
     onError = EdgeColors.onAction,
+    errorContainer = Color(0xFF3F1622),
+    onErrorContainer = EdgeColors.danger,
 )
 
 private val typography = Typography(

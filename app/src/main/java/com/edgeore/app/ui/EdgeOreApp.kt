@@ -1,6 +1,9 @@
 package com.edgeore.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -86,6 +89,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val ops by vm.operations.collectAsStateWithLifecycle()
     val damage by vm.receiptDamage.collectAsStateWithLifecycle()
+    val largeText = LocalDensity.current.fontScale > 1.5f
     val context = LocalContext.current
     val reminders by vm.reminders.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
@@ -109,14 +113,14 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                 containerColor = EdgeColors.surfaceInset, contentColor = EdgeColors.mint) { Icon(EdgeIcons.Bot, contentDescription = "ORE Bot help") }
         },
         bottomBar = {
-            NavigationBar(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp)), containerColor = EdgeColors.surface) {
+            NavigationBar(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp)).then(if (largeText) Modifier.horizontalScroll(rememberScrollState()) else Modifier), containerColor = EdgeColors.surface) {
                 val badges = NavBadges.of(ops, damage.size)
                 Destination.entries.forEach { d ->
                     val badge = badges[d]
                     NavigationBarItem(
                         selected = tab == d && route == null,
                         onClick = { tab = d; route = null },
-                        modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier,
+                        modifier = (if (largeText) Modifier.width(160.dp) else Modifier).then(if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier),
                         icon = {
                             if (badge == null) Icon(d.icon, contentDescription = null)
                             else BadgedBox(badge = { CountBadge(badge.count, tone = badge.tone) }) { Icon(d.icon, contentDescription = null) }
@@ -193,7 +197,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("Current app state · ${com.edgeore.app.ui.Format.time(AppClock.nowMs())}", style = MaterialTheme.typography.labelSmall)
             Text(if (wallet.address == null) "Wallet: not connected. Use Connect, then authorize in your installed Solana wallet." else "Wallet: connected. Connection alone does not approve a transaction.")
-            Text("Balances: ${portfolio.network.label}, ${if (portfolio.loading) "reading" else portfolio.error ?: "${portfolio.assets.count { it.amount != null }} of 3 assets observed"}. Missing balances are never assumed to be zero.")
+            Text("Balances: ${portfolio.network.label}, ${if (portfolio.loading) "reading" else portfolio.error ?: "${portfolio.assets.count { it.amount != null && it.status.startsWith("Observed") }} of 3 assets observed"}. Missing balances are never assumed to be zero.")
             Text("Node session: ${session.phase.name.lowercase()}. ${session.failure ?: session.note ?: "Inspect each worker before starting. Configure your node in Nodes and gateway in Storage."}")
             Text("Review: check recipient, integer lamports, fees and exact message hash. Signing and submission are separate. An unknown result must be observed, never resent.")
             Text("Receipts: ${receipts.size} stored. Verification checks signed contents; it does not independently confirm payment.")

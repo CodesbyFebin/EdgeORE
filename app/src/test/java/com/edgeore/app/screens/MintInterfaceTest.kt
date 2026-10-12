@@ -24,18 +24,18 @@ class MintInterfaceTest {
         rule.onNodeWithText("Connect", substring = false).performScrollTo().performClick()
         rule.onNodeWithText("Connect a Solana wallet", substring = false).assertExists()
         rule.onNodeWithText("Continue to wallet", substring = false).assertExists()
-        rule.onRoot().captureRoboImage("$out/mint/wallet-chooser.png")
+        rule.onAllNodes(isRoot()).onLast().captureRoboImage("$out/mint/wallet-chooser.png")
     }
     @Test fun settingsUseOptInRemindersAndScrollableBuildDisclosure() {
         rule.onNodeWithContentDescription("Settings and build").performClick()
         rule.onNodeWithText("Optional daily reminder", substring = false).assertExists()
-        rule.onRoot().captureRoboImage("$out/mint/settings.png")
+        rule.onAllNodes(isRoot()).onLast().captureRoboImage("$out/mint/settings.png")
     }
     @Test fun helpShowsCurrentStateWithoutClaimingEarnings() {
         rule.onNodeWithContentDescription("ORE Bot help").performClick()
         rule.onNodeWithText("ORE Bot · Basic help", substring = false).assertExists()
         rule.onNodeWithText("Wallet: not connected.", substring = true).assertExists()
-        rule.onRoot().captureRoboImage("$out/mint/basic-help.png")
+        rule.onAllNodes(isRoot()).onLast().captureRoboImage("$out/mint/basic-help.png")
     }
 }
 
@@ -50,6 +50,6 @@ class MintLargeTextTest {
         rule.onNodeWithText("Connect", substring = false).performScrollTo().assertHasClickAction()
         rule.onNodeWithText("Review a supported action", substring = false).performScrollTo().performClick()
         rule.onAllNodesWithText("Review", substring = true).onFirst().assertExists()
-        rule.onRoot().captureRoboImage("${System.getProperty("screens.out")}/mint/review-200percent.png")
+        rule.onAllNodes(isRoot()).onLast().captureRoboImage("${System.getProperty("screens.out")}/mint/review-200percent.png")
     }
 }
