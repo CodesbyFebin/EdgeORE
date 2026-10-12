@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OwnedGatewayBackupProviderTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-12T13:11:22" hostname="grok-bot-vm-446931431" time="0.03">
+  <properties/>
+  <testcase name="wellFormedRequestDoesReachTheNetworkLayer" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.015"/>
+  <testcase name="refusesQuery" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.001"/>
+  <testcase name="oversizedUploadRefusedBeforeConnecting" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.008"/>
+  <testcase name="credentialWithHeaderBreakRefusedBeforeConnecting" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.001"/>
+  <testcase name="nonDigestRemoteRefRefusedBeforeConnecting" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.002"/>
+  <testcase name="refusesProviderPath" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.0"/>
+  <testcase name="refusesCleartext" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.0"/>
+  <testcase name="mismatchedCiphertextDigestRefusedBeforeConnecting" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.001"/>
+  <testcase name="pathLikeJobIdRefusedBeforeConnecting" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.001"/>
+  <testcase name="shortCredentialRefusedBeforeConnecting" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.001"/>
+  <testcase name="refusesUrlCredentials" classname="com.edgeore.app.OwnedGatewayBackupProviderTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

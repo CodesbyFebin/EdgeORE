@@ -348,11 +348,15 @@ fun MiningSessionPanel(
     view: SessionView, edgeModeResumed: Boolean, headline: String,
     onStart: () -> Unit, onStop: () -> Unit, onToggleEdgeMode: () -> Unit,
 ) {
+    val acknowledged = view.parts.any { it.rounds > 0 }
+    val motionPhase = if (view.phase == SessionPhase.ACTIVE && !acknowledged) SessionPhase.STARTING else view.phase
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         com.edgeore.app.ui.components.HoloRing(200.dp, bright = view.phase == SessionPhase.ACTIVE) {
-            MiningAnimation(view.phase, Modifier.size(width = 190.dp, height = 150.dp))
+            MiningAnimation(motionPhase, Modifier.size(width = 190.dp, height = 150.dp))
         }
         if (view.phase == SessionPhase.STARTING) Text("Starting… waiting for your node and gateway to acknowledge", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        // From PR #20: the pickaxe swings only after a part has reported a round, never on ACTIVE alone.
+        if (view.phase == SessionPhase.ACTIVE && !acknowledged) Text("Waiting for first worker result…", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         Text("Session: " + view.phase.label(), fontWeight = FontWeight.Bold, color = if (view.phase == SessionPhase.FAILED) EdgeColors.copper else EdgeColors.textPrimary,
             modifier = Modifier.semantics { contentDescription = "Contribution session ${view.phase.label()}" })
         when (view.phase) {
