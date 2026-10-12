@@ -32,7 +32,7 @@ for g in "device runbook gates 0-10" "wallet (MWA) session on Seeker" "devnet tr
 echo; echo "== EdgeORE handover gates @ $(git rev-parse --short=12 HEAD) =="
 printf '%s\n' "${R[@]}"
 echo; echo "-- per-suite counts (separate, not summed) --"
-echo "android unit:     $(junit app/build/test-results/testDebugUnitTest)"
+echo "android unit:     $(junit "evidence/build-$(git rev-parse --short=12 HEAD)/junit") (from qualify.sh evidence; the e2e step reruns one test separately)"
 echo "receipt checker:  $(junit tools/receipt-checker/build/test-results/test)"
 for n in "storage gateway tests" "offline kit tests" "build-policy tests" "manifest-checker tests"; do
   echo "$n: $(grep -E '^(Ran|OK|FAILED)' "/tmp/handover-${n// /_}.log" | tr '\n' ' ')"; done
