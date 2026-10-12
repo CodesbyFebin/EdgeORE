@@ -104,6 +104,8 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         st.info?.let { Notice(it) }
         if (wallet.address == null) Notice("Connect a wallet to prepare the review. The form can be filled first.")
         PrimaryAction("Prepare exact-message review", icon = EdgeIcons.Shield, enabled = wallet.address != null && destCheck.ok && amountCheck.ok, loading = st.phase == ReviewPhase.PREPARING) { vm.prepareReview() }
+        // Shown right under the button so a refused or failed prepare is never silent (it used to render far below).
+        if (st.draft == null) st.message?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("prepare-error")) }
     }
 
     st.draft?.let { d ->
@@ -157,7 +159,7 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         }
     }
 
-    st.message?.let { Notice(it, error = st.phase == ReviewPhase.REFUSED || st.phase == ReviewPhase.EDITING) }
+    if (st.draft != null) st.message?.let { Notice(it, error = st.phase == ReviewPhase.REFUSED || st.phase == ReviewPhase.EDITING) }
 
     when (st.phase) {
         ReviewPhase.READY, ReviewPhase.SIGNING -> {

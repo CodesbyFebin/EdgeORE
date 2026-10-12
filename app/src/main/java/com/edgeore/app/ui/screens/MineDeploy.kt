@@ -98,7 +98,7 @@ fun EdgeNodeCard(view: SessionView, edgeModeResumed: Boolean, headline: String, 
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("Edge node", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })
             val active = view.phase == SessionPhase.ACTIVE
-            Text(if (active) "Active" else "Paused", color = EdgeColors.background, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+            Text(if (active) "Running" else "Paused", color = EdgeColors.background, fontWeight = FontWeight.Bold, fontSize = 13.sp,
                 modifier = Modifier.background(if (active) EdgeColors.mint else EdgeColors.copper, RoundedCornerShape(50)).padding(horizontal = 12.dp, vertical = 4.dp).testTag("edge-node-badge"))
         }
         MiningSessionPanel(view, edgeModeResumed, headline, onStart, onStop, onToggleEdgeMode)
@@ -192,11 +192,10 @@ fun OreMiningCard(
         Text(if (snapshot == null) "Live round not read yet (mainnet board)." else "Live mainnet round ${snapshot.round.id}. Pool values, not your earnings.",
             color = EdgeColors.textMuted, fontSize = 11.sp)
         if (OreDeployNetwork.MAINNET_ENABLED) {
-            // Explicit network switch: devnet by default; mainnet only when the owner taps it.
-            Row(Modifier.border(1.dp, if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.border, RoundedCornerShape(50)).padding(3.dp).testTag("ore-network-switch")) {
-                ToggleTab("Devnet", !ui.mainnet) { onNetwork(false) }
-                ToggleTab("Mainnet", ui.mainnet) { onNetwork(true) }
-            }
+            // The network follows the selector at the top of Home: one switch, no second toggle here.
+            Text(if (ui.mainnet) "Network: Mainnet (from the selector at the top)" else "Network: Devnet (from the selector at the top)",
+                color = if (ui.mainnet) EdgeColors.mainnetWarning else EdgeColors.textMuted, style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.testTag("ore-network-switch"))
             if (ui.mainnet) {
                 Text(MAINNET_DISCLAIMER, color = EdgeColors.mainnetWarning, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center,
                     modifier = Modifier.testTag("ore-mainnet-disclaimer"))
@@ -211,6 +210,8 @@ fun OreMiningCard(
             ToggleTab("Lite", !ui.pro) { onEdit { it.copy(pro = false) } }
             ToggleTab("Pro", ui.pro) { onEdit { it.copy(pro = true) } }
         }
+        RoundBlocks(ui, snapshot.takeIf { ui.mainnet }) { i -> onEdit { it.copy(proMask = it.proMask xor (1 shl i)) } }
+        Text("Amount per round", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.fillMaxWidth())
         Text(sol(total), color = if (total == 0L) EdgeColors.textMuted else EdgeColors.textPrimary, fontSize = 56.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("ore-amount"))
         Text("◎ SOL", color = EdgeColors.mint, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -228,9 +229,9 @@ fun OreMiningCard(
             onAll = { onEdit { it.copy(proMask = (1 shl com.edgeore.app.ore.OreV3.SQUARES) - 1) } },
             onMinus = { onEdit { it.copy(proMask = stepTiles(it.proMask, -1)) } }, onPlus = { onEdit { it.copy(proMask = stepTiles(it.proMask, 1)) } })
         StepRow("ROUNDS", "1", enabled = false, tag = "rounds", note = "1 round per approval")
-        Line("PER ROUND", "◎ " + sol(total), OreDeployLimits.perSquare(total, squares)?.let { "${sol(it)} SOL on each of $squares square${if (squares == 1) "" else "s"}" }
+        Line("Total deployment", "◎ " + sol(total), OreDeployLimits.perSquare(total, squares)?.let { "${sol(it)} SOL on each of $squares square${if (squares == 1) "" else "s"}" }
             ?: if (ui.pro && squares == 0) "Pick tiles on the grid or with the stepper" else "Add an amount")
-        PrimaryAction("Deploy", Modifier.fillMaxWidth().testTag("ore-deploy"), enabled = blocker == null, onClick = onDeploy)
+        PrimaryAction("Review deployment", Modifier.fillMaxWidth().testTag("ore-deploy"), enabled = blocker == null, onClick = onDeploy)
         Text(blocker ?: "Opens the exact-message review. You approve, your wallet signs, then you submit separately.",
             color = if (blocker != null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center,
             modifier = Modifier.testTag("ore-deploy-hint"))
@@ -331,7 +332,7 @@ private fun SquarePicker(mask: Int, onChange: (Int) -> Unit) {
 fun ContributionToggles(chargeOnly: Boolean, thermalGuard: Boolean, batteryReservePercent: Int, effect: (com.edgeore.app.settings.Control) -> String,
                         onChargeOnly: (Boolean) -> Unit, onThermal: (Boolean) -> Unit) {
     Column(Modifier.mineCard().testTag("contribution-toggles"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text("CONTRIBUTION", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp)
+        Text("Device preferences", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary)
         Text("These gate Edge Mode and the Mine session on this phone. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         ToggleRow("Charge-only", effect(com.edgeore.app.settings.Control.CHARGE_ONLY), chargeOnly, onChargeOnly)
         ToggleRow("Thermal guard", effect(com.edgeore.app.settings.Control.THERMAL_GUARD), thermalGuard, onThermal)
@@ -350,5 +351,37 @@ private fun ToggleRow(label: String, effect: String, checked: Boolean, onChange:
         Text(effect, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
         androidx.compose.material3.Switch(checked, onChange, colors = androidx.compose.material3.SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.background),
             modifier = Modifier.semantics { contentDescription = label })
+    }
+}
+
+/** "Round blocks": 01-25, mint check badge on selected squares, live per-square SOL only when the mainnet round was read. Pro taps toggle the draft. */
+@Composable
+fun RoundBlocks(ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -> Unit) {
+    Column(Modifier.fillMaxWidth().testTag("round-blocks"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text("Round blocks", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Text(if (ui.pro) "Select blocks" else "Lite: all 25", color = EdgeColors.textMuted, fontSize = 12.sp)
+        }
+        for (r in 0 until 5) Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            for (c in 0 until 5) {
+                val i = r * 5 + c
+                val on = ui.mask and (1 shl i) != 0
+                val shape = RoundedCornerShape(10.dp)
+                Box(Modifier.weight(1f).aspectRatio(1.25f).background(if (on && ui.pro) EdgeColors.mint.copy(alpha = 0.16f) else EdgeColors.surfaceInset, shape)
+                    .border(1.dp, if (on && ui.pro) EdgeColors.mint else EdgeColors.border, shape)
+                    .then(if (ui.pro) Modifier.clickable(role = Role.Checkbox) { onToggle(i) } else Modifier)
+                    .semantics { contentDescription = "Block ${i + 1}" + (snapshot?.let { s -> ", ${com.edgeore.app.ore.OreFormat.sol(s.round.deployedLamports[i])} SOL" } ?: "") + if (on) ", selected" else "" }
+                    .testTag("grid-$i")) {
+                    Text("%02d".format(i + 1), color = if (on && ui.pro) EdgeColors.textPrimary else EdgeColors.textMuted, fontSize = 14.sp, fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.align(Alignment.Center))
+                    snapshot?.let { s -> Text("◎" + com.edgeore.app.ore.OreFormat.sol(s.round.deployedLamports[i]), color = EdgeColors.textMuted, fontSize = 9.sp,
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 2.dp)) }
+                    if (on && ui.pro) Box(Modifier.align(Alignment.TopEnd).padding(3.dp).size(14.dp).background(EdgeColors.mint, androidx.compose.foundation.shape.CircleShape).testTag("check-$i"),
+                        contentAlignment = Alignment.Center) { Text("✓", color = EdgeColors.background, fontSize = 9.sp, fontWeight = FontWeight.Bold) }
+                }
+            }
+        }
+        val n = Integer.bitCount(ui.mask)
+        Text("$n selected" + if (snapshot == null) " · live per-block SOL not read" else " · live round ${snapshot.round.id}", color = EdgeColors.textMuted, fontSize = 12.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
     }
 }

@@ -195,7 +195,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                     }
                     tab == Destination.Mine -> MineScreen(vm, requestConnect, actions::disconnectWallet,
                         onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" },
-                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" }, onOreMode = { pro -> route = if (pro) "ore:pro" else "ore:lite" })
+                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" }, onOreMode = { pro -> route = if (pro) "ore:pro" else "ore:lite" }, onSettings = { about = true })
                     tab == Destination.AI -> AiScreen(vm)
                     tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)

@@ -68,6 +68,7 @@ fun MineScreen(
     onOpenReview: () -> Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -> Unit = {},
     onOre: () -> Unit = {},
     onOreMode: (pro: Boolean) -> Unit = { onOre() },
+    onSettings: () -> Unit = {},
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
@@ -84,7 +85,6 @@ fun MineScreen(
 
     // "Now" overview: what needs attention, each row opening the place that handles it.
     val waiting = com.edgeore.app.ui.NavBadges.waiting(ops)
-    com.edgeore.app.ui.components.SectionTitle("Mine", "Your device. Your resources. Your control.")
     val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
     val node by vm.node.collectAsStateWithLifecycle()
     val gateway by vm.gateway.collectAsStateWithLifecycle()
@@ -115,33 +115,47 @@ fun MineScreen(
     androidx.compose.runtime.LaunchedEffect(wallet.address, cluster) { vm.refreshBalances() }
     val notifPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { vm.setReminders(it) }
     val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
-    NetworkSelector(cluster, vm::selectCluster)
+    // One network switch for the whole Home: the ORE card follows it (mainnet still needs the risk tick).
+    androidx.compose.runtime.LaunchedEffect(cluster) {
+        val main = cluster == com.edgeore.app.solana.Cluster.MAINNET
+        if (deploy.mainnet != main) vm.setOreDeployMainnet(main)
+        vm.checkOreDeployCluster()
+    }
+    val ore by vm.ore.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(ore.rpc) { while (true) { vm.refreshOre(); kotlinx.coroutines.delay(15_000) } }
+    NetworkSelector(cluster, vm::selectCluster, onSettings = onSettings)
     WalletConnectRow(wallet.address, wallet.busy, cluster, onConnect = onConnect,
         onCopy = { wallet.address?.let { clipboard.setText(androidx.compose.ui.text.AnnotatedString(it)) } },
         onSwitch = onConnect, onDisconnect = onDisconnect)
+    val failure = wallet.error
+    if (failure != null && !wallet.busy) {
+        // Persistent until the next Connect attempt; sanitized (no token, key or wallet payload).
+        Column(Modifier.fillMaxWidth().testTag("wallet-error").semantics { contentDescription = "Wallet connection error ${failure.code.name}" }) {
+            WalletDisplay.errorLines(failure, showDiagnostics = BuildConfig.DEBUG).forEachIndexed { i, line ->
+                Text(line, color = if (i == 0) EdgeColors.copper else EdgeColors.textMuted,
+                    style = if (i < 2) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelSmall)
+            }
+        }
+    }
     BalanceRow(bal, now, wallet.address != null, if (cluster == com.edgeore.app.solana.Cluster.MAINNET) "ORE" else "Test ORE")
+    EdgeNodeCard(sessionView, settings.edgeModeResumed, eval.headline, vm::startSession, vm::stopSession) {
+        vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
+    }
+    Text("Device metrics", color = EdgeColors.textPrimary, style = MaterialTheme.typography.titleSmall)
+    ResourceGrid(hw.first, hw.second, diskReading, net, com.edgeore.app.ui.components.rememberReducedMotion())
+    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() }, snapshot = ore.snapshot, nowMs = now,
+        onDeploy = { vm.prepareOreDeploy(); onOpenReview() })
+    ContributionToggles(settings.chargeOnly, settings.thermalGuard, settings.batteryReservePercent, effect = { it.effect.label },
+        onChargeOnly = { v -> vm.updateSettings { it.copy(chargeOnly = v) } }, onThermal = { v -> vm.updateSettings { it.copy(thermalGuard = v) } })
     DailyCheckInCard(checkIn, now, reminders, checkInMsg,
         com.edgeore.app.bot.OreBot.tips(wallet.address != null, sessionView.anyConfigured, com.edgeore.app.device.DailyCheckIn.available(checkIn, now), cluster.label),
         onCheckIn = vm::checkInNow,
         onReminders = { on -> if (on && android.os.Build.VERSION.SDK_INT >= 33 && !com.edgeore.app.bot.OreBot.notificationsAllowed(ctx)) notifPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else vm.setReminders(on) })
-    EdgeNodeCard(sessionView, settings.edgeModeResumed, eval.headline, vm::startSession, vm::stopSession) {
-        vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
-    }
-    ResourceGrid(hw.first, hw.second, diskReading, net, com.edgeore.app.ui.components.rememberReducedMotion())
-    OreMiningCard(deploy, wallet.address != null, fresh?.lamports, onEdit = vm::editOreDeploy, onCheck = { vm.checkOreDeployCluster() }, onNetwork = vm::setOreDeployMainnet, snapshot = oreState.snapshot, nowMs = now,
-        onDeploy = { vm.prepareOreDeploy(); onOpenReview() })
-    OreGridCard(cluster, oreState, deploy) { i -> vm.editOreDeploy { it.copy(proMask = it.proMask xor (1 shl i)) } }
-    ContributionToggles(settings.chargeOnly, settings.thermalGuard, settings.batteryReservePercent, effect = { it.effect.label },
-        onChargeOnly = { v -> vm.updateSettings { it.copy(chargeOnly = v) } }, onThermal = { v -> vm.updateSettings { it.copy(thermalGuard = v) } })
-
-    com.edgeore.app.ui.components.SectionTitle("Your edge, under your control", "What needs attention, your wallet, and the gates that decide when anything may run.")
     EdgeCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("Now", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })
-            Text("Solana devnet · test SOL only", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+            Text(cluster.label, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         }
-        StatusRow(EdgeIcons.Wallet, "Wallet", wallet.address?.let { "Connected · ${Format.short(it)}" } ?: "Not connected · tap to connect",
-            attention = wallet.address == null, onClick = if (wallet.address == null) onConnect else onOpenReview)
         StatusRow(EdgeIcons.Clock, "Awaiting an outcome", if (waiting == 0) "Nothing waiting" else "$waiting operation${if (waiting == 1) "" else "s"} · observe status",
             attention = waiting > 0, onClick = onOpenReview)
         StatusRow(EdgeIcons.Receipts, "Receipt log", if (receipts.isEmpty()) "None yet" else "${receipts.size} stored on this phone",
@@ -149,98 +163,7 @@ fun MineScreen(
         StatusRow(EdgeIcons.Lock, "Vault", if (storage.files.isEmpty()) "Empty · encrypt a file in Storage" else "${storage.files.size} encrypted file${if (storage.files.size == 1) "" else "s"}",
             attention = false, onClick = { onOpenTab(com.edgeore.app.ui.Destination.Storage) })
     }
-
-    FactCard(
-        EdgeIcons.Wallet, "Connect Solana Wallets",
-        wallet.address?.let { Format.short(it) } ?: "Authorize securely through your wallet",
-        status = {
-            when {
-                wallet.busy -> StatusPill("Waiting", tone = PillTone.COPPER)
-                wallet.address != null -> StatusPill("Connected", tone = PillTone.MINT, icon = EdgeIcons.Check)
-                else -> StatusPill("Not connected", tone = PillTone.NEUTRAL)
-            }
-        },
-    ) {
-        if (wallet.address == null) {
-            SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", Modifier.fillMaxWidth(), enabled = !wallet.busy, onClick = onConnect)
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(WalletDisplay.statusLine(wallet), color = if (wallet.error != null && wallet.address == null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-            Text("Compatible MWA wallet required", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
-        }
-        val failure = wallet.error
-        if (failure != null && wallet.address == null && !wallet.busy) {
-            // Persistent until the next Connect attempt; sanitized (no token, key or wallet payload).
-            Column(Modifier.semantics { contentDescription = "Wallet connection error ${failure.code.name}" }) {
-                WalletDisplay.errorLines(failure, showDiagnostics = BuildConfig.DEBUG).forEachIndexed { i, line ->
-                    Text(line, color = if (i == 0) EdgeColors.copper else EdgeColors.textMuted,
-                        style = if (i < 2) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelSmall)
-                }
-            }
-        }
-        wallet.address?.let { address ->
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                StatCell("Address", Format.short(address, 6), Modifier.weight(1f), mono = true)
-                StatCell("Devnet balance", fresh?.let { b -> Format.sol(b.lamports) }, Modifier.weight(1f))
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                StatCell("Slot", fresh?.slot?.toString(), Modifier.weight(1f), mono = true)
-                StatCell("Observed", fresh?.let { b -> Format.ago(b.observedAt) }, Modifier.weight(1f))
-            }
-            Text(
-                WalletDisplay.balanceLine(balance) { b -> "Devnet ${Format.sol(b.lamports)} · slot ${b.slot} · ${Format.ago(b.observedAt)}" },
-                color = if (fresh == null) EdgeColors.copper else EdgeColors.textPrimary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecondaryAction("Refresh", onClick = { vm.refreshBalance() })
-                SecondaryAction("Review", onClick = onReview)
-                SecondaryAction("Disconnect", danger = true, onClick = onDisconnect)
-            }
-        }
-    }
-
-    EdgeCard(onClick = onPreview) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(EdgeIcons.Nodes, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(28.dp))
-            Column(Modifier.weight(1f)) {
-                Text("Edge Mode", style = MaterialTheme.typography.titleMedium)
-                Text("Your device. Your resources. Your control.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-            }
-            Icon(EdgeIcons.Chevron, contentDescription = null, tint = EdgeColors.textMuted)
-        }
-    }
-
-    OreEntry(onOre)
-    val ore by vm.ore.collectAsStateWithLifecycle()
-    var oreNow by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
-    androidx.compose.runtime.LaunchedEffect(ore.rpc) { while (true) { vm.refreshOre(); kotlinx.coroutines.delay(15_000) } }
-    androidx.compose.runtime.LaunchedEffect(Unit) { while (true) { kotlinx.coroutines.delay(1_000); oreNow = System.currentTimeMillis() } }
-    OreHomeStrip(ore, oreNow, onOpen = onOreMode)
-
-
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Cpu, "Compute", if (sessionView.phase == SessionPhase.ACTIVE) "Session active" else if (eval.state == EdgeState.PAUSED) "Paused" else eval.state.label, "Not measured on this phone",
-            if (sessionView.phase == SessionPhase.ACTIVE) "Work runs on your node and gateway" else "No workload is running")
-    }
-
-    EdgeCard {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Workload & resources", style = MaterialTheme.typography.titleMedium)
-            Text("No live telemetry", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
-        }
-        Text("CPU, memory, storage and network are not sampled in this build. Missing readings are not shown as zero.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MetricTile(EdgeIcons.Cpu, "CPU")
-            MetricTile(EdgeIcons.Pulse, "Memory")
-            MetricTile(EdgeIcons.Storage, "Storage")
-            MetricTile(EdgeIcons.Wifi, "Network")
-        }
-    }
-
-    PrimaryAction("Preview session", icon = EdgeIcons.Play, onClick = onPreview)
-    SecondaryAction("Review a supported action", Modifier.fillMaxWidth(), onClick = onReview)
+    SecondaryAction("Send SOL (devnet transfer review)", Modifier.fillMaxWidth(), onClick = onReview)
 
     EdgeCard {
         Text("Safety & resource controls", style = MaterialTheme.typography.titleMedium)

@@ -107,7 +107,7 @@ class MineDeployCardTest {
                     androidx.compose.material3.Surface(androidx.compose.ui.Modifier.fillMaxSize(), color = com.edgeore.app.ui.theme.EdgeColors.background, contentColor = com.edgeore.app.ui.theme.EdgeColors.textPrimary) {
                         androidx.compose.foundation.layout.Column(androidx.compose.ui.Modifier.padding(16.dp), verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
                             com.edgeore.app.ui.components.SectionTitle("Mine", "Your device. Your resources. Your control.")
-                            com.edgeore.app.ui.screens.NetworkSelector(com.edgeore.app.solana.Cluster.DEVNET) {}
+                            com.edgeore.app.ui.screens.NetworkSelector(com.edgeore.app.solana.Cluster.DEVNET, {})
                             com.edgeore.app.ui.screens.WalletConnectRow(null, false, com.edgeore.app.solana.Cluster.DEVNET, {}, {}, {}, {})
                             com.edgeore.app.ui.screens.BalanceRow(com.edgeore.app.solana.Balances(), 0L, false, "Test ORE")
                             com.edgeore.app.ui.screens.EdgeNodeCard(view, true, "", {}, {}, {})
