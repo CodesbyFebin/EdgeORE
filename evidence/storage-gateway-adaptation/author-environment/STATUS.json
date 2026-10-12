@@ -1,0 +1,23 @@
+{
+  "base": "268fd74",
+  "backend_tests": {
+    "passed": 8,
+    "exit": 0,
+    "environment": "Python unittest; SQLite; loopback HTTP"
+  },
+  "android_compile": {
+    "status": "BLOCKED",
+    "exit": 1,
+    "reason": "Gradle distribution download: Network is unreachable"
+  },
+  "android_tests": "NOT_RUN",
+  "default_provider": "NotConfiguredBackupProvider",
+  "titan_integration": "NOT_IMPLEMENTED",
+  "portable_backup": "NOT_IMPLEMENTED",
+  "source_sha256": {
+    "services/storage-gateway/server.py": "31cf7d53fd5c2519c7f8c02155019f3aad130f44659e73454e75629d20764296",
+    "services/storage-gateway/test_gateway.py": "0a1ae82e46681d7304d5ab52a07994aec7d8637a5d1e80966140bb44b5119111",
+    "app/src/main/java/com/edgeore/app/storage/OwnedGatewayBackupProvider.kt": "d4ef7d8f4b6968a00cf7c9f7e48579ea9fb457014708e396450567429f2a05d1",
+    "app/src/test/java/com/edgeore/app/OwnedGatewayBackupProviderTest.kt": "a8ba49a4a752f0bc31e250f1217bd25b1c8111cff6b366f52b09282a40a89c02"
+  }
+}

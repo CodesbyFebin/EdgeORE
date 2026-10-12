@@ -1,0 +1,21 @@
+# main 268fd74 vs branch 8cf386c, per configuration
+DIFFERS   app-debugCompileClasspath.txt (sorted lines identical: yes)
+--- deps/main-268fd74/app-debugCompileClasspath.txt	2026-10-11 01:24:50.236659886 +0000
++++ deps/branch-8cf386c/app-debugCompileClasspath.txt	2026-10-11 01:24:50.240660239 +0000
+@@ -298,8 +298,8 @@
+ |    +--- androidx.compose.ui:ui:1.7.6 (c)
+ |    +--- androidx.compose.ui:ui-test-manifest:1.7.6 (c)
+ |    +--- androidx.compose.ui:ui-tooling:1.7.6 (c)
+-|    +--- androidx.compose.ui:ui-tooling-preview:1.7.6 (c)
+ |    +--- androidx.compose.ui:ui-tooling-android:1.7.6 (c)
++|    +--- androidx.compose.ui:ui-tooling-preview:1.7.6 (c)
+ |    +--- androidx.compose.runtime:runtime:1.7.6 (c)
+ |    +--- androidx.compose.runtime:runtime-saveable:1.7.6 (c)
+ |    +--- androidx.compose.material3:material3-android:1.3.1 (c)
+IDENTICAL app-debugRuntimeClasspath.txt
+IDENTICAL app-releaseCompileClasspath.txt
+IDENTICAL app-releaseRuntimeClasspath.txt
+IDENTICAL ondevice-llm-debugCompileClasspath.txt
+IDENTICAL ondevice-llm-debugRuntimeClasspath.txt
+IDENTICAL ondevice-llm-releaseCompileClasspath.txt
+IDENTICAL ondevice-llm-releaseRuntimeClasspath.txt

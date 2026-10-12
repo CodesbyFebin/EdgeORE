@@ -1,0 +1,29 @@
+{
+  "base": "a767f43",
+  "declaration_policy": "PASS; 0 declared version/configuration changes",
+  "policy_tests": {
+    "passed": 6,
+    "exit": 0
+  },
+  "gateway_tests": {
+    "passed": 8,
+    "exit": 0
+  },
+  "gradle_configuration": {
+    "status": "BLOCKED",
+    "exit": 1,
+    "reason": "Network is unreachable downloading Gradle 8.9"
+  },
+  "android_tests": "NOT_RUN",
+  "resolved_dependency_comparison": "NOT_RUN",
+  "github_workflow": "NOT_RUN",
+  "source_sha256": {
+    "build.gradle.kts": "207212669a7190075cb12bd45d867ff916acb9395ddafdd47c38c661e137b0f6",
+    "app/build.gradle.kts": "77b4512276ce6423e30b8861732ef69e03c1ec9c1d82b1b3a3ddec21df082af5",
+    "ondevice-llm/build.gradle.kts": "6fece8943d315f579370acbb1993ac942d93a8a1c39fedc2b78cf94b8bc5eb2f",
+    "gradle/libs.versions.toml": "fa590ebd349b2f3cd9319beb626f0c056c240537b0239d646df28f9453a2c559",
+    "scripts/build-policy.py": "4bdfa4d9b3a188bd3252f23234ba2801e4477a61c6f7ae24f302f42ed5db1a53",
+    "scripts/test_build_policy.py": "22e609041b147ec8893b3d8c6eb3fd889786dd1e448f569e5e40fe64f7507ecc",
+    ".github/workflows/build-governance.yml": "3d6a86cb15b2c9e29026e9d11455017c98751ea4f70d35661acae95f25c0336d"
+  }
+}

@@ -1,0 +1,11 @@
+test_credentials_in_buildconfig_fail (__main__.PolicyTests.test_credentials_in_buildconfig_fail) ... ok
+test_current_declarations_match (__main__.PolicyTests.test_current_declarations_match) ... ok
+test_dynamic_version_fails (__main__.PolicyTests.test_dynamic_version_fails) ... ok
+test_version_change_fails (__main__.PolicyTests.test_version_change_fails) ... ok
+test_wrapper_mutation_fails (__main__.PolicyTests.test_wrapper_mutation_fails) ... ok
+test_wrong_scope_fails (__main__.PolicyTests.test_wrong_scope_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.019s
+
+OK

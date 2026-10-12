@@ -1,6 +1,7 @@
 local.properties
 .gradle/
 **/build/
+!docs/build/
 .env
 *.jks
 *.keystore
@@ -8,3 +9,4 @@ local.properties
 *.iml
 .kotlin/
 captures/
+__pycache__/

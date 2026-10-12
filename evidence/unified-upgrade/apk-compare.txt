@@ -1,0 +1,11 @@
+debug APK 8cf386c (stamp 8cf386c9c9df): 45d2734e2fee8147789e1f64d1e7038b40337a216ce3b4ca99e6f40d42408103
+debug APK main 268fd74 (stamp 268fd7494edd): 1dbf6b99d30083e07249a901eec76d95bc3de4933a4f60ee78a342c5ea12cb04
+
+aapt dump permissions: identical. aapt dump xmltree AndroidManifest.xml: identical.
+Unzipped: same file list; entries that differ:
+< ./classes11.dex
+> ./classes11.dex
+< ./classes8.dex
+> ./classes8.dex
+classes11.dex carries BuildConfig.GIT_COMMIT; classes8.dex contains the new OwnedGatewayBackupProvider and the Backup.kt changes (comment-only in source).
+The provider is compiled in but nothing constructs it (EdgeOreViewModel uses NotConfiguredBackupProvider).

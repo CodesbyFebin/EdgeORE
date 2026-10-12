@@ -1,0 +1,16 @@
+# EdgeORE
+
+Native Kotlin/Compose review candidate by CodesbyFebin for exact-message Solana actions, private AI,
+device-bound storage, owned-host operations and verification of signed receipt contents.
+This branch adds optional prototype storage/build/consent/evidence tooling. It is not a production
+release. Local automated tests do not qualify Android runtime, portable backup or SOL settlement.
+
+- Handoff: docs/HANDOFF-GOOGLE-AI-STUDIO.md
+- Extension roadmap: docs/extensions/RESEARCH-AND-ROADMAP.md
+- Fork guide: FORK-GUIDE.md
+- Storage candidate: docs/storage/INTEGRATION.md
+- Build governance: docs/build/ADAPTATION.md
+- Offline kit: tools/edgeore-kit/README.md
+
+Do not claim SOL mining, guaranteed earnings, audited compute, vendor endorsement or a project MIT
+license. The unsigned artifact manifest checker does not prove who created its contents.
