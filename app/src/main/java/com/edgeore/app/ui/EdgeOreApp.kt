@@ -212,7 +212,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         title = { Text("Settings & build") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("EdgeORE ${BuildConfigInfo.VERSION} (${BuildConfigInfo.COMMIT}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")
+                Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · wallet actions on Solana devnet only; the ORE board reads mainnet, read-only.")
                 com.edgeore.app.ui.components.ResourceControl(EdgeIcons.Bell, "Optional daily reminder", "Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android.", reminders, "Local notification · no eligibility or reward claim", onChange = actions::setReminders)
                 Text("Receipts signed with: ${vm.receiptSignerProtection.substringBefore(" · key ")}.")
                 com.edgeore.app.ui.components.SecondaryAction(if (signerDetails) "Hide signer identity" else "Signer identity", onClick = { signerDetails = !signerDetails })
