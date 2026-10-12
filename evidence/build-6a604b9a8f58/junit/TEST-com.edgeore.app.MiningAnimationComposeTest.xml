@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.MiningAnimationComposeTest" tests="5" skipped="1" failures="0" errors="0" timestamp="2026-10-12T11:55:17" hostname="grok-bot-vm-446931431" time="0.695">
+  <properties/>
+  <testcase name="frames" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.033">
+    <skipped/>
+  </testcase>
+  <testcase name="pausedRestsWithoutMotion" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.332"/>
+  <testcase name="runningSwings" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.158"/>
+  <testcase name="removeAnimationsSettingIsRead" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.091"/>
+  <testcase name="reducedMotionHoldsAStaticFrame" classname="com.edgeore.app.MiningAnimationComposeTest" time="0.08"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

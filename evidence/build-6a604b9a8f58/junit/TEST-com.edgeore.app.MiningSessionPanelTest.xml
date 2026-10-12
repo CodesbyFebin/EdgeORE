@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.MiningSessionPanelTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-12T11:55:18" hostname="grok-bot-vm-446931431" time="0.618">
+  <properties/>
+  <testcase name="notConfiguredPartsSayWhatToSetUpAndShowNoNumbers" classname="com.edgeore.app.MiningSessionPanelTest" time="0.208"/>
+  <testcase name="startingStoppingAndFailedDoNotSwing" classname="com.edgeore.app.MiningSessionPanelTest" time="0.116"/>
+  <testcase name="idleShowsAClickableStartMiningAndARestingPickaxe" classname="com.edgeore.app.MiningSessionPanelTest" time="0.178"/>
+  <testcase name="activeSwingsShowsStopAndOnlyReportedMeasurements" classname="com.edgeore.app.MiningSessionPanelTest" time="0.116"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
