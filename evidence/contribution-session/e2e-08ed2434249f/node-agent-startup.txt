@@ -1,0 +1,5 @@
+Node fingerprint: c08973b763eaca5f91c5593a178b6a74b56c553ee3e99a49d156ff56c962ec6f
+Pairing challenge (2 minutes): {"id":"8807f60480433e123181571ce2c56ba5572b177a07e6fa2e","nonce":"e88f01ff8f158c169d7524e7aa3b6f3bf09e0135f4aa96b4","fingerprint":"c08973b763eaca5f91c5593a178b6a74b56c553ee3e99a49d156ff56c962ec6f","expiresAt":"2026-10-12T08:24:46.582233474Z"}
+Private node key: software, permission-restricted file.
+TLS certificate SHA-256: c46a6209e995b17f505a124619109a48ea03b0f6900258cf735607868906eea7
+Loopback-only TLS listener: https://127.0.0.1:19845; certificate in state/tls.pem. Hosting blocked until isolation qualified. Proofs require an owner-pinned local job. Owner revokes all sessions with SIGUSR1.

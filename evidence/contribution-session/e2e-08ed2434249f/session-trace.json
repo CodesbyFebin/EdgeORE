@@ -1,0 +1,619 @@
+[
+  {
+    "phase": "STARTING",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 0,
+        "status": "Ready",
+        "measurements": []
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 0,
+        "status": "Ready",
+        "measurements": []
+      }
+    ],
+    "tMs": 9
+  },
+  {
+    "phase": "ACTIVE",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 0,
+        "status": "Running",
+        "measurements": []
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 0,
+        "status": "Ready",
+        "measurements": []
+      }
+    ],
+    "tMs": 30
+  },
+  {
+    "phase": "ACTIVE",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 0,
+        "status": "Running",
+        "measurements": [{
+          "unit": "ms",
+          "label": "Current proof job",
+          "source": "this phone's monotonic clock, waiting for the node",
+          "value": 1
+        }]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 0,
+        "status": "Ready",
+        "measurements": []
+      }
+    ],
+    "tMs": 110
+  },
+  {
+    "phase": "ACTIVE",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 1,
+        "status": "Waiting",
+        "measurements": [
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, signed command sent to node-signed result received",
+            "value": 111
+          },
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 111
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 0,
+        "status": "Running",
+        "measurements": []
+      }
+    ],
+    "tMs": 231
+  },
+  {
+    "phase": "ACTIVE",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 1,
+        "status": "Waiting",
+        "measurements": [
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, signed command sent to node-signed result received",
+            "value": 111
+          },
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 111
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 0,
+        "status": "Running",
+        "measurements": [{
+          "unit": "bytes",
+          "label": "Sent to your gateway",
+          "source": "counted by this phone as written to the TLS stream",
+          "value": 262205
+        }]
+      }
+    ],
+    "tMs": 292
+  },
+  {
+    "phase": "ACTIVE",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 1,
+        "status": "Running",
+        "measurements": [
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 111
+          },
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, waiting for the node",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 1,
+        "status": "Waiting",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 d9abde5463ab\u2026 at 2026-10-12T08:22:57.246811+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 46
+          }
+        ]
+      }
+    ],
+    "tMs": 312
+  },
+  {
+    "phase": "STOPPING",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 5,
+        "status": "Done(detail=5 rounds completed)",
+        "measurements": [
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, signed command sent to node-signed result received",
+            "value": 101
+          },
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 5
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 548
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 5,
+        "status": "Done(detail=5 rounds completed)",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 1311025
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 d9abde5463ab\u2026 at 2026-10-12T08:22:57.246811+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 1311025
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 5
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 133
+          }
+        ]
+      }
+    ],
+    "tMs": 876
+  },
+  {
+    "phase": "IDLE",
+    "note": "Session finished. Session limit reached: 5 rounds.",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 5,
+        "status": "Done(detail=5 rounds completed)",
+        "measurements": [
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, signed command sent to node-signed result received",
+            "value": 101
+          },
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 5
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 548
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 5,
+        "status": "Done(detail=5 rounds completed)",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 1311025
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 d9abde5463ab\u2026 at 2026-10-12T08:22:57.246811+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 1311025
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 5
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 133
+          }
+        ]
+      }
+    ],
+    "tMs": 896
+  },
+  {
+    "phase": "IDLE",
+    "note": "Session finished. Session limit reached: 5 rounds.",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 5,
+        "status": "Done(detail=5 rounds completed)",
+        "measurements": [
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, signed command sent to node-signed result received",
+            "value": 101
+          },
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 5
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 548
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 5,
+        "status": "Done(detail=5 rounds completed)",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 1311025
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 d9abde5463ab\u2026 at 2026-10-12T08:22:57.246811+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 1311025
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 5
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 133
+          }
+        ]
+      }
+    ],
+    "tMs": 896
+  },
+  {
+    "phase": "ACTIVE",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 1,
+        "status": "Running",
+        "measurements": [
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 102
+          },
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, waiting for the node",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 1,
+        "status": "Waiting",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 6610269676d1\u2026 at 2026-10-12T08:22:58.073849+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 22
+          }
+        ]
+      }
+    ],
+    "tMs": 1135
+  },
+  {
+    "phase": "STOPPING",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 1,
+        "status": "Running",
+        "measurements": [
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 102
+          },
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, waiting for the node",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 1,
+        "status": "Waiting",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 6610269676d1\u2026 at 2026-10-12T08:22:58.073849+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 22
+          }
+        ]
+      }
+    ],
+    "tMs": 1136
+  },
+  {
+    "phase": "IDLE",
+    "note": "Stopped by you.",
+    "parts": [
+      {
+        "kind": "NODE_PROOF",
+        "rounds": 1,
+        "status": "Cancelled",
+        "measurements": [
+          {
+            "unit": "jobs",
+            "label": "Proof jobs verified",
+            "source": "node-signed results, Ed25519 checked against the paired node key; node verifier VALID",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Proof job time, total",
+            "source": "this phone's monotonic clock",
+            "value": 102
+          },
+          {
+            "unit": "ms",
+            "label": "Current proof job",
+            "source": "this phone's monotonic clock, waiting for the node",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "kind": "GATEWAY_ROUND_TRIP",
+        "rounds": 1,
+        "status": "Cancelled",
+        "measurements": [
+          {
+            "unit": "bytes",
+            "label": "Sent to your gateway",
+            "source": "counted by this phone as written to the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Stored on your gateway",
+            "source": "one chunk; gateway acknowledged SHA-256 6610269676d1\u2026 at 2026-10-12T08:22:58.073849+00:00",
+            "value": 262205
+          },
+          {
+            "unit": "bytes",
+            "label": "Read back from your gateway",
+            "source": "counted by this phone as read from the TLS stream",
+            "value": 262205
+          },
+          {
+            "unit": "round trips",
+            "label": "Round trips verified",
+            "source": "downloaded bytes matched the SHA-256 and decrypted with the vault key",
+            "value": 1
+          },
+          {
+            "unit": "ms",
+            "label": "Transfer time, total",
+            "source": "this phone's monotonic clock",
+            "value": 22
+          }
+        ]
+      }
+    ],
+    "tMs": 1257
+  }
+]

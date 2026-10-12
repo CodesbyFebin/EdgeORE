@@ -1,0 +1,6 @@
+deproof revision: 7431f0896f4fb5409970f3aa3f64c42f6f877757
+c90125f35508c7ddf59040c2a6c22a533e92c57a7f7262bfb36862d2ded3e921  build/node-agent/deproof-node
+00b5fc6499b4081cff30b47c41128beab01dc5f970e060aad65e488a822d243d  build/node-agent/src/prover-worker/build/prove
+1b033578f343d8809feb1ee26c1ec36521e675c67644948445f6f51eb4cbdac3  build/node-agent/src/prover-worker/build/verify
+c921b38cdea30a5069a8260d506a7c6f238a6741ea7c5fb5fe5b6dc9dbe0cb80  build/node-agent/src/tools/proof_jobs.py
+cryptography==50.0.0
