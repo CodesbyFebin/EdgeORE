@@ -62,7 +62,10 @@ jobs:
         if: always()
         with:
           name: android-gate-${{ github.sha }}
-          path: evidence/build-*/
+          path: |
+            evidence/build-*/
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
   receipt-checker:
     needs: policy-and-gateway
     runs-on: ubuntu-latest

@@ -12,11 +12,15 @@ sealed interface OreDeployAvailability {
 }
 
 object OreDeployCheck {
+    @androidx.annotation.VisibleForTesting
+    @Volatile internal var testSource: ((AccountReader) -> OreDeployAvailability)? = null
     const val UPGRADEABLE_LOADER = "BPFLoaderUpgradeab1e11111111111111111111111"
     const val CONFIG_ADDRESS = "9c9X7aDRAF41faiDs94ELjT19UrGnn72wBW9hPsS4Awy"
 
     /** Never falls back to another cluster: a failed or empty read is reported as unavailable. */
-    suspend fun check(reader: AccountReader, nowMs: () -> Long = System::currentTimeMillis): OreDeployAvailability = try {
+    suspend fun check(reader: AccountReader, nowMs: () -> Long = System::currentTimeMillis): OreDeployAvailability {
+        testSource?.let { return it(reader) }
+        return try {
         val r = reader.accounts(listOf(OreV3.PROGRAM_ID, OreV3.BOARD_ADDRESS, OreV3.TREASURY_ADDRESS, CONFIG_ADDRESS))
         val (program, board, treasury, config) = r.accounts
         when {
@@ -32,5 +36,6 @@ object OreDeployCheck {
     } catch (e: Exception) {
         if (e is kotlinx.coroutines.CancellationException) throw e
         OreDeployAvailability.Unavailable(reader.endpoint, "Could not read the cluster: ${e.message ?: e.javaClass.simpleName}", nowMs())
+    }
     }
 }

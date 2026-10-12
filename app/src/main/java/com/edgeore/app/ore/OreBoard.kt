@@ -55,7 +55,12 @@ object OreFormat {
 
 /** Reads Board and Treasury in one call, then the current Round (its PDA from Board.round_id), and checks they agree. */
 class OreObserver(private val reader: AccountReader, private val nowMs: () -> Long = System::currentTimeMillis) {
+    companion object {
+        @androidx.annotation.VisibleForTesting
+        @Volatile internal var testSource: (suspend () -> OreSnapshot)? = null
+    }
     suspend fun read(): OreSnapshot {
+        testSource?.let { return it() }
         val first = reader.accounts(listOf(OreV3.BOARD_ADDRESS, OreV3.TREASURY_ADDRESS))
         val b = first.accounts[0] ?: throw OreV3.DecodeException("Board account not found on this RPC's cluster")
         val t = first.accounts[1] ?: throw OreV3.DecodeException("Treasury account not found on this RPC's cluster")
