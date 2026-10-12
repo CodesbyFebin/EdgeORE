@@ -85,7 +85,7 @@
     <ID>FunctionNaming:Components.kt$@Composable fun SectionTitle(title: String, subtitle: String? = null)</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun CountBadge(count: Int, modifier: Modifier = Modifier, tone: PillTone = PillTone.COPPER)</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun EdgeDivider(modifier: Modifier = Modifier)</ID>
-    <ID>FunctionNaming:DesignKit.kt$@Composable fun EnvironmentStrip(text: String = "Devnet · Review candidate")</ID>
+    <ID>FunctionNaming:DesignKit.kt$@Composable fun EnvironmentStrip(mainnet: Boolean = false)</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun FactCard( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun IconTile(icon: ImageVector, modifier: Modifier = Modifier, tint: Color = EdgeColors.mint)</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatCell(label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false)</ID>
@@ -782,20 +782,19 @@
     <ID>MaxLineLength:ContributionSessionE2ETest.kt$ContributionSessionE2ETest$waitFor(90_000, "stop to complete") { session.view.value.phase == SessionPhase.IDLE || session.view.value.phase == SessionPhase.FAILED }</ID>
     <ID>MaxLineLength:ContributionSessionE2ETest.kt$ContributionSessionE2ETest$while (!cond()) { require(System.currentTimeMillis() &lt; end) { "timed out waiting for $what" }; Thread.sleep(20) }</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$.</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Not configured: add the gateway's SPKI pin (Storage tab).", GatewayRoundTripPart(noPin, { null }).notConfigured())</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Not configured: pair the node again with the RUN_PROOF_JOB scope.", NodeProofPart(readOnly, { key }).notConfigured())</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Not configured: the gateway token is not on this phone; set up storage again.", GatewayRoundTripPart(noToken, { null }).notConfigured())</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Not configured: the node key is not on this phone; pair again.", NodeProofPart(withScope, { null }).notConfigured())</ID>
+    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Set up: add the gateway's SPKI pin (Storage tab).", GatewayRoundTripPart(noPin, { null }).notConfigured())</ID>
+    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Set up: pair the node again with the RUN_PROOF_JOB scope.", NodeProofPart(readOnly, { key }).notConfigured())</ID>
+    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Set up: the gateway token is not on this phone; set up storage again.", GatewayRoundTripPart(noToken, { null }).notConfigured())</ID>
+    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("Set up: the node key is not on this phone; pair again.", NodeProofPart(withScope, { null }).notConfigured())</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("no round completed, so only the summary", listOf("CONTRIBUTION_SESSION_STOPPED"), h.receipts.map { it.outcome })</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("only the part that was mid-round is cancelled remotely", 0, node.cancels)</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals("the same label replaces the last value", 15L, h.part(PartKind.NODE_PROOF).measurements.single().value)</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals(PartStatus.NotConfigured("Not configured on the node: no proof job"), h.part(PartKind.NODE_PROOF).status)</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertEquals(listOf("Not configured: pair a node (Nodes tab).", "Not configured: set up your storage gateway (Storage tab)."), setups)</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertThrows(IllegalArgumentException::class.java) { NodeSigned.verify(env(node.sign(payload)), "22".repeat(32)) }</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertThrows(IllegalArgumentException::class.java) { NodeSigned.verify(env(other.sign(payload), other.publicKey), fp) }</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertTrue(h.receipts.last().detail, h.receipts.last().detail.contains("2 rounds · Sent 25 bytes [test counter]"))</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertTrue(why, why.startsWith("Nothing to run.") &amp;&amp; why.contains("pair a node") &amp;&amp; why.contains("set up your storage gateway"))</ID>
-    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$val h = Harness(this, listOf(node, FakePart(PartKind.GATEWAY_ROUND_TRIP, setup = "Not configured: set up your storage gateway (Storage tab).")))</ID>
+    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$assertTrue(why, why.startsWith("Nothing to run.") &amp;&amp; why.contains("pair a node") &amp;&amp; why.contains("Set up your storage gateway"))</ID>
+    <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$val h = Harness(this, listOf(node, FakePart(PartKind.GATEWAY_ROUND_TRIP, setup = "Set up your storage gateway (Storage tab).")))</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$val noToken = GatewaySetup("https://127.0.0.1:18443", listOf("sha256/" + Base64.getEncoder().encodeToString(ByteArray(32)))) { null }</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$val node = FakePart(PartKind.NODE_PROOF, throwOnRun = IllegalStateException("Node unreachable during proof: Timed out"))</ID>
     <ID>MaxLineLength:ContributionSessionTest.kt$ContributionSessionTest$val node = FakePart(PartKind.NODE_PROOF, throwOnRun = PartNotConfigured("Not configured on the node: no proof job"))</ID>
@@ -862,15 +861,16 @@
     <ID>MaxLineLength:EdgeOreApp.kt$.</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Column(Modifier.fillMaxSize().padding(inner)) { OnboardingScreen(onDone = { Onboarding.set(context, true); onboarded = true }) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Destination$Mine : Destination</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$EnvironmentStrip(mainnet = headerDeploy.mainnet || headerCluster == com.edgeore.app.solana.Cluster.MAINNET)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Icon(EdgeIcons.Back, contentDescription = null, tint = EdgeColors.textMuted); Text(" Back", color = EdgeColors.textMuted)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Modifier.widthIn(max = 640.dp).fillMaxSize().background(EdgeColors.ambient).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 72.dp)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$NavigationBar</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Balances: ${portfolio.network.label}, ${if (portfolio.loading) "reading" else portfolio.error ?: "${portfolio.assets.count { it.amount != null &amp;&amp; it.status.startsWith("Observed") }} of 3 assets observed"}. Missing balances are never assumed to be zero.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Current app state · ${com.edgeore.app.ui.Format.time(AppClock.nowMs())}", style = MaterialTheme.typography.labelSmall)</ID>
-    <ID>MaxLineLength:EdgeOreApp.kt$Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · wallet transfers on Solana devnet only; ORE Deploy is devnet by default, with an explicit owner-signed mainnet option capped at 0.01 SOL.")</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · transfers use Solana devnet; ORE Deploy is devnet by default with an opt-in mainnet option, capped at 0.01 SOL per deploy and signed in your wallet. Hackathon build 0.1.0-clockin; no rewards or income.")</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$Text("Hackathon build 0.1.0-clockin. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Node session: ${session.phase.name.lowercase()}. ${session.failure ?: session.note ?: "Inspect each worker before starting. Configure your node in Nodes and gateway in Storage."}")</ID>
-    <ID>MaxLineLength:EdgeOreApp.kt$Text("Not store-ready. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("ORE: the 5×5 board reads mainnet. ORE Deploy (Mine) is reviewed and signed by you in your wallet; mainnet deploys are capped at 0.01 SOL and risk that SOL. No reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Optional reminders are ${if (reminders) "enabled" else "off"}. No backend notification inbox is configured.")</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Text("Receipts: ${receipts.size} stored. Verification checks signed contents; it does not independently confirm payment.")</ID>
@@ -885,7 +885,6 @@
     <ID>MaxLineLength:EdgeOreApp.kt$containerColor = EdgeColors.surfaceInset</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$dismissButton = { TextButton(onClick = { about = false; Onboarding.set(context, false); onboarded = false }) { Text("Show introduction") } }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$else</ID>
-    <ID>MaxLineLength:EdgeOreApp.kt$if (com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) Text("Screen capture allowed (demo build)", style = MaterialTheme.typography.bodySmall)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$if (walletSheet) com.edgeore.app.ui.components.WalletConnectSheet(onDismiss = { walletSheet = false }, onConnect = { walletSheet = false; actions.connectWallet() })</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier</ID>
@@ -1331,7 +1330,6 @@
     <ID>MaxLineLength:MiningMotionTest.kt$MiningMotionTest$assertEquals(p.name, if (on) MiningPose.SWINGING else MiningPose.RESTING, MiningMotion.pose(p, reducedMotion = false))</ID>
     <ID>MaxLineLength:MiningMotionTest.kt$MiningMotionTest$for (p in listOf(SessionPhase.IDLE, SessionPhase.STARTING, SessionPhase.STOPPING, SessionPhase.FAILED)) assertEquals(MiningPose.RESTING, MiningMotion.pose(p, false))</ID>
     <ID>MaxLineLength:MiningSessionPanelTest.kt$MiningSessionPanelTest$MiningSessionPanel(view, edgeModeResumed = true, headline = "", onStart = { starts++ }, onStop = { stops++ }, onToggleEdgeMode = {})</ID>
-    <ID>MaxLineLength:MiningSessionPanelTest.kt$MiningSessionPanelTest$PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.NotConfigured("Not configured: set up your storage gateway (Storage tab)."))</ID>
     <ID>MaxLineLength:MiningSessionPanelTest.kt$MiningSessionPanelTest$assertFalse("no measurement line without a source: $all", all.any { it.contains(" bytes") || it.contains(" ms ·") || it.contains(" · this phone") })</ID>
     <ID>MaxLineLength:MiningSessionPanelTest.kt$MiningSessionPanelTest$private fun pose()</ID>
     <ID>MaxLineLength:MiningSessionPanelTest.kt$MiningSessionPanelTest$private fun texts()</ID>
@@ -1516,7 +1514,7 @@
     <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$appendLine("- Round start slot: ${s.board.startSlot}; end slot: ${if (s.board.endSlot == OreV3.END_SLOT_WAITING) "not set (waiting for first deploy)" else s.board.endSlot.toString()}")</ID>
     <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$appendLine("Snapshot (read-only mainnet observation via ${s.rpc}; Board read at slot ${s.boardSlot}, Round read at slot ${s.roundSlot}):")</ID>
     <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$const</ID>
-    <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$const val NOT_CONFIGURED = "Not configured: connect your owned host and choose a model (AI → Private AI), or download an on-device model (AI → On this phone)."</ID>
+    <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$const val NOT_CONFIGURED = "Set up: connect your owned host and choose a model (AI → Private AI), or download an on-device model (AI → On this phone)."</ID>
     <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$private fun norm(n: String): String?</ID>
     <ID>MaxLineLength:OreAdvisor.kt$OreAdvisor$s.round.deployedLamports.forEachIndexed { i, l -&gt; appendLine(" square ${i + 1}: ${OreFormat.sol(l)} SOL, ${s.round.count[i]} miners") }</ID>
     <ID>MaxLineLength:OreAdvisorTest.kt$OreAdvisorTest$OreV3.decodeTreasury(f.treasury.owner, f.treasury.data)</ID>
@@ -1542,7 +1540,7 @@
     <ID>MaxLineLength:OreBot.kt$OreBot$if (!nodeOrGatewayConfigured) add("Mine needs a paired node (Nodes) or your storage gateway (Storage) before it can run anything.")</ID>
     <ID>MaxLineLength:OreBot.kt$OreBot$if (!walletConnected) add("Tap Connect to choose a Mobile Wallet Adapter wallet. EdgeORE never sees your seed phrase.")</ID>
     <ID>MaxLineLength:OreBot.kt$OreBot$if (Build.VERSION.SDK_INT &gt;= 26) nm.createNotificationChannel(NotificationChannel(CHANNEL, "ORE Bot reminders", NotificationManager.IMPORTANCE_DEFAULT))</ID>
-    <ID>MaxLineLength:OreBot.kt$OreBot$if (checkInAvailable) add("A check-in slot is open. Checking in adds to your streak and points only. There is no token reward.")</ID>
+    <ID>MaxLineLength:OreBot.kt$OreBot$if (checkInAvailable) add("A check-in slot is open. Checking in adds to your streak and points, saved on your phone.")</ID>
     <ID>MaxLineLength:OreDeployAvailability.kt$OreDeployAvailability.Available$data</ID>
     <ID>MaxLineLength:OreDeployAvailability.kt$OreDeployCheck$OreDeployAvailability.Available(reader.endpoint, OreV3.decodeBoard(board.owner, board.data).roundId, r.slot, nowMs())</ID>
     <ID>MaxLineLength:OreDeployAvailability.kt$OreDeployCheck$OreDeployAvailability.Unavailable(reader.endpoint, "Could not read the cluster: ${e.message ?: e.javaClass.simpleName}", nowMs())</ID>
@@ -1982,7 +1980,6 @@
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$"bytesSent" to sent.toString()</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$/** Cancels the gateway job only if the chunk was never acknowledged, so an interrupted first upload leaves nothing. */</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$digests</ID>
-    <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$gateway.token().isNullOrEmpty() -&gt; "Not configured: the gateway token is not on this phone; set up storage again."</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$if (a !is ProviderObservation.Acknowledged || a.ciphertextSha256 != b.ciphertextSha256) throw IllegalStateException("Gateway did not acknowledge the chunk's SHA-256")</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$localObservation = Evidence("CHECKED", "Byte counts and times measured on this phone; every download matched the SHA-256 and decrypted with the vault key")</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$private val provider: (GatewaySetup) -&gt; OwnedGatewayBackupProvider = { g -&gt; OwnedGatewayBackupProvider(g.endpoint, { g.token() ?: "" }, g.spkiPins) }</ID>
@@ -2094,10 +2091,10 @@
     <ID>MaxLineLength:StorageScreen.kt$Text("Disk I/O ${device?.ioBytesPerSec?.let { "${formatBytes(it)}/s since the last reading" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("No bandwidth-to-ORE contract is verified. Claim stays off.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("No idle sync job is registered.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
-    <ID>MaxLineLength:StorageScreen.kt$Text("Not configured: set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("Nothing is uploaded until a backend is configured. Cross-device recovery is not implemented.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("Open tabs in this app: 0 until you load one https page. Cookies start off.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("Revoke clears sharing consent. Encrypted files stay until you delete them.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:StorageScreen.kt$Text("Set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("Shared by EdgeORE: 0 B. Consent does not start a sharing protocol.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text("This build has no EdgeORE backup backend to connect to, so there is nothing to configure yet and no upload can run.")</ID>
     <ID>MaxLineLength:StorageScreen.kt$Text(if (st.sharingConsent) "Consent on. This app is not sending shared traffic." else "Sharing OFF", color = if (st.sharingConsent) EdgeColors.mint else EdgeColors.textMuted)</ID>

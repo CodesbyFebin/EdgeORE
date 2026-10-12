@@ -441,7 +441,7 @@ fun GatewaySetupCard(g: com.edgeore.app.GatewayState, onSave: (endpoint: String,
             Text("Set up: ${g.endpoint} · ${g.pinCount} SPKI pin${if (g.pinCount == 1) "" else "s"} · token ${if (g.tokenStored) "stored (Keystore-encrypted)" else "missing"}",
                 color = EdgeColors.mint, style = MaterialTheme.typography.bodyMedium)
         } else {
-            Text("Not configured: set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+            Text("Set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
         }
         Text("Run services/storage-gateway on a host you own behind an HTTPS proxy. Enter its origin, its bearer token and the SHA-256 SPKI pin of its certificate (sha256/… as printed by openssl). Requests are refused in the TLS handshake unless the pin matches.",
             color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)

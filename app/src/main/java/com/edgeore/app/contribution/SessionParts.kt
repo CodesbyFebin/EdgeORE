@@ -48,9 +48,9 @@ class NodeProofPart(
     override val kind = PartKind.NODE_PROOF
 
     override fun notConfigured(): String? = when {
-        node == null -> "Not configured: pair a node (Nodes tab)."
-        "RUN_PROOF_JOB" !in node.scopes -> "Not configured: pair the node again with the RUN_PROOF_JOB scope."
-        key() == null -> "Not configured: the node key is not on this phone; pair again."
+        node == null -> "Set up: pair a node (Nodes tab)."
+        "RUN_PROOF_JOB" !in node.scopes -> "Set up: pair the node again with the RUN_PROOF_JOB scope."
+        key() == null -> "Set up: the node key is not on this phone; pair again."
         else -> null
     }
 
@@ -155,10 +155,10 @@ class GatewayRoundTripPart(
     override val kind = PartKind.GATEWAY_ROUND_TRIP
 
     override fun notConfigured(): String? = when {
-        gateway == null -> "Not configured: set up your storage gateway (Storage tab)."
-        gateway.spkiPins.isEmpty() -> "Not configured: add the gateway's SPKI pin (Storage tab)."
-        gateway.token().isNullOrEmpty() -> "Not configured: the gateway token is not on this phone; set up storage again."
-        vault() == null -> "Not configured: the vault key is unavailable on this phone."
+        gateway == null -> "Set up your storage gateway (Storage tab)."
+        gateway.spkiPins.isEmpty() -> "Set up: add the gateway's SPKI pin (Storage tab)."
+        gateway.token().isNullOrEmpty() -> "Set up: the gateway token is not on this phone; set up storage again."
+        vault() == null -> "Set up: the vault key is unavailable on this phone."
         else -> null
     }
 

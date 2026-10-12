@@ -6,7 +6,7 @@ Rules: one continuous take on the physical phone. No edited balances or signatur
 1. Install the demo APK `EdgeORE-76eea59-demo-debug.apk` (debug build, screen capture allowed). If Android refuses the update, uninstall the old build first.
 2. A Mobile Wallet Adapter wallet (Phantom / Solflare / Seed Vault wallet) set to **mainnet**, holding **at least about 0.02 SOL**. A first deploy costs about 0.0145 SOL: 0.01 deploy + about 0.0045 miner account rent + fee.
 3. Do Not Disturb on, battery above 50%, Android screen recorder with mic.
-4. Optional: AI host / node / storage. If not set up, show *Not configured*. Don't fake it.
+4. Optional: AI host / node / storage. If not set up, show the *Set up* step. Don't fake it.
 
 ## Shot list
 
@@ -21,8 +21,8 @@ Rules: one continuous take on the physical phone. No edited balances or signatur
 | 1:55–2:10 | **Approve & sign in wallet** → approve in the wallet (move quickly: rounds last about a minute) | "My wallet signs. EdgeORE checks the returned bytes match the review." |
 | 2:10–2:30 | Tap **Submit** once → status → check confirmation; show the signature | "Submit is one separate tap. No auto-retry. If it times out, it stays 'unknown' rather than resending." |
 | 2:30–2:45 | Receipts → open the deploy receipt → export | "Every outcome becomes a receipt signed with an Android Keystore key." |
-| 2:45–2:55 | (Optional) Daily check-in; AI / Nodes / Storage showing *Not configured* | "A check-in streak and points, no token. Optional AI, node and storage need my own setup." |
-| 2:55–3:05 | End card | "Reviewed, capped, signed by you, receipted. Not production-ready, and no income claims." |
+| 2:45–2:55 | (Optional) Daily check-in; AI / Nodes / Storage showing their *Set up* step | "A check-in streak, with points saved on my phone. Optional AI, node and storage are ready to set up with my own hardware." |
+| 2:55–3:05 | End card | "Reviewed, capped, signed by you, receipted. Hackathon build 0.1.0-clockin, and no income claims." |
 
 **If MWA or the deploy fails:** keep recording, show the error, and say what failed. If the round ended before submit, say so and review again for the new round. Never resend the old bytes.
 

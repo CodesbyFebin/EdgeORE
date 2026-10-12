@@ -172,12 +172,12 @@ class ContributionSessionTest {
         val h = Harness(this, real)
         assertFalse(h.session.view.value.anyConfigured)
         val setups = h.session.view.value.parts.map { (it.status as PartStatus.NotConfigured).setup }
-        assertEquals(listOf("Not configured: pair a node (Nodes tab).", "Not configured: set up your storage gateway (Storage tab)."), setups)
+        assertEquals(listOf("Set up: pair a node (Nodes tab).", "Set up your storage gateway (Storage tab)."), setups)
         assertTrue(h.session.view.value.parts.all { it.measurements.isEmpty() })
         h.session.start(); runCurrent()
         assertEquals(SessionPhase.FAILED, h.phase())
         val why = h.session.view.value.failure!!
-        assertTrue(why, why.startsWith("Nothing to run.") && why.contains("pair a node") && why.contains("set up your storage gateway"))
+        assertTrue(why, why.startsWith("Nothing to run.") && why.contains("pair a node") && why.contains("Set up your storage gateway"))
         assertTrue("nothing counted, nothing recorded", h.receipts.isEmpty())
         assertTrue(h.session.view.value.parts.all { it.measurements.isEmpty() && it.rounds == 0 })
         assertFalse(SessionPhase.ACTIVE in h.phases)
@@ -198,7 +198,7 @@ class ContributionSessionTest {
 
     @Test fun allPartsFailingIsFailedWithTheReason() = runTest {
         val node = FakePart(PartKind.NODE_PROOF, throwOnRun = IllegalStateException("Node unreachable during proof: Timed out"))
-        val h = Harness(this, listOf(node, FakePart(PartKind.GATEWAY_ROUND_TRIP, setup = "Not configured: set up your storage gateway (Storage tab).")))
+        val h = Harness(this, listOf(node, FakePart(PartKind.GATEWAY_ROUND_TRIP, setup = "Set up your storage gateway (Storage tab).")))
         h.session.start(); runCurrent()
         assertEquals(SessionPhase.FAILED, h.phase())
         assertEquals("Node unreachable during proof: Timed out", h.session.view.value.failure)
@@ -214,14 +214,14 @@ class ContributionSessionTest {
     @Test fun realPartsExplainWhatIsMissing() {
         val key = Ed25519.generate()
         val readOnly = PairedNode("https://127.0.0.1:9843", "00".repeat(32), "11".repeat(32), "s", listOf("READ_NODE"))
-        assertEquals("Not configured: pair the node again with the RUN_PROOF_JOB scope.", NodeProofPart(readOnly, { key }).notConfigured())
+        assertEquals("Set up: pair the node again with the RUN_PROOF_JOB scope.", NodeProofPart(readOnly, { key }).notConfigured())
         val withScope = readOnly.copy(scopes = listOf("READ_NODE", "RUN_PROOF_JOB"))
-        assertEquals("Not configured: the node key is not on this phone; pair again.", NodeProofPart(withScope, { null }).notConfigured())
+        assertEquals("Set up: the node key is not on this phone; pair again.", NodeProofPart(withScope, { null }).notConfigured())
         assertNull(NodeProofPart(withScope, { key }).notConfigured())
         val noPin = GatewaySetup("https://127.0.0.1:18443", emptyList()) { "t".repeat(40) }
-        assertEquals("Not configured: add the gateway's SPKI pin (Storage tab).", GatewayRoundTripPart(noPin, { null }).notConfigured())
+        assertEquals("Set up: add the gateway's SPKI pin (Storage tab).", GatewayRoundTripPart(noPin, { null }).notConfigured())
         val noToken = GatewaySetup("https://127.0.0.1:18443", listOf("sha256/" + Base64.getEncoder().encodeToString(ByteArray(32)))) { null }
-        assertEquals("Not configured: the gateway token is not on this phone; set up storage again.", GatewayRoundTripPart(noToken, { null }).notConfigured())
+        assertEquals("Set up: the gateway token is not on this phone; set up storage again.", GatewayRoundTripPart(noToken, { null }).notConfigured())
     }
 
     @Test fun nodeSignedResultsAreCheckedAgainstThePairedKey() {

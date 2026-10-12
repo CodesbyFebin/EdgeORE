@@ -8,7 +8,7 @@ package com.edgeore.app.ore
  */
 object OreAdvisor {
     const val NOTICE = "Not financial advice. ORE rounds can lose SOL. EdgeORE cannot deploy."
-    const val NOT_CONFIGURED = "Not configured: connect your owned host and choose a model (AI → Private AI), or download an on-device model (AI → On this phone)."
+    const val NOT_CONFIGURED = "Set up: connect your owned host and choose a model (AI → Private AI), or download an on-device model (AI → On this phone)."
     const val REDACTED = "[number not in snapshot]"
 
     /** How ORE v3 works, stated only from the source at [OreV3.SOURCE_COMMIT] (file paths given so the model can cite them). */

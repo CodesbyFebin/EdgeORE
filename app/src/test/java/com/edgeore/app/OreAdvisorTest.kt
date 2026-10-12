@@ -37,6 +37,6 @@ class OreAdvisorTest {
     @Test fun systemPromptForbidsActionsAndInventedNumbers() {
         val s = OreAdvisor.SYSTEM_PROMPT.lowercase()
         for (w in listOf("no tools", "cannot sign, send", "deploy", "never compute, estimate or invent")) assertTrue(w, s.contains(w))
-        assertTrue(OreAdvisor.NOT_CONFIGURED.startsWith("Not configured"))
+        assertTrue(OreAdvisor.NOT_CONFIGURED.startsWith("Set up"))
     }
 }

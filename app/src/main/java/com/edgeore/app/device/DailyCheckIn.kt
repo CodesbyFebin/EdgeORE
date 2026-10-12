@@ -24,7 +24,7 @@ data class CheckInState(val day: String = "", val slotStarts: List<Long> = empty
 object DailyCheckIn {
     const val SLOTS_PER_DAY = 5
     const val SLOT_MS = 60 * 60 * 1000L
-    const val REWARD_LABEL = "No token reward · streak and points stay on this phone"
+    const val REWARD_LABEL = "Streak and points saved on your phone"
 
     fun utcDay(ms: Long): String = Instant.ofEpochMilli(ms).atOffset(ZoneOffset.UTC).toLocalDate().toString()
     fun nextResetMs(ms: Long): Long = LocalDate.parse(utcDay(ms)).plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()

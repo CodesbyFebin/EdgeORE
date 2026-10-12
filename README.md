@@ -23,14 +23,14 @@ Hackathon package: [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md) · [`doc
 | Single submit | Submit is a separate tap. The attempt is recorded before sending. A timeout stays "outcome unknown". No automatic retry. |
 | Signed receipts | Every outcome becomes a receipt signed with an Android Keystore key (labelled weaker software fallback if Keystore is unavailable). |
 | Receipt checker | A standalone JVM checker verifies the integrity of signed receipt contents. It does not prove an on-chain outcome. |
-| Daily check-in | A local streak and points. No token reward. |
-| Optional extras | AI advisor host, node agent and storage gateway need your own setup. Without it they show *Not configured*. The AI advisor never signs or deploys. |
+| Daily check-in | Streak and points saved on your phone. |
+| Optional extras | AI advisor host, node agent and storage gateway need your own setup. Until then they show a *Set up* step with the guidance. The AI advisor never signs or deploys. |
 
 ## Verified evidence
 
-- **Mainnet fork simulation (LiteSVM), two runs.** `tools/ore-fork-sim` dumps the live mainnet ORE v3 program (sha256 `b16a10029a35e709956cfe42c4dc51cf2c59522f477eba10816a40bcaa7dd5bd`) and a read-only account snapshot. It then runs the app's exact Deploy bytes. Round 437646 and round 437756 both passed: +400,000 lamports on each of 25 squares for a 0.01 SOL deploy, and a stale-round deploy was rejected. The app's bytes match an independent Rust derivation from [regolith-labs/ore](https://github.com/regolith-labs/ore) @ `48c203bd`. Nothing was sent to any cluster. Details: [`docs/ore/MAINNET-DEPLOY.md`](docs/ore/MAINNET-DEPLOY.md).
+- **Tested against the live ORE mainnet program (local fork, LiteSVM), two runs.** `tools/ore-fork-sim` dumps the live mainnet ORE v3 program (sha256 `b16a10029a35e709956cfe42c4dc51cf2c59522f477eba10816a40bcaa7dd5bd`) and a read-only account snapshot. It then runs the app's exact Deploy bytes. Round 437646 and round 437756 both passed: +400,000 lamports on each of 25 squares for a 0.01 SOL deploy, and a stale-round deploy was rejected. The app's bytes match an independent Rust derivation from [regolith-labs/ore](https://github.com/regolith-labs/ore) @ `48c203bd`. This is a local fork run, not a live transaction: nothing was sent to any cluster. Details: [`docs/ore/MAINNET-DEPLOY.md`](docs/ore/MAINNET-DEPLOY.md).
 - **Devnet evidence:** [`evidence/devnet-session/`](evidence/devnet-session/README.md) has the receipt-settlement program, a receipt checkpoint, and a verified v3 receipt. That transfer and checkpoint were sent from a laptop CLI, not from the app.
-- **Unverified:** MWA signing of a mainnet deploy on a real device stays UNVERIFIED until the owner records it.
+- **Pending device recording:** MWA signing of a mainnet deploy on a real device is pending device recording.
 
 ### Tests
 
@@ -39,16 +39,16 @@ Hackathon package: [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md) · [`doc
 | Android unit tests | 386 run · 379 passed · 7 skipped · 0 failed |
 | Receipt checker (JVM) | 17 passed |
 | LiteSVM receipt-settlement suite | 27 passed |
-| ORE mainnet fork sim (`tools/ore-fork-sim`) | 2 passed |
+| Live ORE mainnet program, local fork (`tools/ore-fork-sim`) | 2 passed |
 
 Each suite is counted on its own. The counts are not added together.
 
 ## Rules the app keeps
 
 - One wallet approval per transaction. Every deploy is reviewed and signed by you.
-- No background spending, no auto-deploy, no automatic retry or resend.
+- You approve every deploy. No automatic retry or resend.
 - No reward, income or earnings claims. Deployed SOL may be lost entirely.
-- Not production-ready. `0.1.0-clockin` is a hackathon build.
+- Hackathon build 0.1.0-clockin.
 
 ## Next
 

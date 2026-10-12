@@ -37,7 +37,7 @@ class MintHoloLogicTest {
         val gap = (DailyCheckIn.checkIn(next, t0 + 72 * h) as DailyCheckIn.Result.Started).state
         assertEquals(1, gap.streakDays) // missing a day starts a new streak; nothing else is taken away
         assertEquals(gap, CheckInState.fromJson(gap.toJson()))
-        assertTrue(DailyCheckIn.REWARD_LABEL.startsWith("No token reward"))
+        assertEquals("Streak and points saved on your phone", DailyCheckIn.REWARD_LABEL) // local only, no token claimed
     }
 
     @Test fun tokenAmountsAreSummedOnlyForTheVerifiedMint() {
