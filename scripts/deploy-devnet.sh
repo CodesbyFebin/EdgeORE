@@ -85,6 +85,8 @@ rec declare_id "$DECLARED"
 [ "$DECLARED" = "$PROGRAM_ID" ] || die "PROGRAM_KEYPAIR ($PROGRAM_ID) != declare_id! ($DECLARED); sync keys in a reviewed commit first"
 
 log "2. anchor build"
+# anchor build refuses a target/deploy keypair that differs from declare_id!; use the (already matched) program keypair.
+mkdir -p "$ONCHAIN/target/deploy" && install -m 600 "$PROGRAM_KEYPAIR" "$ONCHAIN/target/deploy/receipt_settlement-keypair.json"
 ( cd "$ONCHAIN" && anchor build ) > "$OUT_DIR/anchor-build.log" 2>&1 || die "anchor build failed (see anchor-build.log)"
 SO="$ONCHAIN/target/deploy/receipt_settlement.so"
 [ -f "$SO" ] || die "no artifact at $SO"
