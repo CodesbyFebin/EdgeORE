@@ -32,14 +32,16 @@ android {
     val storePass = System.getenv("EDGEORE_STORE_PASS").orEmpty()
     // Release signing only when the owner's keystore is present (never committed) and the password is set.
     // Otherwise assembleRelease produces an UNSIGNED, minified APK for R8/size checks only.
-    val releaseKeystore = rootProject.file("release.jks")
+    // EDGEORE_KEYSTORE: path to a keystore outside the repo (scripts/make-release-keystore.sh); release.jks is the legacy default.
+    val releaseKeystore = System.getenv("EDGEORE_KEYSTORE")?.takeIf { it.isNotBlank() }?.let { file(it) } ?: rootProject.file("release.jks")
+    val keyPass = System.getenv("EDGEORE_KEY_PASS").orEmpty().ifEmpty { storePass }
     val canSignRelease = releaseKeystore.exists() && storePass.isNotEmpty()
     signingConfigs {
         if (canSignRelease) create("release") {
             storeFile = releaseKeystore
             storePassword = storePass
             keyAlias = "edgeore"
-            keyPassword = storePass
+            keyPassword = keyPass
         }
     }
 
