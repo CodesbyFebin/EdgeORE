@@ -1,0 +1,4 @@
+VERIFIED: PASS
+Integrity OK for 1 receipt(s) · key matches pinned key · full chain through signed checkpoint · wallet signatures verified: 0 · descriptive fields covered by the signed envelope · chain status not checked offline
+Receipt signatures: v3 (descriptive fields bound in the signature) 1, legacy digest-only (v1/v2) 0
+Descriptive export fields covered by the signed envelope: top-level note, exclusions, payment, location, exportedAt; deviceKeys[].protection, deviceKeys[].firstUsedAt

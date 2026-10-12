@@ -108,7 +108,7 @@ cat "$OUT_DIR/deploy.json"
 rec deploy_signature "$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("signature",""))' "$OUT_DIR/deploy.json")"
 
 log "4. record program id, slot, upgrade authority"
-solana program show "$PROGRAM_ID" --url "$RPC_URL" --output json > "$OUT_DIR/program-show.json"
+solana program show "$PROGRAM_ID" --url "$RPC_URL" --keypair "$DEPLOYER_KEYPAIR" --output json > "$OUT_DIR/program-show.json"
 for k in programId owner programdataAddress authority lastDeploySlot dataLen lamports; do
   rec "onchain_$k" "$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get(sys.argv[2]))' "$OUT_DIR/program-show.json" "$k")"
 done
@@ -117,7 +117,7 @@ grep -qx "onchain_authority: $DEPLOYER" "$EVID" || die "upgrade authority is not
 grep -qx "onchain_owner: $UPGRADEABLE_LOADER" "$EVID" || die "not owned by the upgradeable loader"
 
 log "5. solana program dump"
-solana program dump "$PROGRAM_ID" "$OUT_DIR/dumped.so" --url "$RPC_URL"
+solana program dump "$PROGRAM_ID" "$OUT_DIR/dumped.so" --url "$RPC_URL" --keypair "$DEPLOYER_KEYPAIR"
 rec dumped_bytes "$(stat -c %s "$OUT_DIR/dumped.so")"
 rec dumped_sha256 "$(sha256sum "$OUT_DIR/dumped.so" | cut -d' ' -f1)"
 

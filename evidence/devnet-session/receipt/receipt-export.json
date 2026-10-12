@@ -1,0 +1,47 @@
+{
+  "schema": "edgeore.receipt-export.v2",
+  "checkpoint": {
+    "lastSha256": "07ac40f55aecfb821d1c186bb5577a171c8f7a46089a93292e8301af27228b70",
+    "firstSequence": 1,
+    "lastSequence": 1,
+    "bundleSha256": "071f62eb0f9364bc977683459b73f7100fa153a1dd385673d0884607e3e5850b",
+    "signature": "MEQCIBqXmNGow0ic0HjW6xNlLP4iyy4Tac/eokbpS47/R+tiAiA1ru5JxIarhAnoBHH5z/rrCZNXXU6TI+PJGDQ8SFsy5w==",
+    "exportedAt": "2026-10-12T12:21:30.603107531Z",
+    "keyId": "710a1d6f004edb4b68d549990b58f9a6bc87b9c699e0984be9887399c2f955ed",
+    "receiptCount": 1
+  },
+  "note": "Device-key signatures show these bytes were written by an install holding these keys. They are not independent verification, provider acknowledgement or payment. Wallet signatures, where present, can be checked separately.",
+  "deviceKeys": [{
+    "firstUsedAt": "2026-10-12T12:21:30.603107531Z",
+    "publicKeySpkiBase64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmB9di9fELS4K6HjnE7GIYLMye2c6Zj83/dzsjmdY6yAOjkyIgZqyrcpWmumvWUhkRydbog9cJk8EmVYi7WFD4w==",
+    "keyId": "710a1d6f004edb4b68d549990b58f9a6bc87b9c699e0984be9887399c2f955ed",
+    "protection": "Software key in app storage (Keystore unavailable; weaker)",
+    "algorithm": "SHA256withECDSA"
+  }],
+  "bundleSha256": "071f62eb0f9364bc977683459b73f7100fa153a1dd385673d0884607e3e5850b",
+  "envelopeRequired": true,
+  "deviceKey": {
+    "publicKeySpkiBase64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmB9di9fELS4K6HjnE7GIYLMye2c6Zj83/dzsjmdY6yAOjkyIgZqyrcpWmumvWUhkRydbog9cJk8EmVYi7WFD4w==",
+    "algorithm": "SHA256withECDSA"
+  },
+  "exclusions": [
+    "Private keys (wallet keys stay in the wallet; node and device keys stay in Android Keystore)",
+    "Document contents and AI prompts/responses (only SHA-256 digests are included)",
+    "Node endpoints' credentials and pairing codes"
+  ],
+  "mode": "FULL_CHAIN",
+  "receipts": [{
+    "deviceSignature": "MEYCIQDqrEnQjsMDXvY52TtXilMpn9M49n0WydQHpyM3B5o1SAIhANJ1SerUpoPWk4hcYdi1zarkbG0FNy8lFXLSWip3Y0KL",
+    "sha256": "07ac40f55aecfb821d1c186bb5577a171c8f7a46089a93292e8301af27228b70",
+    "body": "{\"schema\":\"edgeore.receipt.v3\",\"lamports\":null,\"cluster\":null,\"wallet\":null,\"evidence\":{\"independentVerification\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"nodeSignature\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"providerAcknowledgement\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"},\"localObservation\":{\"checked\":\"Nothing was checked for this dimension\",\"state\":\"NOT_AVAILABLE\"}},\"signerKeyId\":\"710a1d6f004edb4b68d549990b58f9a6bc87b9c699e0984be9887399c2f955ed\",\"kind\":\"POLICY\",\"source\":\"devnet-session\",\"title\":\"Devnet session checkpoint fixture\",\"solanaSignature\":null,\"sequence\":1,\"createdAt\":\"2026-10-12T12:21:30.567732206Z\",\"previousSha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"digests\":{},\"operationId\":null,\"payment\":\"NOT_OBSERVED\",\"id\":\"7f981352-b873-4847-8960-ecc3d419f2e4\",\"detail\":\"Receipt written by the EdgeORE receipt code on the build box for the devnet checkpoint test. Not a payment.\",\"relatesTo\":null,\"outcome\":\"RECORDED\"}"
+  }],
+  "envelope": {
+    "signature": "MEYCIQDbFkw57ekZ0LGUl5FL1b5kVo5PegcWLhI0j+JguuC8gQIhANT2ShyRzq5getNSzJaN6rTikVLcuDgzKYKh5U3cb3o7",
+    "domain": "edgeore.export-envelope.v1",
+    "fieldsSha256": "93931f0af0131cff73bdff8331110cfbb105bca1ad4433079426b0d5b1685558",
+    "keyId": "710a1d6f004edb4b68d549990b58f9a6bc87b9c699e0984be9887399c2f955ed"
+  },
+  "exportedAt": "2026-10-12T12:21:30.603107531Z",
+  "payment": "NOT_OBSERVED",
+  "location": null
+}

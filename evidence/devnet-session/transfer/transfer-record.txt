@@ -1,0 +1,5 @@
+signature: 4AYeQ2cUszdHgJZpsH5HRi2MsNR1k1tx6L4M7KmcNyLDFjMB6N2s2XPUsKaXFqXi2sqyY3ki6tZr4uPpoQXvo1zV
+explorer: https://explorer.solana.com/tx/4AYeQ2cUszdHgJZpsH5HRi2MsNR1k1tx6L4M7KmcNyLDFjMB6N2s2XPUsKaXFqXi2sqyY3ki6tZr4uPpoQXvo1zV?cluster=devnet
+amount_sol: 0.001
+to: 73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n
+rpc: https://solana-devnet.api.onfinality.io/public

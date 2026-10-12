@@ -1,0 +1,45 @@
+RPC URL: https://solana-devnet.api.onfinality.io/public
+Default Signer Path: /home/box/secrets/devnet-test-wallet.json
+Commitment: confirmed
+
+Transaction executed in slot 510262199:
+  Block Time: 2026-10-12T12:22:08+00:00
+  Version: legacy
+  Recent Blockhash: J1ouVVoXaB3GYM1nMHZKKBzjurUSnVLqfRCgJoiBXCWX
+  Signature 0: 5jgyBsA84TC1ajKv2GdVdmWx1QFXMM9Hd1V6vW79AL1gtbw3UJgcXgRSUAD7URoTwsHjrY27Kj9XXi2rNGa9h82q
+  Account 0: srw- 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk (fee payer)
+  Account 1: -rw- Adwt61vGKfuX4x2ZS8mDDNG39JKj8PES3amjYD8aK8Rs
+  Account 2: -r-- 11111111111111111111111111111111
+  Account 3: -r-x 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT
+  Instruction 0
+    Program:   8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT (3)
+    Account 0: 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk (0)
+    Account 1: Adwt61vGKfuX4x2ZS8mDDNG39JKj8PES3amjYD8aK8Rs (1)
+    Account 2: 11111111111111111111111111111111 (2)
+    Data: [31, 220, 203, 51, 137, 172, 253, 119, 113, 10, 29, 111, 0, 78, 219, 75, 104, 213, 73, 153, 11, 88, 249, 166, 188, 135, 185, 198, 153, 224, 152, 75, 233, 136, 115, 153, 194, 249, 85, 237]
+  Instruction 1
+    Program:   8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT (3)
+    Account 0: 2GUk3Jm4GADwe5K27UDDXCqQT6ANSjDtRKGrnbjg7Rxk (0)
+    Account 1: Adwt61vGKfuX4x2ZS8mDDNG39JKj8PES3amjYD8aK8Rs (1)
+    Data: [58, 43, 248, 230, 184, 254, 122, 92, 1, 0, 0, 0, 0, 0, 0, 0, 7, 172, 64, 245, 90, 236, 251, 130, 29, 28, 24, 107, 181, 87, 122, 23, 28, 143, 122, 70, 8, 154, 147, 41, 46, 131, 1, 175, 39, 34, 139, 112, 7, 31, 98, 235, 15, 147, 100, 188, 151, 118, 131, 69, 155, 115, 247, 16, 15, 161, 83, 161, 221, 56, 86, 115, 208, 136, 70, 7, 227, 229, 133, 11, 1, 0, 0, 0]
+  Status: Ok
+    Fee: ◎0.000005
+    Account 0 balance: ◎3.47003052 -> ◎3.4685574
+    Account 1 balance: ◎0 -> ◎0.00146812
+    Account 2 balance: ◎0.000000001
+    Account 3 balance: ◎0.00083312
+  Compute Units Consumed: 12834
+  Log Messages:
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: InitReceiptCheckpoint
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 8233 of 400000 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT invoke [1]
+    Program log: Instruction: RecordReceiptCheckpoint
+    Program data: UE7hD1scGvKPMCU338ZfoeEzCSTpRvfJjwuDghMMQzVdB/CWfzm1XhLSxGGpxe32p5dxqNYOXWtt11fNwpcDDLdAyWGYkEqhcQodbwBO20to1UmZC1j5pryHucaZ4JhL6YhzmcL5Ve0BAAAAAAAAAAesQPVa7PuCHRwYa7VXehccj3pGCJqTKS6DAa8nIotwBx9i6w+TZLyXdoNFm3P3EA+hU6HdOFZz0IhGB+PlhQsBAAAAt/tpHgAAAAA=
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT consumed 4601 of 391767 compute units
+    Program 8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT success
+
+Finalized

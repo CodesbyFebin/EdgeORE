@@ -1,0 +1,3 @@
+Feature                                      | Status                  | Activation Slot | Description
+5cC3foj77CWun58pC51ebHFUWavHWKarWyR5UUik7dnC | active since epoch 1069 | 461808000       | SIMD-0178, SIMD-0189 and SIMD-0377: Enable deployment and execution of SBPFv3 programs
+
