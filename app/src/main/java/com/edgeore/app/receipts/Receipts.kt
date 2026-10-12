@@ -180,7 +180,10 @@ class ReceiptLog(
     companion object {
         const val SCHEMA = "edgeore.receipt.v1"
         const val SCHEMA_V2 = "edgeore.receipt.v2"
-        val KNOWN_SCHEMAS = setOf(SCHEMA, SCHEMA_V2)
+        /** v3: the device signature covers a domain-separated payload naming the descriptive fields, not only the digest. */
+        const val SCHEMA_V3 = "edgeore.receipt.v3"
+        const val SIGNATURE_DOMAIN_V3 = "edgeore.receipt-signature.v3"
+        val KNOWN_SCHEMAS = setOf(SCHEMA, SCHEMA_V2, SCHEMA_V3)
         const val EXPORT_SCHEMA = "edgeore.receipt-export.v1"
         const val EXPORT_SCHEMA_V2 = "edgeore.receipt-export.v2"
         const val CHECKPOINT_DOMAIN = "edgeore.export-checkpoint.v1"
@@ -246,7 +249,7 @@ class ReceiptLog(
             .put("providerAcknowledgement", ev(d.providerAcknowledgement))
         val digests = JSONObject().also { o -> d.digests.toSortedMap().forEach { (k, v) -> o.put(k, v) } }
         val body = JSONObject()
-            .put("schema", SCHEMA_V2)
+            .put("schema", SCHEMA_V3)
             .put("id", UUID.randomUUID().toString())
             .put("sequence", lastSeq + 1)
             .put("previousSha256", lastSha)
@@ -268,7 +271,7 @@ class ReceiptLog(
             .put("wallet", d.wallet?.let { JSONObject().put("messageBase64", it.messageBase64).put("signer", it.signerBase58).put("signature", it.signatureBase58) } ?: JSONObject.NULL)
             .toString()
         val sha = Sha256.hex(body)
-        val sig = Base64.getEncoder().encodeToString(signer.sign(sha.toByteArray(Charsets.US_ASCII)))
+        val sig = Base64.getEncoder().encodeToString(signer.sign(receiptSignaturePayload(JSONObject(body), sha)))
         val stored = StoredReceipt(body, sha, sig)
         // A torn final line from an earlier crash stays in place (and is reported); the new record starts on its own line.
         val needsNewline = file.exists() && file.length() > 0 && RandomAccessFile(file, "r").use { it.seek(it.length() - 1); it.read() != '\n'.code }
@@ -357,6 +360,21 @@ fun envelopePayload(doc: JSONObject): String {
     return lines.joinToString("\n")
 }
 
+/**
+ * Bytes the device key signs for one receipt. v1/v2 (legacy): the ASCII body digest only; the digest still covers
+ * every body field. v3: a domain-separated, line-per-field payload that names the schema, key epoch and every
+ * descriptive field (kind, outcome, title, detail, source, cluster, payment, createdAt) next to the digest, so the
+ * signature itself binds what a reader is shown and cannot be replayed under another schema or key epoch.
+ */
+fun receiptSignaturePayload(body: JSONObject, sha256: String): ByteArray {
+    if (body.optString("schema") != ReceiptLog.SCHEMA_V3) return sha256.toByteArray(Charsets.US_ASCII)
+    fun q(k: String): String = if (!body.has(k) || body.isNull(k)) "null" else JSONObject.quote(body.get(k).toString())
+    val lines = mutableListOf(ReceiptLog.SIGNATURE_DOMAIN_V3, "schema=" + q("schema"), "signerKeyId=" + q("signerKeyId"))
+    for (k in listOf("kind", "outcome", "title", "detail", "source", "cluster", "payment", "createdAt")) lines += "$k=" + q(k)
+    lines += "sha256=$sha256"
+    return lines.joinToString("\n").toByteArray(Charsets.UTF_8)
+}
+
 fun bundleDigest(shas: List<String>): String = Sha256.hex(shas.joinToString("\n"))
 
 fun checkpointPayload(count: Int, firstSeq: Long, lastSeq: Long, lastSha: String, bundle: String, exportedAt: String): String =
@@ -391,6 +409,9 @@ object ReceiptVerifier {
         val descriptiveFieldsSigned: Boolean = false,
         /** True when the export carries no envelope and no envelopeRequired flag: written before envelopes existed. */
         val legacyWithoutEnvelope: Boolean = false,
+        /** Accepted receipts per signature scheme: v3 binds descriptive fields; legacy v1/v2 sign the digest only. */
+        val v3Receipts: Int = 0,
+        val legacyReceipts: Int = 0,
     ) {
         val summary: String get() = buildString {
             append(if (accepted) "Integrity OK for $verifiedReceipts receipt(s)" else "REJECTED")
@@ -443,6 +464,8 @@ object ReceiptVerifier {
         val localById = local.associateBy { runCatching { it.id }.getOrNull() }
         var ok = 0
         var walletOk = 0
+        var v3 = 0
+        var legacySig = 0
         var previous: StoredReceipt? = null
         val parsed = mutableListOf<StoredReceipt?>()
         val shas = mutableListOf<String>()
@@ -463,7 +486,7 @@ object ReceiptVerifier {
                 findings += "$label: signed by key epoch $keyId which is not pinned"; provenance = Provenance.KEY_MISMATCH
             }
             val sigOk = try {
-                Signature.getInstance("SHA256withECDSA").run { initVerify(key); update(r.sha256.toByteArray(Charsets.US_ASCII)); verify(Base64.getDecoder().decode(r.deviceSignature)) }
+                Signature.getInstance("SHA256withECDSA").run { initVerify(key); update(receiptSignaturePayload(body, r.sha256)); verify(Base64.getDecoder().decode(r.deviceSignature)) }
             } catch (_: Exception) { false }
             if (!sigOk) { findings += "$label: device signature invalid"; previous = r; continue }
             val schemaProblem = schemaFinding(body)
@@ -485,6 +508,7 @@ object ReceiptVerifier {
             val localCopy = localById[body.optString("id")]
             if (localCopy != null && localCopy.sha256 != r.sha256) { findings += "$label: differs from the copy stored on this device"; previous = r; continue }
             ok++
+            if (body.optString("schema") == ReceiptLog.SCHEMA_V3) v3++ else legacySig++
             previous = r
         }
         if (doc.optString("bundleSha256") != bundleDigest(shas)) findings += "Bundle digest does not match the receipt list (receipt added, removed or reordered)"
@@ -520,7 +544,7 @@ object ReceiptVerifier {
         val legacy = envelope == null && required == null
         val accepted = findings.isEmpty() && ok == arr.length() && ok > 0
         if (ok == 0 && arr.length() == 0) findings += "Export contains no receipts"
-        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk, accepted && envelopeOk, accepted && legacy)
+        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk, accepted && envelopeOk, accepted && legacy, v3, legacySig)
     }
 
     private fun ecKey(b64: String): PublicKey = KeyFactory.getInstance("EC").generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(b64)))

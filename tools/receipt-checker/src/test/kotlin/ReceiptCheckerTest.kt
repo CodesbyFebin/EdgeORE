@@ -126,6 +126,46 @@ class ReceiptCheckerTest {
         assertTrue(output, output.contains("legacy export without envelope"))
         assertEquals(1, run(java.io.File(dir, "receipt-tampered.json").path).first)
     }
+    @Test fun newReceiptsUseV3SignatureOverDescriptiveFields() {
+        val (file, signer) = export()
+        val rec = JSONObject(file.readText()).getJSONArray("receipts").getJSONObject(0)
+        val body = JSONObject(rec.getString("body"))
+        assertEquals(ReceiptLog.SCHEMA_V3, body.getString("schema"))
+        val payload = String(receiptSignaturePayload(body, rec.getString("sha256")), Charsets.UTF_8)
+        assertTrue(payload.startsWith(ReceiptLog.SIGNATURE_DOMAIN_V3))
+        assertTrue(payload.contains("title=\"Fixture\"") && payload.contains("detail=\"Synthetic test only\""))
+        val ok = java.security.Signature.getInstance("SHA256withECDSA").run {
+            initVerify(java.security.KeyFactory.getInstance("EC").generatePublic(java.security.spec.X509EncodedKeySpec(signer.publicKeySpki())))
+            update(payload.toByteArray(Charsets.UTF_8)); verify(java.util.Base64.getDecoder().decode(rec.getString("deviceSignature")))
+        }
+        assertTrue(ok)
+    }
+    @Test fun v3ReceiptWithDigestOnlySignatureIsRejected() {
+        val signer = SoftwareReceiptSigner()
+        val logFile = java.io.File(temp.root, "v3.jsonl")
+        val log = ReceiptLog(logFile, signer)
+        log.append(ReceiptDraft(ReceiptKind.POLICY, "REFUSED", "Fixture", "Synthetic test only", "unit test"))
+        val line = JSONObject(logFile.readText().trim())
+        line.put("deviceSignature", java.util.Base64.getEncoder().encodeToString(signer.sign(line.getString("sha256").toByteArray(Charsets.US_ASCII))))
+        logFile.writeText(line.toString() + "\n")
+        val copy = temp.newFile("v3-downgraded.json").apply { writeText(ReceiptLog(logFile, signer).export()) }
+        val (code, output) = run(copy.path)
+        assertEquals(output, 1, code)
+        assertTrue(output, output.contains("device signature invalid"))
+    }
+    @Test fun legacyV2ReceiptLineStillVerifies() {
+        val signer = SoftwareReceiptSigner()
+        val logFile = java.io.File(temp.root, "legacy.jsonl")
+        ReceiptLog(logFile, signer).append(ReceiptDraft(ReceiptKind.POLICY, "REFUSED", "Fixture", "Synthetic test only", "unit test"))
+        val body = JSONObject(JSONObject(logFile.readText().trim()).getString("body")).put("schema", ReceiptLog.SCHEMA_V2).toString()
+        val sha = com.edgeore.app.crypto.Sha256.hex(body)
+        val sig = java.util.Base64.getEncoder().encodeToString(signer.sign(sha.toByteArray(Charsets.US_ASCII)))
+        logFile.writeText(StoredReceipt(body, sha, sig).toLine().toString() + "\n")
+        val copy = temp.newFile("legacy.json").apply { writeText(ReceiptLog(logFile, signer).export()) }
+        val (code, output) = run(copy.path)
+        assertEquals(output, 0, code)
+        assertTrue(output, output.contains("legacy digest-only"))
+    }
     @Test fun reportsMissingInputAsToolError() { assertEquals(2, run(java.io.File(temp.root, "missing").path).first) }
     @Test fun rejectsWrongArguments() { assertEquals(2, run().first); assertEquals(2, run("file", "--wrong", "key").first) }
 }
