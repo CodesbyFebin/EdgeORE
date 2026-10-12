@@ -190,3 +190,13 @@ Optional owned-storage gateway, build governance and offline consent/evidence to
 - [Fork and extension guide](FORK-GUIDE.md)
 - [Research and roadmap](docs/extensions/RESEARCH-AND-ROADMAP.md)
 - [Offline kit](tools/edgeore-kit/README.md)
+
+## Community policies
+
+[Code of conduct](CODE_OF_CONDUCT.md) · [Contributing](CONTRIBUTING.md) ·
+[Security policy](SECURITY.md) · [Accessibility statement](ACCESSIBILITY.md)
+
+A project license remains pending the repository owner's choice. `NOTICE` records upstream
+licenses and attribution; it does not license EdgeORE's own code. Private security reporting must
+also be enabled or a private contact channel supplied by the owner; the policy does not imply that
+this setting is already active.
