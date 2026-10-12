@@ -19,6 +19,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +67,7 @@ fun MineScreen(
     vm: EdgeOreViewModel, onConnect: () -> Unit, onDisconnect: () -> Unit, onReview: () -> Unit, onPreview: () -> Unit,
     onOpenReview: () -> Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -> Unit = {},
     onOre: () -> Unit = {},
+    onOreMode: (pro: Boolean) -> Unit = { onOre() },
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
@@ -164,6 +166,11 @@ fun MineScreen(
     val gateway by vm.gateway.collectAsStateWithLifecycle()
     androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
     OreEntry(onOre)
+    val ore by vm.ore.collectAsStateWithLifecycle()
+    var oreNow by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
+    androidx.compose.runtime.LaunchedEffect(ore.rpc) { while (true) { vm.refreshOre(); kotlinx.coroutines.delay(15_000) } }
+    androidx.compose.runtime.LaunchedEffect(Unit) { while (true) { kotlinx.coroutines.delay(1_000); oreNow = System.currentTimeMillis() } }
+    OreHomeStrip(ore, oreNow, onOpen = onOreMode)
 
     MiningSessionPanel(
         view = sessionView, edgeModeResumed = settings.edgeModeResumed, headline = eval.headline,

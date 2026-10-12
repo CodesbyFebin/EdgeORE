@@ -60,3 +60,16 @@ reverted: a real workload now exists, so the art follows it and the caption is g
 
 Screenshot baselines show the idle (resting) frame; see `docs/screenshots/README.md`.
 These are JVM renders, not a phone run.
+
+## 2026-10-12: frame-based art from the user's GIF (feature/home-ore-upgrade)
+
+The drawn rock + rotating pickaxe (mine_rock / mine_rock_veins / mine_pickaxe) was replaced by 25 frames cut from the
+user's rock-and-pickaxe GIF (560×420, 25 frames at 40 ms, sha256 b5bb0f6fb8405796bd09ec7f4470a75d54be6133a2e396c728f02073baeed8f4).
+Each frame is cropped to the art's bounding box, its background keyed toward the brand background #101414, scaled to
+400×275 and saved as WebP q80 (`res/drawable-nodpi/mine_frame_00..24.webp`, 224,960 bytes total). Behaviour is unchanged:
+frames play (one strike per 1000 ms cycle) only while the contribution session is ACTIVE; idle, starting, stopping and
+failed hold frame 0; "Remove animations" holds the impact frame 15 (MiningMotion.IMPACT = 0.60).
+
+The Mine home also gains an ORE strip (ui/screens/OreHomeStrip.kt): deployed SOL, motherlode and round time from the
+read-only OreObserver, Lite / Pro shortcuts into the ORE board, and ORE / SOL prices shown as "—" because no price
+source is configured. Reads older than 60 s are labelled stale; loading and errors are labelled. No deploy controls.

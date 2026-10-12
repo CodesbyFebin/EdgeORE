@@ -132,14 +132,15 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                         onScanQr = actions::scanAddressQr, onPickQrImage = actions::pickQrImage)
                     r == "preview" -> ConceptPreviewScreen()
                     r == "browser" -> BrowserScreen()
-                    r == "ore" -> com.edgeore.app.ui.screens.OreScreen(vm)
+                    r == "ore" || r == "ore:pro" -> com.edgeore.app.ui.screens.OreScreen(vm, initialPro = true)
+                    r == "ore:lite" -> com.edgeore.app.ui.screens.OreScreen(vm, initialPro = false)
                     r != null && r.startsWith("receipt:") -> {
                         val rec = receipts.firstOrNull { it.id == r.removePrefix("receipt:") }
                         if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }
                     }
                     tab == Destination.Mine -> MineScreen(vm, actions::connectWallet, actions::disconnectWallet,
                         onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" },
-                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" })
+                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" }, onOreMode = { pro -> route = if (pro) "ore:pro" else "ore:lite" })
                     tab == Destination.AI -> AiScreen(vm)
                     tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)

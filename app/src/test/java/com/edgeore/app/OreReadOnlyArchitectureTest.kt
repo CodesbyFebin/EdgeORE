@@ -11,10 +11,10 @@ import java.io.File
 /** The ORE code path has no way to build, sign or submit a transaction, and no ORE instruction builder. */
 class OreReadOnlyArchitectureTest {
     private val sources = File("src/main/java/com/edgeore/app/ore").listFiles()!!.toList() +
-        File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt") + File("src/main/java/com/edgeore/app/solana/AccountReader.kt") + File("src/main/java/com/edgeore/app/solana/JsonRpcHttp.kt")
+        File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt") + File("src/main/java/com/edgeore/app/ui/screens/OreHomeStrip.kt") + File("src/main/java/com/edgeore/app/solana/AccountReader.kt") + File("src/main/java/com/edgeore/app/solana/JsonRpcHttp.kt")
 
     @Test fun noSigningTransactionOrWalletApisInTheOrePath() {
-        assertTrue(sources.size >= 5 && sources.all { it.isFile })
+        assertTrue(sources.size >= 6 && sources.all { it.isFile })
         val banned = listOf(
             Regex("""\bSolanaRpc\b"""), Regex("""sendTransaction|signTransaction|signAndSend|signMessages?\b"""), Regex("""\bTransaction[A-Z]?\w*\("""),
             Regex("""\bChainGateway\b"""), Regex("""TransferCoordinator|TransferReview|SolanaMessage"""), Regex("""walletadapter|MobileWalletAdapter|WalletConnection""", RegexOption.IGNORE_CASE),
@@ -39,5 +39,13 @@ class OreReadOnlyArchitectureTest {
         for (chip in listOf("\"+0.01\"", "\"+0.1\"", "\"+1\"", "\"MAX\"", "\"ALL\"")) assertFalse(chip, ui.contains(chip))
         assertTrue(ui.contains("enabled = false") && ui.contains("Deploy disabled in EdgeORE (read-only)"))
         assertTrue(ui.contains("Read-only · mainnet observation"))
+    }
+
+    @Test fun theMineHomeStripOffersNoActingControlsOrHardcodedPrices() {
+        val ui = File("src/main/java/com/edgeore/app/ui/screens/OreHomeStrip.kt").readText()
+        for (chip in listOf("\"+0.01\"", "\"+0.1\"", "\"+1\"", "\"MAX\"", "\"ALL\"", "Deploy\"", "per round", "Rounds\"")) assertFalse(chip, ui.contains(chip))
+        assertFalse("no hardcoded dollar amounts", Regex(""""\$\d""").containsMatchIn(ui))
+        val mine = File("src/main/java/com/edgeore/app/ui/screens/MineScreen.kt").readText()
+        assertFalse(mine.contains("PriceQuote("))
     }
 }

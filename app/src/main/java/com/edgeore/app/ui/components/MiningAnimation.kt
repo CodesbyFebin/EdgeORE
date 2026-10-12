@@ -13,12 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
@@ -29,16 +23,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.ImageBitmap
 import com.edgeore.app.R
 import com.edgeore.app.contribution.SessionPhase
-import com.edgeore.app.ui.theme.EdgeColors
 import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.cos
 import kotlin.math.exp
-import kotlin.math.hypot
 import kotlin.math.sin
 
 /** What the Mine art shows. Derived only from whether a contribution session is ACTIVE; not a separate app state. */
@@ -109,9 +98,36 @@ fun rememberReducedMotion(): Boolean {
     }
 }
 
+/** Frames of the rock-and-pickaxe loop (res/drawable-nodpi/mine_frame_NN.webp, cut from the user's GIF; see docs/design/mine-animation.md). */
+object MiningFrames {
+    const val COUNT = 25
+    /** Idle and failed sessions hold the raised-pick frame; nothing moves. */
+    const val REST = 0
+    /** The pick meets the rock in this frame (MiningMotion.IMPACT * COUNT); held when animations are off. */
+    const val IMPACT_FRAME = 15
+    val ids = intArrayOf(
+        R.drawable.mine_frame_00, R.drawable.mine_frame_01, R.drawable.mine_frame_02, R.drawable.mine_frame_03, R.drawable.mine_frame_04,
+        R.drawable.mine_frame_05, R.drawable.mine_frame_06, R.drawable.mine_frame_07, R.drawable.mine_frame_08, R.drawable.mine_frame_09,
+        R.drawable.mine_frame_10, R.drawable.mine_frame_11, R.drawable.mine_frame_12, R.drawable.mine_frame_13, R.drawable.mine_frame_14,
+        R.drawable.mine_frame_15, R.drawable.mine_frame_16, R.drawable.mine_frame_17, R.drawable.mine_frame_18, R.drawable.mine_frame_19,
+        R.drawable.mine_frame_20, R.drawable.mine_frame_21, R.drawable.mine_frame_22, R.drawable.mine_frame_23, R.drawable.mine_frame_24,
+    )
+
+    fun frameAt(pose: MiningPose, cycle: Float?): Int = when (pose) {
+        MiningPose.RESTING -> REST
+        MiningPose.STILL_ON -> IMPACT_FRAME
+        MiningPose.SWINGING -> ((cycle ?: 0f) * COUNT).toInt().coerceIn(0, COUNT - 1)
+    }
+}
+
+/** Test hook: the frame index drawn. */
+val MiningFrameKey = SemanticsPropertyKey<Int>("MiningFrame")
+private var SemanticsPropertyReceiver.miningFrame by MiningFrameKey
+
 /**
- * The Mine screen art: the user's rock with the pickaxe pivoted near its grip. Swings about once a second while a
- * contribution session is ACTIVE; rests at a tilt otherwise; holds still when the system removes animations.
+ * The Mine screen art: the user's rock-and-pickaxe loop, played at 40 ms a frame (one strike a second) only while a
+ * contribution session is ACTIVE; held on the raised-pick frame otherwise; held on the impact frame when the system
+ * removes animations.
  */
 @Composable
 fun MiningAnimation(
@@ -120,9 +136,8 @@ fun MiningAnimation(
     reducedMotion: Boolean = rememberReducedMotion(),
 ) {
     val pose = MiningMotion.pose(phase, reducedMotion)
-    val rock = ImageBitmap.imageResource(R.drawable.mine_rock)
-    val veins = ImageBitmap.imageResource(R.drawable.mine_rock_veins)
-    val pick = ImageBitmap.imageResource(R.drawable.mine_pickaxe)
+    val res = LocalContext.current.resources
+    val frames = remember(res) { MiningFrames.ids.map { ImageBitmap.imageResource(res, it) } }
     val fixedPhase = LocalMiningPhaseOverride.current
     val cycle: Float? = when {
         pose != MiningPose.SWINGING -> null
@@ -138,70 +153,19 @@ fun MiningAnimation(
         MiningPose.STILL_ON -> 0f
         MiningPose.RESTING -> MiningMotion.REST_DEG
     }
+    val index = MiningFrames.frameAt(pose, cycle)
     Canvas(
         modifier.testTag("mining-animation").semantics {
             contentDescription = MiningMotion.description(pose)
             stateDescription = pose.name
             miningSwing = angle
+            miningFrame = index
         },
     ) {
-        val t = cycle
-        drawMine(rock, veins, pick, angle,
-            shake = t?.let(MiningMotion::shake) ?: 0f,
-            glow = t?.let(MiningMotion::glow) ?: if (pose == MiningPose.STILL_ON) 0.25f else 0f,
-            sparkLife = t?.let(MiningMotion::sparks))
-    }
-}
-
-// Geometry in fractions of the exported drawables (res/drawable-nodpi, see docs/design/mine-animation.md).
-private const val PIVOT_X = 0.90f   // grip, near the handle end
-private const val PIVOT_Y = 0.88f
-private const val TIP_X = 0.03f     // lower pick tip
-private const val TIP_Y = 0.54f
-private const val TARGET_X = 0.60f  // strike point on the big rock's shoulder
-private const val TARGET_Y = 0.24f
-
-private val sparkAngles = floatArrayOf(-150f, -125f, -100f, -75f, -55f, -35f, -165f)
-
-private fun DrawScope.drawMine(rock: ImageBitmap, veins: ImageBitmap, pick: ImageBitmap, angle: Float, shake: Float, glow: Float, sparkLife: Float?) {
-    val w = size.width
-    val h = size.height
-    val rw = w * 0.66f
-    val rh = rw * rock.height / rock.width
-    val rockLeft = w * 0.5f - rw / 2 - w * 0.13f
-    val rockTop = h - rh
-    val dst = IntSize(rw.toInt(), rh.toInt())
-    val dstOff = IntOffset((rockLeft + shake * 3.dp.toPx()).toInt(), rockTop.toInt()) // only the rock shakes
-    drawImage(rock, dstOffset = dstOff, dstSize = dst)
-    if (glow > 0.01f) {
-        drawImage(veins, dstOffset = dstOff, dstSize = dst, alpha = glow.coerceIn(0f, 1f),
-            colorFilter = ColorFilter.tint(EdgeColors.mint), blendMode = BlendMode.Plus)
-    }
-
-    val pw = w * 0.48f
-    val ph = pw * pick.height / pick.width
-    val target = Offset(rockLeft + rw * TARGET_X, rockTop + rh * TARGET_Y)
-    val tipVec = Offset((TIP_X - PIVOT_X) * pw, (TIP_Y - PIVOT_Y) * ph)
-    val reach = hypot(tipVec.x, tipVec.y)
-    // Pivot sits to the right of the strike point, slightly below it, one handle-length away, so the raised pick stays inside the frame.
-    val dir = 28f * PI.toFloat() / 180f
-    val pivot = Offset(target.x + reach * cos(dir), target.y + reach * sin(dir))
-    val strikeRotation = (atan2(target.y - pivot.y, target.x - pivot.x) - atan2(tipVec.y, tipVec.x)) * 180f / PI.toFloat()
-
-    rotate(strikeRotation + angle, pivot) {
-        drawImage(pick, dstOffset = IntOffset((pivot.x - PIVOT_X * pw).toInt(), (pivot.y - PIVOT_Y * ph).toInt()), dstSize = IntSize(pw.toInt(), ph.toInt()))
-    }
-
-    if (sparkLife != null) {
-        val life = sparkLife
-        val r0 = 3.2.dp.toPx() * (1 - life * 0.7f)
-        sparkAngles.forEachIndexed { i, deg ->
-            val a = deg * PI.toFloat() / 180f
-            val speed = (42 + (i * 7) % 18).dp.toPx()
-            val gravity = 40.dp.toPx()
-            val p = Offset(target.x + cos(a) * speed * life, target.y + sin(a) * speed * life + gravity * life * life)
-            val c = if (i % 2 == 0) EdgeColors.copper else EdgeColors.mint
-            translate(p.x, p.y) { drawCircle(c, radius = r0, center = Offset.Zero, alpha = 1 - life) }
-        }
+        val img = frames[index]
+        val scale = minOf(size.width / img.width, size.height / img.height)
+        val w = (img.width * scale).toInt(); val h = (img.height * scale).toInt()
+        drawImage(img, dstOffset = IntOffset(((size.width - w) / 2).toInt(), ((size.height - h) / 2).toInt()), dstSize = IntSize(w, h),
+            filterQuality = androidx.compose.ui.graphics.FilterQuality.Medium)
     }
 }
