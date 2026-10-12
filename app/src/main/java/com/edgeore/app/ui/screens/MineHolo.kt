@@ -81,6 +81,7 @@ fun NetworkSelector(selected: Cluster, onSelect: (Cluster) -> Unit) {
 /** WalletConnectRow: one Connect (Mobile Wallet Adapter), then copy / switch account / disconnect. */
 @Composable
 fun WalletConnectRow(address: String?, busy: Boolean, cluster: Cluster, onConnect: () -> Unit, onCopy: () -> Unit, onSwitch: () -> Unit, onDisconnect: () -> Unit) {
+    com.edgeore.app.ui.components.SecureWindow()
     Column(Modifier.holoCard().testTag("wallet-connect"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(EdgeIcons.Wallet, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.size(24.dp))

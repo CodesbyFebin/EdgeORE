@@ -43,6 +43,7 @@ import com.edgeore.app.ui.theme.EdgeColors
 /** Dedicated review route: the only path to a wallet signature. */
 @Composable
 fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit, onScanQr: () -> Unit = {}, onPickQrImage: () -> Unit = {}) {
+    com.edgeore.app.ui.components.SecureWindow()
     val st by vm.review.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
     val settings by vm.settings.collectAsStateWithLifecycle()

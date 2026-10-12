@@ -139,6 +139,7 @@ fun NodesScreen(vm: EdgeOreViewModel) {
 
 @Composable
 private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
+    com.edgeore.app.ui.components.SecureWindow()
     var endpoint by rememberSaveable { mutableStateOf("https://127.0.0.1:9843") }
     var cert by rememberSaveable { mutableStateOf("") }
     var challenge by rememberSaveable { mutableStateOf("") }

@@ -64,6 +64,7 @@ private val clock = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm").withZone(Zo
 
 @Composable
 fun ReceiptsScreen(vm: EdgeOreViewModel, onOpen: (StoredReceipt) -> Unit, onExport: (StoredReceipt?, Boolean) -> Unit) {
+    com.edgeore.app.ui.components.SecureWindow()
     val receipts by vm.receipts.collectAsStateWithLifecycle()
     val verify by vm.verify.collectAsStateWithLifecycle()
     val damage by vm.receiptDamage.collectAsStateWithLifecycle()
@@ -285,6 +286,7 @@ fun ReceiptCard(r: StoredReceipt, onClick: () -> Unit) {
 
 @Composable
 fun ReceiptDetailScreen(r: StoredReceipt, onExport: () -> Unit) {
+    com.edgeore.app.ui.components.SecureWindow()
     SectionTitle(r.title, r.outcome.replace('_', ' '))
     EdgeCard {
         KeyValue("Receipt ID (immutable)", r.id, mono = true)

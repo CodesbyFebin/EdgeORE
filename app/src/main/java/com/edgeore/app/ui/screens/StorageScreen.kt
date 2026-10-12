@@ -253,6 +253,7 @@ fun StorageVaultSection(
     onDelete: (id: String) -> Unit,
     onAllowance: (Int) -> Unit,
 ) {
+    com.edgeore.app.ui.components.SecureWindow()
     var confirmExport by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var inspect by rememberSaveable { mutableStateOf<String?>(null) }
