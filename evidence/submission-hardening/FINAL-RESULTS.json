@@ -1,0 +1,150 @@
+{
+  "schema": "edgeore.submission-qualification.v1",
+  "sourceCommit": "76cb0e8d53a7c6d51e18e36ad459c98b568396e7",
+  "testedPrHead": "6a45680d6dd4057022b10a518addbb922e92be4d",
+  "testedMergeCommit": "45952302b790ab19d008f75b2ec8a322f0aec539",
+  "integrationMerge": "48669070181837ef32f90cc6efeb0e0bece02020",
+  "mergedPullRequests": [
+    {
+      "number": 20,
+      "state": "closed",
+      "merged": true,
+      "head": "e88718f697471bb9cdfcca82217a87d5989dd075",
+      "merge": "f94dc9e4f75ecb1ab3a6898bffbac600a7d09f7f"
+    },
+    {
+      "number": 22,
+      "state": "closed",
+      "merged": true,
+      "head": "15df6555780b86699ec51aae30804c064eaab4da",
+      "merge": "d745d200c5abf572f34e98698c1e2ba7e957f0cf"
+    },
+    {
+      "number": 23,
+      "state": "closed",
+      "merged": true,
+      "head": "a3891e0ade3bb959f2d868927cd85352e2293c55",
+      "merge": "a3891e0ade3bb959f2d868927cd85352e2293c55"
+    },
+    {
+      "number": 24,
+      "state": "closed",
+      "merged": true,
+      "head": "217c8a56c180e2b87f52a0ffb3d1aaeb0eb99d8f",
+      "merge": "446c75872a49045b91e27e4fdfee8a016fe9b056"
+    },
+    {
+      "number": 25,
+      "state": "closed",
+      "merged": true,
+      "head": "e58d4d61a6080f5b34156b372f5589e0c236ca10",
+      "merge": "446c75872a49045b91e27e4fdfee8a016fe9b056"
+    },
+    {
+      "number": 26,
+      "state": "closed",
+      "merged": true,
+      "head": "d567c1d20f62413cebd3a938c2234a60ce821913",
+      "merge": "446c75872a49045b91e27e4fdfee8a016fe9b056"
+    },
+    {
+      "number": 27,
+      "state": "closed",
+      "merged": true,
+      "head": "6a45680d6dd4057022b10a518addbb922e92be4d",
+      "merge": "48669070181837ef32f90cc6efeb0e0bece02020"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "CodeQL",
+      "runId": 38296685230,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/CodesbyFebin/EdgeORE/actions/runs/38296685230"
+    },
+    {
+      "name": "MobSF static scan (local container)",
+      "runId": 38296685224,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/CodesbyFebin/EdgeORE/actions/runs/38296685224"
+    },
+    {
+      "name": "Quality",
+      "runId": 38296685468,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/CodesbyFebin/EdgeORE/actions/runs/38296685468"
+    },
+    {
+      "name": "Build governance and qualification",
+      "runId": 38296685205,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/CodesbyFebin/EdgeORE/actions/runs/38296685205"
+    }
+  ],
+  "suites": {
+    "android": {
+      "tests": 391,
+      "passed": 382,
+      "skipped": 9,
+      "failures": 0
+    },
+    "screenshots": {
+      "tests": 29,
+      "passed": 29,
+      "failures": 0
+    },
+    "receiptChecker": {
+      "tests": 17,
+      "passed": 17,
+      "failures": 0
+    },
+    "gateway": {
+      "tests": 17,
+      "passed": 17
+    },
+    "offlineKit": {
+      "tests": 22,
+      "passed": 22
+    },
+    "policyTests": {
+      "tests": 12,
+      "passed": 12
+    },
+    "manifestTests": {
+      "tests": 9,
+      "passed": 9
+    },
+    "mobsfPolicyTests": {
+      "tests": 5,
+      "passed": 5
+    }
+  },
+  "mobsf": {
+    "rawHighFindings": 1,
+    "reviewedLoopbackOnly": 1,
+    "unreviewedHighFindings": 0,
+    "scannerInput": "Unminified release variant, disposable CI signature; not owner production signing"
+  },
+  "apk": {
+    "version": "0.1.0-clockin",
+    "versionCode": 12,
+    "package": "com.edgeore.app",
+    "sha256": "3ef9ba1477855ceb538275133eb7e78f000e165ecd95764e22fc14d824ca7365",
+    "sizeBytes": 59474099,
+    "buildStamp": "45952302b790",
+    "certificateSha256": "97d1e6a5e3b63f10260ac3b53861a5c440071f094b840bbb820d8c24034b3274",
+    "signing": "Android debug"
+  },
+  "limits": [
+    "Device MWA signing NOT_RUN",
+    "Real mainnet landing NOT_RUN",
+    "Device interrupted-submit recovery NOT_RUN",
+    "Production signing/store publication NOT_RUN",
+    "Generated presentation is not a device-recorded demo",
+    "0.01 SOL cap is deployed amount; rent and network fees are additional"
+  ]
+}
