@@ -35,7 +35,7 @@ object OreDeployLimits {
 
     /** MAX: the balance minus the fee reserve, never above the per-deploy cap, never negative. Null when the balance is not read. */
     fun max(balanceLamports: Long?, cluster: String = OreDeployNetwork.CLUSTER): Long? =
-        balanceLamports?.let { (it - FEE_RESERVE_LAMPORTS).coerceIn(0, cap(cluster)) }
+        balanceLamports?.let { (it.coerceAtLeast(0) - FEE_RESERVE_LAMPORTS).coerceIn(0, cap(cluster)) }
 
     /** Splits a total across the selected squares (rounded down per square). Null when it cannot be split. */
     fun perSquare(totalLamports: Long, squares: Int): Long? = if (squares in 1..OreV3.SQUARES && totalLamports >= squares) totalLamports / squares else null

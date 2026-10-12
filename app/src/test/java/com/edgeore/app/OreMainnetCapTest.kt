@@ -41,6 +41,15 @@ class OreMainnetCapTest {
         assertEquals(10_000_000L, OreDeployLimits.max(rich, mainnet))
     }
 
+    @Test fun invalidNegativeBalanceCannotOverflowIntoSpendableFunds() {
+        for (balance in listOf(Long.MIN_VALUE, -1L, 0L, 9_999_999L)) {
+            assertEquals(0L, OreDeployLimits.max(balance, mainnet))
+            val draft = OreDeployReview.prepare(signer, 1, 1, 1, bh, balance, 0, rich, mainnet)
+            assertFalse(draft.approvable)
+            assertEquals(0, draft.message.size)
+        }
+    }
+
     @Test fun overCapIsRefusedBeforeAnyMessageExists() {
         for (total in listOf(10_000_001L, 25_000_000L, 100_000_000L, Long.MAX_VALUE)) {
             assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", OreDeployLimits.refusal(total, 25, rich, mainnet))

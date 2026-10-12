@@ -1,0 +1,40 @@
+name: Storage gateway review package
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: storage-gateway-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Gateway tests
+        run: python3 -m unittest discover -s services/storage-gateway -v
+      - name: Build and exercise prototype
+        run: |
+          docker build -f services/storage-gateway/Dockerfile --build-arg SOURCE_REVISION="$GITHUB_SHA" -t edgeore-storage-gateway:review .
+          python3 services/storage-gateway/container-smoke.py
+      - name: Publish exact tested image
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgeore-storage-gateway:sha-$GITHUB_SHA"
+          docker tag edgeore-storage-gateway:review "$image"
+          docker push "$image"
+          {
+            echo 'Prototype storage gateway published; no device/provider qualification implied.'
+            echo "Source: $GITHUB_SHA"
+            docker image inspect "$image" --format '{{json .RepoDigests}}'
+          } >> "$GITHUB_STEP_SUMMARY"

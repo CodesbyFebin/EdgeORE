@@ -1,0 +1,19 @@
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+OK
+REVIEWED: AndroidX Biometric CryptoObjectUtils platform authentication helper; app vault/key wrapping uses AES-GCM
+MobSF raw high=1 unreviewed high=0; raw reports retained
+MobSF raw high=1 unreviewed high=1; raw reports retained
+UNREVIEWED HIGH: The App uses the encryption mode CBC with PKCS5/PKCS7 padding. This configuration is vulnerable to padding oracle attacks.
+MobSF raw high=1 unreviewed high=1; raw reports retained
+UNREVIEWED HIGH: The App uses the encryption mode CBC with PKCS5/PKCS7 padding. This configuration is vulnerable to padding oracle attacks.
+REVIEWED: loopback-only cleartext for MWA and explicit owned-host tunnels; remote cleartext remains denied
+MobSF raw high=1 unreviewed high=0; raw reports retained
+MobSF raw high=1 unreviewed high=1; raw reports retained
+UNREVIEWED HIGH: Domain config is insecurely configured to permit clear text traffic to these domains in scope
+MobSF raw high=1 unreviewed high=1; raw reports retained
+UNREVIEWED HIGH: Missing Code Signing certificate
+MobSF raw high=1 unreviewed high=1; raw reports retained
+UNREVIEWED HIGH: New vulnerability

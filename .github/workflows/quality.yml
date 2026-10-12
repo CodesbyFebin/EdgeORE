@@ -1,0 +1,44 @@
+name: Quality
+# Unit tests, Android lint, detekt and ktlint against the committed baselines. Read-only, no secrets.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: detekt + ktlint (baselined; new findings fail)
+        run: bash scripts/lint-static.sh
+  tests-and-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - run: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug
+      - run: ./gradlew --no-daemon -p tools/receipt-checker test
+      - run: python3 -m unittest discover -s services/storage-gateway -v
+      - run: python3 -m unittest discover -s tools/edgeore-kit -v

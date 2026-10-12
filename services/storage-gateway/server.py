@@ -133,7 +133,7 @@ if __name__ == '__main__':
     if len(token) < 32:
         raise SystemExit('Set EDGEORE_STORAGE_TOKEN to a random secret of at least 32 characters')
     os.umask(0o077)  # the SQLite file and its journal are readable by this user only
-    server = ThreadingHTTPServer(('127.0.0.1', 19844), Handler)
+    server = ThreadingHTTPServer((os.environ.get('EDGEORE_STORAGE_BIND', '127.0.0.1'), 19844), Handler)
     server.slots = threading.BoundedSemaphore(int(os.environ.get('EDGEORE_STORAGE_MAX_CONNECTIONS', '8')))
     server.token = token
     server.store = Store(os.environ.get('EDGEORE_STORAGE_DB', 'storage.sqlite3'), int(os.environ.get('EDGEORE_STORAGE_MAX_BYTES', '1000000000')))

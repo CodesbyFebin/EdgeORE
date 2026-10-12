@@ -37,7 +37,8 @@ The machine-readable contract is `services/storage-gateway/openapi.yaml` (OpenAP
 `test_contract.py` fails if the server's routes, status codes, patterns or size limits drift from it.
 
 All routes require a bearer credential supplied outside source control.
-The gateway binds only to 127.0.0.1:19844. Android requires an HTTPS origin with owner-managed TLS.
+Direct execution defaults to 127.0.0.1:19844; EDGEORE_STORAGE_BIND is an explicit operator override.
+The [container guide](../../services/storage-gateway/CONTAINER.md) publishes its port only on host loopback. Android requires an HTTPS origin with owner-managed TLS.
 No IPFS administrative API or arbitrary remote URL is exposed.
 
 - PUT /v1/jobs/{id}: octet-stream ciphertext, Content-Length, X-Ciphertext-SHA256.

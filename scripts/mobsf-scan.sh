@@ -2,7 +2,7 @@
 # Local MobSF static scan of an APK (hardening 12). No secrets: the API key is generated for this one throwaway
 # container and never leaves the machine. Nothing is uploaded to any hosted service.
 #   scripts/mobsf-scan.sh [APK] [OUT_DIR]
-# Needs: docker, curl, python3. Exit 0: scan finished with 0 high-severity findings; 1: high findings; 2: could not run.
+# Needs: docker, curl, python3. Exit 0: scan finished with 0 unreviewed high-severity findings (raw reports retained); 1: high findings; 2: could not run.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 APK="${1:-app/build/outputs/apk/release/app-release-unsigned.apk}"
@@ -24,11 +24,4 @@ curl -sf -H "$H" -d "hash=$HASH" "http://127.0.0.1:$PORT/api/v1/scan" >/dev/null
 curl -sf -H "$H" -d "hash=$HASH" "http://127.0.0.1:$PORT/api/v1/report_json" -o "$OUT/report.json"
 curl -sf -H "$H" -d "hash=$HASH" "http://127.0.0.1:$PORT/api/v1/scorecard" -o "$OUT/scorecard.json" || true
 sha256sum "$APK" > "$OUT/apk.sha256"
-python3 - "$OUT/scorecard.json" <<'P'
-import json,sys
-try: s=json.load(open(sys.argv[1]))
-except Exception: print("Scorecard unavailable; see report.json"); sys.exit(0)
-high=s.get("high",[]); print(f"MobSF security_score={s.get('security_score')} high={len(high)} warning={len(s.get('warning',[]))} info={len(s.get('info',[]))}")
-for h in high: print(" HIGH:", h.get("title"))
-sys.exit(1 if high else 0)
-P
+python3 scripts/mobsf-policy.py "$OUT"

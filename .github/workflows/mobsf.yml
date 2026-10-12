@@ -1,10 +1,10 @@
 name: MobSF static scan (local container)
-# Builds the unsigned release APK and scans it with a MobSF container started inside the runner.
+# Builds a signed debug review APK (not production signing) and scans it with a MobSF container started inside the runner.
 # No repository secrets are used; the MobSF API key is random per run and the report is only an artifact.
 on:
   workflow_dispatch:
   pull_request:
-    paths: ['app/**', 'gradle/**', '.github/workflows/mobsf.yml', 'scripts/mobsf-scan.sh']
+    paths: ['app/**', 'gradle/**', '.github/workflows/mobsf.yml', 'scripts/mobsf-scan.sh', 'scripts/mobsf-policy.py', 'scripts/test_mobsf_policy.py']
 permissions:
   contents: read
 jobs:
@@ -19,8 +19,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - run: bash gradlew --no-daemon :app:assembleRelease
-      - run: bash scripts/mobsf-scan.sh app/build/outputs/apk/release/app-release-unsigned.apk evidence/mobsf/ci
+      - run: bash gradlew --no-daemon :app:assembleDebug
+      - run: python3 scripts/test_mobsf_policy.py
+      - run: bash scripts/mobsf-scan.sh app/build/outputs/apk/debug/app-debug.apk evidence/mobsf/ci
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (tag resolved 2026-10-10)
         if: always()
         with:

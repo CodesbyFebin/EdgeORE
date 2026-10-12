@@ -1,0 +1,22 @@
+test_1_every_operation_and_status (test_contract.ContractTests.test_1_every_operation_and_status) ... ok
+test_2_undeclared_routes_and_methods_never_succeed (test_contract.ContractTests.test_2_undeclared_routes_and_methods_never_succeed) ... ok
+test_3_limits_and_patterns_match_the_server (test_contract.ContractTests.test_3_limits_and_patterns_match_the_server) ... ok
+test_4_response_bodies_match_schemas (test_contract.ContractTests.test_4_response_bodies_match_schemas) ... ok
+test_bounds_and_identifier (test_gateway.GatewayTests.test_bounds_and_identifier) ... ok
+test_cancel_blocks_retrieval_and_reupload (test_gateway.GatewayTests.test_cancel_blocks_retrieval_and_reupload) ... ok
+test_modified_content_refused (test_gateway.GatewayTests.test_modified_content_refused) ... ok
+test_quota_holds_under_concurrent_uploads (test_gateway.GatewayTests.test_quota_holds_under_concurrent_uploads) ... ok
+test_quota_is_transactional_and_counts_retained_canceled_data (test_gateway.GatewayTests.test_quota_is_transactional_and_counts_retained_canceled_data) ... ok
+test_repeated_upload_is_idempotent (test_gateway.GatewayTests.test_repeated_upload_is_idempotent) ... ok
+test_reusing_job_for_different_content_fails (test_gateway.GatewayTests.test_reusing_job_for_different_content_fails) ... ok
+test_store_survives_restart (test_gateway.GatewayTests.test_store_survives_restart) ... ok
+test_auth_required (test_gateway.HttpTests.test_auth_required) ... ok
+test_capability_discovery_does_not_claim_pinning_or_payments (test_gateway.HttpTests.test_capability_discovery_does_not_claim_pinning_or_payments) ... ok
+test_connection_cap_refuses_extra_connections (test_gateway.HttpTests.test_connection_cap_refuses_extra_connections) ... ok
+test_idle_connection_is_closed_by_timeout (test_gateway.HttpTests.test_idle_connection_is_closed_by_timeout) ... ok
+test_upload_observe_retrieve_cancel (test_gateway.HttpTests.test_upload_observe_retrieve_cancel) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 6.016s
+
+OK

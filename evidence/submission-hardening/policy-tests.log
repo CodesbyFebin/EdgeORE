@@ -1,0 +1,17 @@
+test_added_repository_fails (__main__.PolicyTests.test_added_repository_fails) ... ok
+test_api_key_buildconfig_field_fails (__main__.PolicyTests.test_api_key_buildconfig_field_fails) ... ok
+test_credentials_in_buildconfig_fail (__main__.PolicyTests.test_credentials_in_buildconfig_fail) ... ok
+test_current_declarations_match (__main__.PolicyTests.test_current_declarations_match) ... ok
+test_dynamic_version_fails (__main__.PolicyTests.test_dynamic_version_fails) ... ok
+test_new_dependency_in_unlisted_configuration_fails (__main__.PolicyTests.test_new_dependency_in_unlisted_configuration_fails) ... ok
+test_new_dependency_through_kapt_fails (__main__.PolicyTests.test_new_dependency_through_kapt_fails) ... ok
+test_removed_dependency_exclusion_fails (__main__.PolicyTests.test_removed_dependency_exclusion_fails) ... ok
+test_removed_project_dependency_fails (__main__.PolicyTests.test_removed_project_dependency_fails) ... ok
+test_version_change_fails (__main__.PolicyTests.test_version_change_fails) ... ok
+test_wrapper_mutation_fails (__main__.PolicyTests.test_wrapper_mutation_fails) ... ok
+test_wrong_scope_fails (__main__.PolicyTests.test_wrong_scope_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.023s
+
+OK
