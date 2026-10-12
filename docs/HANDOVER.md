@@ -35,7 +35,9 @@ Counts are per suite and are not summed.
 | Release build, R8-minified, **unsigned** | PASS (build only) | — |
 | Contribution session end-to-end (loopback node + gateway) | PASS | 1 test; 5 proof rounds + 5 gateway round trips |
 | Detekt + ktlint (detekt-formatting) | REPORT ONLY, once | 11,707 findings, mostly formatting (`evidence/static-analysis-e1ae65f/`) |
-| Device runbook gates 0–10, MWA wallet session, devnet transfer, release signing, MobSF, dApp Store, demo video | NOT_RUN | — |
+| Device runbook gates 0–10, in-app MWA wallet session and transfer, MobSF, dApp Store, demo video | NOT_RUN | — |
+| Devnet program deploy, CLI sample transfer, receipt checkpoint (build box) | DONE | evidence/devnet-session/ |
+| Release signing (build-box key at /home/box/secrets; owner must move it somewhere safe) | DONE | evidence/release-signed/ |
 
 ### Evidence hashes
 
@@ -96,3 +98,9 @@ See [HARDENING-20.md](HARDENING-20.md) for per-item status. New owner steps: cho
 LICENSE; run `scripts/make-release-keystore.sh` and sign; run `scripts/mobsf-scan.sh` where docker exists; follow
 [DEVNET-RUNBOOK.md](DEVNET-RUNBOOK.md) after approving a devnet deploy. `scripts/handover.sh` now also runs the commit
 stamp check and `scripts/lint-static.sh`.
+
+## Devnet session (Oct 12, 2026, build box, DEVNET ONLY)
+- receipt-settlement program ID: `8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT` (upgradeable, unaudited) — deploy tx `5DKbCx8NwYw1EBM1sEWD8K6UgrrCUs8Rw3x8eYBNSRQNc6eQMn3gDo6qjcvxZoUpsXYVSabrhWzphsc6o3TUgQdU`
+- Sample CLI transfer 0.001 SOL: `4AYeQ2cUszdHgJZpsH5HRi2MsNR1k1tx6L4M7KmcNyLDFjMB6N2s2XPUsKaXFqXi2sqyY3ki6tZr4uPpoQXvo1zV`
+- Receipt checkpoint tx: `5jgyBsA84TC1ajKv2GdVdmWx1QFXMM9Hd1V6vW79AL1gtbw3UJgcXgRSUAD7URoTwsHjrY27Kj9XXi2rNGa9h82q` (account `Adwt61vGKfuX4x2ZS8mDDNG39JKj8PES3amjYD8aK8Rs`)
+- Explorer links and the verified v3 receipt: [evidence/devnet-session/](../evidence/devnet-session/README.md). The in-app MWA transfer on a phone is still NOT_RUN.

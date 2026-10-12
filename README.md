@@ -194,3 +194,9 @@ Optional owned-storage gateway, build governance and offline consent/evidence to
 - [Fork and extension guide](FORK-GUIDE.md)
 - [Research and roadmap](docs/extensions/RESEARCH-AND-ROADMAP.md)
 - [Offline kit](tools/edgeore-kit/README.md)
+
+## Devnet session (Oct 12, 2026, build box, DEVNET ONLY)
+- receipt-settlement program ID: `8JMkxGfiEfXJ3xJgt9Dh2bzdp6ozL6WQ5E534WfLwHfT` (upgradeable, unaudited) — deploy tx `5DKbCx8NwYw1EBM1sEWD8K6UgrrCUs8Rw3x8eYBNSRQNc6eQMn3gDo6qjcvxZoUpsXYVSabrhWzphsc6o3TUgQdU`
+- Sample CLI transfer 0.001 SOL: `4AYeQ2cUszdHgJZpsH5HRi2MsNR1k1tx6L4M7KmcNyLDFjMB6N2s2XPUsKaXFqXi2sqyY3ki6tZr4uPpoQXvo1zV`
+- Receipt checkpoint tx: `5jgyBsA84TC1ajKv2GdVdmWx1QFXMM9Hd1V6vW79AL1gtbw3UJgcXgRSUAD7URoTwsHjrY27Kj9XXi2rNGa9h82q` (account `Adwt61vGKfuX4x2ZS8mDDNG39JKj8PES3amjYD8aK8Rs`)
+- Explorer links and the verified v3 receipt: [evidence/devnet-session/](evidence/devnet-session/README.md). The in-app MWA transfer on a phone is still NOT_RUN.
