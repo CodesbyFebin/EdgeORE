@@ -880,6 +880,7 @@
     <ID>MaxLineLength:EdgeOreApp.kt$containerColor = EdgeColors.surfaceInset</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$dismissButton = { TextButton(onClick = { about = false; Onboarding.set(context, false); onboarded = false }) { Text("Show introduction") } }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$else</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$if (com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) Text("Screen capture allowed (demo build)", style = MaterialTheme.typography.bodySmall)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$if (walletSheet) com.edgeore.app.ui.components.WalletConnectSheet(onDismiss = { walletSheet = false }, onConnect = { walletSheet = false; actions.connectWallet() })</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier</ID>
@@ -1759,6 +1760,7 @@
     <ID>MaxLineLength:PolicyAndEndpointTest.kt$PolicyAndEndpointTest$val hot = EdgePolicy.evaluate(ResourceSettings(edgeModeResumed = true), good.copy(thermal = ThermalLevel.SEVERE))</ID>
     <ID>MaxLineLength:QrDecoder.kt$QrDecoder$/** [data] is a Y (luminance) plane with [rowStride] bytes per row, as delivered by an ImageReader YUV_420_888 frame. */</ID>
     <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$if</ID>
+    <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$if (!com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)</ID>
     <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$mgr.cameraIdList.firstOrNull { mgr.getCameraCharacteristics(it).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK }</ID>
     <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$setText(com.edgeore.app.R.string.qr_scan_cancel)</ID>
     <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$val mgr = getSystemService(CameraManager::class.java) ?: return finishWith(null, "No camera service on this device.")</ID>
@@ -1961,6 +1963,7 @@
     <ID>MaxLineLength:SafeFiles.kt$BoundedInput$return if (text.length &gt; maxChars) TextResult.Ok(text.take(maxChars), bytes, true) else TextResult.Ok(text, bytes, false)</ID>
     <ID>MaxLineLength:ScreenshotTest.kt$private fun Rule_.button(text: String)</ID>
     <ID>MaxLineLength:SecureWindow.kt$SecureWindowCount$if (n == 0) { counts.remove(a); a.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE) } else counts[a] = n</ID>
+    <ID>MaxLineLength:SecureWindow.kt$SecureWindowCount$if (n == 1 &amp;&amp; !com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) a.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$"$detail. The chunk is random test data sealed with this phone's vault key and stays on your gateway. Your own equipment only; nothing is earned."</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$"bytesSent" to sent.toString()</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$/** Cancels the gateway job only if the chunk was never acknowledged, so an interrupted first upload leaves nothing. */</ID>
