@@ -79,3 +79,9 @@ the user confirms it in the app, and stays under its own license (for example Qw
 Apache-2.0; Gemma: Gemma Terms of Use, gated on Hugging Face and not downloadable in this build).
 
 A copy of the Apache License, Version 2.0 is available at http://www.apache.org/licenses/LICENSE-2.0
+
+regolith-labs/ore
+  https://github.com/regolith-labs/ore
+  Used: ORE v3 program id and Board/Round account layouts at commit
+  48c203bd75db3cc45105ec29d8f8db719e5a2263, for read-only decoding only (see docs/ore/README.md).
+  No ORE source code is copied. EdgeORE is not affiliated with or endorsed by Regolith Labs.

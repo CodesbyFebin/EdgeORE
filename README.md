@@ -3,6 +3,11 @@
 
 **Your Edge. Your AI. Your Proof.**
 
+> **Every wallet action on Seeker produces a signed receipt you can verify offline — including the ones you refuse.**
+>
+> Pitch package (retrospective + dApp Store launch; submissions closed 8 Oct 2026): [`docs/pitch/EdgeORE-pitch.md`](docs/pitch/EdgeORE-pitch.md) · [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md)
+> Latest gate `84a788cbd926` ([evidence](evidence/build-84a788cbd926/summary.md)): Android 330 tests (325 passed, 5 skipped) · receipt checker 14 · gateway 17 · kit 22 · build-policy 12 · manifest-checker 9 · lint clean. Device gates NOT_RUN. Devnet only; no rewards, no token; not production-ready.
+
 ### Know what your wallet signs. Keep evidence of what happened.
 
 EdgeORE is a native **Kotlin / Jetpack Compose Android app** for reviewing a supported Solana transaction before signing, submitting it as a separate action, and exporting a receipt that can be checked outside the app. It also includes clients for AI and nodes on infrastructure you own.

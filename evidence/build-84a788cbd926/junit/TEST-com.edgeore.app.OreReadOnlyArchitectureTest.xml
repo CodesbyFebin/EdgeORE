@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.OreReadOnlyArchitectureTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-12T05:17:27" hostname="grok-bot-vm-446931431" time="0.02">
+  <properties/>
+  <testcase name="theScreenOffersNoActingControls" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.002"/>
+  <testcase name="noSigningTransactionOrWalletApisInTheOrePath" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.016"/>
+  <testcase name="theReaderTypesExposeOnlyReads" classname="com.edgeore.app.OreReadOnlyArchitectureTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -14,3 +14,17 @@ at `d675002bd701`. These are known properties of the **debug review candidate**;
 | H5 | AI tab copy: "On-device execution" | Observed on Appetize (API 33) against the `d675002bd701` APK: the Private AI tab shows the label **On-device execution**, although this build talks to an owned Ollama-compatible host and has no embedded AI runtime. See [`evidence/appetize-d675002bd701/SESSION.md`](../evidence/appetize-d675002bd701/SESSION.md). | Post-submission UI copy fix so the label matches the owned-host architecture; do not treat the current label as an on-device inference claim. |
 
 Not in this list: the runtime qualification items (wallet, devnet transfer, restart recovery, device Keystore, video). Those are tracked as NOT_RUN in `evidence/SUBMISSION-MANIFEST.md` and `docs/qualification-status.md`.
+
+## Added for the dApp Store launch package (2026-10-12, `84a788cbd926`)
+
+| # | Item | Status | Planned action |
+|---|---|---|---|
+| H6 | Detekt | DESIGN | Add the Gradle plugin at a pinned version via the version catalog; baseline current findings; fail CI on new ones. |
+| H7 | ktlint | DESIGN | Pinned ktlint check task in CI; format-only commits kept separate from logic. |
+| H8 | MobSF static scan | NOT_RUN | Scan the release APK; record report hash under `evidence/`; triage findings here. |
+| H9 | Release signing | BLOCKED (owner key) | See H3. Key held outside the repo; record cert SHA-256 only. |
+| H10 | bundletool | NOT_RUN | Build an AAB, `bundletool build-apks` + `validate`, record outputs and sizes. |
+| H11 | Solana dApp Store flow | NOT_RUN | Publisher/app NFT mint via the dApp Store publishing CLI, listing copy matching the pitch labels, privacy policy, store screenshots. |
+| H12 | Store declarations | DESIGN | Declare `CAMERA` (QR entry, optional), `INTERNET`; no analytics/tracking SDKs; data-safety text consistent with on-device vault. |
+| H13 | LICENSE | Missing | Repo has `NOTICE` only; owner chooses a licence before listing. |
+| D1 | BLE, mesh, WebRTC, libp2p transports | Deferred | Not in scope until device gates pass. |
