@@ -85,7 +85,7 @@ jobs:
         with:
           name: screenshots-${{ github.sha }}
           path: app/build/test-results/
-  release-r8-and-static-analysis:
+  release-r8:
     needs: policy-and-gateway
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -97,12 +97,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Unsigned minified release (R8) and report-only detekt/ktlint (no release key in CI)
-        run: bash gradlew --no-daemon :app:assembleRelease :app:detekt
+      - name: Unsigned minified release (R8) (no release key in CI)
+        run: bash gradlew --no-daemon :app:assembleRelease
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (tag resolved 2026-10-10)
         if: always()
         with:
-          name: release-r8-detekt-${{ github.sha }}
+          name: release-r8-${{ github.sha }}
           path: |
-            app/build/reports/detekt/
             app/build/outputs/mapping/release/

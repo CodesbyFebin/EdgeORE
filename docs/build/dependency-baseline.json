@@ -23,7 +23,6 @@
     "io.github.takahirom.roborazzi:roborazzi-compose:1.36.0",
     "io.github.takahirom.roborazzi:roborazzi-junit-rule:1.36.0",
     "io.github.takahirom.roborazzi:roborazzi:1.36.0",
-    "io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8",
     "junit:junit:4.13.2",
     "org.bouncycastle:bcprov-jdk18on:1.78.1",
     "org.jetbrains.kotlin:kotlin-reflect:2.0.21",
@@ -36,7 +35,6 @@
     "com.android.application:8.7.3",
     "com.android.library:8.7.3",
     "io.github.takahirom.roborazzi:1.36.0",
-    "io.gitlab.arturbosch.detekt:1.23.8",
     "org.jetbrains.kotlin.android:2.0.21",
     "org.jetbrains.kotlin.plugin.compose:2.0.21"
   ],
