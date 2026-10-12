@@ -1,0 +1,5 @@
+**
+!services/
+!services/storage-gateway/
+!services/storage-gateway/server.py
+!NOTICE

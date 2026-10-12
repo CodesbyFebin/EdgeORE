@@ -6,7 +6,7 @@
 > **Every wallet action on Seeker produces a signed receipt you can verify offline — including the ones you refuse.**
 >
 > Pitch package (retrospective + dApp Store launch; submissions closed 8 Oct 2026): [`docs/pitch/EdgeORE-pitch.md`](docs/pitch/EdgeORE-pitch.md) · [`docs/pitch/HACKATHON.md`](docs/pitch/HACKATHON.md)
-> Latest gate `84a788cbd926` ([evidence](evidence/build-84a788cbd926/summary.md)): Android 330 tests (325 passed, 5 skipped) · receipt checker 14 · gateway 17 · kit 22 · build-policy 12 · manifest-checker 9 · lint clean. Device gates NOT_RUN. Devnet only; no rewards, no token; not production-ready.
+> Historical gate `84a788cbd926` ([evidence](evidence/build-84a788cbd926/summary.md)): Android 330 tests (325 passed, 5 skipped) · receipt checker 14 · gateway 17 · kit 22 · build-policy 12 · manifest-checker 9 · lint clean. Device gates NOT_RUN. Devnet only; no rewards, no token; not production-ready.
 
 ### Know what your wallet signs. Keep evidence of what happened.
 
@@ -14,8 +14,10 @@ EdgeORE is a native **Kotlin / Jetpack Compose Android app** for reviewing a sup
 
 Built by **[CodesbyFebin](https://github.com/CodesbyFebin)** · **Solana Mobile Wallet Adapter** · **Devnet**
 
-**Candidate:** `0.2.8-review` · versionCode `10` · debug APK  
-**Current `main`:** `111a3dba48c3` (evidence-only merge of PR #4) · **Tested source / APK stamp:** `d675002bd701` (`d675002bd701f94809cf776aaa0580b3cb9e83ef`).
+**Delivered mint review candidate:** `0.1.0-clockin`, versionCode `12`, source `ecb7edfac316` ([PR #22](https://github.com/CodesbyFebin/EdgeORE/pull/22)). [Review tag](https://github.com/CodesbyFebin/EdgeORE/tree/v0.1.0-clockin-review.1) · [APK and UI preview package](https://d2ol7oe51mr4n9.cloudfront.net/user_3Jn4WZsssIDmoyWlzqAT3djW3wG/cc6b3407-f20a-4e9b-9c06-4e314fc3b4ec.zip) · [Passing source-side CI](https://github.com/CodesbyFebin/EdgeORE/actions/runs/38249756791). This is a debug review build; its video is a JVM UI preview. Device/wallet/provider gates remain NOT_RUN. See [tags, releases and packages](docs/releases-and-packages.md).
+
+**Historical submitted candidate:** `0.2.8-review` · versionCode `10` · debug APK
+**Historical main snapshot:** `111a3dba48c3` (evidence-only merge of PR #4) · **Tested source / APK stamp:** `d675002bd701` (`d675002bd701f94809cf776aaa0580b3cb9e83ef`).
 **Integration candidate (merged into `main` with its device gates still NOT_RUN):** branch `integration/0.2.9-candidate` (`0.2.9-review`, versionCode `11`) combines the wallet-authorization fix, Storage vault, on-device AI path and the `onchain/` prototype; see [`evidence/integration-0.2.9/`](evidence/integration-0.2.9/). The submitted candidate above is unchanged.
 
 > **Qualification:** source-side work has progressed; the wallet journey still needs runtime evidence. No confirmed transfer through EdgeORE, installed-app demo video or physical-device walkthrough is recorded here yet. This is a review candidate, not a production or ORE-earning release.
@@ -200,3 +202,5 @@ A project license remains pending the repository owner's choice. `NOTICE` record
 licenses and attribution; it does not license EdgeORE's own code. Private security reporting must
 also be enabled or a private contact channel supplied by the owner; the policy does not imply that
 this setting is already active.
+
+[Security and quality agents](QUALITY.md) · [Tags, releases and packages](docs/releases-and-packages.md)

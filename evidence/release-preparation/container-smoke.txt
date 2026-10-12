@@ -1,0 +1,6 @@
+PASS missing credential refuses startup
+PASS unauthenticated request refused
+PASS authenticated upload and exact-byte retrieval
+PASS SQLite persists across container restart
+PASS canceled job no longer exposes ciphertext
+PASS nonroot UID 10001 with read-only root filesystem

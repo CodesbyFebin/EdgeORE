@@ -20,3 +20,7 @@ Participation follows the [code of conduct](CODE_OF_CONDUCT.md). Report vulnerab
 [security policy](SECURITY.md), and report interface barriers using the
 [accessibility statement](ACCESSIBILITY.md). Accessibility targets and unrun runtime checks must
 remain distinct. The project license is still an owner decision; preserve upstream notices.
+
+Security and quality reviewers can use the [repository agent profiles](QUALITY.md#agent-profiles).
+[Tags, releases and packages](docs/releases-and-packages.md) describe source identity, debug review
+artifacts and draft-release preparation.
