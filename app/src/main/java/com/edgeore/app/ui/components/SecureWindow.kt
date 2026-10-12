@@ -28,7 +28,7 @@ internal object SecureWindowCount {
     @Synchronized fun acquire(a: Activity) {
         val n = (counts[a] ?: 0) + 1
         counts[a] = n
-        if (n == 1) a.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        if (n == 1 && !com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) a.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 
     @Synchronized fun release(a: Activity) {

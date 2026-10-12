@@ -50,7 +50,7 @@ class QrScanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Pairing and destination QR codes stay out of screenshots, recordings and recents (hardening 14).
-        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        if (!com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
         texture = TextureView(this).apply { contentDescription = "Camera preview for QR scanning" }
         status = TextView(this).apply {
             setText(com.edgeore.app.R.string.qr_scan_hint)

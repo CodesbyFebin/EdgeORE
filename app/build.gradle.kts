@@ -50,7 +50,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Demo recordings: debug builds skip FLAG_SECURE so the screen can be recorded. Release keeps it.
+            buildConfigField("boolean", "SCREEN_CAPTURE_ALLOWED", "true")
+        }
         release {
+            buildConfigField("boolean", "SCREEN_CAPTURE_ALLOWED", "false")
             // Password stays in the environment. The keystore is not committed.
             isMinifyEnabled = true
             isShrinkResources = true
