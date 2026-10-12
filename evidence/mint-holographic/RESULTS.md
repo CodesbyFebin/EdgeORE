@@ -1,0 +1,30 @@
+# Mint holographic refinement — recorded gates
+
+Tested implementation: `fefa81facc95bd08eb72e1a74875473699c87474`. Base: `bca02efea46a19b928c127eb13fcbd7156a095a4`. Linux build host, JDK 17 / Android SDK 35 / Gradle 8.9. Gate logs record their start/end and commands. Evidence recorded 12 October 2026 (IST); machine timestamps in logs are UTC.
+
+The APK stamp is `fefa81facc95-dirty`: the tracked screenshot baselines and their README were intentionally being refreshed; no uncommitted production-source changes existed at the final gate. Later evidence/documentation commits do not imply a new tested source result.
+
+| Gate | Recorded result | Evidence |
+|---|---|---|
+| Android JVM regression suite | 336 tests; 331 passed; 0 failures/errors; 5 skipped | `android-junit/`, `android-gate.log` |
+| Debug lint | No issues found | `lint.txt` |
+| Debug APK + instrumented-test APK assembly | Build successful, Gradle exit 0 | `android-gate.log`, `APK-IDENTITY.txt` |
+| Screenshot/interaction record | 29 passed, exit 0 | `screens-record.log`, `screens-junit/` |
+| Screenshot comparison after record | 29 passed, exit 0 | `screens-verify.log` |
+| Standalone receipt checker (fresh rerun) | 14 passed, exit 0 | `receipt-checker.log`, `receipt-checker-junit/` |
+| Build declaration policy | PASS | `build-policy.log` |
+| Build-policy tests | 12 passed | `build-policy-tests.log` |
+| Release-manifest self-tests | 9 passed | `manifest-tests.log` |
+| Release-manifest inspection | PASS | `manifest-check.log` |
+| Palette contrast calculations | Selected primary/supporting/action/disabled pairs exceed 4.5:1 | `contrast.txt` (not a full device contrast audit) |
+| Attached Android runtime | None | `android-runtime.txt` |
+| Public Solana RPC access | BLOCKED: CONNECT forbidden (403) | `rpc-access.txt` |
+| Device MWA, real balances, recovery, notifications, TalkBack, real provider session | NOT_RUN | No runtime evidence claimed |
+
+APK SHA-256: `5d572f2b2d3006411b4a07e5afeee475fa3cfa4b9cd8e750f77c83a264867e15`. Package `com.edgeore.app`, debug-signed review candidate. This APK is not a signed production release or store publication.
+
+Skipped Android cases require a live node/gateway/proxy or optional preview capture: ContributionSessionE2ETest, GatewayProxyIntegrationTest, NodeAgentIntegrationTest, MiningAnimationComposeTest.frames and OrePreviewFrames.frames. They are not included as passes.
+
+The 200% text interaction now scrolls horizontally to Receipts and opens it. Sheet/dialog snapshots choose their own window root. Settings hides the varying receipt key identity behind **Signer identity**; the identity remains accessible. Help-clock and unavailable-telemetry seams are confined to tests. No mock balances or successful reward handlers were introduced.
+
+Open engineering/configuration work remains in `docs/design/mint-implementation-report.md`. In particular, SKR registry, mainnet/testnet transactions, ORE deployment, funded check-in rewards, server eligibility/leases, bandwidth/cloud providers and push inbox are not implemented by these gates.

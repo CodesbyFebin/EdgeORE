@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.screens.MintLargeTextTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:53:42" hostname="070466fed5bf" time="0.397">
+  <properties/>
+  <testcase name="walletAndReviewRemainReachableAtTwoHundredPercent" classname="com.edgeore.app.screens.MintLargeTextTest" time="0.397"/>
+  <system-out><![CDATA[Roborazzi: review-200percent.png The differ result :ComparisonResult(pixelDifferences=0, pixelCount=1984500, width=945, height=2100) changed:false
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

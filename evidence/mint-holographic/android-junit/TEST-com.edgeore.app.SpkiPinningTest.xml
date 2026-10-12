@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.SpkiPinningTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:55:13" hostname="070466fed5bf" time="0.217">
+  <properties/>
+  <testcase name="wrongPinFailsBeforeAnyRequestOrBodyIsSent" classname="com.edgeore.app.SpkiPinningTest" time="0.105"/>
+  <testcase name="malformedPinsAreRefusedAtSetup" classname="com.edgeore.app.SpkiPinningTest" time="0.001"/>
+  <testcase name="pinIsSpkiNotWholeCertificate" classname="com.edgeore.app.SpkiPinningTest" time="0.015"/>
+  <testcase name="hexPinFormIsEquivalent" classname="com.edgeore.app.SpkiPinningTest" time="0.066"/>
+  <testcase name="noPinRefusesSelfSignedHostBeforeAnyRequest" classname="com.edgeore.app.SpkiPinningTest" time="0.014"/>
+  <testcase name="correctPinConnectsAndUploads" classname="com.edgeore.app.SpkiPinningTest" time="0.016"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
