@@ -159,7 +159,7 @@ fun OreMiningCard(
             Chip("+1") { onEdit { addChip(it, 1_000_000_000, balanceLamports) } }
             Chip("MAX", enabled = balanceLamports != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(balanceLamports)) } }
         }
-        if (ui.pro) SquarePicker(ui.proMask) { m -> onEdit { it.copy(proMask = m) } }
+        if (ui.pro) Text("Pro: pick squares on the ORE grid below.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         val squares = Integer.bitCount(ui.mask)
         Line("ROUNDS", "1", "One round per deploy. Multi-round automation is not supported.")
         Line("PER ROUND", "◎ " + sol(total), OreDeployLimits.perSquare(total, squares)?.let { "${sol(it)} SOL on each of $squares square${if (squares == 1) "" else "s"}" }
@@ -234,7 +234,7 @@ fun ContributionToggles(chargeOnly: Boolean, thermalGuard: Boolean, batteryReser
                         onChargeOnly: (Boolean) -> Unit, onThermal: (Boolean) -> Unit) {
     Column(Modifier.mineCard().testTag("contribution-toggles"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text("CONTRIBUTION", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp)
-        Text("These gate Edge Mode and the Start Mining session on this phone. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        Text("These gate Edge Mode and the Mine session on this phone. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
         ToggleRow("Charge-only", effect(com.edgeore.app.settings.Control.CHARGE_ONLY), chargeOnly, onChargeOnly)
         ToggleRow("Thermal guard", effect(com.edgeore.app.settings.Control.THERMAL_GUARD), thermalGuard, onThermal)
         Row(Modifier.fillMaxWidth().heightIn(min = 44.dp), verticalAlignment = Alignment.CenterVertically) {

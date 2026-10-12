@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.edgeore.app.ui.theme.EdgeColors
 
-val CardShape = RoundedCornerShape(16.dp)
+val CardShape = RoundedCornerShape(20.dp)
 
 /** Three-bar E mark drawn natively (no raster artwork). */
 @Composable
@@ -117,7 +117,7 @@ fun CapabilityBadge(cap: Capability, text: String = cap.label) {
 @Composable
 fun EdgeCard(modifier: Modifier = Modifier, inset: Boolean = false, onClick: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
     var m = modifier.fillMaxWidth().clip(CardShape).background(if (inset) EdgeColors.surfaceInset else EdgeColors.surface)
-        .border(BorderStroke(1.dp, EdgeColors.border), CardShape)
+        .border(BorderStroke(1.dp, androidx.compose.ui.graphics.Brush.verticalGradient(listOf(EdgeColors.holoBorder, EdgeColors.border))), CardShape)
     if (onClick != null) m = m.clickable(role = Role.Button, onClick = onClick)
     Column(m.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
 }

@@ -409,6 +409,87 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // ---------- Cluster selector and live SOL / ORE / SKR balances (read-only) ----------
+    private val _cluster = MutableStateFlow(com.edgeore.app.solana.Cluster.of(prefs.getString("cluster", null)))
+    val cluster: StateFlow<com.edgeore.app.solana.Cluster> = _cluster.asStateFlow()
+    private val _balances = MutableStateFlow(com.edgeore.app.solana.Balances(_cluster.value))
+    val balances: StateFlow<com.edgeore.app.solana.Balances> = _balances.asStateFlow()
+    private var balanceJob: Job? = null
+
+    /** Persists the choice and drops every value from the previous cluster before reading the new one. */
+    fun selectCluster(c: com.edgeore.app.solana.Cluster) {
+        if (c == _cluster.value) return
+        prefs.edit().putString("cluster", c.id).apply()
+        _cluster.value = c
+        balanceJob?.cancel()
+        _balances.value = com.edgeore.app.solana.Balances(c, _wallet.value.address)
+        // ORE observation follows the cluster; ORE v3 is verified only on mainnet (docs/ore/devnet-check.txt).
+        refreshBalances()
+    }
+
+    fun refreshBalances() {
+        val owner = _wallet.value.address
+        val c = _cluster.value
+        if (owner == null) { _balances.value = com.edgeore.app.solana.Balances(c, null); return }
+        if (balanceJob?.isActive == true) return
+        val prev = _balances.value.takeIf { it.cluster == c && it.account == owner }
+        val mints = com.edgeore.app.solana.TokenRegistry.mints(c)
+        fun mintRead(sym: String) = if (mints.none { it.symbol == sym }) com.edgeore.app.solana.BalanceRead.NotOnCluster(c) else com.edgeore.app.solana.BalanceRead.Loading
+        _balances.value = com.edgeore.app.solana.Balances(c, owner, com.edgeore.app.solana.BalanceRead.Loading, mintRead("ORE"), mintRead("SKR"))
+        balanceJob = viewModelScope.launch {
+            val now = System.currentTimeMillis()
+            val rpcClient = com.edgeore.app.solana.BalanceRpc(c)
+            fun last(r: com.edgeore.app.solana.BalanceRead?) = r as? com.edgeore.app.solana.BalanceRead.Value ?: (r as? com.edgeore.app.solana.BalanceRead.Failed)?.last
+            suspend fun read(prevRead: com.edgeore.app.solana.BalanceRead?, block: () -> com.edgeore.app.solana.BalanceRead.Value) = withContext(Dispatchers.IO) {
+                try { block() } catch (e: CancellationException) { throw e } catch (e: Exception) {
+                    com.edgeore.app.solana.BalanceRead.Failed("RPC unavailable: ${e.message ?: e.javaClass.simpleName}", last(prevRead))
+                }
+            }
+            val genesis = withContext(Dispatchers.IO) { runCatching { rpcClient.genesisOk() }.getOrNull() }
+            if (genesis != true) {
+                val why = if (genesis == false) "NETWORK_MISMATCH: RPC is not ${c.label}" else "RPC unavailable"
+                _balances.value = com.edgeore.app.solana.Balances(c, owner, com.edgeore.app.solana.BalanceRead.Failed(why, last(prev?.sol)),
+                    if (mints.any { it.symbol == "ORE" }) com.edgeore.app.solana.BalanceRead.Failed(why, last(prev?.ore)) else com.edgeore.app.solana.BalanceRead.NotOnCluster(c),
+                    if (mints.any { it.symbol == "SKR" }) com.edgeore.app.solana.BalanceRead.Failed(why, last(prev?.skr)) else com.edgeore.app.solana.BalanceRead.NotOnCluster(c))
+                return@launch
+            }
+            val sol = read(prev?.sol) { rpcClient.sol(owner, now) }
+            val ore = mints.firstOrNull { it.symbol == "ORE" }?.let { m -> read(prev?.ore) { rpcClient.token(owner, m, now) } } ?: com.edgeore.app.solana.BalanceRead.NotOnCluster(c)
+            val skr = mints.firstOrNull { it.symbol == "SKR" }?.let { m -> read(prev?.skr) { rpcClient.token(owner, m, now) } } ?: com.edgeore.app.solana.BalanceRead.NotOnCluster(c)
+            // Discard if the account or cluster changed while reading.
+            if (_cluster.value == c && _wallet.value.address == owner) _balances.value = com.edgeore.app.solana.Balances(c, owner, sol, ore, skr)
+        }
+    }
+
+    // ---------- Daily check-in (local streak and points; no token reward) and ORE Bot reminders ----------
+    private val checkInPrefs = app.getSharedPreferences(com.edgeore.app.bot.OreBot.PREFS, android.content.Context.MODE_PRIVATE)
+    private val _checkIn = MutableStateFlow(com.edgeore.app.device.CheckInState.fromJson(checkInPrefs.getString(com.edgeore.app.bot.OreBot.KEY_STATE, null)))
+    val checkIn: StateFlow<com.edgeore.app.device.CheckInState> = _checkIn.asStateFlow()
+    private val _reminders = MutableStateFlow(checkInPrefs.getBoolean(com.edgeore.app.bot.OreBot.KEY_OPT_IN, false))
+    val reminders: StateFlow<Boolean> = _reminders.asStateFlow()
+    private val _checkInMessage = MutableStateFlow<String?>(null)
+    val checkInMessage: StateFlow<String?> = _checkInMessage.asStateFlow()
+
+    fun checkInNow() {
+        when (val r = com.edgeore.app.device.DailyCheckIn.checkIn(_checkIn.value, System.currentTimeMillis())) {
+            is com.edgeore.app.device.DailyCheckIn.Result.Started -> {
+                checkInPrefs.edit().putString(com.edgeore.app.bot.OreBot.KEY_STATE, r.state.toJson()).apply()
+                _checkIn.value = r.state; _checkInMessage.value = null
+            }
+            is com.edgeore.app.device.DailyCheckIn.Result.Refused -> _checkInMessage.value = r.reason
+        }
+    }
+
+    /** Opt-in only. The caller has already asked for POST_NOTIFICATIONS on Android 13+. */
+    fun setReminders(on: Boolean) {
+        val allowed = com.edgeore.app.bot.OreBot.notificationsAllowed(getApplication())
+        val v = on && allowed
+        checkInPrefs.edit().putBoolean(com.edgeore.app.bot.OreBot.KEY_OPT_IN, v).apply()
+        _reminders.value = v
+        _checkInMessage.value = if (on && !allowed) "Notifications are not allowed for EdgeORE, so reminders stay off." else null
+        com.edgeore.app.bot.OreBot.schedule(getApplication(), v)
+    }
+
     /** Which AI path the advisor would use, or null ("Not configured"). The owned host is preferred when a model is chosen. */
     fun advisorBackend(): String? {
         val a = _ai.value

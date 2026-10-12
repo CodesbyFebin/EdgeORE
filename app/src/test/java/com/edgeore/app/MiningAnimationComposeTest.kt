@@ -133,7 +133,7 @@ class MiningAnimationComposeTest {
             }
         }
         rule.waitForIdle()
-        rule.onNodeWithText("Start Mining").assertExists()
+        rule.onNodeWithText("Mine").assertExists()
         save("idle")
         view = active
         rule.waitForIdle()

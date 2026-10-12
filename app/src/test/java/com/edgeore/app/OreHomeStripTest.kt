@@ -114,7 +114,7 @@ class OreHomeStripTest {
             }
         }
         fun save(name: String) = rule.onRoot().captureRoboImage(java.io.File(dir, "$name.png").path)
-        rule.waitForIdle(); rule.onNodeWithText("Start Mining").assertExists(); save("idle")
+        rule.waitForIdle(); rule.onNodeWithText("Mine").assertExists(); save("idle")
         view = active; rule.waitForIdle(); rule.onNodeWithText("Stop").assertExists()
         for (i in 0 until 25) { phase = i / 25f; rule.waitForIdle(); save("active-%02d".format(i)) }
     }

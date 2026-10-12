@@ -73,7 +73,7 @@ class MiningSessionPanelTest {
 
     @Test fun idleShowsAClickableStartMiningAndARestingPickaxe() {
         show()
-        rule.onNodeWithText("Start Mining").assertHasClickAction().assertIsEnabled().performClick()
+        rule.onNodeWithText("Mine").assertHasClickAction().assertIsEnabled().performClick()
         assertEquals(1, starts)
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText(SESSION_EXPLAINER).assertExists()
@@ -95,7 +95,7 @@ class MiningSessionPanelTest {
         assertEquals(MiningPose.SWINGING.name, pose())
         rule.onNodeWithText("Stop").assertHasClickAction().performClick()
         assertEquals(1, stops)
-        assertEquals(0, rule.onAllNodesWithText("Start Mining").fetchSemanticsNodes().size)
+        assertEquals(0, rule.onAllNodesWithText("Mine").fetchSemanticsNodes().size)
         rule.onNodeWithText("Sent to your gateway: 262,205 bytes · counted by this phone as written to the TLS stream").assertExists()
         val lines = texts().filter { it.contains(" · ") && (it.contains("bytes") || it.endsWith("ms")) }
         assertEquals("exactly the one reported measurement is shown: $lines", 1, lines.size)
@@ -112,6 +112,6 @@ class MiningSessionPanelTest {
         view = SessionView(SessionPhase.FAILED, notConfigured, failure = "Not started: an unmetered network (Wi-Fi) is not observed"); androidx.compose.runtime.snapshots.Snapshot.sendApplyNotifications(); rule.mainClock.advanceTimeByFrame()
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText("Not started: an unmetered network (Wi-Fi) is not observed").assertExists()
-        rule.onNodeWithText("Start Mining").assertHasClickAction()
+        rule.onNodeWithText("Mine").assertHasClickAction()
     }
 }

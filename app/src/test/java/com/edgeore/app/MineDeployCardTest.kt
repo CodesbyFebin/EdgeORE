@@ -66,11 +66,10 @@ class MineDeployCardTest {
     }
 
     @Test fun proNeedsSquares() {
-        val ui = show(OreDeployUi(availability = avail, totalLamports = 10_000_000), true, 1_000_000_000)
+        show(OreDeployUi(availability = avail, totalLamports = 10_000_000), true, 1_000_000_000)
         rule.onNodeWithTag("ore-mode-Pro").performClick()
         rule.onNodeWithTag("ore-deploy").assertIsNotEnabled()
-        rule.onNodeWithTag("pick-12").performClick(); assertEquals(1 shl 12, ui().mask)
-        rule.onNodeWithTag("ore-deploy").assertIsEnabled()
+        assertEquals(null, deployBlocker(OreDeployUi(availability = avail, totalLamports = 10_000_000, pro = true, proMask = 1 shl 12), true, 1_000_000_000))
     }
 
     @Test fun blockerOrder() {
@@ -108,11 +107,13 @@ class MineDeployCardTest {
                     androidx.compose.material3.Surface(androidx.compose.ui.Modifier.fillMaxSize(), color = com.edgeore.app.ui.theme.EdgeColors.background, contentColor = com.edgeore.app.ui.theme.EdgeColors.textPrimary) {
                         androidx.compose.foundation.layout.Column(androidx.compose.ui.Modifier.padding(16.dp), verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
                             com.edgeore.app.ui.components.SectionTitle("Mine", "Your device. Your resources. Your control.")
-                            com.edgeore.app.ui.screens.MineWalletRow(null, false) {}
-                            com.edgeore.app.ui.screens.MineBalanceCards(false, null)
+                            com.edgeore.app.ui.screens.NetworkSelector(com.edgeore.app.solana.Cluster.DEVNET) {}
+                            com.edgeore.app.ui.screens.WalletConnectRow(null, false, com.edgeore.app.solana.Cluster.DEVNET, {}, {}, {}, {})
+                            com.edgeore.app.ui.screens.BalanceRow(com.edgeore.app.solana.Balances(), 0L, false, "Test ORE")
                             com.edgeore.app.ui.screens.EdgeNodeCard(view, true, "", {}, {}, {})
-                            com.edgeore.app.ui.screens.DeviceCards(null, null)
+                            com.edgeore.app.ui.screens.ResourceGrid(null, null, null, com.edgeore.app.device.NetActivity.UNAVAILABLE, false)
                             OreMiningCard(deploy, false, null, {}, {}, {})
+                            com.edgeore.app.ui.screens.OreGridCard(com.edgeore.app.solana.Cluster.DEVNET, com.edgeore.app.ore.OreState(), deploy) {}
                             com.edgeore.app.ui.screens.ContributionToggles(true, true, 20, { it.effect.label }, {}, {})
                         }
                     }

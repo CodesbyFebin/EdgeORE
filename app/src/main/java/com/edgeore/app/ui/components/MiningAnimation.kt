@@ -167,5 +167,20 @@ fun MiningAnimation(
         val w = (img.width * scale).toInt(); val h = (img.height * scale).toInt()
         drawImage(img, dstOffset = IntOffset(((size.width - w) / 2).toInt(), ((size.height - h) / 2).toInt()), dstSize = IntSize(w, h),
             filterQuality = androidx.compose.ui.graphics.FilterQuality.Medium)
+        // Decorative ORE-icon particles on each impact. Purely visual: they read nothing and change no balance,
+        // counter or receipt. Drawn only while SWINGING, so paused, failed and reduced-motion states show none.
+        val life = cycle?.let(MiningMotion::sparks)
+        if (pose == MiningPose.SWINGING && life != null) {
+            val origin = androidx.compose.ui.geometry.Offset(size.width * 0.47f, size.height * 0.42f)
+            val r = size.minDimension * 0.035f * (1f - life * 0.4f)
+            for (i in 0 until 6) {
+                val a = Math.toRadians((-150.0 + i * 24.0))
+                val d = size.minDimension * 0.32f * life
+                val p = androidx.compose.ui.geometry.Offset(origin.x + (kotlin.math.cos(a) * d).toFloat(), origin.y + (kotlin.math.sin(a) * d).toFloat() + size.height * 0.2f * life * life)
+                val col = if (i % 2 == 0) com.edgeore.app.ui.theme.EdgeColors.mint else com.edgeore.app.ui.theme.EdgeColors.copper
+                drawCircle(col, r, p, alpha = 1f - life, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.45f))
+                drawLine(col, androidx.compose.ui.geometry.Offset(p.x - r * 0.7f, p.y + r * 0.7f), androidx.compose.ui.geometry.Offset(p.x + r * 0.7f, p.y - r * 0.7f), r * 0.4f, alpha = 1f - life)
+            }
+        }
     }
 }

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- ORE Bot check-in reminders, opt-in; requested at runtime on Android 13+ only when the user turns reminders on. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Optional QR address scan on the review route. Requested at runtime only when the user taps "Scan QR". -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
