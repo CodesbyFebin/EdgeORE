@@ -1,0 +1,31 @@
+
+== EdgeORE handover gates @ 6a604b9a8f58 ==
+PASS    commit stamp
+PASS    static analysis (detekt, ktlint)
+PASS    build-policy
+PASS    build-policy tests
+PASS    manifest-checker tests
+PASS    storage gateway tests
+PASS    offline kit tests
+PASS    android gate (qualify.sh: unit tests, lint, debug APK, release manifest)
+PASS    receipt checker tests
+PASS    release R8 build (unsigned)
+PASS    contribution session e2e
+NOT_RUN device runbook gates 0-10 (owner step)
+NOT_RUN wallet (MWA) session on Seeker (owner step)
+NOT_RUN devnet transfer (owner-approved) (owner step)
+NOT_RUN release signing (owner key) (owner step)
+NOT_RUN MobSF scan (scripts/mobsf-scan.sh; needs docker) (owner step)
+NOT_RUN dApp Store publish (publisher KYC) (owner step)
+NOT_RUN demo video (owner step)
+
+-- per-suite counts (separate, not summed) --
+android unit:     tests=368 passed=361 failed=0 errors=0 skipped=7 (from qualify.sh evidence; the e2e step reruns one test separately)
+receipt checker:  tests=17 passed=17 failed=0 errors=0 skipped=0
+storage gateway tests: Ran 17 tests in 6.051s OK 
+offline kit tests: Ran 22 tests in 0.007s OK 
+build-policy tests: Ran 12 tests in 0.025s OK 
+manifest-checker tests: Ran 9 tests in 0.002s OK 
+sha256 08f5de784ccc9b165b5806a9b5b371db4e2a426c93303831e28d543110b853ce  app/build/outputs/apk/debug/app-debug.apk (59407922 bytes)
+sha256 e08ee9026a166d37115157c11c130249620642b5cbc7a0e16a845125f5e042ab  app/build/outputs/apk/release/app-release-unsigned.apk (46635246 bytes)
+EXIT 0

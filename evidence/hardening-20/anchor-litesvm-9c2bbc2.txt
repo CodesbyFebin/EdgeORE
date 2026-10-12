@@ -1,0 +1,2 @@
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+program_so_sha256 a452bdfe37450c52981f99337a3c81e2b2d5e7cdc451ec92d5a7a85be7526234 (local build, not deployed)
