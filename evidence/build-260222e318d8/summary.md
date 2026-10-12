@@ -1,0 +1,38 @@
+# Build gate for 260222e318d8
+
+JVM/build results only. No phone, wallet, owned AI host or on-device node session is part of this gate.
+
+- Command: `./gradlew --no-daemon clean :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest :app:processReleaseMainManifest`
+- Gradle exit: EXIT=0
+- Started: 2026-10-12T06:26:36Z · Finished: 2026-10-12T06:28:14Z
+- Toolchain: openjdk version "17.0.20.1" 2026-08-18; gradle-8.9
+
+## Unit tests (JUnit XML in `junit/`, parsed by attribute name)
+```
+suites=42 tests=330 passed=325 failures=0 errors=0 skipped=5
+SKIPPED com.edgeore.app.ContributionSessionE2ETest.realSessionOnOwnedNodeAndGatewayThenCancelledSession (no reason given)
+SKIPPED com.edgeore.app.GatewayProxyIntegrationTest.uploadObserveDownloadQuotaAuthThroughHttpsProxy (no reason given)
+SKIPPED com.edgeore.app.MiningAnimationComposeTest.frames (no reason given)
+SKIPPED com.edgeore.app.NodeAgentIntegrationTest.pairObserveRevokeAgainstRealAgent (no reason given)
+SKIPPED com.edgeore.app.OrePreviewFrames.frames (no reason given)
+```
+
+## Lint (debug)
+```
+No issues found.
+```
+
+## Debug APK
+```
+package: name='com.edgeore.app' versionCode='11' versionName='0.2.9-review' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+sha256 2f8f446ccfa016b0f24dd9f888a2f16db37157700040f941f1b82ca292fec803
+size   57927923 bytes
+BuildConfig.GIT_COMMIT = 260222e318d8 
+signer c9b4666505b1de4c34b18bb4a0c2a5795931a20e77035af2cc9e9c37b7ae4b93 (Android debug key unless you configured release signing)
+```
+
+## Release manifest
+```
+MANIFEST CHECK: PASS (app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml)
+```
+check-manifest exit: EXIT=0

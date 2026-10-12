@@ -76,3 +76,13 @@ Counts are per suite and are not summed.
 ## Never commit
 
 The Appetize API token, the private manage key, the unredacted upload response, the test wallet key, or `release.jks`.
+
+## Re-run on main after the merge (`260222e318d8`)
+
+`bash scripts/handover.sh` on main: every machine gate PASS (session end-to-end not re-run here; it passed at `24ad91de3e1a` on the same app tree).
+Android 330 tests (325 passed, 5 skipped) · receipt checker 14 passed · gateway 17 passed · kit 22 passed · build policy 12 passed · manifest checker 9 passed.
+
+- Debug APK (GIT_COMMIT `260222e318d8`): sha256 `2f8f446ccfa016b0f24dd9f888a2f16db37157700040f941f1b82ca292fec803`, 57,927,923 bytes
+- Release APK, unsigned, R8: sha256 `2b3823a75efc0d40acd2ad8dd7e47bc11b565cf15f82a860a4ac1fa5288fb54c`, 45,825,046 bytes
+- Evidence: `evidence/build-260222e318d8/`
+- PRs: #14, #15, #16 marked merged by GitHub through #18; #17 closed as superseded (its commits are on main).
