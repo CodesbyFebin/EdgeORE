@@ -10,8 +10,10 @@ observations. The optional OwnedGatewayBackupProvider plugs into the existing Ba
 interface. services/storage-gateway provides a real owned-host ciphertext backend using SQLite
 transactions and synchronous=FULL. No upstream source was copied and no provider account was created.
 
-The shipped app still selects NotConfiguredBackupProvider. The optional adapter is not selectable
-in the UI yet. Do not advertise working remote backup based on this candidate.
+The vault's remote backup still selects NotConfiguredBackupProvider. Do not advertise working remote
+backup based on this candidate. The provider is used, with owner-entered SPKI pins (required), by the
+Mine contribution session's encrypted-chunk round trip only (Storage → *Your storage gateway*;
+docs/contribution/session.md).
 
 ## Strategy taken from each repository
 

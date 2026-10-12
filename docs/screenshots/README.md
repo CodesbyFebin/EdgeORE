@@ -82,3 +82,17 @@ Intentional. The Edge Mode ring on Mine is replaced by the owner's rock-and-pick
 
 `01-mine.png` (Pixel 7 viewport) did not change: the art sits below its fold. No other baseline changed. No baseline shows the
 swinging pose; the running, paused and reduced-motion poses are covered by `MiningMotionTest` and `MiningAnimationComposeTest`.
+
+### Re-record: Start Mining contribution session (feature/contribution-session)
+
+Intentional. The Mine art now follows a real contribution session (`docs/contribution/session.md`); Storage and Nodes gain
+the setup it needs.
+
+| Baseline | Why it changed | Source change |
+|---|---|---|
+| `full/01-mine-full.png` | Under the resting pickaxe: **Session: Idle**, the **Start Mining** button, the copy saying what a session runs and that nothing is earned, "Nothing to run yet", and *What this session runs* with both parts **Not configured** (fresh install: no node, no gateway). The art is no longer a toggle; **Resume Edge Mode** is a separate button. The "Animation only" caption is gone. | `ui/screens/MineScreen.kt` (`MiningSessionPanel`), `ui/components/MiningAnimation.kt` |
+| `full/03-storage-full.png` | New *Your storage gateway* card (Not configured; origin, token, SPKI pins) after the vault section. | `ui/screens/StorageScreen.kt` (`GatewaySetupCard`) |
+| `04-nodes.png`, `full/04-nodes-full.png` | Pairing hint mentions `RUN_PROOF_JOB` and the proof flags; new optional **RUN_PROOF_JOB** checkbox. | `ui/screens/NodesScreen.kt` |
+
+No baseline shows a running session: the ACTIVE panel and the swing are covered by `MiningSessionPanelTest`,
+`MiningAnimationComposeTest` and `MiningMotionTest`, and previewed (not as a baseline) from the real end-to-end run.

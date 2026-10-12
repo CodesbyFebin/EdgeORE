@@ -1,4 +1,4 @@
-# Mine screen art: rock and pickaxe (feature/mine-pickaxe-animation)
+# Mine screen art: rock and pickaxe
 
 The Edge Mode ring on the Mine screen is replaced by the owner's own art: a rock with mint veins and copper streaks,
 and a pickaxe that swings into it. Requested by the repository owner on 2026-10-12.
@@ -27,38 +27,36 @@ No third-party art, font or library is added. See `NOTICE`.
 
 ## Behaviour
 
-`ui/components/MiningAnimation.kt`. The pose is derived only from the existing evaluated `EdgeState`
-(`EdgePolicy.evaluate(settings, device)`); no new app state is stored.
+`ui/components/MiningAnimation.kt`. The pose is derived only from the contribution session's phase
+(`contribution/ContributionSession.kt`, see `docs/contribution/session.md`); no separate animation state exists.
 
-| EdgeState | Pose |
+| Session phase | Pose |
 |---|---|
-| `IDLE` (Edge Mode resumed and every gate passes), `STARTING`, `ACTIVE` | `SWINGING`: one swing per second (wind-up 0–45%, strike 45–60%, rebound, carry). At impact (60%) the rock shakes ±3 dp, the veins pulse mint and seven copper/mint sparks fly. |
-| same, with system **Remove animations** (animator duration scale 0) | `STILL_ON`: pickaxe held against the rock, faint vein glow, no motion |
-| `PAUSED` (by you or by policy), `PAUSING`, `UNAVAILABLE`, `FAILED` | `RESTING`: pickaxe raised 24° at a tilt, no motion |
+| `ACTIVE` (a session is running its parts on your node and gateway) | `SWINGING`: one swing per second (wind-up 0–45%, strike 45–60%, rebound, carry). At impact (60%) the rock shakes ±3 dp, the veins pulse mint and seven copper/mint sparks fly. |
+| `ACTIVE`, with system **Remove animations** (animator duration scale 0) | `STILL_ON`: pickaxe held against the rock, faint vein glow, no motion |
+| `IDLE`, `STARTING`, `STOPPING`, `FAILED` | `RESTING`: pickaxe raised 24° at a tilt, no motion |
 
-Tapping the art (or the **MINE / PAUSE** label under it) is the same `edgeModeResumed` toggle the ring was.
-The label under it still shows the evaluated state (`PAUSED`, `IDLE`), the policy headline is unchanged
-("Paused by you", "Paused by policy: …", "Idle · no qualified workload in this build"), and a caption says
-"Animation only: the pickaxe swings while Edge Mode is on. No workload runs and nothing is earned."
-The ORE rewards card still reads "Not observed". TalkBack reads the art's description, for example
-"Pickaxe striking the rock: Edge Mode is on. Animation only; no workload runs and nothing is earned."
+Under the art: the session phase, then **Start Mining** (idle or failed) or **Stop** (starting or active;
+"Stopping…" while it winds down), then the copy that says what a session runs and that nothing is earned, then
+each part with its status ("Not configured: …", running, waiting, done, cancelled, failed) and only the measurements
+that part reported. **Pause Edge Mode / Resume Edge Mode** is a separate button; pausing stops a running session.
+The art itself is no longer a toggle.
 
-### Departure from design.md (owner decision)
-
-`design.md` §5 says "Do not animate a running ring without measured activity" and its motion rules say "no looping
-ornament". This build has no qualified workload, so `ACTIVE` is never reached: binding the swing to `ACTIVE` only
-would mean the pickaxe never moves. At the owner's request the swing also runs in `IDLE` (resumed, gates pass),
-with the caption and description above saying it is an animation only. If that should not ship, change
-`MiningMotion.pose` so only `ACTIVE` swings; the tests in `MiningMotionTest` name the mapping.
+The 2026-10-12 owner exception (swinging while Edge Mode was merely on, with an "Animation only" caption) is
+reverted: a real workload now exists, so the art follows it and the caption is gone.
 
 ## Tests
 
-- `MiningMotionTest` (JVM): pose for every `EdgeState` with and without reduced motion; fresh install and
-  paused-by-policy rest; swing continuity and strike at impact; impact effects only after the strike; descriptions
+- `MiningMotionTest` (JVM): pose for every session phase with and without reduced motion (only `ACTIVE` swings);
+  swing continuity and strike at impact; impact effects only after the strike; descriptions
   carry no ORE/SKR/reward/income wording.
 - `MiningAnimationComposeTest` (Robolectric): swinging changes the drawn angle over time; paused holds 24°;
   reduced motion holds 0°; the real `Settings.Global.ANIMATOR_DURATION_SCALE = 0` selects the static pose.
-  Its `frames` test writes preview PNGs only when `MINE_FRAMES_OUT` is set (skipped in the gate).
+  Its `frames` test writes preview PNGs of the session panel only when `MINE_FRAMES_OUT` and
+  `MINE_FRAMES_SESSION` are set (skipped in the gate); the active frames use the measurements recorded by the
+  real end-to-end session in `evidence/contribution-session/`.
+- `MiningSessionPanelTest` (Robolectric): Start Mining is visible and clickable while idle, Stop while active; only
+  `ACTIVE` swings; not-configured parts show what to set up and no numbers; only reported measurements are shown.
 
 Screenshot baselines show the idle (resting) frame; see `docs/screenshots/README.md`.
 These are JVM renders, not a phone run.

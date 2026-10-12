@@ -21,6 +21,16 @@ import com.edgeore.app.device.DeviceObservations
 import com.edgeore.app.device.DeviceResourcesReader
 import com.edgeore.app.device.DeviceSnapshot
 import com.edgeore.app.device.KeystoreReceiptSigner
+import com.edgeore.app.contribution.ContributionSession
+import com.edgeore.app.contribution.GatewayRoundTripPart
+import com.edgeore.app.contribution.GatewaySetup
+import com.edgeore.app.contribution.NodeProofPart
+import com.edgeore.app.contribution.PairedNode
+import com.edgeore.app.contribution.SessionPart
+import com.edgeore.app.contribution.SessionView
+import com.edgeore.app.device.EdgePolicy
+import com.edgeore.app.device.GatewayCredentialVault
+import com.edgeore.app.storage.OwnedGatewayBackupProvider
 import com.edgeore.app.device.NodeKeyVault
 import com.edgeore.app.device.ResourceSettings
 import com.edgeore.app.device.ResourceSettingsStore
@@ -152,6 +162,13 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     val lastContributionRun: StateFlow<LastRun?> = _lastContributionRun.asStateFlow()
     private var jobWatch: Job? = null
 
+    // User-started contribution session (Mine → Start Mining). Runs only on the owner's paired node and gateway.
+    private val gatewayVault = GatewayCredentialVault(app)
+    private val _gateway = MutableStateFlow(gatewayState())
+    val gateway: StateFlow<GatewayState> = _gateway.asStateFlow()
+    private val session = ContributionSession(viewModelScope, ::sessionParts, ::sessionBlocker, { d -> record(d); Unit })
+    val contributionSession: StateFlow<SessionView> = session.view
+
     private var documentText: String? = null
     // On-device LLM (LiteRT-LM, the Google AI Edge Gallery runtime). Weights are downloaded only after consent.
     private val onDeviceAi = OnDeviceAiController(
@@ -222,6 +239,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         }
         ResourceSettingsStore.save(prefs, s)
         _settings.value = s
+        if (old.edgeModeResumed && !s.edgeModeResumed) session.stop()
         if (ContributionPolicy.shouldSchedule(old) != ContributionPolicy.shouldSchedule(s)) applyContributionSchedule(s)
     }
 
@@ -254,6 +272,57 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
             else -> cm.getNetworkCapabilities(cm.activeNetwork)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
         }
         _lastContributionRun.value = LastRunStore.read(prefs)
+    }
+
+    // ---------- contribution session ----------
+    private fun gatewayState(error: String? = null, note: String? = null) =
+        GatewayState(gatewayVault.endpoint, gatewayVault.pins.size, gatewayVault.token() != null, error, note)
+
+    private fun gatewaySetup(): GatewaySetup? = gatewayVault.endpoint?.let { GatewaySetup(it, gatewayVault.pins) { gatewayVault.token() } }
+
+    private fun sessionParts(): List<SessionPart> = listOf(
+        NodeProofPart(_node.value.record?.let { PairedNode(it.endpoint, it.certSha256, it.fingerprint, it.sessionId, it.scopes) }, { vault.load() }),
+        GatewayRoundTripPart(gatewaySetup(), { fileVault }),
+    )
+
+    /** Null while a session may run: Edge Mode on, every policy gate passes and an unmetered network is observed. */
+    private fun sessionBlocker(): String? {
+        refreshDevice()
+        val s = _settings.value
+        if (!s.edgeModeResumed) return "Edge Mode is paused"
+        EdgePolicy.evaluate(s, _device.value).gates.firstOrNull { !it.allowed }?.let { return "${it.name}: ${it.explanation}" }
+        if (_unmetered.value != true) return "an unmetered network (Wi-Fi) is not observed"
+        return null
+    }
+
+    fun refreshSession() = session.refresh()
+
+    /** Start Mining: turns Edge Mode on if it was paused, then starts one session (refused with a reason if a gate fails). */
+    fun startSession() {
+        if (!_settings.value.edgeModeResumed) updateSettings { it.copy(edgeModeResumed = true) }
+        session.start()
+    }
+
+    fun stopSession() = session.stop()
+
+    /** Saves the gateway origin, its SPKI pins (one per line) and the bearer token. Pins are required before use. */
+    fun saveGateway(endpoint: String, token: String, pinsText: String) {
+        val pins = pinsText.lines().map { it.trim() }.filter { it.isNotEmpty() }
+        val error = runCatching {
+            require(pins.isNotEmpty()) { "Add at least one SPKI pin (sha256/… or 64 hex characters)" }
+            require(token.length >= 32 && token.all { it.code in 33..126 }) { "The token must be at least 32 printable characters" }
+            OwnedGatewayBackupProvider(endpoint.trim(), { token }, pins) // validates the HTTPS origin and every pin
+        }.exceptionOrNull()?.message
+        if (error != null) { _gateway.value = gatewayState(error = error); return }
+        gatewayVault.save(endpoint.trim().trimEnd('/'), pins, token)
+        _gateway.value = gatewayState(note = "Saved. The token is encrypted with an Android Keystore key and is not shown again.")
+        session.refresh()
+    }
+
+    fun removeGateway() {
+        gatewayVault.clear()
+        _gateway.value = gatewayState(note = "Gateway removed from this phone. Chunks already stored stay on your gateway.")
+        session.refresh()
     }
 
     // ---------- receipts ----------

@@ -106,3 +106,6 @@ data class StorageState(
     /** True when the most recent device read failed; [device] then holds the previous (stale) readings. */
     val deviceReadFailed: Boolean = false,
 )
+
+/** The owner's storage gateway as set up on this phone. The token is never part of UI state. */
+data class GatewayState(val endpoint: String? = null, val pinCount: Int = 0, val tokenStored: Boolean = false, val error: String? = null, val note: String? = null)

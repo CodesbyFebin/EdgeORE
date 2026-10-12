@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.ImageBitmap
 import com.edgeore.app.R
-import com.edgeore.app.device.EdgeState
+import com.edgeore.app.contribution.SessionPhase
 import com.edgeore.app.ui.theme.EdgeColors
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -41,12 +41,12 @@ import kotlin.math.exp
 import kotlin.math.hypot
 import kotlin.math.sin
 
-/** What the Mine art shows. Derived only from the real [EdgeState]; it is not a separate app state. */
+/** What the Mine art shows. Derived only from whether a contribution session is ACTIVE; not a separate app state. */
 enum class MiningPose { RESTING, SWINGING, STILL_ON }
 
 /**
  * Timing and pose of the Mine screen pickaxe animation, as pure functions of the cycle phase t in [0, 1).
- * The animation is decoration for the Edge Mode toggle: it measures nothing, runs no workload and earns nothing.
+ * It swings only while a real contribution session is ACTIVE (see contribution/ContributionSession.kt).
  */
 object MiningMotion {
     const val CYCLE_MS = 1000
@@ -58,11 +58,9 @@ object MiningMotion {
     const val REBOUND_DEG = 14f
     private const val CARRY_DEG = 10f
 
-    /** Swinging only while Edge Mode is resumed and its gates pass; paused, pausing, failed or unavailable rest. */
-    fun pose(state: EdgeState, reducedMotion: Boolean): MiningPose = when (state) {
-        EdgeState.IDLE, EdgeState.STARTING, EdgeState.ACTIVE -> if (reducedMotion) MiningPose.STILL_ON else MiningPose.SWINGING
-        EdgeState.PAUSED, EdgeState.PAUSING, EdgeState.UNAVAILABLE, EdgeState.FAILED -> MiningPose.RESTING
-    }
+    /** Swinging only while a session is ACTIVE; idle, starting, stopping and failed sessions rest. */
+    fun pose(phase: SessionPhase, reducedMotion: Boolean): MiningPose =
+        if (phase == SessionPhase.ACTIVE) (if (reducedMotion) MiningPose.STILL_ON else MiningPose.SWINGING) else MiningPose.RESTING
 
     private fun easeInOut(x: Float) = x * x * (3 - 2 * x)
     private fun easeIn(x: Float) = x * x * x
@@ -89,9 +87,9 @@ object MiningMotion {
     fun sparks(t: Float): Float? = sinceImpact(t)?.let { d -> (d / 0.24f).takeIf { it <= 1f } }
 
     fun description(pose: MiningPose): String = when (pose) {
-        MiningPose.SWINGING -> "Pickaxe striking the rock: Edge Mode is on. Animation only; no workload runs and nothing is earned."
-        MiningPose.STILL_ON -> "Pickaxe against the rock, not moving because animations are off: Edge Mode is on. No workload runs and nothing is earned."
-        MiningPose.RESTING -> "Pickaxe at rest beside the rock: Edge Mode is paused."
+        MiningPose.SWINGING -> "Pickaxe striking the rock: a contribution session is running on your own node and storage gateway. Nothing is earned."
+        MiningPose.STILL_ON -> "Pickaxe against the rock, not moving because animations are off: a contribution session is running. Nothing is earned."
+        MiningPose.RESTING -> "Pickaxe at rest beside the rock: no contribution session is running."
     }
 }
 
@@ -112,21 +110,21 @@ fun rememberReducedMotion(): Boolean {
 }
 
 /**
- * The Mine screen art: the user's rock with the pickaxe pivoted near its grip. Swings about once a second while
- * Edge Mode is on; rests at a tilt when paused; holds still when the system removes animations.
+ * The Mine screen art: the user's rock with the pickaxe pivoted near its grip. Swings about once a second while a
+ * contribution session is ACTIVE; rests at a tilt otherwise; holds still when the system removes animations.
  */
 @Composable
 fun MiningAnimation(
-    state: EdgeState,
+    phase: SessionPhase,
     modifier: Modifier = Modifier,
     reducedMotion: Boolean = rememberReducedMotion(),
 ) {
-    val pose = MiningMotion.pose(state, reducedMotion)
+    val pose = MiningMotion.pose(phase, reducedMotion)
     val rock = ImageBitmap.imageResource(R.drawable.mine_rock)
     val veins = ImageBitmap.imageResource(R.drawable.mine_rock_veins)
     val pick = ImageBitmap.imageResource(R.drawable.mine_pickaxe)
     val fixedPhase = LocalMiningPhaseOverride.current
-    val phase: Float? = when {
+    val cycle: Float? = when {
         pose != MiningPose.SWINGING -> null
         fixedPhase != null -> fixedPhase
         else -> {
@@ -136,7 +134,7 @@ fun MiningAnimation(
         }
     }
     val angle = when (pose) {
-        MiningPose.SWINGING -> MiningMotion.swingDegrees(phase ?: 0f)
+        MiningPose.SWINGING -> MiningMotion.swingDegrees(cycle ?: 0f)
         MiningPose.STILL_ON -> 0f
         MiningPose.RESTING -> MiningMotion.REST_DEG
     }
@@ -147,7 +145,7 @@ fun MiningAnimation(
             miningSwing = angle
         },
     ) {
-        val t = phase
+        val t = cycle
         drawMine(rock, veins, pick, angle,
             shake = t?.let(MiningMotion::shake) ?: 0f,
             glow = t?.let(MiningMotion::glow) ?: if (pose == MiningPose.STILL_ON) 0.25f else 0f,
@@ -155,7 +153,7 @@ fun MiningAnimation(
     }
 }
 
-// Geometry in fractions of the exported drawables (res/drawable-nodpi, see docs/assets/mine-art.md).
+// Geometry in fractions of the exported drawables (res/drawable-nodpi, see docs/design/mine-animation.md).
 private const val PIVOT_X = 0.90f   // grip, near the handle end
 private const val PIVOT_Y = 0.88f
 private const val TIP_X = 0.03f     // lower pick tip

@@ -10,7 +10,7 @@ import java.net.HttpURLConnection
 import java.net.URI
 import kotlin.coroutines.coroutineContext
 
-/** Optional client for services/storage-gateway; not selected by the default app build.
+/** Client for services/storage-gateway. Used by the contribution session (SessionParts.GatewayRoundTripPart) with owner-entered SPKI pins; not the vault's remote-backup provider in this build.
  * Credentials are provided at request time, never put in provider labels, URLs or receipts.
  * Only HTTPS, no redirects, no arbitrary remote download URLs and no automatic write retries.
  * [spkiPins] are SPKI SHA-256 pins the owner supplies at setup (see [SpkiPinning]). With no pins only a public-CA
@@ -62,7 +62,10 @@ class OwnedGatewayBackupProvider(
         "acknowledged" -> ProviderObservation.Acknowledged(digest(o.getString("remoteRef")), digest(o.getString("ciphertextSha256")), o.getString("observedAt"))
         else -> throw BackupUnavailableException("Unrecognized storage observation")
     }
-    override suspend fun upload(request: UploadRequest): ProviderObservation = withContext(Dispatchers.IO) {
+    override suspend fun upload(request: UploadRequest): ProviderObservation = upload(request) { }
+
+    /** As [upload], reporting the running count of body bytes handed to the TLS stream after each write. */
+    suspend fun upload(request: UploadRequest, onBytesWritten: (Long) -> Unit): ProviderObservation = withContext(Dispatchers.IO) {
         require(request.ciphertextBytes == request.ciphertext.size.toLong() && request.ciphertextBytes <= MAX_BYTES)
         require(Sha256.hex(request.ciphertext) == request.ciphertextSha256)
         coroutineContext.ensureActive()
@@ -79,6 +82,7 @@ class OwnedGatewayBackupProvider(
                     val n = minOf(8192, request.ciphertext.size - offset)
                     out.write(request.ciphertext, offset, n)
                     offset += n
+                    onBytesWritten(offset.toLong())
                 }
             }
             coroutineContext.ensureActive()

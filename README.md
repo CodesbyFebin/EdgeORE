@@ -87,7 +87,7 @@ The previously reported single-byte mutation experiment has no preserved script 
 
 | Destination | Purpose and current boundary |
 |---|---|
-| **Mine** | Opens with a *Now* overview (wallet, operations awaiting an outcome, receipts, vault), then Edge state, wallet observations and resource controls. No mining workload or qualified earnings. |
+| **Mine** | Opens with a *Now* overview (wallet, operations awaiting an outcome, receipts, vault), then the rock-and-pickaxe art with **Start Mining**: a contribution session on your own paired node and storage gateway (proof jobs, an encrypted chunk stored and read back), measured and receipted; the pickaxe swings only while it runs. See [docs/contribution/session.md](docs/contribution/session.md). No ORE, SKR, points or earnings. |
 | **Private AI** | Ollama-compatible chat and document attachment to an owned host. On the integration candidate: an on-device LiteRT-LM path after [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery) (download after consent, see [docs/on-device-ai.md](docs/on-device-ai.md)); not run on a device yet. |
 | **Storage** | Local AES-GCM vault, bounded imports and capacity allowance. Remote backup is *Not configured* (no backend exists; nothing is uploaded). Android Keystore behavior still needs device qualification. The device-bound vault is a design decision, not a defect: vault keys never leave this phone, so uninstalling makes the vault unrecoverable. Cross-device restore needs a separate passphrase-wrapped backup envelope, which is not built yet. |
 | **Nodes** | Scoped pairing, health reads and revocation against a pinned upstream agent. No arbitrary remote shell. |
@@ -146,6 +146,8 @@ adb reverse tcp:11434 tcp:11434
 Configure `http://127.0.0.1:11434` in the app. Cleartext is allowed only to loopback; LAN hosts require HTTPS. Endpoint policy refuses public destinations. Prompts and attached document content go to the configured owned host; this is **private hosting, not on-phone inference**. A live reply and refusal session still need runtime evidence.
 
 **Nodes:** use the [pinned build script](scripts/build-node-agent.sh), [pin record](scripts/node-agent.pin) and [integration runner](scripts/node-agent-it.sh). The dependency binary is named `deproof-node`; its upstream lineage is retained for provenance. Android pairing and TLS behavior still need runtime qualification. Forward the actual configured agent port and use its live challenge, single-use code and certificate fingerprint.
+
+**Start Mining (contribution session):** pair the node with `RUN_PROOF_JOB` and an owner-pinned proof job, and set up your [storage gateway](services/storage-gateway/) with its SPKI pin in Storage. A session runs only with Edge Mode on, its gates passing and Wi-Fi observed, stops on **Stop**, and records signed receipts with measured numbers. A part that is not set up shows *Not configured* and is not counted. The [end-to-end run](scripts/session-e2e.sh) on the build machine is recorded in [`evidence/contribution-session/`](evidence/contribution-session/); on a phone it is NOT_RUN.
 
 ## Architecture and trust boundaries
 

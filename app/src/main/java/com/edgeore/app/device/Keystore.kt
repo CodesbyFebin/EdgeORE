@@ -86,3 +86,52 @@ class NodeKeyVault(context: Context, private val alias: String = "edgeore.nodeke
 
     fun destroy() { prefs.edit().clear().apply() }
 }
+
+/**
+ * The owner's storage-gateway setup: origin URL and SPKI pins in app preferences, the bearer token encrypted with an
+ * AES-GCM key held in Android Keystore. The token is never shown again, logged or written to a receipt.
+ */
+class GatewayCredentialVault(context: Context, private val alias: String = "edgeore.gateway.wrap.v1") {
+    private val prefs = context.getSharedPreferences("edgeore.gateway", Context.MODE_PRIVATE)
+    private val ks: KeyStore by lazy { KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) } }
+
+    private fun wrapKey(): SecretKey {
+        (ks.getKey(alias, null) as? SecretKey)?.let { return it }
+        return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE).apply {
+            init(
+                KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setKeySize(256)
+                    .build(),
+            )
+        }.generateKey()
+    }
+
+    val endpoint: String? get() = prefs.getString("endpoint", null)
+    val pins: List<String> get() = prefs.getString("pins", null)?.split('\n')?.filter { it.isNotBlank() }.orEmpty()
+
+    fun save(endpoint: String, pins: List<String>, token: String) {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, wrapKey()) }
+        val ct = cipher.doFinal(token.toByteArray(Charsets.UTF_8))
+        prefs.edit()
+            .putString("endpoint", endpoint)
+            .putString("pins", pins.joinToString("\n"))
+            .putString("iv", Base64.getEncoder().encodeToString(cipher.iv))
+            .putString("token", Base64.getEncoder().encodeToString(ct))
+            .apply()
+    }
+
+    fun token(): String? {
+        val iv = prefs.getString("iv", null) ?: return null
+        val ct = prefs.getString("token", null) ?: return null
+        return try {
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply {
+                init(Cipher.DECRYPT_MODE, wrapKey(), GCMParameterSpec(128, Base64.getDecoder().decode(iv)))
+            }
+            String(cipher.doFinal(Base64.getDecoder().decode(ct)), Charsets.UTF_8)
+        } catch (_: Exception) { null }
+    }
+
+    fun clear() { prefs.edit().clear().apply() }
+}

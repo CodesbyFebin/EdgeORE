@@ -1,8 +1,6 @@
 package com.edgeore.app
 
-import com.edgeore.app.device.EdgePolicy
-import com.edgeore.app.device.EdgeState
-import com.edgeore.app.device.ResourceSettings
+import com.edgeore.app.contribution.SessionPhase
 import com.edgeore.app.ui.components.MiningMotion
 import com.edgeore.app.ui.components.MiningPose
 import org.junit.Assert.assertEquals
@@ -11,21 +9,19 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** The Mine pickaxe animation follows the evaluated Edge Mode state and never runs on its own. */
+/** The Mine pickaxe swings only while a real contribution session is ACTIVE and never runs on its own. */
 class MiningMotionTest {
-    @Test fun posesFollowTheRealEdgeState() {
-        for (s in EdgeState.entries) {
-            val on = s == EdgeState.IDLE || s == EdgeState.STARTING || s == EdgeState.ACTIVE
-            assertEquals(s.name, if (on) MiningPose.SWINGING else MiningPose.RESTING, MiningMotion.pose(s, reducedMotion = false))
-            assertEquals(s.name, if (on) MiningPose.STILL_ON else MiningPose.RESTING, MiningMotion.pose(s, reducedMotion = true))
+    @Test fun swingsOnlyWhileASessionIsActive() {
+        for (p in SessionPhase.entries) {
+            val on = p == SessionPhase.ACTIVE
+            assertEquals(p.name, if (on) MiningPose.SWINGING else MiningPose.RESTING, MiningMotion.pose(p, reducedMotion = false))
+            assertEquals(p.name, if (on) MiningPose.STILL_ON else MiningPose.RESTING, MiningMotion.pose(p, reducedMotion = true))
         }
     }
 
-    @Test fun freshInstallAndPausedRest() {
-        // Fresh install: Edge Mode is paused by default, so the art rests.
-        assertEquals(MiningPose.RESTING, MiningMotion.pose(EdgePolicy.evaluate(ResourceSettings(), null).state, false))
-        // Resumed but gates cannot be observed: paused by policy, still resting.
-        assertEquals(MiningPose.RESTING, MiningMotion.pose(EdgePolicy.evaluate(ResourceSettings(edgeModeResumed = true), null).state, false))
+    @Test fun idleStartingStoppingAndFailedRest() {
+        // The owner exception (swinging while Edge Mode was merely on) is gone: no session, no swing.
+        for (p in listOf(SessionPhase.IDLE, SessionPhase.STARTING, SessionPhase.STOPPING, SessionPhase.FAILED)) assertEquals(MiningPose.RESTING, MiningMotion.pose(p, false))
     }
 
     @Test fun swingIsContinuousAndStrikesAtImpact() {
@@ -60,7 +56,7 @@ class MiningMotionTest {
             val d = MiningMotion.description(p).lowercase()
             for (word in listOf("ore ", "skr", "reward", "income", "earning ")) assertFalse("$p: $d", d.contains(word))
         }
-        assertTrue(MiningMotion.description(MiningPose.SWINGING).contains("nothing is earned"))
-        assertTrue(MiningMotion.description(MiningPose.RESTING).contains("paused"))
+        assertTrue(MiningMotion.description(MiningPose.SWINGING).lowercase().contains("nothing is earned"))
+        assertTrue(MiningMotion.description(MiningPose.RESTING).contains("no contribution session is running"))
     }
 }

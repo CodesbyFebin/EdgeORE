@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +34,13 @@ import com.edgeore.app.EdgeOreViewModel
 import com.edgeore.app.contribution.ConstraintObservation
 import com.edgeore.app.contribution.ContributionPolicy
 import com.edgeore.app.contribution.SchedulerStatus
+import com.edgeore.app.contribution.Measurement
+import com.edgeore.app.contribution.MAX_DURATION_MS
+import com.edgeore.app.contribution.MAX_ROUNDS
+import com.edgeore.app.contribution.PartStatus
+import com.edgeore.app.contribution.PartView
+import com.edgeore.app.contribution.SessionPhase
+import com.edgeore.app.contribution.SessionView
 import com.edgeore.app.device.EdgePolicy
 import com.edgeore.app.device.EdgeState
 import com.edgeore.app.solana.RpcObservation
@@ -149,33 +157,20 @@ fun MineScreen(
         }
     }
 
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // The user's rock-and-pickaxe art replaces the Edge Mode ring. It is the same toggle (edgeModeResumed) and is
-        // bound to the same evaluated EdgeState: it swings only while Edge Mode is on and its gates pass.
-        val resumed = settings.edgeModeResumed
-        Column(
-            Modifier.fillMaxWidth().clip(com.edgeore.app.ui.components.CardShape)
-                .clickable(role = Role.Button, onClickLabel = if (resumed) "Pause Edge Mode" else "Resume Edge Mode") {
-                    vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
-                }
-                .semantics(mergeDescendants = true) { contentDescription = "Edge Mode ${eval.state.label}. ${eval.headline}" },
-            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            MiningAnimation(eval.state, Modifier.size(width = 280.dp, height = 210.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(if (resumed) EdgeIcons.Pause else EdgeIcons.Play, contentDescription = null, tint = EdgeColors.copper, modifier = Modifier.size(24.dp))
-                Text(if (resumed) "PAUSE" else "MINE", fontWeight = FontWeight.Bold, color = EdgeColors.copper)
-                Text("· " + eval.state.label.uppercase(), fontWeight = FontWeight.Bold, color = EdgeColors.textPrimary)
-            }
-        }
-        Text("Animation only: the pickaxe swings while Edge Mode is on. No workload runs and nothing is earned.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-        Text("Protocol qualification required", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Text(eval.headline, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
-    }
+    val sessionView by vm.contributionSession.collectAsStateWithLifecycle()
+    val node by vm.node.collectAsStateWithLifecycle()
+    val gateway by vm.gateway.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(node.record, gateway) { vm.refreshSession() }
+    MiningSessionPanel(
+        view = sessionView, edgeModeResumed = settings.edgeModeResumed, headline = eval.headline,
+        onStart = vm::startSession, onStop = vm::stopSession,
+        onToggleEdgeMode = { vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) } },
+    )
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")
-        ObservationCard(Modifier.weight(1f), EdgeIcons.Cpu, "Compute", if (eval.state == EdgeState.PAUSED) "Paused" else eval.state.label, "Not measured", "No workload is running")
+        ObservationCard(Modifier.weight(1f), EdgeIcons.Cpu, "Compute", if (sessionView.phase == SessionPhase.ACTIVE) "Session active" else if (eval.state == EdgeState.PAUSED) "Paused" else eval.state.label, "Not measured on this phone",
+            if (sessionView.phase == SessionPhase.ACTIVE) "Work runs on your node and gateway" else "No workload is running")
     }
 
     EdgeCard {
@@ -275,4 +270,79 @@ private fun LabeledSlider(icon: androidx.compose.ui.graphics.vector.ImageVector,
             modifier = Modifier.fillMaxWidth().height(48.dp).semantics { contentDescription = "$label $value percent" },
         )
     }
+}
+
+/** Shown next to Start Mining: exactly what a session runs. The button text is the owner's; this copy is the substance. */
+const val SESSION_EXPLAINER = "Start Mining runs a session on your own equipment only: proof jobs on your paired node, and one 256 KiB " +
+    "encrypted chunk stored on your storage gateway, sent and read back each round. It repeats until you tap Stop, up to " +
+    "$MAX_ROUNDS rounds or ${MAX_DURATION_MS / 60_000} minutes, and only on Wi-Fi with Edge Mode on and your charge, heat and battery limits met. " +
+    "Nothing is earned: no ORE, SKR, points or payment."
+
+fun SessionPhase.label(): String = when (this) {
+    SessionPhase.IDLE -> "Idle"
+    SessionPhase.STARTING -> "Starting"
+    SessionPhase.ACTIVE -> "Active"
+    SessionPhase.STOPPING -> "Stopping"
+    SessionPhase.FAILED -> "Failed"
+}
+
+/**
+ * The rock-and-pickaxe art with the Start Mining / Stop control and the session's parts. Stateless, so it renders on
+ * the JVM. The pickaxe swings only while [view] is ACTIVE; every number shown comes from a [Measurement] reported
+ * by a running part, and a part that is not configured shows what to set up instead of a value.
+ */
+@Composable
+fun MiningSessionPanel(
+    view: SessionView, edgeModeResumed: Boolean, headline: String,
+    onStart: () -> Unit, onStop: () -> Unit, onToggleEdgeMode: () -> Unit,
+) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        MiningAnimation(view.phase, Modifier.size(width = 280.dp, height = 210.dp))
+        Text("Session: " + view.phase.label(), fontWeight = FontWeight.Bold, color = if (view.phase == SessionPhase.FAILED) EdgeColors.copper else EdgeColors.textPrimary,
+            modifier = Modifier.semantics { contentDescription = "Contribution session ${view.phase.label()}" })
+        when (view.phase) {
+            SessionPhase.IDLE, SessionPhase.FAILED ->
+                PrimaryAction("Start Mining", Modifier.testTag("start-mining"), icon = EdgeIcons.Play, onClick = onStart)
+            SessionPhase.STARTING, SessionPhase.ACTIVE ->
+                PrimaryAction("Stop", Modifier.testTag("stop-mining"), icon = EdgeIcons.Pause, onClick = onStop)
+            SessionPhase.STOPPING -> PrimaryAction("Stopping…", Modifier.testTag("stopping-mining"), enabled = false, loading = true, onClick = {})
+        }
+        Text(SESSION_EXPLAINER, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        view.failure?.takeIf { view.phase == SessionPhase.FAILED }?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium) }
+        view.note?.takeIf { view.phase == SessionPhase.IDLE }?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }
+        if (!view.anyConfigured) Text("Nothing to run yet. Pair a node (Nodes) or set up your storage gateway (Storage).", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+        EdgeCard {
+            Text("What this session runs", style = MaterialTheme.typography.titleMedium)
+            view.parts.forEach { SessionPartRow(it) }
+        }
+        SecondaryAction(if (edgeModeResumed) "Pause Edge Mode" else "Resume Edge Mode", Modifier.fillMaxWidth(), onClick = onToggleEdgeMode)
+        Text(headline, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+private fun SessionPartRow(p: PartView) {
+    val (status, color) = when (val st = p.status) {
+        is PartStatus.NotConfigured -> st.setup to EdgeColors.copper
+        PartStatus.Ready -> "Ready" to EdgeColors.textMuted
+        PartStatus.Running -> "Running · round ${p.rounds + 1}" to EdgeColors.mint
+        PartStatus.Waiting -> "Waiting for its next round · ${p.rounds} done" to EdgeColors.mint
+        is PartStatus.Done -> "Done: ${st.detail}" to EdgeColors.mint
+        PartStatus.Cancelled -> "Cancelled" to EdgeColors.copper
+        is PartStatus.Failed -> "Failed: ${st.reason}" to EdgeColors.copper
+    }
+    Column(Modifier.fillMaxWidth().testTag("session-part-${p.kind.name}").semantics(mergeDescendants = true) {}) {
+        Text(p.kind.title, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
+        Text(status, color = color, style = MaterialTheme.typography.bodyMedium)
+        p.measurements.forEach { m -> Text(measurementLine(m), color = EdgeColors.textPrimary, style = MaterialTheme.typography.labelSmall) }
+    }
+}
+
+fun measurementLine(m: Measurement): String {
+    val v = when (m.unit) {
+        "bytes" -> "%,d bytes".format(m.value)
+        "ms" -> if (m.value >= 1000) "%.1f s".format(m.value / 1000.0) else "${m.value} ms"
+        else -> "${m.value} " + if (m.value == 1L && m.unit.endsWith("s")) m.unit.dropLast(1) else m.unit
+    }
+    return "${m.label}: $v · ${m.source}"
 }
