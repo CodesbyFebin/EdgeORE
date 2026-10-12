@@ -1,1 +1,1 @@
-mobsf: NOT_RUN (docker not available on build box)
+mobsf: NOT_RUN. docker.io installed and daemon running; pulling the MobSF image was interrupted by the user, so no scan ran.

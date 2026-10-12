@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.edgeore.app.MintHoloLogicTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-12T12:37:26" hostname="grok-bot-vm-446931431" time="0.015">
+  <properties/>
+  <testcase name="telemetryFormatting" classname="com.edgeore.app.MintHoloLogicTest" time="0.002"/>
+  <testcase name="balanceStatesAreHonest" classname="com.edgeore.app.MintHoloLogicTest" time="0.005"/>
+  <testcase name="fiveOneHourSlotsPerUtcDayAndAStreak" classname="com.edgeore.app.MintHoloLogicTest" time="0.002"/>
+  <testcase name="registryMatchesTheVerifiedMints" classname="com.edgeore.app.MintHoloLogicTest" time="0.001"/>
+  <testcase name="oreBotIsTextOnly" classname="com.edgeore.app.MintHoloLogicTest" time="0.004"/>
+  <testcase name="tokenAmountsAreSummedOnlyForTheVerifiedMint" classname="com.edgeore.app.MintHoloLogicTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

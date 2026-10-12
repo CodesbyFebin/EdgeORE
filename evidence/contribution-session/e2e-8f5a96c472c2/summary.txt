@@ -1,0 +1,15 @@
+phases (session 1): STARTING -> ACTIVE -> STOPPING -> IDLE
+NODE_PROOF: Done(detail=5 rounds completed), rounds=5
+  Current proof job: 111 ms [this phone's monotonic clock, signed command sent to node-signed result received]
+  Proof jobs verified: 5 jobs [node-signed results, Ed25519 checked against the paired node key; node verifier VALID]
+  Proof job time, total: 719 ms [this phone's monotonic clock]
+GATEWAY_ROUND_TRIP: Done(detail=5 rounds completed), rounds=5
+  Sent to your gateway: 1311025 bytes [counted by this phone as written to the TLS stream]
+  Stored on your gateway: 262205 bytes [one chunk; gateway acknowledged SHA-256 31777681adfa… at 2026-10-12T12:40:45.676392+00:00]
+  Read back from your gateway: 1311025 bytes [counted by this phone as read from the TLS stream]
+  Round trips verified: 5 round trips [downloaded bytes matched the SHA-256 and decrypted with the vault key]
+  Transfer time, total: 148 ms [this phone's monotonic clock]
+session 2 (stopped during round 2): NODE_PROOF=Cancelled rounds=1, GATEWAY_ROUND_TRIP=Cancelled rounds=1; note=Stopped by you.
+receipts: PROOF_JOBS_VERIFIED, GATEWAY_ROUND_TRIPS_VERIFIED, CONTRIBUTION_SESSION_COMPLETED, PROOF_JOBS_VERIFIED, GATEWAY_ROUND_TRIPS_VERIFIED, CONTRIBUTION_SESSION_STOPPED
+receipt verifier: accepted=true ok=6
+node observe after stop: proofState=IDLE
