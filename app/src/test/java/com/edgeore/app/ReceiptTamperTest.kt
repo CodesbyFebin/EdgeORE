@@ -78,7 +78,7 @@ class ReceiptTamperTest {
             val arr = d.getJSONArray("receipts")
             for (i in 0 until arr.length()) {
                 val e = arr.getJSONObject(i)
-                e.put("deviceSignature", Base64.getEncoder().encodeToString(attacker.sign(e.getString("sha256").toByteArray())))
+                e.put("deviceSignature", Base64.getEncoder().encodeToString(attacker.sign(com.edgeore.app.receipts.receiptSignaturePayload(JSONObject(e.getString("body")), e.getString("sha256")))))
             }
             d.getJSONObject("deviceKey").put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(attacker.publicKeySpki()))
         }
@@ -115,7 +115,7 @@ class ReceiptTamperTest {
         val localId = log.all()[0].id
         val body = JSONObject(entry.getString("body")).put("id", localId).toString()
         val sha = Sha256.hex(body)
-        entry.put("body", body).put("sha256", sha).put("deviceSignature", Base64.getEncoder().encodeToString(signer.sign(sha.toByteArray())))
+        entry.put("body", body).put("sha256", sha).put("deviceSignature", Base64.getEncoder().encodeToString(signer.sign(com.edgeore.app.receipts.receiptSignaturePayload(JSONObject(body.toString()), sha))))
         forged.put("bundleSha256", bundleDigest(listOf(sha)))
         val r = ReceiptVerifier.verify(forged.toString(), signer.publicKeySpki(), log.all())
         assertFalse(r.accepted)
