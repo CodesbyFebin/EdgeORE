@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ReceiptCheckerTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-12T10:34:21" hostname="070466fed5bf" time="0.681">
+  <properties/>
+  <testcase name="nonBooleanEnvelopeRequiredIsRejected" classname="ReceiptCheckerTest" time="0.192"/>
+  <testcase name="acceptsStorageReceiptAndRejectsItsTamperedCopy" classname="ReceiptCheckerTest" time="0.063"/>
+  <testcase name="signedEnvelopeDetectsEditedDescriptiveFields" classname="ReceiptCheckerTest" time="0.035"/>
+  <testcase name="realPreEnvelopeExportFromBuildD675002StillVerifies" classname="ReceiptCheckerTest" time="0.214"/>
+  <testcase name="newExportWithEnvelopeRemovedIsRejected" classname="ReceiptCheckerTest" time="0.044"/>
+  <testcase name="legacyExportWithoutEnvelopeIsLabelledUnsigned" classname="ReceiptCheckerTest" time="0.013"/>
+  <testcase name="rejectsWrongArguments" classname="ReceiptCheckerTest" time="0.003"/>
+  <testcase name="acceptsExportAndReportsUnpinnedOfflineLimits" classname="ReceiptCheckerTest" time="0.012"/>
+  <testcase name="rejectsWellFormedBodyTamperAndPreservesOriginal" classname="ReceiptCheckerTest" time="0.018"/>
+  <testcase name="reportsMissingInputAsToolError" classname="ReceiptCheckerTest" time="0.003"/>
+  <testcase name="acceptsPinnedKeyAndRejectsDifferentKey" classname="ReceiptCheckerTest" time="0.054"/>
+  <testcase name="rejectsMalformedJson" classname="ReceiptCheckerTest" time="0.002"/>
+  <testcase name="rejectsMalformedUtf8" classname="ReceiptCheckerTest" time="0.002"/>
+  <testcase name="rejectsSignedStorageReceiptThatClaimsPayment" classname="ReceiptCheckerTest" time="0.024"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

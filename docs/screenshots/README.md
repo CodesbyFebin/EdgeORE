@@ -14,7 +14,7 @@ The suite runs only with `-Pscreens`; the normal `testDebugUnitTest` excludes it
 What these images are and are not:
 - They show the app in its **fresh-install state** on the JVM: no wallet, no node, no AI host, no receipts.
 - On API 28 the Android thermal API does not exist, so thermal status renders as *not observed*; battery is *not observed*.
-- The CPU percentage on the Storage page comes from the **build machine's** `/proc/stat` through Robolectric, not from a phone.
+- Device telemetry uses an explicit unavailable-readings test seam; current renders do not show build-machine CPU, memory, filesystem or traffic values.
 - They are **not device screenshots**. Phone qualification is still NOT_RUN (see `docs/known-limitations.md`).
 
 ## `storage/` — Storage page JVM renders (feature/storage-vault)
@@ -102,3 +102,9 @@ No baseline shows a running session: the ACTIVE panel and the swing are covered 
 Intentional: `full/01-mine-full.png` (the central "ORE board · Read-only · mainnet observation" entry above the session panel),
 `07-onboarding.png`, `full/07-onboarding-full.png`, `full/07-onboarding-fontscale-1.5.png` (the onboarding line now reads
 "No mainnet transactions and no real money (the ORE board only reads mainnet)"). No other baseline changed in the record run.
+
+## Mint holographic re-record (12 October 2026)
+
+All screen baselines intentionally change with the new palette, card/control shapes, icon family and Mine layout. The native routes and review handlers remain intact. New `mint/` renders cover the MWA chooser, Settings, Basic help and review at 200% font size on a 360×800 dp viewport. The navigation becomes horizontally scrollable with wider targets at large text sizes. Dialog/sheet renders select their own root window, not a simulated phone capture. Help time and unavailable telemetry are fixed only through explicit test seams. Settings uses the explicit **JVM render** build label in tests; it never substitutes that label on a device.
+
+See `docs/design/mint-implementation-report.md` and `evidence/mint-holographic/RESULTS.md` for the exact source and final commands. These images are JVM layout evidence only.

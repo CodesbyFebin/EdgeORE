@@ -16,6 +16,9 @@ class FixedDeviceReadings : ExternalResource() {
         com.edgeore.app.device.Telemetry.testTrafficSource = { null }
         com.edgeore.app.ore.OreObserver.testSource = { throw IllegalStateException("Not observed in JVM render") }
         com.edgeore.app.ore.OreDeployCheck.testSource = { com.edgeore.app.ore.OreDeployAvailability.NotChecked }
+        com.edgeore.app.ui.AppClock.testBuildStamp = "JVM render"
+        com.edgeore.app.ui.AppClock.testNow = { 1_791_763_200_000L }
+        com.edgeore.app.device.ResourceTelemetryReader.testSource = { com.edgeore.app.device.ResourceTelemetry() }
         DeviceResourcesReader.testSource = { UNOBSERVED.copy(observedAtElapsedMs = android.os.SystemClock.elapsedRealtime()) }
     }
     override fun after() {
@@ -25,6 +28,9 @@ class FixedDeviceReadings : ExternalResource() {
         com.edgeore.app.device.Telemetry.testTrafficSource = null
         com.edgeore.app.ore.OreObserver.testSource = null
         com.edgeore.app.ore.OreDeployCheck.testSource = null
+        com.edgeore.app.device.ResourceTelemetryReader.testSource = null
+        com.edgeore.app.ui.AppClock.testBuildStamp = null
+        com.edgeore.app.ui.AppClock.testNow = null
     }
 
     companion object {

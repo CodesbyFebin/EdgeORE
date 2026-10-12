@@ -11,6 +11,21 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.platform.LocalView
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import android.os.PowerManager
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -135,8 +150,16 @@ fun MiningAnimation(
     modifier: Modifier = Modifier,
     reducedMotion: Boolean = rememberReducedMotion(),
 ) {
-    val pose = MiningMotion.pose(phase, reducedMotion)
-    val res = LocalContext.current.resources
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycleState by lifecycle.currentStateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val view = LocalView.current
+    var visible by remember { mutableStateOf(true) }
+    // From PR #20: pause when off-screen, stopped, or in battery saver. The art stays the GIF frame set (#19).
+    val savingPower = context.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
+    val displayedPhase = if (visible && lifecycleState.isAtLeast(Lifecycle.State.STARTED)) phase else SessionPhase.IDLE
+    val pose = MiningMotion.pose(displayedPhase, reducedMotion || savingPower)
+    val res = context.resources
     val frames = remember(res) { MiningFrames.ids.map { ImageBitmap.imageResource(res, it) } }
     val fixedPhase = LocalMiningPhaseOverride.current
     val cycle: Float? = when {
@@ -155,7 +178,10 @@ fun MiningAnimation(
     }
     val index = MiningFrames.frameAt(pose, cycle)
     Canvas(
-        modifier.testTag("mining-animation").semantics {
+        modifier.onGloballyPositioned { coordinates ->
+            val b = coordinates.boundsInWindow()
+            visible = b.bottom > 0 && b.top < view.rootView.height && b.right > 0 && b.left < view.rootView.width
+        }.testTag("mining-animation").semantics {
             contentDescription = MiningMotion.description(pose)
             stateDescription = pose.name
             miningSwing = angle

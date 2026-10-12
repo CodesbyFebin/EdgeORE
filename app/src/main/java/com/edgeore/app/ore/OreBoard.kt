@@ -56,6 +56,7 @@ object OreFormat {
 /** Reads Board and Treasury in one call, then the current Round (its PDA from Board.round_id), and checks they agree. */
 class OreObserver(private val reader: AccountReader, private val nowMs: () -> Long = System::currentTimeMillis) {
     companion object {
+        /** Screenshot tests must not depend on live RPC availability or changing mainnet rounds. */
         @androidx.annotation.VisibleForTesting
         @Volatile internal var testSource: (suspend () -> OreSnapshot)? = null
     }

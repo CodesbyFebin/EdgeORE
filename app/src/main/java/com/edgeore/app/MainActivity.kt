@@ -32,6 +32,10 @@ import kotlinx.coroutines.launch
 class MainActivity : androidx.fragment.app.FragmentActivity() {
     private val vm: EdgeOreViewModel by viewModels()
 
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        vm.setReminders(granted)
+    }
+
     // QR address scan for the review destination. Each launcher is registered before STARTED, as required.
     private val scanResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         val text = r.data?.getStringExtra(QrScanActivity.EXTRA_TEXT)
@@ -61,6 +65,11 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
         // Must be created before the Activity is STARTED (registers an activity-result launcher).
         val sender = ActivityResultSender(this)
         val actions = object : PlatformActions {
+            override fun setReminders(enabled: Boolean) {
+                if (enabled && android.os.Build.VERSION.SDK_INT >= 33 && !com.edgeore.app.notifications.OreReminders.permitted(this@MainActivity)) {
+                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else vm.setReminders(enabled)
+            }
             override fun connectWallet() { vm.connectWallet(sender) }
             override fun disconnectWallet() { vm.disconnectWallet(sender) }
             // Hardening 15: user presence (biometric or device credential) before the wallet is opened to sign.
@@ -88,6 +97,8 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
     override fun onResume() {
         super.onResume()
         vm.refreshDevice()
+        vm.refreshPortfolio()
+        vm.refreshReminderPermission()
     }
 
     /** Downsamples the picked image (max 1600 px side), decodes it in memory and discards it. Nothing is stored. */

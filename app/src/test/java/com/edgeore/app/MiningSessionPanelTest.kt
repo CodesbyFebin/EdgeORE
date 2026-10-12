@@ -114,4 +114,10 @@ class MiningSessionPanelTest {
         rule.onNodeWithText("Not started: an unmetered network (Wi-Fi) is not observed").assertExists()
         rule.onNodeWithText("Mine").assertHasClickAction()
     }
+    @Test fun activeWithoutWorkerResultKeepsPickaxeStill() {
+        view = SessionView(SessionPhase.ACTIVE, listOf(PartView(PartKind.NODE_PROOF, PartStatus.Running)))
+        show()
+        assertEquals(MiningPose.RESTING.name, pose())
+        rule.onNodeWithText("Waiting for first worker result…").assertExists()
+    }
 }
