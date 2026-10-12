@@ -28,7 +28,7 @@ end_slot + ONE_DAY_SLOTS` (288,000) in both fixtures.
   the accessibility label.
 - The RPC, slot and local time of the read. Refreshes every 15 s while open. The public mainnet RPC is configurable (https only).
 - **Not shown:** prices (no price source configured), the web board's tile sparkle (its meaning was not verified), any
-  amount chips, steppers or deploy control. One disabled button: "Deploy disabled in EdgeORE (read-only)".
+  amount chips, steppers or deploy control. A visible informational label: "Deploy unavailable in this release (read-only)".
 
 ## Read-only by construction
 

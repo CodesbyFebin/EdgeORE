@@ -1,6 +1,7 @@
 package com.edgeore.app
 
-import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertHasNoClickAction
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
@@ -14,7 +15,7 @@ import com.edgeore.app.ore.OreAdvisor
 import com.edgeore.app.ore.OreSnapshot
 import com.edgeore.app.ore.OreState
 import com.edgeore.app.ore.OreV3
-import com.edgeore.app.ui.screens.ORE_DEPLOY_DISABLED
+import com.edgeore.app.ui.screens.ORE_DEPLOY_UNAVAILABLE
 import com.edgeore.app.ui.screens.OreContent
 import com.edgeore.app.ui.theme.EdgeOreTheme
 import org.junit.Assert.assertEquals
@@ -53,8 +54,11 @@ class OreScreenTest {
         for (i in 0 until 25) rule.onNodeWithTag("ore-square-$i").assertExists()
         rule.onNodeWithTag("ore-square-0").assertExists()
         rule.onNodeWithContentDescription("Square 1: 0.261 SOL, 122 miners").assertExists()
-        rule.onNodeWithTag("ore-deploy-disabled").assertIsNotEnabled()
-        rule.onNodeWithText(ORE_DEPLOY_DISABLED).assertExists()
+        rule.onNodeWithTag("ore-deploy-unavailable").assertHasNoClickAction()
+        rule.onNodeWithText(ORE_DEPLOY_UNAVAILABLE).assertExists()
+        rule.onNodeWithText("Read-only · mainnet observation").assertExists()
+        rule.onNodeWithTag("ore-source").assertTextContains("Last read", substring = true)
+        rule.onNodeWithTag("ore-source").assertTextContains(snap.rpc, substring = true)
         for (chip in listOf("+0.01", "+0.1", "+1", "MAX")) assertEquals(chip, 0, rule.onAllNodesWithText(chip).fetchSemanticsNodes().size)
         rule.onNodeWithText("Prices: not shown. No price source is configured in EdgeORE.").assertExists()
     }

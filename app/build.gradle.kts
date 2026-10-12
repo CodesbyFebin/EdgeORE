@@ -20,8 +20,8 @@ android {
         applicationId = "com.edgeore.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 11
-        versionName = "0.2.9-review"
+        versionCode = 12
+        versionName = "0.1.0-clockin"
         // Binds the APK to its source revision (shown in the app and in aapt badging via BuildConfig).
         buildConfigField("String", "GIT_COMMIT", "\"$gitCommit\"")
         // ORE v3 deploy targets devnet only. Mainnet deploy stays off; no build type turns it on.

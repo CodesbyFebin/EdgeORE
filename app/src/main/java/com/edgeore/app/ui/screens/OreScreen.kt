@@ -45,7 +45,6 @@ import com.edgeore.app.ore.OreState
 import com.edgeore.app.ore.OreV3
 import com.edgeore.app.ui.components.EdgeCard
 import com.edgeore.app.ui.components.PillTone
-import com.edgeore.app.ui.components.PrimaryAction
 import com.edgeore.app.ui.components.SecondaryAction
 import com.edgeore.app.ui.components.StatusPill
 import com.edgeore.app.ui.theme.EdgeColors
@@ -55,7 +54,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 const val ORE_READ_ONLY_LABEL = "Read-only · mainnet observation"
-const val ORE_DEPLOY_DISABLED = "Deploy disabled in EdgeORE (read-only)"
+const val ORE_DEPLOY_UNAVAILABLE = "Deploy unavailable in this release (read-only)"
 
 /** Opened from Mine. Reads the live ORE v3 board every 15 s while shown; there is no transaction path on this screen. */
 @Composable
@@ -96,7 +95,7 @@ fun OreContent(
             OreStat("TIME", clock?.let(OreClock::label), EdgeColors.textPrimary)
         }
         if (s != null) {
-            Text("Round ${s.round.id} · ${s.round.totalMiners} miners · read at slot ${s.roundSlot}, ${localTime(s.observedAtMs)} from ${s.rpc}" +
+            Text("Round ${s.round.id} · ${s.round.totalMiners} miners · Last read ${localTime(s.observedAtMs)} at slot ${s.roundSlot} from ${s.rpc}" +
                 (s.slotRate?.let { " · time estimated at %.0f ms per slot (RPC performance sample)".format(it.msPerSlot) } ?: " · no slot rate measured, so time is in slots"),
                 color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("ore-source"))
         } else {
@@ -131,7 +130,8 @@ fun OreContent(
                 Text("SOL deployed per square, from Round.deployed (lamports ÷ 10⁹, rounded down to 3 decimals).", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
             }
         }
-        PrimaryAction(ORE_DEPLOY_DISABLED, Modifier.testTag("ore-deploy-disabled"), enabled = false, onClick = {})
+        Text(ORE_DEPLOY_UNAVAILABLE, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.testTag("ore-deploy-unavailable"))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SecondaryAction(if (ore.loading) "Reading…" else "Refresh", enabled = !ore.loading, onClick = onRefresh)
