@@ -421,7 +421,10 @@ fun OreEntry(onOpen: () -> Unit) {
 
 /** CPU cores and a memory class, as Android reports them. Usage is not sampled. */
 object DeviceFacts {
+    @androidx.annotation.VisibleForTesting
+    @Volatile internal var testSource: ((android.content.Context) -> Pair<Int?, Int?>)? = null
     fun read(ctx: android.content.Context): Pair<Int?, Int?> {
+        testSource?.let { return it(ctx) }
         val cores = Runtime.getRuntime().availableProcessors().takeIf { it > 0 }
         val am = ctx.getSystemService(android.content.Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
         val mem = am?.let { val mi = android.app.ActivityManager.MemoryInfo(); it.getMemoryInfo(mi); mi.totalMem }?.takeIf { it > 0 }
