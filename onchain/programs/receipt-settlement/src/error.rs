@@ -65,4 +65,6 @@ pub enum SettlementError {
     OpenAccountsRemain, // 6029
     #[msg("Job cannot be closed in the slot it was created")]
     CloseTooEarly, // 6030
+    #[msg("Receipt checkpoint must advance the sequence and cover at least one receipt")]
+    CheckpointNotAdvancing, // 6031
 }

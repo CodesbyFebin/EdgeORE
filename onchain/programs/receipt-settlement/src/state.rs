@@ -195,3 +195,35 @@ pub struct JobClosed {
     pub creator: Pubkey,
     pub lamports: u64,
 }
+
+pub const RECEIPT_CHECKPOINT_SEED: &[u8] = b"receipt-checkpoint";
+
+/// PDA: ["receipt-checkpoint", authority, device_key_id]. Payer: authority.
+/// Latest anchored point of one device key's receipt chain (hardening 17).
+#[account]
+#[derive(InitSpace)]
+pub struct ReceiptCheckpoint {
+    pub authority: Pubkey,
+    /// SHA-256 of the device receipt key's SubjectPublicKeyInfo (the app's keyId).
+    pub device_key_id: [u8; 32],
+    pub last_sequence: u64,
+    pub last_receipt_sha256: [u8; 32],
+    /// bundleDigest over the exported receipt digests (same definition as the app's export).
+    pub bundle_sha256: [u8; 32],
+    pub receipt_count: u32,
+    pub recorded_slot: u64,
+    pub updates: u32,
+    pub bump: u8,
+}
+
+#[event]
+pub struct ReceiptCheckpointRecorded {
+    pub checkpoint: Pubkey,
+    pub authority: Pubkey,
+    pub device_key_id: [u8; 32],
+    pub last_sequence: u64,
+    pub last_receipt_sha256: [u8; 32],
+    pub bundle_sha256: [u8; 32],
+    pub receipt_count: u32,
+    pub slot: u64,
+}

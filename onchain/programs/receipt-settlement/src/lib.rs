@@ -99,4 +99,22 @@ pub mod receipt_settlement {
     pub fn close_job(ctx: Context<CloseJob>) -> Result<()> {
         instructions::close_job::handle_close_job(ctx)
     }
+
+    /// Creates the receipt checkpoint for one device receipt key (hardening 17).
+    pub fn init_receipt_checkpoint(ctx: Context<InitReceiptCheckpoint>, device_key_id: [u8; 32]) -> Result<()> {
+        instructions::receipt_checkpoint::handle_init_receipt_checkpoint(ctx, device_key_id)
+    }
+
+    /// Records a newer (sequence, last digest, bundle digest); must strictly advance.
+    pub fn record_receipt_checkpoint(
+        ctx: Context<RecordReceiptCheckpoint>,
+        last_sequence: u64,
+        last_receipt_sha256: [u8; 32],
+        bundle_sha256: [u8; 32],
+        receipt_count: u32,
+    ) -> Result<()> {
+        instructions::receipt_checkpoint::handle_record_receipt_checkpoint(
+            ctx, last_sequence, last_receipt_sha256, bundle_sha256, receipt_count,
+        )
+    }
 }

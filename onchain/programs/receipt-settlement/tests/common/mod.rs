@@ -1832,3 +1832,76 @@ pub fn recreated_job_rejects_replay_of_old_signature(mode: Mode) {
     );
     expect_ok(settle(&mut env, 0, &a), "fresh signature settles");
 }
+
+// ------------------------------------------------- receipt checkpoint (H17)
+
+fn checkpoint_pda(authority: &Pubkey, device_key_id: &[u8; 32]) -> Pubkey {
+    Pubkey::find_program_address(&[RECEIPT_CHECKPOINT_SEED, authority.as_ref(), device_key_id], &pid()).0
+}
+
+fn init_checkpoint_ix(authority: &Pubkey, device_key_id: [u8; 32]) -> Instruction {
+    Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::InitReceiptCheckpoint { device_key_id }.data(),
+        receipt_settlement::accounts::InitReceiptCheckpoint {
+            authority: *authority,
+            checkpoint: checkpoint_pda(authority, &device_key_id),
+            system_program: system_program::ID,
+        }
+        .to_account_metas(None),
+    )
+}
+
+fn record_checkpoint_ix(authority: &Pubkey, checkpoint: Pubkey, seq: u64, last: [u8; 32], bundle: [u8; 32], count: u32) -> Instruction {
+    Instruction::new_with_bytes(
+        pid(),
+        &receipt_settlement::instruction::RecordReceiptCheckpoint {
+            last_sequence: seq,
+            last_receipt_sha256: last,
+            bundle_sha256: bundle,
+            receipt_count: count,
+        }
+        .data(),
+        receipt_settlement::accounts::RecordReceiptCheckpoint { authority: *authority, checkpoint }.to_account_metas(None),
+    )
+}
+
+const DEVICE_KEY: [u8; 32] = [0xD1; 32];
+
+pub fn receipt_checkpoint_records_and_only_advances(mode: Mode) {
+    let mut env = setup(mode);
+    let owner = funded(&mut env, 2);
+    let cp = checkpoint_pda(&owner.pubkey(), &DEVICE_KEY);
+    expect_ok(as_signer(&mut env, &owner, init_checkpoint_ix(&owner.pubkey(), DEVICE_KEY)), "init checkpoint");
+    let c: ReceiptCheckpoint = read(&env.b, &cp);
+    assert_eq!((c.authority, c.device_key_id, c.last_sequence, c.updates), (owner.pubkey(), DEVICE_KEY, 0, 0));
+    expect_ok(as_signer(&mut env, &owner, record_checkpoint_ix(&owner.pubkey(), cp, 5, [1; 32], [2; 32], 5)), "record 5");
+    let c: ReceiptCheckpoint = read(&env.b, &cp);
+    assert_eq!((c.last_sequence, c.last_receipt_sha256, c.bundle_sha256, c.receipt_count, c.updates), (5, [1; 32], [2; 32], 5, 1));
+    // Same or lower sequence: refused (no rollback, no replay).
+    expect_custom(as_signer(&mut env, &owner, record_checkpoint_ix(&owner.pubkey(), cp, 5, [3; 32], [4; 32], 5)), 0, code(SettlementError::CheckpointNotAdvancing));
+    expect_custom(as_signer(&mut env, &owner, record_checkpoint_ix(&owner.pubkey(), cp, 4, [3; 32], [4; 32], 4)), 0, code(SettlementError::CheckpointNotAdvancing));
+    // Count larger than the sequence, or zero: refused.
+    expect_custom(as_signer(&mut env, &owner, record_checkpoint_ix(&owner.pubkey(), cp, 6, [3; 32], [4; 32], 7)), 0, code(SettlementError::CheckpointNotAdvancing));
+    // Zero digests: refused.
+    expect_custom(as_signer(&mut env, &owner, record_checkpoint_ix(&owner.pubkey(), cp, 6, [0; 32], [4; 32], 6)), 0, code(SettlementError::InvalidHash));
+    expect_ok(as_signer(&mut env, &owner, record_checkpoint_ix(&owner.pubkey(), cp, 9, [5; 32], [6; 32], 9)), "record 9");
+    let c: ReceiptCheckpoint = read(&env.b, &cp);
+    assert_eq!((c.last_sequence, c.updates), (9, 2));
+}
+
+pub fn receipt_checkpoint_rejects_other_signer_and_zero_key(mode: Mode) {
+    let mut env = setup(mode);
+    let owner = funded(&mut env, 2);
+    let other = funded(&mut env, 2);
+    let cp = checkpoint_pda(&owner.pubkey(), &DEVICE_KEY);
+    expect_ok(as_signer(&mut env, &owner, init_checkpoint_ix(&owner.pubkey(), DEVICE_KEY)), "init checkpoint");
+    let before = snapshot(&env, &[cp]);
+    // Another wallet cannot write the owner's checkpoint (seeds bind the authority).
+    let res = as_signer(&mut env, &other, record_checkpoint_ix(&other.pubkey(), cp, 3, [1; 32], [2; 32], 3));
+    assert!(res.is_err(), "foreign signer must be refused");
+    assert_eq!(before, snapshot(&env, &[cp]));
+    // A second init for the same key fails (account already in use).
+    assert!(as_signer(&mut env, &owner, init_checkpoint_ix(&owner.pubkey(), DEVICE_KEY)).is_err());
+    expect_custom(as_signer(&mut env, &owner, init_checkpoint_ix(&owner.pubkey(), [0; 32])), 0, code(SettlementError::InvalidHash));
+}
