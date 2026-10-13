@@ -17,7 +17,7 @@ sourceSets.main {
 }
 dependencies {
     implementation("org.json:json:20260814")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     testImplementation("junit:junit:4.13.2")
 }
 tasks.test { testLogging { events("passed", "failed", "skipped") } }
