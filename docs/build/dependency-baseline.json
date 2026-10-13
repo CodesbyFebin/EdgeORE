@@ -20,7 +20,7 @@
     "androidx.work:work-runtime-ktx:2.10.0",
     "androidx.work:work-testing:2.10.0",
     "com.google.ai.edge.litertlm:litertlm-android:0.8.0",
-    "com.google.zxing:core:3.5.3",
+    "com.google.zxing:core:3.5.4",
     "com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.0.3",
     "io.github.takahirom.roborazzi:roborazzi-compose:1.36.0",
     "io.github.takahirom.roborazzi:roborazzi-junit-rule:1.36.0",
@@ -30,7 +30,7 @@
     "org.jetbrains.kotlin:kotlin-reflect:2.0.21",
     "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0",
     "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0",
-    "org.json:json:20240303",
+    "org.json:json:20260814",
     "org.robolectric:robolectric:4.14.1"
   ],
   "plugins": [
@@ -128,7 +128,7 @@
       ],
       [
         "implementation",
-        "com.google.zxing:core:3.5.3"
+        "com.google.zxing:core:3.5.4"
       ],
       [
         "implementation",
@@ -184,7 +184,7 @@
       ],
       [
         "testImplementation",
-        "org.json:json:20240303"
+        "org.json:json:20260814"
       ],
       [
         "testImplementation",

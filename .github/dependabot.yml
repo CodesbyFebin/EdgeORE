@@ -5,6 +5,19 @@ updates:
     schedule: { interval: weekly }
     groups:
       gradle-all: { patterns: ["*"] }
+    ignore:
+      # Pinned for the tested toolchain; bump only by hand with a full re-test.
+      - dependency-name: "com.solanamobile:*"
+      - dependency-name: "com.solana*"
+      - dependency-name: "androidx.compose:compose-bom"
+      - dependency-name: "com.android.application"
+      - dependency-name: "com.android.library"
+      - dependency-name: "com.android.tools.build:gradle"
+      - dependency-name: "org.jetbrains.kotlin*"
+      - dependency-name: "org.jetbrains.kotlin:*"
+      - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-*"
+      - dependency-name: "gradle-wrapper"
+      - dependency-name: "com.google.ai.edge.litertlm:*"
   - package-ecosystem: pip
     directories: ["/services/storage-gateway", "/tools/edgeore-kit"]
     schedule: { interval: weekly }
