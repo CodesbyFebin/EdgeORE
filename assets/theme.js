@@ -1,0 +1,3 @@
+(function(){var k='edgeore-theme',d=document.documentElement,s=localStorage.getItem(k);if(s)d.dataset.theme=s;
+document.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('tt');function l(){var t=d.dataset.theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');b.textContent=t==='light'?'Dark theme':'Light theme';b.setAttribute('aria-label','Switch to '+(t==='light'?'dark':'light')+' theme')}l();
+b.addEventListener('click',function(){var t=(d.dataset.theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'))==='light'?'dark':'light';d.dataset.theme=t;localStorage.setItem(k,t);l()})})})();

@@ -1,0 +1,37 @@
+# EdgeORE
+
+> Non-custodial Android dapp for Solana Mobile (package com.edgeore.app) by CodesbyFebin. Exact-message review, wallet-signed ORE v3 deploys (mainnet capped at 0.01 SOL per deploy, opt-in with a real-SOL risk confirmation), a single submit with no resend, and receipts signed with Android Keystore. The receipt checker verifies the integrity of signed receipt contents.
+
+Facts for accurate summaries:
+- Hackathon build 0.1.0-clockin; not production-ready; provided as is.
+- Keys stay in the user's Mobile Wallet Adapter wallet. EdgeORE cannot sign or move funds by itself.
+- EdgeORE does not promise, guarantee or estimate rewards, returns or income. Check-in points have no monetary value; "$EdgeORE" is not a token.
+- No account, no backend, no analytics. Data stays on the phone; delete by clearing app data or uninstalling.
+- No AI model is bundled; an owned host or an allowlisted on-device download is optional. ZK Proof shows "Prover not configured".
+- Not affiliated with Regolith Labs (ORE) or Solana Mobile. Apache-2.0.
+
+## Pages
+- [Home](https://codesbyfebin.github.io/EdgeORE/)
+- [faq/](https://codesbyfebin.github.io/EdgeORE/faq/)
+- [docs/](https://codesbyfebin.github.io/EdgeORE/docs/)
+- [docs/getting-started/](https://codesbyfebin.github.io/EdgeORE/docs/getting-started/)
+- [docs/networks/](https://codesbyfebin.github.io/EdgeORE/docs/networks/)
+- [docs/ore-deploy/](https://codesbyfebin.github.io/EdgeORE/docs/ore-deploy/)
+- [docs/receipts/](https://codesbyfebin.github.io/EdgeORE/docs/receipts/)
+- [docs/ai/](https://codesbyfebin.github.io/EdgeORE/docs/ai/)
+- [docs/zk-proof/](https://codesbyfebin.github.io/EdgeORE/docs/zk-proof/)
+- [docs/theme/](https://codesbyfebin.github.io/EdgeORE/docs/theme/)
+- [docs/troubleshooting/](https://codesbyfebin.github.io/EdgeORE/docs/troubleshooting/)
+- [docs/security/](https://codesbyfebin.github.io/EdgeORE/docs/security/)
+- [wiki/](https://codesbyfebin.github.io/EdgeORE/wiki/)
+- [wiki/faq/](https://codesbyfebin.github.io/EdgeORE/wiki/faq/)
+- [wiki/architecture/](https://codesbyfebin.github.io/EdgeORE/wiki/architecture/)
+- [wiki/build-and-test/](https://codesbyfebin.github.io/EdgeORE/wiki/build-and-test/)
+- [wiki/release-verification/](https://codesbyfebin.github.io/EdgeORE/wiki/release-verification/)
+- [terms/](https://codesbyfebin.github.io/EdgeORE/terms/)
+- [privacy/](https://codesbyfebin.github.io/EdgeORE/privacy/)
+- [support/](https://codesbyfebin.github.io/EdgeORE/support/)
+
+## Source
+- Repository: https://github.com/CodesbyFebin/EdgeORE
+- Releases: https://github.com/CodesbyFebin/EdgeORE/releases

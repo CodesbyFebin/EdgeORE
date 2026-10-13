@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Architecture · EdgeORE wiki</title><meta name="description" content="EdgeORE wiki: Architecture."><link rel="canonical" href="https://codesbyfebin.github.io/EdgeORE/wiki/architecture/"><meta name="theme-color" content="#101414">
+<link rel="icon" href="../../assets/favicon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/theme.js"></script>
+<meta property="og:type" content="website"><meta property="og:site_name" content="EdgeORE"><meta property="og:title" content="Architecture · EdgeORE wiki"><meta property="og:description" content="EdgeORE wiki: Architecture."><meta property="og:url" content="https://codesbyfebin.github.io/EdgeORE/wiki/architecture/"><meta property="og:image" content="https://codesbyfebin.github.io/EdgeORE/assets/banner.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="600"><meta property="og:image:alt" content="EdgeORE banner">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Architecture · EdgeORE wiki"><meta name="twitter:description" content="EdgeORE wiki: Architecture."><meta name="twitter:image" content="https://codesbyfebin.github.io/EdgeORE/assets/banner.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://codesbyfebin.github.io/EdgeORE/"}, {"@type": "ListItem", "position": 2, "name": "Wiki", "item": "https://codesbyfebin.github.io/EdgeORE/wiki/"}, {"@type": "ListItem", "position": 3, "name": "Architecture", "item": "https://codesbyfebin.github.io/EdgeORE/wiki/architecture/"}]}</script>
+</head><body><a class="skip" href="#main">Skip to content</a><header><div class="bar"><a class="brand" href="../../"><img src="../../assets/icon-512.png" width="36" height="36" alt=""><span>Edge<b>ORE</b></span></a>
+<nav aria-label="Main"><ul><li><a href="../../">Home</a></li><li><a href="../../docs/">Docs</a></li><li><a href="../../wiki/" aria-current=page>Wiki</a></li><li><a href="../../faq/">FAQ</a></li><li><a href="../../support/">Support</a></li><li><a href="../../terms/">Terms</a></li><li><a href="../../privacy/">Privacy</a></li></ul></nav><button id="tt" type="button">Theme</button></div></header>
+<main id="main"><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../../">Home</a></li><li><a href="../../wiki/">Wiki</a></li><li aria-current="page">Architecture</li></ol></nav><article><h1>Architecture</h1><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Path</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android app</td>
+<td><code>app/</code></td>
+<td>Kotlin/Compose UI, wallet coordinator (MWA), ORE v3 instruction builder, operation ledger, Keystore-signed receipts</td>
+</tr>
+<tr>
+<td>On-device LLM bridge</td>
+<td><code>ondevice-llm/</code></td>
+<td>Java-only module wrapping LiteRT-LM 0.8.0 so it never reaches the app's Kotlin compile classpath</td>
+</tr>
+<tr>
+<td>Receipt checker</td>
+<td><code>tools/receipt-checker/</code></td>
+<td>Standalone JVM tool; verifies the integrity of signed receipt contents</td>
+</tr>
+<tr>
+<td>ORE fork simulation</td>
+<td><code>tools/ore-fork-sim/</code>, <code>tools/ore-fixtures/</code></td>
+<td>Mainnet-fork simulation and fixtures for the ORE Deploy instruction</td>
+</tr>
+<tr>
+<td>Offline kit</td>
+<td><code>tools/edgeore-kit/</code></td>
+<td>Python tooling and tests</td>
+</tr>
+<tr>
+<td>Storage gateway</td>
+<td><code>services/storage-gateway/</code></td>
+<td>Optional self-hosted gateway you run yourself</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Trust spine:</strong> exact-message review → MWA sign → returned-bytes check → one separate submit → Keystore-signed receipt. An unknown outcome is re-read from chain after restart and never resent.</p>
+<p>The ORE v3 Deploy instruction (ix 6, 12 accounts) was checked against <a href="https://github.com/regolith-labs/ore">regolith-labs/ore</a> at commit <code>48c203bd</code>.</p><p><small>Mirrored from the <a href='https://github.com/CodesbyFebin/EdgeORE/wiki'>GitHub wiki</a>.</small></p></article></main><footer><div class="bar"><p>EdgeORE is an independent open-source project by <a href="https://github.com/CodesbyFebin">CodesbyFebin</a>, licensed under Apache-2.0. It is not affiliated with Regolith Labs (ORE) or Solana Mobile. Nothing here is financial advice; EdgeORE does not promise rewards or income.</p>
+<p><a href="https://github.com/CodesbyFebin/EdgeORE">GitHub</a> · <a href="https://github.com/CodesbyFebin/EdgeORE/releases">Releases</a> · <a href="../../docs/">Docs</a> · <a href="../../support/">Support</a> · <a href="../../terms/">Terms</a> · <a href="../../privacy/">Privacy</a> · <a href="../../llms.txt">llms.txt</a></p></div></footer></body></html>

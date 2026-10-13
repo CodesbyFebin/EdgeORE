@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build &amp; test · EdgeORE wiki</title><meta name="description" content="EdgeORE wiki: Build &amp; test."><link rel="canonical" href="https://codesbyfebin.github.io/EdgeORE/wiki/build-and-test/"><meta name="theme-color" content="#101414">
+<link rel="icon" href="../../assets/favicon.png"><link rel="stylesheet" href="../../assets/site.css"><script src="../../assets/theme.js"></script>
+<meta property="og:type" content="website"><meta property="og:site_name" content="EdgeORE"><meta property="og:title" content="Build &amp; test · EdgeORE wiki"><meta property="og:description" content="EdgeORE wiki: Build &amp; test."><meta property="og:url" content="https://codesbyfebin.github.io/EdgeORE/wiki/build-and-test/"><meta property="og:image" content="https://codesbyfebin.github.io/EdgeORE/assets/banner.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="600"><meta property="og:image:alt" content="EdgeORE banner">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Build &amp; test · EdgeORE wiki"><meta name="twitter:description" content="EdgeORE wiki: Build &amp; test."><meta name="twitter:image" content="https://codesbyfebin.github.io/EdgeORE/assets/banner.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://codesbyfebin.github.io/EdgeORE/"}, {"@type": "ListItem", "position": 2, "name": "Wiki", "item": "https://codesbyfebin.github.io/EdgeORE/wiki/"}, {"@type": "ListItem", "position": 3, "name": "Build & test", "item": "https://codesbyfebin.github.io/EdgeORE/wiki/build-and-test/"}]}</script>
+</head><body><a class="skip" href="#main">Skip to content</a><header><div class="bar"><a class="brand" href="../../"><img src="../../assets/icon-512.png" width="36" height="36" alt=""><span>Edge<b>ORE</b></span></a>
+<nav aria-label="Main"><ul><li><a href="../../">Home</a></li><li><a href="../../docs/">Docs</a></li><li><a href="../../wiki/" aria-current=page>Wiki</a></li><li><a href="../../faq/">FAQ</a></li><li><a href="../../support/">Support</a></li><li><a href="../../terms/">Terms</a></li><li><a href="../../privacy/">Privacy</a></li></ul></nav><button id="tt" type="button">Theme</button></div></header>
+<main id="main"><nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../../">Home</a></li><li><a href="../../wiki/">Wiki</a></li><li aria-current="page">Build & test</li></ol></nav><article><h1>Build & test</h1><p>Requirements: JDK 17, Android SDK (compile SDK per <code>app/build.gradle.kts</code>). Dependency versions are pinned (Kotlin 2.0.21, AGP 8.7.3, MWA clientlib-ktx 2.0.3); do not bump them without re-testing.</p>
+<p><code>./gradlew :app:assembleDebug
+./gradlew :app:testDebugUnitTest
+./gradlew :app:lintDebug</code></p>
+<p>Each suite is recorded on its own; counts are never added together.</p>
+<table>
+<thead>
+<tr>
+<th>Suite</th>
+<th>Commit</th>
+<th>Ran</th>
+<th>Passed</th>
+<th>Skipped</th>
+<th>Failed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android unit tests (<code>:app:testDebugUnitTest</code>)</td>
+<td>main <code>4f6e207</code></td>
+<td>391</td>
+<td>382</td>
+<td>9</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Android unit tests (<code>:app:testDebugUnitTest</code>)</td>
+<td>PR #30 head</td>
+<td>396</td>
+<td>387</td>
+<td>9</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Other suites (receipt checker, edgeore-kit Python tests, screenshot verification, release R8 build) run in GitHub Actions; see each workflow run for its own counts. Lint passes against committed baselines (<code>config/detekt</code>, <code>config/ktlint</code>).</p><p><small>Mirrored from the <a href='https://github.com/CodesbyFebin/EdgeORE/wiki'>GitHub wiki</a>.</small></p></article></main><footer><div class="bar"><p>EdgeORE is an independent open-source project by <a href="https://github.com/CodesbyFebin">CodesbyFebin</a>, licensed under Apache-2.0. It is not affiliated with Regolith Labs (ORE) or Solana Mobile. Nothing here is financial advice; EdgeORE does not promise rewards or income.</p>
+<p><a href="https://github.com/CodesbyFebin/EdgeORE">GitHub</a> · <a href="https://github.com/CodesbyFebin/EdgeORE/releases">Releases</a> · <a href="../../docs/">Docs</a> · <a href="../../support/">Support</a> · <a href="../../terms/">Terms</a> · <a href="../../privacy/">Privacy</a> · <a href="../../llms.txt">llms.txt</a></p></div></footer></body></html>
