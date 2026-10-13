@@ -20,7 +20,7 @@ androidx-test-runner-lib = { module = "androidx.test:runner", version = "1.5.2" 
 androidx-work-work-runtime-ktx-lib = { module = "androidx.work:work-runtime-ktx", version = "2.10.0" }
 androidx-work-work-testing-lib = { module = "androidx.work:work-testing", version = "2.10.0" }
 com-google-ai-edge-litertlm-litertlm-android-lib = { module = "com.google.ai.edge.litertlm:litertlm-android", version = "0.8.0" }
-com-google-zxing-core-lib = { module = "com.google.zxing:core", version = "3.5.3" }
+com-google-zxing-core-lib = { module = "com.google.zxing:core", version = "3.5.4" }
 com-solanamobile-mobile-wallet-adapter-clientlib-ktx-lib = { module = "com.solanamobile:mobile-wallet-adapter-clientlib-ktx", version = "2.0.3" }
 io-github-takahirom-roborazzi-roborazzi-compose-lib = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version = "1.36.0" }
 io-github-takahirom-roborazzi-roborazzi-junit-rule-lib = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version = "1.36.0" }
@@ -30,7 +30,7 @@ org-bouncycastle-bcprov-jdk18on-lib = { module = "org.bouncycastle:bcprov-jdk18o
 org-jetbrains-kotlin-kotlin-reflect-lib = { module = "org.jetbrains.kotlin:kotlin-reflect", version = "2.0.21" }
 org-jetbrains-kotlinx-kotlinx-coroutines-android-lib = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version = "1.9.0" }
 org-jetbrains-kotlinx-kotlinx-coroutines-test-lib = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.9.0" }
-org-json-json-lib = { module = "org.json:json", version = "20240303" }
+org-json-json-lib = { module = "org.json:json", version = "20260814" }
 org-robolectric-robolectric-lib = { module = "org.robolectric:robolectric", version = "4.14.1" }
 
 [plugins]
