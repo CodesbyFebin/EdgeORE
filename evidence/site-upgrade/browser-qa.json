@@ -1,0 +1,92 @@
+[
+  {
+    "width": 390,
+    "overflow": false,
+    "images": [
+      {
+        "src": "assets/home.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/home.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/ai.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/proof.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/settings.webp",
+        "loaded": true
+      }
+    ],
+    "canonical": "https://codesbyfebin.github.io/EdgeORE/",
+    "violations": [],
+    "errors": [],
+    "externalRequests": []
+  },
+  {
+    "width": 768,
+    "overflow": false,
+    "images": [
+      {
+        "src": "assets/home.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/home.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/ai.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/proof.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/settings.webp",
+        "loaded": true
+      }
+    ],
+    "canonical": "https://codesbyfebin.github.io/EdgeORE/",
+    "violations": [],
+    "errors": [],
+    "externalRequests": []
+  },
+  {
+    "width": 1440,
+    "overflow": false,
+    "images": [
+      {
+        "src": "assets/home.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/home.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/ai.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/proof.webp",
+        "loaded": true
+      },
+      {
+        "src": "assets/settings.webp",
+        "loaded": true
+      }
+    ],
+    "canonical": "https://codesbyfebin.github.io/EdgeORE/",
+    "violations": [],
+    "errors": [],
+    "externalRequests": []
+  }
+]

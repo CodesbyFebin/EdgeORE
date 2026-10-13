@@ -1,0 +1,4 @@
+# A project-path robots file is informational. Search engines use the host-root /robots.txt.
+User-agent: *
+Allow: /EdgeORE/
+Sitemap: https://codesbyfebin.github.io/EdgeORE/sitemap.xml
