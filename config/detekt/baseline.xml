@@ -161,7 +161,8 @@
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun FileRow(f: VaultFileView, onExport: () -&gt; Unit, onInspect: () -&gt; Unit, onDelete: () -&gt; Unit)</ID>
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun StateLine(key: String, value: String, color: Color)</ID>
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun UsageRing(fraction: Float)</ID>
-    <ID>FunctionNaming:Theme.kt$@Composable fun EdgeOreTheme(content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun EdgeOreTheme(mode: ThemeMode = ThemeState.mode, content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:ThemeSwitch.kt$@Composable fun ThemeSwitch(mode: ThemeMode, onSelect: (ThemeMode) -&gt; Unit)</ID>
     <ID>FunctionNaming:WalletConnectSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WalletConnectSheet(onDismiss: () -&gt; Unit, onConnect: () -&gt; Unit)</ID>
     <ID>InstanceOfCheckForException:OreDeployAvailability.kt$OreDeployCheck$e is kotlinx.coroutines.CancellationException</ID>
     <ID>InstanceOfCheckForException:TransferCoordinator.kt$TransferCoordinator$e is java.net.SocketTimeoutException</ID>
@@ -205,6 +206,7 @@
     <ID>LongParameterList:OreScreen.kt$( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>LongParameterList:Receipts.kt$(count: Int, firstSeq: Long, lastSeq: Long, lastSha: String, bundle: String, exportedAt: String)</ID>
     <ID>LongParameterList:StorageController.kt$StorageController$( private val vault: LocalVault, private val jobs: BackupJobStore, private val provider: BackupProvider, private val audit: StorageAudit? = null, private val onEvent: suspend (StorageEvent) -&gt; Unit = {}, private val io: CoroutineDispatcher = Dispatchers.IO, private val newId: () -&gt; String = { java.util.UUID.randomUUID().toString() }, )</ID>
+    <ID>LongParameterList:Theme.kt$EdgePalette$( val light: Boolean, val background: Color, val surface: Color, val surfaceRaised: Color, val surfacePressed: Color, val surfaceInset: Color, val mint: Color, val mintSoft: Color, val copper: Color, val copperDeep: Color, val mainnetWarning: Color, val textPrimary: Color, val textMuted: Color, val textTertiary: Color, val border: Color, val success: Color, val warning: Color, val danger: Color, val disabledSurface: Color, val disabledText: Color, val onAction: Color, val ambientTop: Color, val markEnd: Color, val copperEnd: Color, )</ID>
     <ID>LongParameterList:TransferReview.kt$TransferReview$( from: ByteArray, toAddress: String, amountSol: String, recentBlockhash: ByteArray, spentTodayLamports: Long, dailyLimitLamports: Long, )</ID>
     <ID>LoopWithTooManyJumpStatements:ContributionSession.kt$ContributionSession$while</ID>
     <ID>LoopWithTooManyJumpStatements:DeviceMeters.kt$DiskSample.Companion$for</ID>
@@ -533,31 +535,54 @@
     <ID>MagicNumber:StorageScreen.kt$900</ID>
     <ID>MagicNumber:StorageScreen.kt$90f</ID>
     <ID>MagicNumber:Telemetry.kt$Telemetry$1e9</ID>
+    <ID>MagicNumber:Theme.kt$0xFF060D0C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF07110F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF09130F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0A211B</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0A7560</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0D1917</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0E9F80</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0FB897</ID>
+    <ID>MagicNumber:Theme.kt$0xFF101414</ID>
+    <ID>MagicNumber:Theme.kt$0xFF142421</ID>
+    <ID>MagicNumber:Theme.kt$0xFF182421</ID>
+    <ID>MagicNumber:Theme.kt$0xFF19E6BC</ID>
+    <ID>MagicNumber:Theme.kt$0xFF1B7F55</ID>
+    <ID>MagicNumber:Theme.kt$0xFF1C3530</ID>
+    <ID>MagicNumber:Theme.kt$0xFF2C4740</ID>
     <ID>MagicNumber:Theme.kt$0xFF3E2515</ID>
     <ID>MagicNumber:Theme.kt$0xFF3F1622</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF060D0C</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF07110F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF09130F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF0A211B</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF0D1917</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF0FB897</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF142421</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF182421</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF19E6BC</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF1C3530</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF2C4740</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF43D99B</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF81968F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF89968F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF8BF4DF</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFABBDB7</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFE8792A</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFF07A2E</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFF2F7F5</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFF6B79</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFF963F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFFA365</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFFB65C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF43D99B</ID>
+    <ID>MagicNumber:Theme.kt$0xFF56625C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF5F6B66</ID>
+    <ID>MagicNumber:Theme.kt$0xFF6E7A75</ID>
+    <ID>MagicNumber:Theme.kt$0xFF81968F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF89968F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF8A4614</ID>
+    <ID>MagicNumber:Theme.kt$0xFF8A5A00</ID>
+    <ID>MagicNumber:Theme.kt$0xFF8BF4DF</ID>
+    <ID>MagicNumber:Theme.kt$0xFF9A4E17</ID>
+    <ID>MagicNumber:Theme.kt$0xFF9C4C14</ID>
+    <ID>MagicNumber:Theme.kt$0xFFA0521A</ID>
+    <ID>MagicNumber:Theme.kt$0xFFABBDB7</ID>
+    <ID>MagicNumber:Theme.kt$0xFFB3261E</ID>
+    <ID>MagicNumber:Theme.kt$0xFFD5DCD9</ID>
+    <ID>MagicNumber:Theme.kt$0xFFDDEFE9</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE3F2EC</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE6EAE8</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE8792A</ID>
+    <ID>MagicNumber:Theme.kt$0xFFEEF2F0</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF07A2E</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF0F3F2</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF2F7F5</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF6F8F7</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF9DEDC</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFBE3D2</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFF6B79</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFF963F</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFFA365</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFFB65C</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFFFFFF</ID>
     <ID>MagicNumber:Theme.kt$EdgeShapes$50</ID>
     <ID>MagicNumber:Tokens.kt$EdgeType$12</ID>
     <ID>MagicNumber:Trust.kt$SpendGuard$25</ID>
@@ -1089,6 +1114,7 @@
     <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$private</ID>
     <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$rule.onNodeWithTag("check-2", useUnmergedTree = true).assertExists()</ID>
     <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$rule.onNodeWithText("01", useUnmergedTree = true).assertExists()</ID>
+    <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$}</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$addPath(addPathNodes(it), stroke = SolidColor(Color.White), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round)</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$private</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val</ID>
@@ -2136,10 +2162,36 @@
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$try { s.markReceipted(op.id, OpState.REVIEWED); fail("expected OperationStoreUnavailable") } catch (_: OperationStoreUnavailable) {}</ID>
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$try { s.transition(op.id, setOf(OpState.REVIEWED), OpState.ABANDONED); fail("expected latch") } catch (_: OperationStoreUnavailable) {}</ID>
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$val r = s.reserve("devnet", fx.signer, fx.recipient, fx.lamports, fx.message, fx.messageSha256, "bh2", 200, limit)</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$/** dApp Store screenshots: the real MainActivity, fresh install (no wallet, so no balances), 1080x1920 portrait. Set -Dstore.out. */</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun oreCard()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun receipts()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun review()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$private fun shot(name: String)</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$private fun top()</ID>
     <ID>MaxLineLength:Telemetry.kt$Telemetry$/** This app's received + sent bytes (TrafficStats per-UID counters), or null when the platform does not report them. */</ID>
     <ID>MaxLineLength:TestFixtures.kt$FakeGateway$override suspend fun blockHeight(): Long</ID>
     <ID>MaxLineLength:TestFixtures.kt$FakeGateway$override suspend fun status(signature: String): ChainStatus</ID>
     <ID>MaxLineLength:TestFixtures.kt$SignedFixture$val signedTx: ByteArray = SolanaMessage.unsignedTransaction(message).also { System.arraycopy(signatureBytes, 0, it, 1, 64) }</ID>
+    <ID>MaxLineLength:Theme.kt$EdgeColors$* Colour tokens. Every token reads the active palette, so all screens follow the Dark/Light setting from this one source.</ID>
+    <ID>MaxLineLength:Theme.kt$EdgeColors$val actionGradient get() = if (palette.light) Brush.horizontalGradient(listOf(mint, mint)) else Brush.horizontalGradient(listOf(mintSoft, mint))</ID>
+    <ID>MaxLineLength:Theme.kt$EdgePalette$val background: Color</ID>
+    <ID>MaxLineLength:Theme.kt$EdgePalette$val success: Color</ID>
+    <ID>MaxLineLength:Theme.kt$ThemePrefs$ctx.getSharedPreferences(FILE, android.content.Context.MODE_PRIVATE).getString(KEY, null)?.let { v -&gt; ThemeMode.entries.firstOrNull { it.name == v } } ?: ThemeMode.DARK</ID>
+    <ID>MaxLineLength:Theme.kt$background = Color(0xFF060D0C)</ID>
+    <ID>MaxLineLength:Theme.kt$background = Color(0xFFF6F8F7)</ID>
+    <ID>MaxLineLength:Theme.kt$mint = Color(0xFF0A7560)</ID>
+    <ID>MaxLineLength:Theme.kt$mint = Color(0xFF19E6BC)</ID>
+    <ID>MaxLineLength:Theme.kt$onAction = Color(0xFF07110F)</ID>
+    <ID>MaxLineLength:Theme.kt$onAction = Color(0xFFFFFFFF)</ID>
+    <ID>MaxLineLength:Theme.kt$success = Color(0xFF1B7F55)</ID>
+    <ID>MaxLineLength:Theme.kt$success = Color(0xFF43D99B)</ID>
+    <ID>MaxLineLength:Theme.kt$textPrimary = Color(0xFF101414)</ID>
+    <ID>MaxLineLength:Theme.kt$textPrimary = Color(0xFFF2F7F5)</ID>
+    <ID>MaxLineLength:Theme.kt$val dark = when (mode) { ThemeMode.DARK -&gt; true; ThemeMode.LIGHT -&gt; false; ThemeMode.SYSTEM -&gt; androidx.compose.foundation.isSystemInDarkTheme() }</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$.</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$Box</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$Row</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$Text(m.label, color = if (on) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$class</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply { init(ks, password.toCharArray()) }</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$write("HTTP/1.1 $code X\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n".toByteArray())</ID>

@@ -77,4 +77,15 @@ class HomeDesignTest {
         val dir = System.getenv("HOME_FINAL_DIR")
         if (!dir.isNullOrBlank()) { rule.waitForIdle(); rule.onRoot().captureRoboImage("$dir/home.png") }
     }
+
+    @Test fun homeRendersInLight() {
+        com.edgeore.app.ui.theme.ThemeState.mode = com.edgeore.app.ui.theme.ThemeMode.LIGHT
+        try {
+            home(Cluster.MAINNET, proDeploy)
+            rule.onNodeWithText("Round blocks").assertExists()
+            org.junit.Assert.assertSame(com.edgeore.app.ui.theme.LightPalette, EdgeColors.palette)
+            val dir = System.getenv("HOME_FINAL_DIR")
+            if (!dir.isNullOrBlank()) { rule.waitForIdle(); rule.onRoot().captureRoboImage("$dir/home-light.png") }
+        } finally { com.edgeore.app.ui.theme.ThemeState.mode = com.edgeore.app.ui.theme.ThemeMode.DARK; EdgeColors.palette = com.edgeore.app.ui.theme.DarkPalette }
+    }
 }
