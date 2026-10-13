@@ -83,7 +83,7 @@ class ReviewFilledScreenshotTest {
     @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
 
     @Test fun reviewFilled() {
-        rule.onNode(hasText("Review a supported action") and hasClickAction()).performScrollTo().performClick()
+        rule.onNode(hasText("Send SOL (devnet transfer review)") and hasClickAction()).performScrollTo().performClick()
         rule.waitForIdle()
         val fields = rule.onAllNodes(hasSetTextAction())
         fields[0].performTextInput(DEST)

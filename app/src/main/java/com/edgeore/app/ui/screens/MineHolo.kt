@@ -1,5 +1,7 @@
 package com.edgeore.app.ui.screens
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -63,18 +65,26 @@ import java.time.format.DateTimeFormatter
 private fun Modifier.holoCard() = this.fillMaxWidth().background(EdgeColors.surface, EdgeShapes.card).border(1.dp, EdgeColors.holoBorder, EdgeShapes.card).padding(14.dp)
 private fun hm(ms: Long) = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(ms))
 
-/** NetworkSelector: devnet / testnet / mainnet-beta, persisted by the view model. */
+/** NetworkSelector: compact Devnet / Testnet / Mainnet dropdown plus the settings gear. Persisted by the view model. */
 @Composable
-fun NetworkSelector(selected: Cluster, onSelect: (Cluster) -> Unit) {
-    Row(Modifier.fillMaxWidth().border(1.dp, EdgeColors.holoBorder, EdgeShapes.pill).padding(3.dp).testTag("network-selector"), verticalAlignment = Alignment.CenterVertically) {
-        Icon(EdgeIcons.Globe, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.padding(horizontal = 8.dp).size(18.dp))
-        Cluster.entries.forEach { c ->
-            val on = c == selected
-            Box(Modifier.weight(1f).heightIn(min = 40.dp).background(if (on) EdgeColors.surfacePressed else Color.Transparent, EdgeShapes.pill)
-                .then(if (on) Modifier.border(1.dp, EdgeColors.mint, EdgeShapes.pill) else Modifier)
-                .clickable(role = Role.Tab) { onSelect(c) }.semantics { this.selected = on }.testTag("cluster-${c.id}"), contentAlignment = Alignment.Center) {
-                Text(c.label, color = if (on) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, fontSize = 13.sp)
+fun NetworkSelector(selected: Cluster, onSelect: (Cluster) -> Unit, onSettings: () -> Unit = {}) {
+    var open by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    Row(Modifier.fillMaxWidth().testTag("network-selector"), verticalAlignment = Alignment.CenterVertically) {
+        Text("Home", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+        Box {
+            Row(Modifier.heightIn(min = 40.dp).border(1.dp, if (selected == Cluster.MAINNET) EdgeColors.mainnetWarning else EdgeColors.holoBorder, EdgeShapes.pill)
+                .clickable(role = Role.DropdownList) { open = true }.padding(horizontal = 14.dp).testTag("network-dropdown"), verticalAlignment = Alignment.CenterVertically) {
+                Text(selected.label + "  ▾", color = if (selected == Cluster.MAINNET) EdgeColors.mainnetWarning else EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             }
+            androidx.compose.material3.DropdownMenu(open, onDismissRequest = { open = false }) {
+                Cluster.entries.forEach { c ->
+                    androidx.compose.material3.DropdownMenuItem(text = { Text(c.label) }, onClick = { open = false; onSelect(c) },
+                        modifier = Modifier.semantics { this.selected = c == selected }.testTag("cluster-${c.id}"))
+                }
+            }
+        }
+        Box(Modifier.size(44.dp).clickable(role = Role.Button, onClick = onSettings).semantics { contentDescription = "Settings" }.testTag("open-settings"), contentAlignment = Alignment.Center) {
+            Icon(EdgeIcons.Settings, contentDescription = null, tint = EdgeColors.textMuted, modifier = Modifier.size(22.dp))
         }
     }
 }
@@ -87,13 +97,16 @@ fun WalletConnectRow(address: String?, busy: Boolean, cluster: Cluster, onConnec
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(EdgeIcons.Wallet, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.size(24.dp))
             Column(Modifier.weight(1f).padding(start = 10.dp)) {
-                Text(if (address == null) "Connect a Solana wallet" else "Wallet connected", fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
-                Text(address?.let { "${it.take(4)}…${it.takeLast(4)} · ${cluster.label}" } ?: "Mobile Wallet Adapter: Phantom, Solflare, Backpack, Seed Vault and other MWA wallets",
+                Text(if (address == null) "Wallet not connected" else "Wallet connected", fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
+                Text(address?.let { "${it.take(4)}…${it.takeLast(4)} · ${cluster.label}" } ?: "Connect a Solana wallet (MWA) to review and sign",
                     color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, fontFamily = if (address != null) FontFamily.Monospace else null)
             }
+            if (address == null) Row(Modifier.heightIn(min = 44.dp).background(EdgeColors.copper, EdgeShapes.control).clickable(enabled = !busy, role = Role.Button, onClick = onConnect)
+                .padding(horizontal = 14.dp).testTag("connect"), verticalAlignment = Alignment.CenterVertically) {
+                Text(if (busy) "Waiting…" else "Connect wallet", color = EdgeColors.background, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+            }
         }
-        if (address == null) Pill(if (busy) "Waiting for wallet…" else "Connect", Modifier.fillMaxWidth().testTag("connect"), primary = true, enabled = !busy, onClick = onConnect)
-        else Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (address != null) Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Pill("Copy address", Modifier.weight(1f).testTag("copy-address"), icon = EdgeIcons.Copy, onClick = onCopy)
             Pill("Switch", Modifier.weight(1f).testTag("switch-account"), icon = EdgeIcons.Refresh, onClick = onSwitch)
             Pill("Disconnect", Modifier.weight(1f).testTag("disconnect"), danger = true, onClick = onDisconnect)
@@ -113,7 +126,7 @@ private fun Pill(text: String, modifier: Modifier, primary: Boolean = false, dan
 
 /** What one balance card says. Zero only after a successful read; stale and failed reads keep their last value labelled. */
 fun balanceText(r: BalanceRead, nowMs: Long, connected: Boolean): Pair<String, String> = when (r) {
-    BalanceRead.NotRead -> "—" to if (connected) "Not read yet" else "Connect a wallet"
+    BalanceRead.NotRead -> "—" to "Not read"
     BalanceRead.Loading -> "…" to "Loading"
     is BalanceRead.NotOnCluster -> "Not on ${r.cluster.label}" to "No verified mint on this network"
     is BalanceRead.Value -> r.formatted() to (if (nowMs - r.atMs > Balances.STALE_AFTER_MS) "Stale · read ${hm(r.atMs)}" else "Read ${hm(r.atMs)} · slot ${r.slot}")
@@ -187,8 +200,8 @@ fun DailyCheckInCard(state: CheckInState, nowMs: Long, reminders: Boolean, messa
 fun ResourceGrid(cores: Int?, memoryGb: Int?, storage: StorageReading?, net: NetActivity, reducedMotion: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Res(EdgeIcons.Cpu, "CPU", cores?.let { "$it cores" } ?: "Not read", "Logical cores (Runtime)", "res-cpu")
-            Res(EdgeIcons.Memory, "Memory", memoryGb?.let { "$it GB class" } ?: "Not read", "Total RAM (ActivityManager)", "res-mem")
+            Res(EdgeIcons.Cpu, "CPU", cores?.let { "$it cores" } ?: "—", if (cores == null) "Awaiting device" else "Logical cores (Runtime)", "res-cpu")
+            Res(EdgeIcons.Memory, "Memory", memoryGb?.let { "$it GB class" } ?: "—", if (memoryGb == null) "Awaiting device" else "Total RAM (ActivityManager)", "res-mem")
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Res(EdgeIcons.Storage, "Storage", storage?.let { "${Telemetry.gb(it.freeBytes)} free" } ?: "Not read", storage?.let { "of ${Telemetry.gb(it.totalBytes)} (StatFs)" } ?: "StatFs unavailable", "res-storage")

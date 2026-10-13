@@ -432,7 +432,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         val from = _wallet.value.publicKey ?: run { _oreDeploy.update { it.copy(message = "Wallet required. Connect a Solana wallet to deploy.") }; return@launch }
         val store = opStore ?: run { _oreDeploy.update { it.copy(message = operationsUnavailable) }; return@launch }
         operationsUnavailable?.let { why -> _oreDeploy.update { it.copy(message = why) }; return@launch }
-        if (_review.value.phase == ReviewPhase.PREPARING) return@launch
+        if (_review.value.phase == ReviewPhase.PREPARING) { _review.update { it.copy(message = "Already preparing; wait for the devnet blockhash.") }; return@launch }
         abandonCurrentDraft()
         _review.update { ReviewState(phase = ReviewPhase.PREPARING) }
         try {
@@ -479,6 +479,9 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
         _balances.value = com.edgeore.app.solana.Balances(c, _wallet.value.address)
         // ORE observation follows the cluster; ORE v3 is verified only on mainnet (docs/ore/devnet-check.txt).
         refreshBalances()
+        // The ORE deploy card follows the one network selector (mainnet still needs the risk tick before Review).
+        setOreDeployMainnet(c == com.edgeore.app.solana.Cluster.MAINNET)
+        checkOreDeployCluster()
     }
 
     fun refreshBalances() {
@@ -672,7 +675,7 @@ class EdgeOreViewModel(app: Application) : AndroidViewModel(app) {
     fun connectWallet(sender: ActivityResultSender) = viewModelScope.launch {
         // The connection state is published by WalletConnection only; a balance (RPC) failure below
         // is shown on its own line and never changes an authorized connection.
-        if (walletConnection.connect { wallet.connect(sender) }) {
+        if (walletConnection.connect { wallet.connect(sender, mainnet = _cluster.value == com.edgeore.app.solana.Cluster.MAINNET) }) {
             _wallet.value.address?.let { refreshBalance(it) }
             refreshPortfolio()
         }

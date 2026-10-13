@@ -36,7 +36,14 @@ private val out: String = System.getProperty("screens.out") ?: "build/screenshot
 // render is deterministic. 0.1% only absorbs anti-aliasing noise; any text or layout change fails.
 private val options = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.001f))
 
-private fun Rule_.tab(name: String) { onNode(hasText(name) and hasClickAction()).performClick(); waitForIdle() }
+// Storage, Nodes and Receipts moved off the bottom bar (Home | AI | ZK Proof | Settings); they open from Settings.
+private fun Rule_.tab(name: String) {
+    if (name in setOf("Storage", "Nodes", "Receipts")) {
+        onNode(hasText("Settings") and hasClickAction()).performClick(); waitForIdle()
+        onNode(androidx.compose.ui.test.hasTestTag("settings-${name.lowercase()}")).performScrollTo().performClick()
+    } else onNode(hasText(name) and hasClickAction()).performClick()
+    waitForIdle()
+}
 private fun Rule_.button(text: String) { onNode(hasText(text) and hasClickAction()).performScrollTo().performClick(); waitForIdle() }
 private fun Rule_.shot(file: String) {
     onAllNodes(hasScrollAction()).onFirst().performTouchInput { repeat(10) { swipeDown() } }
@@ -56,7 +63,7 @@ class ScreenshotTest {
     @Test fun storage() { rule.tab("Storage"); rule.shot("03-storage") }
     @Test fun nodes() { rule.tab("Nodes"); rule.shot("04-nodes") }
     @Test fun receipts() { rule.tab("Receipts"); rule.shot("05-receipts") }
-    @Test fun review() { rule.button("Review a supported action"); rule.shot("06-review") }
+    @Test fun review() { rule.button("Send SOL (devnet transfer review)"); rule.shot("06-review") }
 }
 
 /** Same screens on a very tall viewport so every control and its effect label is visible in one image. */
@@ -79,5 +86,5 @@ class FullScreenshotTest {
     }
     @Test fun nodes() { rule.tab("Nodes"); rule.shot("full/04-nodes-full") }
     @Test fun receipts() { rule.tab("Receipts"); rule.shot("full/05-receipts-full") }
-    @Test fun review() { rule.button("Review a supported action"); rule.shot("full/06-review-full") }
+    @Test fun review() { rule.button("Send SOL (devnet transfer review)"); rule.shot("full/06-review-full") }
 }

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertTrue
@@ -29,8 +30,8 @@ class DefaultStateWalkTest {
 
     @Test fun walksAllDestinations() {
         exists("Edge Mode")
-        exists("Not connected")
-        exists("Not observed")
+        exists("Wallet not connected")
+        exists("Not read")            // balances never shown as zero before a read
         exists("Saved only")          // CPU limit states it is not enforced
 
         rule.onNodeWithText("AI", substring = false).performClick()
@@ -39,22 +40,28 @@ class DefaultStateWalkTest {
         exists("No model names reported.")
         rule.onNodeWithText("Send stays off").performScrollTo().assertIsNotEnabled()
 
-        rule.onNodeWithText("Storage", substring = false).performClick()
+        rule.onNodeWithText("ZK Proof", substring = false).performClick()
+        exists("Prover not configured")
+
+        fun viaSettings(tag: String) {
+            rule.onNodeWithText("Settings", substring = false).performClick()
+            rule.onNodeWithTag(tag).performScrollTo().performClick()
+        }
+        viaSettings("settings-storage")
         exists("Encrypted on this device. Backup stays under your control.")
         exists("Not configured")      // remote backup: no EdgeORE backend in this build
         exists("No files in the vault yet.")
         exists("Unavailable")         // kill switch: no VPN tunnel exists
 
-        rule.onNodeWithText("Nodes", substring = false).performClick()
+        viaSettings("settings-nodes")
         exists("Owned Nodes")
         exists("No node paired")
         exists("Capacity unavailable")
 
-        rule.onNodeWithText("Receipts", substring = false).performClick()
+        viaSettings("settings-receipts")
         exists("No receipts yet.")
 
-        rule.onNodeWithText("Mine", substring = false).performClick()
-        rule.onNodeWithText("Preview session", substring = false).performScrollTo().performClick()
-        exists("CONCEPT · SAMPLE DATA")
+        rule.onNodeWithText("Home", substring = false).performClick()
+        rule.onNodeWithText("Review deployment", substring = false).performScrollTo().assertIsNotEnabled()
     }
 }

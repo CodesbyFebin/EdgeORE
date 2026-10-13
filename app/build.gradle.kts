@@ -95,6 +95,7 @@ tasks.withType<Test>().configureEach {
     if (screens) {
         filter { includeTestsMatching("com.edgeore.app.screens.*") }
         systemProperty("screens.out", rootProject.file("docs/screenshots").absolutePath)
+        System.getenv("STORE_OUT")?.let { systemProperty("store.out", it) }
         maxHeapSize = "1536m"
     } else {
         exclude("com/edgeore/app/screens/**")

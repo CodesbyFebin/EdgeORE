@@ -22,7 +22,7 @@ class MintInterfaceTest {
     @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
     private val out = System.getProperty("screens.out") ?: "build/screenshots"
     @Test fun connectShowsSolanaConsentWithoutSigning() {
-        rule.onNodeWithText("Connect", substring = false).performScrollTo().performClick()
+        rule.onNodeWithTag("connect").performScrollTo().performClick()
         // Merged Mine (#22) also titles its card "Connect a Solana wallet", so the sheet adds a second node.
         rule.onAllNodesWithText("Connect a Solana wallet", substring = false).onLast().assertExists()
         rule.onNodeWithText("Continue to wallet", substring = false).assertExists()
@@ -49,11 +49,12 @@ class MintLargeTextTest {
     @get:Rule(order = 1) val onboarded = OnboardingSeen()
     @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
     @Test fun walletAndReviewRemainReachableAtTwoHundredPercent() {
-        rule.onNodeWithText("Connect", substring = false).performScrollTo().assertHasClickAction()
-        rule.onNodeWithText("Review a supported action", substring = false).performScrollTo().performClick()
+        rule.onNodeWithTag("connect").performScrollTo().assertHasClickAction()
+        rule.onNodeWithText("Send SOL (devnet transfer review)", substring = false).performScrollTo().performClick()
         rule.onAllNodesWithText("Review", substring = true).onFirst().assertExists()
         rule.onAllNodes(isRoot()).onLast().captureRoboImage("${System.getProperty("screens.out")}/mint/review-200percent.png")
-        rule.onNodeWithTag("nav-Receipts").performScrollTo().assertIsDisplayed().performClick()
+        rule.onNodeWithTag("nav-Settings").performScrollTo().assertIsDisplayed().performClick()
+        rule.onNodeWithTag("settings-receipts").performScrollTo().assertIsDisplayed().performClick()
         rule.onNodeWithText("No receipts yet.", substring = false).assertExists()
     }
 }

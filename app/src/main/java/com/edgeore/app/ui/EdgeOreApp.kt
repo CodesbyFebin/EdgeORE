@@ -66,8 +66,11 @@ import com.edgeore.app.ui.screens.BrowserScreen
 import com.edgeore.app.ui.screens.StorageScreen
 import com.edgeore.app.ui.theme.EdgeColors
 
-enum class Destination(val label: String, val icon: ImageVector) {
-    Mine("Mine", EdgeIcons.Mine), AI("AI", EdgeIcons.Ai), Storage("Storage", EdgeIcons.Storage), Nodes("Nodes", EdgeIcons.Nodes), Receipts("Receipts", EdgeIcons.Receipts)
+enum class Destination(val label: String, val icon: ImageVector, val inNav: Boolean = true) {
+    Mine("Home", EdgeIcons.Home), AI("AI", EdgeIcons.Ai), Zk("ZK Proof", EdgeIcons.Proof), Settings("Settings", EdgeIcons.Settings),
+    // Reachable from Home and Settings, not from the bottom bar.
+    Storage("Storage", EdgeIcons.Storage, inNav = false), Nodes("Nodes", EdgeIcons.Nodes, inNav = false), Receipts("Receipts", EdgeIcons.Receipts, inNav = false);
+    companion object { val nav = entries.filter { it.inNav } }
 }
 
 /** Platform actions the UI needs from the Activity (wallet sender and share sheet). */
@@ -126,7 +129,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                     .clip(RoundedCornerShape(28.dp)).background(EdgeColors.surface)
                     .border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp))
                     .horizontalScroll(rememberScrollState()).navigationBarsPadding()) {
-                    Destination.entries.forEach { d ->
+                    Destination.nav.forEach { d ->
                         val selected = tab == d && route == null
                         val tint = if (!selected) EdgeColors.textMuted else if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint
                         val badge = badges[d]
@@ -144,7 +147,7 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
             } else {
             NavigationBar(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).border(1.dp, EdgeColors.mint.copy(alpha = 0.3f), RoundedCornerShape(28.dp)), containerColor = EdgeColors.surface) {
                 val badges = NavBadges.of(ops, damage.size)
-                Destination.entries.forEach { d ->
+                Destination.nav.forEach { d ->
                     val badge = badges[d]
                     NavigationBarItem(
                         selected = tab == d && route == null,
@@ -195,8 +198,12 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
                     }
                     tab == Destination.Mine -> MineScreen(vm, requestConnect, actions::disconnectWallet,
                         onReview = { vm.resetReview(); route = "review" }, onPreview = { route = "preview" },
-                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" }, onOreMode = { pro -> route = if (pro) "ore:pro" else "ore:lite" })
-                    tab == Destination.AI -> AiScreen(vm)
+                        onOpenReview = { route = "review" }, onOpenTab = { tab = it; route = null }, onOre = { route = "ore" }, onOreMode = { pro -> route = if (pro) "ore:pro" else "ore:lite" }, onSettings = { about = true })
+                    tab == Destination.AI -> { com.edgeore.app.ui.screens.JavAiTop(vm); AiScreen(vm) }
+                    tab == Destination.Zk -> com.edgeore.app.ui.screens.ZkProofScreen()
+                    tab == Destination.Settings -> com.edgeore.app.ui.screens.SettingsScreen(vm, requestConnect, actions::disconnectWallet,
+                        onOpen = { r -> tab = when (r) { "receipts" -> Destination.Receipts; "storage" -> Destination.Storage; else -> Destination.Nodes }; route = null },
+                        onAbout = { about = true }, onAi = { tab = Destination.AI; route = null })
                     tab == Destination.Storage -> StorageScreen(vm, onBrowser = { route = "browser" })
                     tab == Destination.Nodes -> NodesScreen(vm)
                     tab == Destination.Receipts -> ReceiptsScreen(vm, onOpen = { route = "receipt:" + it.id }, onExport = actions::export)
@@ -216,6 +223,9 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         title = { Text("Settings & build") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                com.edgeore.app.ui.components.ThemeSwitch(com.edgeore.app.ui.theme.ThemeState.mode) { m ->
+                    com.edgeore.app.ui.theme.ThemeState.mode = m; com.edgeore.app.ui.theme.ThemePrefs.write(context, m)
+                }
                 Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · transfers use Solana devnet; ORE Deploy is devnet by default with an opt-in mainnet option, capped at 0.01 SOL per deploy and signed in your wallet. Hackathon build 0.1.0-clockin; no rewards or income.")
                 com.edgeore.app.ui.components.ResourceControl(EdgeIcons.Bell, "Optional daily reminder", "Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android.", reminders, "Local notification · no eligibility or reward claim", onChange = actions::setReminders)
                 Text("Receipts signed with: ${vm.receiptSignerProtection.substringBefore(" · key ")}.")

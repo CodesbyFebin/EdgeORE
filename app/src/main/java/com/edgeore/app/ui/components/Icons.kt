@@ -66,6 +66,11 @@ object EdgeIcons {
     val External = outline("external", "M14 3h7v7 M21 3l-12 12 M10 3H3v18h18v-7")
     val Download = outline("download", "M12 3v12 M7 10l5 5 5-5 M4 17v4h16v-4")
     val Upload = Export
+    val Home = outline("home", "M3 11l9-7 9 7v9h-6v-6H9v6H3z")
+    val Proof = outline("proof", "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z", "M8 12l3 3 5-6")
+    val Key = outline("key", "M8 15a4 4 0 1 1 0-8 4 4 0 0 1 0 8z", "M12 11h9 M18 11v3 M21 11v2")
+    val Cube = outline("cube", "M12 3l8 4.5v9L12 21l-8-4.5v-9z", "M12 12l8-4.5 M12 12v9 M12 12L4 7.5")
+    val Circuit = outline("circuit", "M5 5h14v14H5z", "M9 9h6v6H9z", "M9 2v3 M15 2v3 M9 19v3 M15 19v3 M2 9h3 M2 15h3 M19 9h3 M19 15h3")
     val Plus = outline("plus", "M12 5v14 M5 12h14")
     val Minus = outline("minus", "M5 12h14")
     val Search = outline("search", "M10 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14z M15 15l6 6")
