@@ -14,19 +14,29 @@ object EdgeOreCore {
     fun lamports(input: String): Long {
         require(Regex("""^[0-9]+(\.[0-9]{1,9})?$""").matches(input)) { "INVALID_AMOUNT" }
         val parts = input.split('.')
-        val units = BigInteger(parts[0]) * LAMPORTS_PER_SOL +
-            BigInteger((parts.getOrNull(1) ?: "").padEnd(9, '0'))
+        val units =
+            BigInteger(parts[0]) * LAMPORTS_PER_SOL +
+                BigInteger((parts.getOrNull(1) ?: "").padEnd(9, '0'))
         if (units.bitLength() > 63) throw ArithmeticException("BigInteger out of long range")
         return units.toLong()
     }
 
-    fun exposure(perSquare: Long, mask: Int): Long {
+    fun exposure(
+        perSquare: Long,
+        mask: Int,
+    ): Long {
         require(perSquare > 0 && mask > 0 && (mask ushr 25) == 0) { "INVALID_DEPLOY" }
         return Math.multiplyExact(perSquare, Integer.bitCount(mask).toLong())
     }
 
-    fun sameMessage(a: ByteArray, b: ByteArray): Boolean = MessageDigest.isEqual(a, b)
+    fun sameMessage(
+        a: ByteArray,
+        b: ByteArray,
+    ): Boolean = MessageDigest.isEqual(a, b)
 
-    fun eligible(total: Long, spent: Long, limit: Long): Boolean =
-        total > 0 && spent >= 0 && limit >= spent && total <= limit - spent
+    fun eligible(
+        total: Long,
+        spent: Long,
+        limit: Long,
+    ): Boolean = total > 0 && spent >= 0 && limit >= spent && total <= limit - spent
 }

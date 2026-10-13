@@ -10,14 +10,31 @@ import androidx.compose.ui.unit.dp
 
 /** One outline icon family, ~2dp strokes, as the spec requires. */
 object EdgeIcons {
-    private fun outline(name: String, vararg paths: String): ImageVector = ImageVector.Builder(name, 24.dp, 24.dp, 24f, 24f).apply {
-        paths.forEach {
-            addPath(addPathNodes(it), stroke = SolidColor(Color.White), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round)
-        }
-    }.build()
+    private fun outline(
+        name: String,
+        vararg paths: String,
+    ): ImageVector =
+        ImageVector
+            .Builder(name, 24.dp, 24.dp, 24f, 24f)
+            .apply {
+                paths.forEach {
+                    addPath(
+                        addPathNodes(it),
+                        stroke = SolidColor(Color.White),
+                        strokeLineWidth = 2f,
+                        strokeLineCap = StrokeCap.Round,
+                        strokeLineJoin = StrokeJoin.Round,
+                    )
+                }
+            }.build()
 
     val Mine = outline("mine", "M14 4c3 0 5.5 1.5 7 3.5", "M14 4c-3 0-5.5 1.5-7 3.5", "M14 4L4 20")
-    val Brain = outline("brain", "M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 3 5 3 3 0 0 0 5 1V5a2 2 0 0 0-3-1z", "M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-3 5 3 3 0 0 1-5 1")
+    val Brain =
+        outline(
+            "brain",
+            "M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 3 5 3 3 0 0 0 5 1V5a2 2 0 0 0-3-1z",
+            "M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-3 5 3 3 0 0 1-5 1",
+        )
     val Nodes = outline("nodes", "M8 3h8v6H8z M2 15h7v6H2z M15 15h7v6h-7z", "M12 9v3 M5 15v-3h14v3")
     val Receipts = outline("receipts", "M6 3h8l4 4v14H6z", "M14 3v4h4", "M9 14l2 2 4-5")
     val Pause = outline("pause", "M9 6v12", "M15 6v12")
@@ -27,7 +44,13 @@ object EdgeIcons {
     val Shield = outline("shield", "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z", "M9 12l2 2 4-4")
     val Wallet = outline("wallet", "M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z", "M3 7l12-4v4", "M17 14h.01")
     val Pulse = outline("pulse", "M3 12h4l3-7 4 14 3-7h4")
-    val Coins = outline("coins", "M12 5c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3z", "M5 8v8c0 1.7 3 3 7 3s7-1.3 7-3V8", "M5 12c0 1.7 3 3 7 3s7-1.3 7-3")
+    val Coins =
+        outline(
+            "coins",
+            "M12 5c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3z",
+            "M5 8v8c0 1.7 3 3 7 3s7-1.3 7-3V8",
+            "M5 12c0 1.7 3 3 7 3s7-1.3 7-3",
+        )
     val Bolt = outline("bolt", "M13 3L5 14h6l-1 7 8-11h-6z")
     val Thermo = outline("thermo", "M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z")
     val Battery = outline("battery", "M3 8h15v8H3z", "M21 11v2")
@@ -46,7 +69,14 @@ object EdgeIcons {
     val Clock = outline("clock", "M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z", "M12 7v5l3 2")
 
     // v2 additions (docs/design/icons.md)
-    val Globe = outline("globe", "M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z", "M3 12h18", "M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9", "M12 3c-2.5 2.5-3.5 5.5-3.5 9s1 6.5 3.5 9")
+    val Globe =
+        outline(
+            "globe",
+            "M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z",
+            "M3 12h18",
+            "M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9",
+            "M12 3c-2.5 2.5-3.5 5.5-3.5 9s1 6.5 3.5 9",
+        )
     val Bell = outline("bell", "M6 16V11a6 6 0 0 1 12 0v5l2 2H4z", "M10 20a2 2 0 0 0 4 0")
     val Calendar = outline("calendar", "M4 6h16v14H4z", "M4 10h16", "M8 3v4", "M16 3v4", "M9 15l2 2 4-4")
     val Bot = outline("bot", "M4 5h16v11H9l-5 4z", "M12 8l1 2 2 .5-2 .5-1 2-1-2-2-.5 2-.5z")
@@ -54,11 +84,36 @@ object EdgeIcons {
     val Refresh = outline("refresh", "M20 12a8 8 0 1 1-2.3-5.7", "M20 4v5h-5")
     val Memory = outline("memory", "M3 8h18v8H3z", "M7 8v8", "M11 8v8", "M15 8v8", "M6 16v3", "M18 16v3")
     val Network = outline("network", "M5 12a10 10 0 0 1 14 0", "M8.5 15.5a5 5 0 0 1 7 0", "M12 19h.01")
-    val Grid = outline("grid", "M4 4h4v4H4z", "M10 4h4v4h-4z", "M16 4h4v4h-4z", "M4 10h4v4H4z", "M10 10h4v4h-4z", "M16 10h4v4h-4z", "M4 16h4v4H4z", "M10 16h4v4h-4z", "M16 16h4v4h-4z")
+    val Grid =
+        outline(
+            "grid",
+            "M4 4h4v4H4z",
+            "M10 4h4v4h-4z",
+            "M16 4h4v4h-4z",
+            "M4 10h4v4H4z",
+            "M10 10h4v4h-4z",
+            "M16 10h4v4h-4z",
+            "M4 16h4v4H4z",
+            "M10 16h4v4h-4z",
+            "M16 16h4v4h-4z",
+        )
     val Gift = outline("gift", "M4 10h16v10H4z", "M3 7h18v3H3z", "M12 7v13", "M12 7c-2-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3-2-5 1")
     val Stop = outline("stop", "M7 7h10v10H7z")
-    val Settings = outline("settings", "M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z", "M12 2v3", "M12 19v3", "M2 12h3", "M19 12h3", "M5 5l2 2", "M17 17l2 2", "M5 19l2-2", "M17 7l2-2")
+    val Settings =
+        outline(
+            "settings",
+            "M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z",
+            "M12 2v3",
+            "M12 19v3",
+            "M2 12h3",
+            "M19 12h3",
+            "M5 5l2 2",
+            "M17 17l2 2",
+            "M5 19l2-2",
+            "M17 7l2-2",
+        )
     val Warning = outline("warning", "M12 4l9 16H3z", "M12 10v4", "M12 17h.01")
+
     // From PR #20 (mint holographic design), names not already defined above
     val Ai get() = Bot
     val Review = outline("review", "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z", "M7 12l3 3 7-7")

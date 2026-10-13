@@ -100,5 +100,8 @@ class SolanaMessageTest {
         assertArrayEquals(m, SolanaMessage.splitTransaction(tx).message)
     }
 
-    private fun signedTx(sig: ByteArray, message: ByteArray) = byteArrayOf(1) + sig + message
+    private fun signedTx(
+        sig: ByteArray,
+        message: ByteArray,
+    ) = byteArrayOf(1) + sig + message
 }

@@ -46,14 +46,16 @@ object DeviceResourcesReader {
         // Monotonic clock: wall-clock changes cannot stretch or shrink the interval.
         val io = diskTracker.observe(DiskSample.read(), android.os.SystemClock.elapsedRealtime())
         val cm = context.getSystemService(ConnectivityManager::class.java)
-        val vpn = cm?.allNetworks?.any { network ->
-            cm.getNetworkCapabilities(network)?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true
-        }
+        val vpn =
+            cm?.allNetworks?.any { network ->
+                cm.getNetworkCapabilities(network)?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true
+            }
         val caps = cm?.activeNetwork?.let { cm.getNetworkCapabilities(it) }
-        val metered = caps?.let {
-            it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                !it.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
-        }
+        val metered =
+            caps?.let {
+                it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    !it.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+            }
         return DeviceResources(
             storageTotal = stat?.totalBytes,
             storageFree = stat?.availableBytes,
@@ -69,7 +71,10 @@ object DeviceResourcesReader {
         )
     }
 
-    private fun drainPerHour(context: Context, charging: Boolean?): Int? {
+    private fun drainPerHour(
+        context: Context,
+        charging: Boolean?,
+    ): Int? {
         val bm = context.getSystemService(BatteryManager::class.java) ?: return null
         return BatteryDrain.percentPerHour(
             currentMicroamps = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW),
@@ -86,7 +91,12 @@ object DeviceResourcesReader {
  * returns null instead of presenting charge current as an hourly drain.
  */
 object BatteryDrain {
-    fun percentPerHour(currentMicroamps: Int, chargeCounterUah: Int, capacityPercent: Int, charging: Boolean?): Int? {
+    fun percentPerHour(
+        currentMicroamps: Int,
+        chargeCounterUah: Int,
+        capacityPercent: Int,
+        charging: Boolean?,
+    ): Int? {
         if (charging != false) return null
         if (currentMicroamps == Int.MIN_VALUE || chargeCounterUah == Int.MIN_VALUE || capacityPercent !in 1..100) return null
         if (currentMicroamps == 0 || chargeCounterUah <= 0) return null
@@ -105,16 +115,25 @@ object ReadingFreshness {
 
     enum class State { NOT_READ, FRESH, STALE, LAST_READ_FAILED }
 
-    fun state(observedAtElapsedMs: Long?, nowElapsedMs: Long, lastReadFailed: Boolean): State = when {
-        observedAtElapsedMs == null -> State.NOT_READ
-        lastReadFailed -> State.LAST_READ_FAILED
-        // A sample "from the future" (clock source mismatch) is not trusted as fresh.
-        nowElapsedMs < observedAtElapsedMs -> State.STALE
-        nowElapsedMs - observedAtElapsedMs > STALE_AFTER_MS -> State.STALE
-        else -> State.FRESH
-    }
+    fun state(
+        observedAtElapsedMs: Long?,
+        nowElapsedMs: Long,
+        lastReadFailed: Boolean,
+    ): State =
+        when {
+            observedAtElapsedMs == null -> State.NOT_READ
+            lastReadFailed -> State.LAST_READ_FAILED
+            // A sample "from the future" (clock source mismatch) is not trusted as fresh.
+            nowElapsedMs < observedAtElapsedMs -> State.STALE
+            nowElapsedMs - observedAtElapsedMs > STALE_AFTER_MS -> State.STALE
+            else -> State.FRESH
+        }
 
-    fun label(observedAtElapsedMs: Long?, nowElapsedMs: Long, lastReadFailed: Boolean): String =
+    fun label(
+        observedAtElapsedMs: Long?,
+        nowElapsedMs: Long,
+        lastReadFailed: Boolean,
+    ): String =
         when (state(observedAtElapsedMs, nowElapsedMs, lastReadFailed)) {
             State.NOT_READ -> if (lastReadFailed) "Device readings unavailable: the read failed" else "Device readings not taken yet"
             State.LAST_READ_FAILED -> "Stale: the last read failed, so these are the previous readings"

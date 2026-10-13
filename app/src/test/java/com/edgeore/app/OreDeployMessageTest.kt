@@ -26,9 +26,17 @@ import org.junit.Test
 class OreDeployMessageTest {
     private val fx = JSONObject(javaClass.getResource("/ore/deploy-fixture.json")!!.readText())
     private val cases = (0 until fx.getJSONArray("cases").length()).map { fx.getJSONArray("cases").getJSONObject(it) }
+
     private fun hex(s: String) = ByteArray(s.length / 2) { s.substring(it * 2, it * 2 + 2).toInt(16).toByte() }
-    private fun deploy(c: JSONObject) = OreDeployMessage.Deploy(Base58.decodePublicKey(c.getString("signer")), c.getLong("roundId"),
-        c.getLong("amountPerSquareLamports"), c.getInt("mask"), Base58.decodePublicKey(c.getString("blockhash")))
+
+    private fun deploy(c: JSONObject) =
+        OreDeployMessage.Deploy(
+            Base58.decodePublicKey(c.getString("signer")),
+            c.getLong("roundId"),
+            c.getLong("amountPerSquareLamports"),
+            c.getInt("mask"),
+            Base58.decodePublicKey(c.getString("blockhash")),
+        )
 
     @Test fun fixtureIdsMatchTheApp() {
         assertEquals(OreV3.PROGRAM_ID, fx.getString("programId"))
@@ -43,23 +51,46 @@ class OreDeployMessageTest {
         assertEquals(2, cases.size)
         for (c in cases) {
             val d = deploy(c)
-            assertEquals(c.getString("name"), c.getString("dataHex"), OreDeployMessage.data(d.amountPerSquareLamports, d.mask).joinToString("") { "%02x".format(it) })
+            assertEquals(
+                c.getString(
+                    "name",
+                ),
+                c.getString("dataHex"),
+                OreDeployMessage.data(d.amountPerSquareLamports, d.mask).joinToString("") {
+                    "%02x".format(it)
+                },
+            )
             val msg = OreDeployMessage.build(d)
             assertArrayEquals(c.getString("name"), hex(c.getString("messageHex")), msg)
             assertEquals(c.getString("messageSha256"), OreDeployMessage.sha256(msg))
             val keys = OreDeployMessage.keys(d.signer, d.roundId).map(Base58::encode)
             val acc = c.getJSONObject("accounts")
-            assertEquals(listOf(acc.getString("automation"), OreV3.BOARD_ADDRESS, OreDeployMessage.CONFIG_ADDRESS, acc.getString("miner"), acc.getString("round"),
-                OreV3.TREASURY_ADDRESS, acc.getString("entropyVar")), keys.subList(1, 8))
+            assertEquals(
+                listOf(
+                    acc.getString("automation"),
+                    OreV3.BOARD_ADDRESS,
+                    OreDeployMessage.CONFIG_ADDRESS,
+                    acc.getString("miner"),
+                    acc.getString("round"),
+                    OreV3.TREASURY_ADDRESS,
+                    acc.getString("entropyVar"),
+                ),
+                keys.subList(1, 8),
+            )
             assertEquals(OreV3.roundAddress(d.roundId), acc.getString("round"))
         }
     }
 
     @Test fun decodeAcceptsOnlyTheExactShapeForTheReviewedRound() {
-        val c = cases[1]; val d = deploy(c); val msg = OreDeployMessage.build(d)
+        val c = cases[1]
+        val d = deploy(c)
+        val msg = OreDeployMessage.build(d)
         val back = OreDeployMessage.decode(msg, d.roundId)!!
-        assertEquals(d.amountPerSquareLamports, back.amountPerSquareLamports); assertEquals(d.mask, back.mask); assertEquals(3, back.squareCount)
+        assertEquals(d.amountPerSquareLamports, back.amountPerSquareLamports)
+        assertEquals(d.mask, back.mask)
+        assertEquals(3, back.squareCount)
         assertNull("other round", OreDeployMessage.decode(msg, d.roundId + 1))
+
         fun flip(i: Int) = msg.copyOf().also { it[i] = (it[i].toInt() xor 1).toByte() }
         for (i in listOf(0, 10, 200, 390, msg.size - 13)) assertNull("byte $i flipped", OreDeployMessage.decode(flip(i), d.roundId)) // header, keys, program index, discriminator
         // Flipping an amount or mask byte is a different, valid deploy; the decoder reports it as such (and the wallet-bytes check refuses it).
@@ -70,8 +101,9 @@ class OreDeployMessageTest {
 
     @Test fun builderRefusesBadInputs() {
         val d = deploy(cases[0])
-        for (bad in listOf(d.copy(amountPerSquareLamports = 0), d.copy(mask = 0), d.copy(mask = 1 shl 25), d.copy(roundId = -1)))
+        for (bad in listOf(d.copy(amountPerSquareLamports = 0), d.copy(mask = 0), d.copy(mask = 1 shl 25), d.copy(roundId = -1))) {
             assertTrue(runCatching { OreDeployMessage.build(bad) }.isFailure)
+        }
     }
 
     @Test fun limitsCapMaxAndTheDeploy() {
@@ -92,15 +124,53 @@ class OreDeployMessageTest {
     @Test fun reviewPreparesAnApprovableDraftOnlyWithinLimits() {
         val ok = OreDeployReview.prepare(signer, 437127, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000)
         assertTrue(ok.refusal, ok.approvable)
-        assertEquals(25_000_000L, ok.lamports); assertEquals(OreV3.PROGRAM_ID, ok.toAddress)
+        assertEquals(25_000_000L, ok.lamports)
+        assertEquals(OreV3.PROGRAM_ID, ok.toAddress)
         assertTrue(ok.decoded is SolanaMessage.Decoded.OreDeploy)
         assertFalse(OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, null, 0, 50_000_000).approvable)
-        assertFalse(OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 40_000_000, 50_000_000).approvable) // daily budget
+        assertFalse(
+            OreDeployReview
+                .prepare(
+                    signer,
+                    1,
+                    25_000_000,
+                    OreDeployMessage.ALL_SQUARES_MASK,
+                    bh,
+                    1_000_000_000,
+                    40_000_000,
+                    50_000_000,
+                ).approvable,
+        ) // daily budget
         // Mainnet is enabled in this build but 0.025 SOL is above the 0.01 SOL mainnet cap, so no message is built.
-        val over = OreDeployReview.prepare(signer, 1, 25_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "mainnet-beta")
-        assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", over.refusal); assertEquals(0, over.message.size)
-        assertEquals("ORE deploy supports devnet or mainnet-beta only",
-            OreDeployReview.prepare(signer, 1, 5_000_000, OreDeployMessage.ALL_SQUARES_MASK, bh, 1_000_000_000, 0, 50_000_000, cluster = "testnet").refusal)
+        val over =
+            OreDeployReview.prepare(
+                signer,
+                1,
+                25_000_000,
+                OreDeployMessage.ALL_SQUARES_MASK,
+                bh,
+                1_000_000_000,
+                0,
+                50_000_000,
+                cluster = "mainnet-beta",
+            )
+        assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", over.refusal)
+        assertEquals(0, over.message.size)
+        assertEquals(
+            "ORE deploy supports devnet or mainnet-beta only",
+            OreDeployReview
+                .prepare(
+                    signer,
+                    1,
+                    5_000_000,
+                    OreDeployMessage.ALL_SQUARES_MASK,
+                    bh,
+                    1_000_000_000,
+                    0,
+                    50_000_000,
+                    cluster = "testnet",
+                ).refusal,
+        )
     }
 
     @Test fun walletReturningDifferentBytesIsRefused() {
@@ -110,20 +180,38 @@ class OreDeployMessageTest {
         assertTrue(r is TransferReview.WalletReturn.Refused)
     }
 
-    private class Fake(private val accts: List<RawAccount?>, private val fail: Boolean = false) : AccountReader {
+    private class Fake(
+        private val accts: List<RawAccount?>,
+        private val fail: Boolean = false,
+    ) : AccountReader {
         override val endpoint = "https://api.devnet.solana.com"
-        override suspend fun accounts(addresses: List<String>): AccountsAt { if (fail) error("timeout"); return AccountsAt(9, accts) }
+
+        override suspend fun accounts(addresses: List<String>): AccountsAt {
+            if (fail) error("timeout")
+            return AccountsAt(9, accts)
+        }
+
         override suspend fun slotRate(): SlotRate? = null
     }
 
-    @Test fun devnetCheckNeverAssumesTheProgramIsThere() = runBlocking {
-        val none = OreDeployCheck.check(Fake(listOf(null, null, null, null))) as OreDeployAvailability.Unavailable
-        assertTrue(none.reason.contains("not deployed"))
-        assertTrue(OreDeployCheck.check(Fake(emptyList(), fail = true)) is OreDeployAvailability.Unavailable)
-        val prog = RawAccount(OreDeployCheck.UPGRADEABLE_LOADER, ByteArray(36))
-        assertTrue((OreDeployCheck.check(Fake(listOf(prog, null, null, null))) as OreDeployAvailability.Unavailable).reason.contains("missing"))
-        val f = OreV3Test.Fixture("mainnet-round-437127.json")
-        val ok = OreDeployCheck.check(Fake(listOf(prog, f.board, f.treasury, RawAccount(OreV3.PROGRAM_ID, ByteArray(8))))) as OreDeployAvailability.Available
-        assertEquals(437127L, ok.roundId)
-    }
+    @Test fun devnetCheckNeverAssumesTheProgramIsThere() =
+        runBlocking {
+            val none = OreDeployCheck.check(Fake(listOf(null, null, null, null))) as OreDeployAvailability.Unavailable
+            assertTrue(none.reason.contains("not deployed"))
+            assertTrue(OreDeployCheck.check(Fake(emptyList(), fail = true)) is OreDeployAvailability.Unavailable)
+            val prog = RawAccount(OreDeployCheck.UPGRADEABLE_LOADER, ByteArray(36))
+            assertTrue(
+                (
+                    OreDeployCheck.check(
+                        Fake(listOf(prog, null, null, null)),
+                    ) as OreDeployAvailability.Unavailable
+                ).reason.contains("missing"),
+            )
+            val f = OreV3Test.Fixture("mainnet-round-437127.json")
+            val ok =
+                OreDeployCheck.check(
+                    Fake(listOf(prog, f.board, f.treasury, RawAccount(OreV3.PROGRAM_ID, ByteArray(8)))),
+                ) as OreDeployAvailability.Available
+            assertEquals(437127L, ok.roundId)
+        }
 }

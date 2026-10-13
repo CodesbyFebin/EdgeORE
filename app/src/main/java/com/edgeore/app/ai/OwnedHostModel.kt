@@ -22,40 +22,86 @@ import javax.net.ssl.HttpsURLConnection
  */
 object EndpointPolicy {
     sealed interface Decision {
-        data class Allowed(val url: String, val location: String, val boundUrl: String = url, val originalHost: String = "") : Decision
-        data class Refused(val reason: String) : Decision
+        data class Allowed(
+            val url: String,
+            val location: String,
+            val boundUrl: String = url,
+            val originalHost: String = "",
+        ) : Decision
+
+        data class Refused(
+            val reason: String,
+        ) : Decision
     }
 
-    fun check(endpoint: String, resolve: (String) -> InetAddress): Decision = checkAll(endpoint) { listOf(resolve(it)) }
+    fun check(
+        endpoint: String,
+        resolve: (String) -> InetAddress,
+    ): Decision = checkAll(endpoint) { listOf(resolve(it)) }
 
     fun check(endpoint: String): Decision = checkAll(endpoint) { InetAddress.getAllByName(it).toList() }
 
-    fun checkAll(endpoint: String, resolveAll: (String) -> List<InetAddress>): Decision {
-        val uri = try { URI(endpoint.trim().trimEnd('/')) } catch (_: Exception) { return Decision.Refused("Not a valid URL") }
+    fun checkAll(
+        endpoint: String,
+        resolveAll: (String) -> List<InetAddress>,
+    ): Decision {
+        val uri =
+            try {
+                URI(endpoint.trim().trimEnd('/'))
+            } catch (_: Exception) {
+                return Decision.Refused("Not a valid URL")
+            }
         if (uri.scheme != "http" && uri.scheme != "https") return Decision.Refused("Use http:// or https://")
         val host = uri.host ?: return Decision.Refused("URL needs a host")
-        if (!uri.rawPath.isNullOrEmpty() || uri.rawQuery != null || uri.userInfo != null || uri.rawFragment != null) return Decision.Refused("Use scheme://host:port only")
-        val addrs = try { resolveAll(host) } catch (_: Exception) { return Decision.Refused("Host does not resolve") }
+        if (!uri.rawPath.isNullOrEmpty() ||
+            uri.rawQuery != null ||
+            uri.userInfo != null ||
+            uri.rawFragment != null
+        ) {
+            return Decision.Refused("Use scheme://host:port only")
+        }
+        val addrs =
+            try {
+                resolveAll(host)
+            } catch (_: Exception) {
+                return Decision.Refused("Host does not resolve")
+            }
         if (addrs.isEmpty()) return Decision.Refused("Host does not resolve")
         val verdicts = addrs.map { classify(it, uri.scheme) }
         verdicts.firstOrNull { it is Decision.Refused }?.let {
-            return if (addrs.size > 1) Decision.Refused("${(it as Decision.Refused).reason} (one of ${addrs.size} resolved addresses)") else it
+            return if (addrs.size >
+                1
+            ) {
+                Decision.Refused("${(it as Decision.Refused).reason} (one of ${addrs.size} resolved addresses)")
+            } else {
+                it
+            }
         }
         val chosen = addrs.first()
         val location = if (chosen.isLoopbackAddress) "Owned host via loopback tunnel ($host)" else "Owned host on private network ($host)"
         return Decision.Allowed(uri.toString(), location, boundUrl(uri, chosen), host)
     }
 
-    private fun classify(addr: InetAddress, scheme: String): Decision = when {
-        addr.isLoopbackAddress -> Decision.Allowed("", "")
-        addr.isSiteLocalAddress || isCgnat(addr) || isUniqueLocalV6(addr) ->
-            if (scheme == "http") Decision.Refused("Cleartext to LAN hosts is blocked; use a loopback tunnel (adb reverse / SSH) or https")
-            else Decision.Allowed("", "")
-        else -> Decision.Refused("Public endpoints are refused: cloud fallback is off")
-    }
+    private fun classify(
+        addr: InetAddress,
+        scheme: String,
+    ): Decision =
+        when {
+            addr.isLoopbackAddress -> Decision.Allowed("", "")
+            addr.isSiteLocalAddress || isCgnat(addr) || isUniqueLocalV6(addr) ->
+                if (scheme == "http") {
+                    Decision.Refused("Cleartext to LAN hosts is blocked; use a loopback tunnel (adb reverse / SSH) or https")
+                } else {
+                    Decision.Allowed("", "")
+                }
+            else -> Decision.Refused("Public endpoints are refused: cloud fallback is off")
+        }
 
     /** URL that targets the validated IP literal, keeping scheme and port. */
-    fun boundUrl(uri: URI, addr: InetAddress): String {
+    fun boundUrl(
+        uri: URI,
+        addr: InetAddress,
+    ): String {
         val literal = if (addr is Inet6Address) "[" + addr.hostAddress!!.substringBefore('%') + "]" else addr.hostAddress!!
         val port = if (uri.port == -1) "" else ":${uri.port}"
         return "${uri.scheme}://$literal$port"
@@ -65,7 +111,11 @@ object EndpointPolicy {
         val b = a.address
         return b.size == 4 && (b[0].toInt() and 0xff) == 100 && (b[1].toInt() and 0xc0) == 64
     }
-    private fun isUniqueLocalV6(a: InetAddress): Boolean { val b = a.address; return b.size == 16 && (b[0].toInt() and 0xfe) == 0xfc }
+
+    private fun isUniqueLocalV6(a: InetAddress): Boolean {
+        val b = a.address
+        return b.size == 16 && (b[0].toInt() and 0xfe) == 0xfc
+    }
 }
 
 /**
@@ -82,6 +132,7 @@ class OwnedHostModelClient(
         this(decision.boundUrl, timeoutMs, decision.originalHost.takeIf { decision.boundUrl.startsWith("https") && it.isNotEmpty() })
 
     @Volatile private var active: HttpURLConnection? = null
+
     @Volatile var cancelled: Boolean = false
         private set
 
@@ -93,15 +144,24 @@ class OwnedHostModelClient(
         return true
     }
 
-    suspend fun listModels(): List<String> = withContext(Dispatchers.IO) {
-        val json = JSONObject(request("GET", "/api/tags", null))
-        val arr = json.optJSONArray("models") ?: JSONArray()
-        (0 until arr.length()).mapNotNull { arr.optJSONObject(it)?.optString("name")?.takeIf(String::isNotBlank) }
-    }
+    suspend fun listModels(): List<String> =
+        withContext(Dispatchers.IO) {
+            val json = JSONObject(request("GET", "/api/tags", null))
+            val arr = json.optJSONArray("models") ?: JSONArray()
+            (0 until arr.length()).mapNotNull { arr.optJSONObject(it)?.optString("name")?.takeIf(String::isNotBlank) }
+        }
 
-    suspend fun chat(model: String, system: String, user: String): String = withContext(Dispatchers.IO) { chatBlocking(model, system, user) }
+    suspend fun chat(
+        model: String,
+        system: String,
+        user: String,
+    ): String = withContext(Dispatchers.IO) { chatBlocking(model, system, user) }
 
-    fun chatBlocking(model: String, system: String, user: String): String {
+    fun chatBlocking(
+        model: String,
+        system: String,
+        user: String,
+    ): String {
         val body = buildChatRequest(model, system, user)
         val json = JSONObject(request("POST", "/api/chat", body))
         return json.optJSONObject("message")?.optString("content")?.takeIf { it.isNotEmpty() }
@@ -109,13 +169,20 @@ class OwnedHostModelClient(
     }
 
     companion object {
-        fun buildChatRequest(model: String, system: String, user: String): String = JSONObject()
-            .put("model", model)
-            .put("stream", false)
-            .put("messages", JSONArray()
-                .put(JSONObject().put("role", "system").put("content", system))
-                .put(JSONObject().put("role", "user").put("content", user)))
-            .toString()
+        fun buildChatRequest(
+            model: String,
+            system: String,
+            user: String,
+        ): String =
+            JSONObject()
+                .put("model", model)
+                .put("stream", false)
+                .put(
+                    "messages",
+                    JSONArray()
+                        .put(JSONObject().put("role", "system").put("content", system))
+                        .put(JSONObject().put("role", "user").put("content", user)),
+                ).toString()
 
         const val SYSTEM_PROMPT = "You are a private assistant running on hardware the user owns. Answer only from the provided document when one is given. You cannot approve transactions, grant permissions or change settings."
         const val MAX_DOCUMENT_CHARS = 24_000
@@ -123,7 +190,11 @@ class OwnedHostModelClient(
         const val MAX_RESPONSE_BYTES = 2_000_000
     }
 
-    private fun request(method: String, path: String, body: String?): String {
+    private fun request(
+        method: String,
+        path: String,
+        body: String?,
+    ): String {
         if (cancelled) throw java.io.InterruptedIOException("Cancelled")
         val conn = URL(baseUrl + path).openConnection() as HttpURLConnection
         active = conn
@@ -148,7 +219,20 @@ class OwnedHostModelClient(
             val out = ByteArrayOutputStream()
             conn.inputStream.use { s ->
                 val buf = ByteArray(8192)
-                while (true) { val n = s.read(buf); if (n < 0) break; if (out.size() + n > MAX_RESPONSE_BYTES) throw java.io.IOException("Response too large"); out.write(buf, 0, n) }
+                while (true) {
+                    val n = s.read(buf)
+                    if (n <
+                        0
+                    ) {
+                        break
+                    }
+                    if (out.size() + n >
+                        MAX_RESPONSE_BYTES
+                    ) {
+                        throw java.io.IOException("Response too large")
+                    }
+                    out.write(buf, 0, n)
+                }
             }
             return String(out.toByteArray(), Charsets.UTF_8)
         } catch (e: java.io.IOException) {

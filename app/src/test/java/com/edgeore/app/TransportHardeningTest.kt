@@ -48,7 +48,18 @@ class TransportHardeningTest {
         val d = EndpointPolicy.checkAll("https://models.home:8443") { listOf(v4("192.168.1.9")) } as EndpointPolicy.Decision.Allowed
         assertEquals("https://192.168.1.9:8443", d.boundUrl)
         assertEquals("models.home", d.originalHost)
-        val loop = EndpointPolicy.checkAll("http://localhost:11434") { listOf(InetAddress.getByAddress("localhost", ByteArray(16).also { it[15] = 1 })) } as EndpointPolicy.Decision.Allowed
+        val loop =
+            EndpointPolicy.checkAll("http://localhost:11434") {
+                listOf(
+                    InetAddress.getByAddress(
+                        "localhost",
+                        ByteArray(16).also {
+                            it[15] =
+                                1
+                        },
+                    ),
+                )
+            } as EndpointPolicy.Decision.Allowed
         assertEquals("http://[0:0:0:0:0:0:0:1]:11434", loop.boundUrl)
         assertEquals("http://127.0.0.1", EndpointPolicy.boundUrl(URI("http://127.0.0.1"), v4("127.0.0.1")))
     }
@@ -63,11 +74,27 @@ class TransportHardeningTest {
     @Test fun localCancelClosesTheSocketPromptly() {
         ServerSocket(0, 1, InetAddress.getLoopbackAddress()).use { server ->
             val accepted = CountDownLatch(1)
-            thread(isDaemon = true) { runCatching { server.accept().also { accepted.countDown(); Thread.sleep(30_000) } } }
+            thread(isDaemon = true) {
+                runCatching {
+                    server.accept().also {
+                        accepted.countDown()
+                        Thread.sleep(30_000)
+                    }
+                }
+            }
             val client = OwnedHostModelClient("http://127.0.0.1:${server.localPort}", timeoutMs = 60_000)
             var error: Throwable? = null
             val done = CountDownLatch(1)
-            val t = thread { try { client.chatBlocking("m", "s", "u") } catch (e: Throwable) { error = e } finally { done.countDown() } }
+            val t =
+                thread {
+                    try {
+                        client.chatBlocking("m", "s", "u")
+                    } catch (e: Throwable) {
+                        error = e
+                    } finally {
+                        done.countDown()
+                    }
+                }
             assertTrue(accepted.await(5, TimeUnit.SECONDS))
             Thread.sleep(200)
             val started = System.nanoTime()
@@ -89,12 +116,20 @@ class TransportHardeningTest {
     @Test fun modelHostRedirectIsRefused() {
         ServerSocket(0, 1, InetAddress.getLoopbackAddress()).use { server ->
             thread(isDaemon = true) {
-                runCatching { server.accept().use { s ->
-                    s.getInputStream().read(ByteArray(4096))
-                    s.getOutputStream().write("HTTP/1.1 302 Found\r\nLocation: https://example.com/api/tags\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".toByteArray())
-                } }
+                runCatching {
+                    server.accept().use { s ->
+                        s.getInputStream().read(ByteArray(4096))
+                        s.getOutputStream().write(
+                            "HTTP/1.1 302 Found\r\nLocation: https://example.com/api/tags\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                                .toByteArray(),
+                        )
+                    }
+                }
             }
-            val e = runCatching { kotlinx.coroutines.runBlocking { OwnedHostModelClient("http://127.0.0.1:${server.localPort}").listModels() } }.exceptionOrNull()
+            val e =
+                runCatching {
+                    kotlinx.coroutines.runBlocking { OwnedHostModelClient("http://127.0.0.1:${server.localPort}").listModels() }
+                }.exceptionOrNull()
             assertTrue(e.toString(), e?.message?.contains("redirect") == true)
         }
     }
@@ -104,9 +139,32 @@ class TransportHardeningTest {
         val dir = createTempDir()
         val ks = File(dir, "node.p12")
         val keytool = File(System.getProperty("java.home"), "bin/keytool").absolutePath
-        val p = ProcessBuilder(keytool, "-genkeypair", "-alias", "node", "-keyalg", "EC", "-groupname", "secp256r1", "-dname", "CN=127.0.0.1",
-            "-ext", "SAN=ip:127.0.0.1", "-validity", "2", "-storetype", "PKCS12", "-keystore", ks.absolutePath, "-storepass", "changeit", "-keypass", "changeit")
-            .redirectErrorStream(true).start()
+        val p =
+            ProcessBuilder(
+                keytool,
+                "-genkeypair",
+                "-alias",
+                "node",
+                "-keyalg",
+                "EC",
+                "-groupname",
+                "secp256r1",
+                "-dname",
+                "CN=127.0.0.1",
+                "-ext",
+                "SAN=ip:127.0.0.1",
+                "-validity",
+                "2",
+                "-storetype",
+                "PKCS12",
+                "-keystore",
+                ks.absolutePath,
+                "-storepass",
+                "changeit",
+                "-keypass",
+                "changeit",
+            ).redirectErrorStream(true)
+                .start()
         val out = p.inputStream.bufferedReader().readText()
         check(p.waitFor() == 0) { "keytool failed: $out" }
         val store = KeyStore.getInstance("PKCS12").apply { ks.inputStream().use { load(it, "changeit".toCharArray()) } }
@@ -115,22 +173,32 @@ class TransportHardeningTest {
         return store to pin
     }
 
-    private fun tlsServer(store: KeyStore, response: String): SSLServerSocket {
+    private fun tlsServer(
+        store: KeyStore,
+        response: String,
+    ): SSLServerSocket {
         val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply { init(store, "changeit".toCharArray()) }
         val ctx = SSLContext.getInstance("TLS").apply { init(kmf.keyManagers, null, null) }
         val server = ctx.serverSocketFactory.createServerSocket(0, 1, InetAddress.getLoopbackAddress()) as SSLServerSocket
         thread(isDaemon = true) {
-            runCatching { server.accept().use { s ->
-                val buf = ByteArray(8192); s.getInputStream().read(buf)
-                s.getOutputStream().write(response.toByteArray()); s.getOutputStream().flush()
-            } }
+            runCatching {
+                server.accept().use { s ->
+                    val buf = ByteArray(8192)
+                    s.getInputStream().read(buf)
+                    s.getOutputStream().write(response.toByteArray())
+                    s.getOutputStream().flush()
+                }
+            }
         }
         return server
     }
 
     @Test fun nodeRedirectIsRefusedNotFollowed() {
         val (store, pin) = selfSignedKeystore()
-        tlsServer(store, "HTTP/1.1 307 Temporary Redirect\r\nLocation: https://127.0.0.1:1/command\r\nContent-Length: 0\r\nConnection: close\r\n\r\n").use { server ->
+        tlsServer(
+            store,
+            "HTTP/1.1 307 Temporary Redirect\r\nLocation: https://127.0.0.1:1/command\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+        ).use { server ->
             val client = NodeAgentClient("https://127.0.0.1:${server.localPort}", pin, timeoutMs = 5_000)
             val r = client.command("session", Ed25519.generate(), "observe")
             assertTrue(r.toString(), r is NodeResult.Refused && r.code == "REDIRECT_REFUSED")
@@ -140,8 +208,16 @@ class TransportHardeningTest {
     @Test fun pinnedTlsStillWorksForANormalAnswer() {
         val (store, pin) = selfSignedKeystore()
         val body = "{\"fingerprint\":\"abc\",\"hostOS\":\"linux\"}"
-        tlsServer(store, "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ${body.length}\r\nConnection: close\r\n\r\n$body").use { server ->
-            val r = NodeAgentClient("https://127.0.0.1:${server.localPort}", pin, timeoutMs = 5_000).command("session", Ed25519.generate(), "observe")
+        tlsServer(
+            store,
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ${body.length}\r\nConnection: close\r\n\r\n$body",
+        ).use { server ->
+            val r =
+                NodeAgentClient(
+                    "https://127.0.0.1:${server.localPort}",
+                    pin,
+                    timeoutMs = 5_000,
+                ).command("session", Ed25519.generate(), "observe")
             assertTrue(r.toString(), r is NodeResult.Ok && r.value.getString("hostOS") == "linux")
         }
     }
@@ -149,7 +225,12 @@ class TransportHardeningTest {
     @Test fun wrongPinIsUnreachableNotTrusted() {
         val (store, _) = selfSignedKeystore()
         tlsServer(store, "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}").use { server ->
-            val r = NodeAgentClient("https://127.0.0.1:${server.localPort}", "00".repeat(32), timeoutMs = 5_000).command("s", Ed25519.generate(), "observe")
+            val r =
+                NodeAgentClient(
+                    "https://127.0.0.1:${server.localPort}",
+                    "00".repeat(32),
+                    timeoutMs = 5_000,
+                ).command("s", Ed25519.generate(), "observe")
             assertTrue(r.toString(), r is NodeResult.Unreachable)
         }
     }
@@ -190,18 +271,22 @@ class TransportHardeningTest {
 
     @Test fun malformedStatusIsUnavailableNeverNotFound() {
         fun r(v: String) = JSONObject("{\"result\":{\"value\":[$v]}}")
+
         fun un(o: JSONObject) = assertTrue("expected Unavailable for $o", parseStatus(o) is ChainStatus.Unavailable)
-        un(JSONObject("{\"result\":{\"value\":[]}}"))            // empty array
-        un(JSONObject("{\"result\":{\"value\":[null,null]}}"))   // wrong length
-        un(r("\"finalized\"")); un(r("42")); un(r("true")); un(r("[]")) // wrong element type
-        un(JSONObject("{}"))                                          // missing result
-        un(JSONObject("{\"result\":{}}"))                           // missing value
-        un(JSONObject("{\"result\":{\"value\":null}}"))           // value not an array
+        un(JSONObject("{\"result\":{\"value\":[]}}")) // empty array
+        un(JSONObject("{\"result\":{\"value\":[null,null]}}")) // wrong length
+        un(r("\"finalized\""))
+        un(r("42"))
+        un(r("true"))
+        un(r("[]")) // wrong element type
+        un(JSONObject("{}")) // missing result
+        un(JSONObject("{\"result\":{}}")) // missing value
+        un(JSONObject("{\"result\":{\"value\":null}}")) // value not an array
         un(JSONObject("{\"result\":{\"value\":{}}}"))
         un(JSONObject("{\"result\":\"x\"}"))
-        un(r("{\"confirmationStatus\":\"finalized\"}"))             // err missing
-        un(r("{\"err\":null}"))                                        // status missing
-        un(r("{\"err\":null,\"confirmationStatus\":\"rooted\"}"))   // unknown status
+        un(r("{\"confirmationStatus\":\"finalized\"}")) // err missing
+        un(r("{\"err\":null}")) // status missing
+        un(r("{\"err\":null,\"confirmationStatus\":\"rooted\"}")) // unknown status
         un(r("{\"err\":null,\"confirmationStatus\":7}"))
         // Only an explicit, well-formed null is NOT_FOUND.
         assertEquals(ChainStatus.NotFound, parseStatus(r("null")))

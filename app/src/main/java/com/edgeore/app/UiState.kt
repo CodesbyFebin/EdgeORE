@@ -27,11 +27,22 @@ data class WalletState(
 }
 
 data class NodeRecord(
-    val endpoint: String, val certSha256: String, val fingerprint: String, val sessionId: String,
-    val scopes: List<String>, val pairedAt: String, val revocationPending: Boolean = false,
+    val endpoint: String,
+    val certSha256: String,
+    val fingerprint: String,
+    val sessionId: String,
+    val scopes: List<String>,
+    val pairedAt: String,
+    val revocationPending: Boolean = false,
 )
 
-data class NodeOp(val time: String, val action: String, val operationId: String?, val payloadSha256: String?, val outcome: String)
+data class NodeOp(
+    val time: String,
+    val action: String,
+    val operationId: String?,
+    val payloadSha256: String?,
+    val outcome: String,
+)
 
 data class NodeState(
     val record: NodeRecord? = null,
@@ -44,7 +55,13 @@ data class NodeState(
 )
 
 enum class AiStatus { NO_ENDPOINT, CHECKING, NO_MODEL, READY, LOADING, COMPLETED, CANCELED, FAILED }
-data class ChatMessage(val fromUser: Boolean, val text: String, val time: Long)
+
+data class ChatMessage(
+    val fromUser: Boolean,
+    val text: String,
+    val time: Long,
+)
+
 data class AiState(
     val endpoint: String = "",
     val location: String? = null,
@@ -66,6 +83,7 @@ data class AiState(
 )
 
 enum class ReviewPhase { EDITING, PREPARING, READY, SIGNING, SIGNED, SUBMITTING, SUBMITTED, UNKNOWN, REFUSED }
+
 data class ReviewState(
     val destination: String = "",
     /** Empty by default: the user types (or scans) the amount; nothing is prefilled. */
@@ -84,7 +102,11 @@ data class ReviewState(
     val operation: PendingOperation? = null,
 )
 
-data class VerifyOutcome(val accepted: Boolean, val summary: String, val findings: List<String>)
+data class VerifyOutcome(
+    val accepted: Boolean,
+    val summary: String,
+    val findings: List<String>,
+)
 
 data class StorageState(
     val files: List<VaultEntry> = emptyList(),
@@ -108,7 +130,13 @@ data class StorageState(
 )
 
 /** The owner's storage gateway as set up on this phone. The token is never part of UI state. */
-data class GatewayState(val endpoint: String? = null, val pinCount: Int = 0, val tokenStored: Boolean = false, val error: String? = null, val note: String? = null)
+data class GatewayState(
+    val endpoint: String? = null,
+    val pinCount: Int = 0,
+    val tokenStored: Boolean = false,
+    val error: String? = null,
+    val note: String? = null,
+)
 
 /** Mine page ORE Mining card inputs. Amounts are whole lamports; nothing is prefilled from a guess. */
 data class OreDeployUi(

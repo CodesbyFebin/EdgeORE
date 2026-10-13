@@ -32,13 +32,24 @@ import org.robolectric.annotation.ConscryptMode
 @ConscryptMode(ConscryptMode.Mode.OFF)
 @Config(sdk = [28], qualifiers = "w411dp-h3000dp")
 class FourScreensTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val onboarded = OnboardingSeen()
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
 
-    @After fun reset() { ThemeState.mode = ThemeMode.DARK; EdgeColors.palette = DarkPalette }
+    @get:Rule(order = 1)
+    val onboarded = OnboardingSeen()
 
-    private fun tab(label: String) { rule.onNode(hasText(label) and hasClickAction()).performClick(); rule.waitForIdle() }
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
+
+    @After fun reset() {
+        ThemeState.mode = ThemeMode.DARK
+        EdgeColors.palette = DarkPalette
+    }
+
+    private fun tab(label: String) {
+        rule.onNode(hasText(label) and hasClickAction()).performClick()
+        rule.waitForIdle()
+    }
 
     @Test fun bottomNavHasTheFourDestinations() {
         assertEquals(listOf("Home", "AI", "ZK Proof", "Settings"), Destination.nav.map { it.label })
@@ -70,9 +81,11 @@ class FourScreensTest {
         rule.onNodeWithTag("settings-connect").assertExists()
         rule.onNodeWithText("Device preferences").assertExists()
         rule.onNodeWithText("Default model").assertExists()
-        rule.onNodeWithTag("theme-light").performScrollTo().performClick(); rule.waitForIdle()
+        rule.onNodeWithTag("theme-light").performScrollTo().performClick()
+        rule.waitForIdle()
         assertSame(LightPalette, EdgeColors.palette)
-        rule.onNode(hasTestTag("settings-receipts")).performScrollTo().performClick(); rule.waitForIdle()
+        rule.onNode(hasTestTag("settings-receipts")).performScrollTo().performClick()
+        rule.waitForIdle()
         rule.onNodeWithText("Receipts", substring = false).assertExists()
     }
 }

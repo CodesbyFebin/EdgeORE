@@ -23,8 +23,13 @@ class ContributionPolicyTest {
     private val on = ResourceSettings(edgeModeResumed = true, contributionOptIn = true)
     private val healthy = DeviceSnapshot(80, true, ThermalLevel.NONE, 0, batteryLow = false)
     private val allMet = ConstraintObservation(unmetered = true, charging = true, batteryLow = false)
-    private fun view(s: ResourceSettings = on, d: DeviceSnapshot? = healthy, o: ConstraintObservation = allMet, j: JobState = JobState.ENQUEUED) =
-        ContributionPolicy.view(s, d, o, j)
+
+    private fun view(
+        s: ResourceSettings = on,
+        d: DeviceSnapshot? = healthy,
+        o: ConstraintObservation = allMet,
+        j: JobState = JobState.ENQUEUED,
+    ) = ContributionPolicy.view(s, d, o, j)
 
     @Test fun offByDefaultAndNotScheduled() {
         assertFalse(ResourceSettings().contributionOptIn)
@@ -78,9 +83,22 @@ class ContributionPolicyTest {
         assertTrue(v.detail.contains("Protocol qualification required"))
         assertEquals(RunOutcome.NO_QUALIFIED_WORKLOAD, ContributionPolicy.decide(on, healthy))
         // Every state reachable in this build: none of them is "checking"/running work.
-        for (j in JobState.entries) for (u in listOf(true, false, null)) for (c in listOf(true, false, null)) for (b in listOf(true, false, null))
-            for (d in listOf(healthy, null)) for (s in listOf(on, on.copy(edgeModeResumed = false), ResourceSettings()))
-                assertNotEquals(SchedulerStatus.CHECKING, ContributionPolicy.view(s, d, ConstraintObservation(u, c, b), j).status)
+        for (j in JobState.entries) {
+            for (u in listOf(true, false, null)) {
+                for (c in listOf(true, false, null)) {
+                    for (b in listOf(true, false, null)) {
+                        for (d in listOf(healthy, null)) {
+                            for (s in listOf(on, on.copy(edgeModeResumed = false), ResourceSettings())) {
+                                assertNotEquals(
+                                    SchedulerStatus.CHECKING,
+                                    ContributionPolicy.view(s, d, ConstraintObservation(u, c, b), j).status,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Test fun schedulerHealthIsReportedNotAssumed() {
@@ -105,8 +123,9 @@ class ContributionPolicyTest {
     @Test fun controlIsLabelledAndCopyMakesNoRewardClaims() {
         assertEquals(Effect.ENFORCED, Control.CONTRIBUTION_SCHEDULER.effect)
         val banned = Regex("""(?i)\b(reward|earn|earning|earnings|apr|apy|boost|yield|zero[- ]knowledge|income|profit)\b""")
-        val texts = SchedulerStatus.entries.map { it.label } + RunOutcome.entries.map { it.label } + Control.CONTRIBUTION_SCHEDULER.detail +
-            File("src/main/java/com/edgeore/app/contribution").listFiles()!!.map { it.readText() }
+        val texts =
+            SchedulerStatus.entries.map { it.label } + RunOutcome.entries.map { it.label } + Control.CONTRIBUTION_SCHEDULER.detail +
+                File("src/main/java/com/edgeore/app/contribution").listFiles()!!.map { it.readText() }
         for (t in texts) assertFalse("banned wording in: ${t.take(80)}", banned.containsMatchIn(t))
     }
 }

@@ -19,10 +19,17 @@ data class OreSnapshot(
 sealed interface RoundClock {
     /** end_slot is u64::MAX: the round starts with its first deploy (program/src/deploy.rs). */
     data object WaitingForFirstDeploy : RoundClock
+
     /** [secondsLeft] is null when no slot rate was measured; then only slots are shown. */
-    data class Live(val slotsLeft: Long, val secondsLeft: Long?) : RoundClock
+    data class Live(
+        val slotsLeft: Long,
+        val secondsLeft: Long?,
+    ) : RoundClock
+
     /** Past end_slot: the round is waiting to be reset (intermission, program/src/reset.rs). */
-    data class Ended(val slotsPast: Long) : RoundClock
+    data class Ended(
+        val slotsPast: Long,
+    ) : RoundClock
 }
 
 object OreClock {
@@ -30,7 +37,12 @@ object OreClock {
      * [observedSlot] is the slot the RPC reported with the read; [elapsedMs] is how long ago (this phone's clock) it was read.
      * The current slot is estimated only with a measured [rate]; without one the observed slot is used as is.
      */
-    fun at(board: OreV3.Board, observedSlot: Long, elapsedMs: Long, rate: SlotRate?): RoundClock {
+    fun at(
+        board: OreV3.Board,
+        observedSlot: Long,
+        elapsedMs: Long,
+        rate: SlotRate?,
+    ): RoundClock {
         if (board.endSlot == OreV3.END_SLOT_WAITING) return RoundClock.WaitingForFirstDeploy
         val est = observedSlot + if (rate != null && elapsedMs > 0) (elapsedMs / rate.msPerSlot).toLong() else 0L
         val left = board.endSlot - est
@@ -40,26 +52,42 @@ object OreClock {
 
     fun mmss(seconds: Long): String = "%02d:%02d".format(seconds / 60, seconds % 60)
 
-    fun label(c: RoundClock): String = when (c) {
-        RoundClock.WaitingForFirstDeploy -> "Waiting for the first deploy"
-        is RoundClock.Live -> c.secondsLeft?.let { mmss(it) } ?: "${c.slotsLeft} slots"
-        is RoundClock.Ended -> "Ended · awaiting reset"
-    }
+    fun label(c: RoundClock): String =
+        when (c) {
+            RoundClock.WaitingForFirstDeploy -> "Waiting for the first deploy"
+            is RoundClock.Live -> c.secondsLeft?.let { mmss(it) } ?: "${c.slotsLeft} slots"
+            is RoundClock.Ended -> "Ended · awaiting reset"
+        }
 }
 
 object OreFormat {
     /** Lamports as SOL with up to 3 decimals (the precision the ORE web board shows), never rounded up to look larger. */
-    fun sol(lamports: Long): String = java.math.BigDecimal.valueOf(lamports, 9).setScale(3, java.math.RoundingMode.DOWN).stripTrailingZeros().toPlainString()
-    fun ore(grams: Long): String = java.math.BigDecimal.valueOf(grams, 11).setScale(2, java.math.RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+    fun sol(lamports: Long): String =
+        java.math.BigDecimal
+            .valueOf(lamports, 9)
+            .setScale(3, java.math.RoundingMode.DOWN)
+            .stripTrailingZeros()
+            .toPlainString()
+
+    fun ore(grams: Long): String =
+        java.math.BigDecimal
+            .valueOf(grams, 11)
+            .setScale(2, java.math.RoundingMode.DOWN)
+            .stripTrailingZeros()
+            .toPlainString()
 }
 
 /** Reads Board and Treasury in one call, then the current Round (its PDA from Board.round_id), and checks they agree. */
-class OreObserver(private val reader: AccountReader, private val nowMs: () -> Long = System::currentTimeMillis) {
+class OreObserver(
+    private val reader: AccountReader,
+    private val nowMs: () -> Long = System::currentTimeMillis,
+) {
     companion object {
         /** Screenshot tests must not depend on live RPC availability or changing mainnet rounds. */
         @androidx.annotation.VisibleForTesting
         @Volatile internal var testSource: (suspend () -> OreSnapshot)? = null
     }
+
     suspend fun read(): OreSnapshot {
         testSource?.let { return it() }
         val first = reader.accounts(listOf(OreV3.BOARD_ADDRESS, OreV3.TREASURY_ADDRESS))
@@ -70,13 +98,23 @@ class OreObserver(private val reader: AccountReader, private val nowMs: () -> Lo
         val second = reader.accounts(listOf(OreV3.roundAddress(board.roundId)))
         val r = second.accounts[0] ?: throw OreV3.DecodeException("Round ${board.roundId} account not found")
         val round = OreV3.decodeRound(r.owner, r.data)
-        if (round.id != board.roundId) throw OreV3.DecodeException("Round account id ${round.id} does not match Board.round_id ${board.roundId}")
+        if (round.id !=
+            board.roundId
+        ) {
+            throw OreV3.DecodeException("Round account id ${round.id} does not match Board.round_id ${board.roundId}")
+        }
         return OreSnapshot(reader.endpoint, board, first.slot, treasury, round, second.slot, nowMs(), reader.slotRate())
     }
 }
 
 /** ORE screen state. [snapshot] is the last successful read; [error] the last failure (the old snapshot stays, labelled with its time). */
-data class OreState(val rpc: String = DEFAULT_RPC, val snapshot: OreSnapshot? = null, val loading: Boolean = false, val error: String? = null, val rpcError: String? = null) {
+data class OreState(
+    val rpc: String = DEFAULT_RPC,
+    val snapshot: OreSnapshot? = null,
+    val loading: Boolean = false,
+    val error: String? = null,
+    val rpcError: String? = null,
+) {
     companion object {
         /** Public mainnet RPC, used only for read-only observation. Configurable on the ORE screen. */
         const val DEFAULT_RPC = "https://api.mainnet-beta.solana.com"
@@ -84,5 +122,14 @@ data class OreState(val rpc: String = DEFAULT_RPC, val snapshot: OreSnapshot? = 
 }
 
 /** Advisor chat. [backend] is null when no AI path is configured ("Not configured"). */
-data class AdvisorMessage(val fromUser: Boolean, val text: String, val time: Long)
-data class AdvisorState(val messages: List<AdvisorMessage> = emptyList(), val busy: Boolean = false, val error: String? = null)
+data class AdvisorMessage(
+    val fromUser: Boolean,
+    val text: String,
+    val time: Long,
+)
+
+data class AdvisorState(
+    val messages: List<AdvisorMessage> = emptyList(),
+    val busy: Boolean = false,
+    val error: String? = null,
+)

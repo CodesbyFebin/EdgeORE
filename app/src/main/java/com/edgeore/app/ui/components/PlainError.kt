@@ -3,7 +3,6 @@ package com.edgeore.app.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,7 +28,10 @@ import com.edgeore.app.ui.theme.EdgeType
  * values, codes and receipts are untouched.
  */
 object PlainError {
-    enum class Area(val target: String, val fallback: String) {
+    enum class Area(
+        val target: String,
+        val fallback: String,
+    ) {
         ON_DEVICE_AI("the on-device model", "The on-device model could not run. Nothing was generated."),
         OWNED_HOST("your AI host", "Your AI host did not complete the request. No answer was produced."),
         NODE("your node", "The node request did not complete. Last known data is kept."),
@@ -38,7 +40,22 @@ object PlainError {
     const val MAX_DETAIL = 300
 
     private val technicalSymbols = listOf("://", "/", "{", "[", "_", "\\")
-    private val technicalWords = listOf("http", "https", "tls", "ssl", "exception", "json", "localhost", "traceback", "stack", "null", "errno", "status code", "error code")
+    private val technicalWords =
+        listOf(
+            "http",
+            "https",
+            "tls",
+            "ssl",
+            "exception",
+            "json",
+            "localhost",
+            "traceback",
+            "stack",
+            "null",
+            "errno",
+            "status code",
+            "error code",
+        )
 
     /** True when the text already reads as plain language: short and without markers of an internal detail. */
     fun isPlain(text: String?): Boolean {
@@ -51,14 +68,26 @@ object PlainError {
     }
 
     /** The sentence to show first. */
-    fun headline(raw: String, area: Area): String {
+    fun headline(
+        raw: String,
+        area: Area,
+    ): String {
         if (isPlain(raw)) return raw.trim()
         val l = raw.lowercase()
         return when {
             listOf("tls", "ssl", "certificate", "handshake").any { l.contains(it) } ->
                 "The secure connection to ${area.target} was refused. Check the certificate SHA-256."
-            listOf("timeout", "timed out").any { l.contains(it) } -> "${area.target.replaceFirstChar { it.uppercase() }} took too long to answer. Try again."
-            listOf("unknownhost", "connectexception", "unreachable", "network error", "connection refused", "no route").any { l.contains(it) } ->
+            listOf("timeout", "timed out").any {
+                l.contains(it)
+            } -> "${area.target.replaceFirstChar { it.uppercase() }} took too long to answer. Try again."
+            listOf(
+                "unknownhost",
+                "connectexception",
+                "unreachable",
+                "network error",
+                "connection refused",
+                "no route",
+            ).any { l.contains(it) } ->
                 "Couldn't reach ${area.target}. Check the network and the address."
             l.contains("allowlist") -> "The model list failed its check, so no on-device models are offered."
             else -> area.fallback
@@ -75,7 +104,10 @@ object PlainError {
 
 /** Error notice: plain headline, then an optional disclosure with the exact original text. */
 @Composable
-fun PlainNotice(raw: String, area: PlainError.Area) {
+fun PlainNotice(
+    raw: String,
+    area: PlainError.Area,
+) {
     var open by rememberSaveable(raw) { mutableStateOf(false) }
     val detail = PlainError.detail(raw)
     Column(Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, verticalArrangement = Arrangement.spacedBy(dp4)) {
@@ -87,4 +119,6 @@ fun PlainNotice(raw: String, area: PlainError.Area) {
     }
 }
 
-private val dp4 = androidx.compose.ui.unit.Dp(4f)
+private val dp4 =
+    androidx.compose.ui.unit
+        .Dp(4f)

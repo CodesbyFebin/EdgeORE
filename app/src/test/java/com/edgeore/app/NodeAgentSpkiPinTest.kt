@@ -14,15 +14,27 @@ import java.io.File
 class NodeAgentSpkiPinTest {
     companion object {
         private lateinit var server: TlsTestServer
-        @BeforeClass @JvmStatic fun start() { server = TlsTestServer { _, _, _ -> 200 to "{}" } }
-        @AfterClass @JvmStatic fun stop() { server.close() }
+
+        @BeforeClass @JvmStatic
+        fun start() {
+            server = TlsTestServer { _, _, _ -> 200 to "{}" }
+        }
+
+        @AfterClass @JvmStatic
+        fun stop() {
+            server.close()
+        }
     }
 
     @Test fun spkiPinAndCertificatePinBothMatchAndOthersDoNot() {
         val cert = server.certificate
         assertTrue(NodeAgentClient(server.url, SpkiPinning.format(cert)).matches(cert))
         assertTrue(NodeAgentClient(server.url, Sha256.hex(cert.encoded)).matches(cert))
-        val other = "sha256/" + java.util.Base64.getEncoder().encodeToString(ByteArray(32) { 7 })
+        val other =
+            "sha256/" +
+                java.util.Base64
+                    .getEncoder()
+                    .encodeToString(ByteArray(32) { 7 })
         assertFalse(NodeAgentClient(server.url, other).matches(cert))
         // An SPKI hash given in the hex form is treated as a certificate hash and does not match.
         assertFalse(NodeAgentClient(server.url, Sha256.hex(cert.publicKey.encoded)).matches(cert))

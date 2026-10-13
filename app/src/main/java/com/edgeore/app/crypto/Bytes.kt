@@ -5,6 +5,7 @@ import java.security.MessageDigest
 
 object Hex {
     fun encode(bytes: ByteArray): String = bytes.joinToString("") { "%02x".format(it) }
+
     fun decode(hex: String): ByteArray {
         require(hex.length % 2 == 0 && hex.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }) { "INVALID_HEX" }
         return ByteArray(hex.length / 2) { i -> hex.substring(i * 2, i * 2 + 2).toInt(16).toByte() }
@@ -13,7 +14,9 @@ object Hex {
 
 object Sha256 {
     fun digest(bytes: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(bytes)
+
     fun hex(bytes: ByteArray): String = Hex.encode(digest(bytes))
+
     fun hex(text: String): String = hex(text.toByteArray(Charsets.UTF_8))
 }
 
@@ -31,7 +34,9 @@ object Base58 {
             sb.append(ALPHABET[r.toInt()])
             value = q
         }
-        for (b in input) { if (b.toInt() == 0) sb.append('1') else break }
+        for (b in input) {
+            if (b.toInt() == 0) sb.append('1') else break
+        }
         return sb.reverse().toString()
     }
 

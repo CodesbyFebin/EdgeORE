@@ -21,18 +21,38 @@ class SpkiPinningTest {
         private val ack = """{"state":"acknowledged","remoteRef":"$digest","ciphertextSha256":"$digest","observedAt":"2026-10-11T00:00:00Z"}"""
         private lateinit var server: TlsTestServer
 
-        @BeforeClass @JvmStatic fun start() { server = TlsTestServer { _, _, _ -> 200 to ack } }
-        @AfterClass @JvmStatic fun stop() { server.close() }
+        @BeforeClass @JvmStatic
+        fun start() {
+            server = TlsTestServer { _, _, _ -> 200 to ack }
+        }
+
+        @AfterClass @JvmStatic
+        fun stop() {
+            server.close()
+        }
     }
 
     private val token = { "t".repeat(40) }
-    private val otherPin = "sha256/" + java.util.Base64.getEncoder().encodeToString(ByteArray(32) { 7 })
+    private val otherPin =
+        "sha256/" +
+            java.util.Base64
+                .getEncoder()
+                .encodeToString(ByteArray(32) { 7 })
+
     private fun provider(pins: List<String>) = OwnedGatewayBackupProvider(server.url, token, pins)
 
-    @Before fun reset() { server.requests.set(0); server.bodyBytes.set(0) }
+    @Before fun reset() {
+        server.requests.set(0)
+        server.bodyBytes.set(0)
+    }
 
     @Test fun correctPinConnectsAndUploads() {
-        val obs = runBlocking { provider(listOf(SpkiPinning.format(server.certificate))).upload(UploadRequest("job-1", body, digest, body.size.toLong())) }
+        val obs =
+            runBlocking {
+                provider(
+                    listOf(SpkiPinning.format(server.certificate)),
+                ).upload(UploadRequest("job-1", body, digest, body.size.toLong()))
+            }
         assertTrue(obs is ProviderObservation.Acknowledged)
         assertEquals(1, server.requests.get())
         assertEquals(body.size.toLong(), server.bodyBytes.get())
@@ -45,14 +65,20 @@ class SpkiPinningTest {
     }
 
     @Test fun wrongPinFailsBeforeAnyRequestOrBodyIsSent() {
-        val e = runCatching { runBlocking { provider(listOf(otherPin)).upload(UploadRequest("job-1", body, digest, body.size.toLong())) } }.exceptionOrNull()
+        val e =
+            runCatching {
+                runBlocking { provider(listOf(otherPin)).upload(UploadRequest("job-1", body, digest, body.size.toLong())) }
+            }.exceptionOrNull()
         assertTrue("expected a TLS failure, got $e", e is javax.net.ssl.SSLException)
         assertEquals(0, server.requests.get())
         assertEquals(0L, server.bodyBytes.get())
     }
 
     @Test fun noPinRefusesSelfSignedHostBeforeAnyRequest() {
-        val e = runCatching { runBlocking { provider(emptyList()).upload(UploadRequest("job-1", body, digest, body.size.toLong())) } }.exceptionOrNull()
+        val e =
+            runCatching {
+                runBlocking { provider(emptyList()).upload(UploadRequest("job-1", body, digest, body.size.toLong())) }
+            }.exceptionOrNull()
         assertTrue("expected a TLS failure, got $e", e is javax.net.ssl.SSLException)
         assertEquals(0, server.requests.get())
         assertEquals(0L, server.bodyBytes.get())

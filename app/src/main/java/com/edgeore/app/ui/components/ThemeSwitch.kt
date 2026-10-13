@@ -27,17 +27,38 @@ import com.edgeore.app.ui.theme.ThemeMode
 
 /** Settings: Dark | Light | System. The choice is persisted by the caller (ThemePrefs). */
 @Composable
-fun ThemeSwitch(mode: ThemeMode, onSelect: (ThemeMode) -> Unit) {
+fun ThemeSwitch(
+    mode: ThemeMode,
+    onSelect: (ThemeMode) -> Unit,
+) {
     Column(Modifier.fillMaxWidth().testTag("theme-switch")) {
         Text("Theme", style = MaterialTheme.typography.titleSmall, color = EdgeColors.textPrimary)
-        Row(Modifier.fillMaxWidth().padding(top = 6.dp).border(1.dp, EdgeColors.border, EdgeShapes.pill).padding(3.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 6.dp)
+                .border(1.dp, EdgeColors.border, EdgeShapes.pill)
+                .padding(3.dp),
+        ) {
             ThemeMode.entries.forEach { m ->
                 val on = m == mode
-                Box(Modifier.weight(1f).heightIn(min = 44.dp).background(if (on) EdgeColors.surfacePressed else Color.Transparent, EdgeShapes.pill)
-                    .then(if (on) Modifier.border(1.dp, EdgeColors.mint, EdgeShapes.pill) else Modifier)
-                    .clickable(role = Role.Tab) { onSelect(m) }.semantics { selected = on }.testTag("theme-${m.name.lowercase()}"),
-                    contentAlignment = Alignment.Center) {
-                    Text(m.label, color = if (on) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)
+                Box(
+                    Modifier
+                        .weight(
+                            1f,
+                        ).heightIn(min = 44.dp)
+                        .background(if (on) EdgeColors.surfacePressed else Color.Transparent, EdgeShapes.pill)
+                        .then(if (on) Modifier.border(1.dp, EdgeColors.mint, EdgeShapes.pill) else Modifier)
+                        .clickable(role = Role.Tab) { onSelect(m) }
+                        .semantics { selected = on }
+                        .testTag("theme-${m.name.lowercase()}"),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        m.label,
+                        color = if (on) EdgeColors.textPrimary else EdgeColors.textMuted,
+                        fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
+                    )
                 }
             }
         }

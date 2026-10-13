@@ -23,13 +23,37 @@ class ReceiptTamperTest {
 
     private fun logWithThree(): ReceiptLog {
         val log = ReceiptLog(tmp.newFile("r.jsonl").also { it.delete() }, signer)
-        log.append(ReceiptDraft(ReceiptKind.NODE, "PAIRED", "Node paired", "READ_NODE", "https://127.0.0.1:9843", localObservation = Evidence("CHECKED", "pinned TLS")))
+        log.append(
+            ReceiptDraft(
+                ReceiptKind.NODE,
+                "PAIRED",
+                "Node paired",
+                "READ_NODE",
+                "https://127.0.0.1:9843",
+                localObservation = Evidence("CHECKED", "pinned TLS"),
+            ),
+        )
         log.append(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Review refused", "user", "review", "devnet", lamports = 1000))
-        log.append(ReceiptDraft(ReceiptKind.LOCAL_AI, "COMPLETED_ON_OWNED_HOST", "AI", "digests only", "http://127.0.0.1:11434", digests = mapOf("promptSha256" to Sha256.hex("x"))))
+        log.append(
+            ReceiptDraft(
+                ReceiptKind.LOCAL_AI,
+                "COMPLETED_ON_OWNED_HOST",
+                "AI",
+                "digests only",
+                "http://127.0.0.1:11434",
+                digests =
+                    mapOf(
+                        "promptSha256" to Sha256.hex("x"),
+                    ),
+            ),
+        )
         return log
     }
 
-    private fun mutate(export: String, block: (JSONObject) -> Unit): String = JSONObject(export).also(block).toString()
+    private fun mutate(
+        export: String,
+        block: (JSONObject) -> Unit,
+    ): String = JSONObject(export).also(block).toString()
 
     @Test fun untouchedExportAccepted() {
         val log = logWithThree()
@@ -48,10 +72,11 @@ class ReceiptTamperTest {
 
     @Test fun editedBodyRejected() {
         val log = logWithThree()
-        val t = mutate(log.export()) { d ->
-            val e = d.getJSONArray("receipts").getJSONObject(1)
-            e.put("body", e.getString("body").replace("REFUSED", "SUBMITTED"))
-        }
+        val t =
+            mutate(log.export()) { d ->
+                val e = d.getJSONArray("receipts").getJSONObject(1)
+                e.put("body", e.getString("body").replace("REFUSED", "SUBMITTED"))
+            }
         val r = ReceiptVerifier.verify(t, signer.publicKeySpki(), log.all())
         assertFalse(r.accepted)
         assertTrue(r.findings.any { it.contains("does not match body") })
@@ -59,13 +84,14 @@ class ReceiptTamperTest {
 
     @Test fun editedBodyWithRecomputedDigestRejectedBySignature() {
         val log = logWithThree()
-        val t = mutate(log.export()) { d ->
-            val arr = d.getJSONArray("receipts")
-            val e = arr.getJSONObject(1)
-            val body = e.getString("body").replace("REFUSED", "SUBMITTED")
-            e.put("body", body).put("sha256", Sha256.hex(body))
-            d.put("bundleSha256", bundleDigest((0 until arr.length()).map { arr.getJSONObject(it).getString("sha256") }))
-        }
+        val t =
+            mutate(log.export()) { d ->
+                val arr = d.getJSONArray("receipts")
+                val e = arr.getJSONObject(1)
+                val body = e.getString("body").replace("REFUSED", "SUBMITTED")
+                e.put("body", body).put("sha256", Sha256.hex(body))
+                d.put("bundleSha256", bundleDigest((0 until arr.length()).map { arr.getJSONObject(it).getString("sha256") }))
+            }
         val r = ReceiptVerifier.verify(t, signer.publicKeySpki(), log.all())
         assertFalse(r.accepted)
         assertTrue(r.findings.any { it.contains("device signature invalid") })
@@ -74,14 +100,23 @@ class ReceiptTamperTest {
     @Test fun reSignedWithAnotherKeyRejected() {
         val log = logWithThree()
         val attacker = SoftwareReceiptSigner()
-        val t = mutate(log.export()) { d ->
-            val arr = d.getJSONArray("receipts")
-            for (i in 0 until arr.length()) {
-                val e = arr.getJSONObject(i)
-                e.put("deviceSignature", Base64.getEncoder().encodeToString(attacker.sign(com.edgeore.app.receipts.receiptSignaturePayload(JSONObject(e.getString("body")), e.getString("sha256")))))
+        val t =
+            mutate(log.export()) { d ->
+                val arr = d.getJSONArray("receipts")
+                for (i in 0 until arr.length()) {
+                    val e = arr.getJSONObject(i)
+                    e.put(
+                        "deviceSignature",
+                        Base64.getEncoder().encodeToString(
+                            attacker.sign(
+                                com.edgeore.app.receipts
+                                    .receiptSignaturePayload(JSONObject(e.getString("body")), e.getString("sha256")),
+                            ),
+                        ),
+                    )
+                }
+                d.getJSONObject("deviceKey").put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(attacker.publicKeySpki()))
             }
-            d.getJSONObject("deviceKey").put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(attacker.publicKeySpki()))
-        }
         val r = ReceiptVerifier.verify(t, signer.publicKeySpki(), emptyList())
         assertFalse(r.accepted)
         assertTrue(r.findings.any { it.contains("different device key") })
@@ -97,11 +132,14 @@ class ReceiptTamperTest {
 
     @Test fun reorderedReceiptsRejected() {
         val log = logWithThree()
-        val t = mutate(log.export()) { d ->
-            val arr = d.getJSONArray("receipts")
-            val a = arr.getJSONObject(0); val b = arr.getJSONObject(1)
-            arr.put(0, b); arr.put(1, a)
-        }
+        val t =
+            mutate(log.export()) { d ->
+                val arr = d.getJSONArray("receipts")
+                val a = arr.getJSONObject(0)
+                val b = arr.getJSONObject(1)
+                arr.put(0, b)
+                arr.put(1, a)
+            }
         assertFalse(ReceiptVerifier.verify(t, signer.publicKeySpki(), log.all()).accepted)
     }
 
@@ -115,7 +153,22 @@ class ReceiptTamperTest {
         val localId = log.all()[0].id
         val body = JSONObject(entry.getString("body")).put("id", localId).toString()
         val sha = Sha256.hex(body)
-        entry.put("body", body).put("sha256", sha).put("deviceSignature", Base64.getEncoder().encodeToString(signer.sign(com.edgeore.app.receipts.receiptSignaturePayload(JSONObject(body.toString()), sha))))
+        entry
+            .put(
+                "body",
+                body,
+            ).put(
+                "sha256",
+                sha,
+            ).put(
+                "deviceSignature",
+                Base64.getEncoder().encodeToString(
+                    signer.sign(
+                        com.edgeore.app.receipts
+                            .receiptSignaturePayload(JSONObject(body.toString()), sha),
+                    ),
+                ),
+            )
         forged.put("bundleSha256", bundleDigest(listOf(sha)))
         val r = ReceiptVerifier.verify(forged.toString(), signer.publicKeySpki(), log.all())
         assertFalse(r.accepted)

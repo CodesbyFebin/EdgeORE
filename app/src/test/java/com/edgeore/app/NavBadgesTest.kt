@@ -12,9 +12,22 @@ import org.junit.Test
 
 /** Bottom-navigation counts come only from local operation and receipt state. */
 class NavBadgesTest {
-    private fun op(id: String, state: OpState) = PendingOperation(
-        id = id, cluster = "devnet", signer = "S", recipient = "R", lamports = 1, messageSha256 = "00", messageBase64 = "",
-        blockhash = "B", lastValidBlockHeight = 1, budgetDay = "2026-10-11", reviewedAt = "2026-10-11T00:00:00Z", state = state,
+    private fun op(
+        id: String,
+        state: OpState,
+    ) = PendingOperation(
+        id = id,
+        cluster = "devnet",
+        signer = "S",
+        recipient = "R",
+        lamports = 1,
+        messageSha256 = "00",
+        messageBase64 = "",
+        blockhash = "B",
+        lastValidBlockHeight = 1,
+        budgetDay = "2026-10-11",
+        reviewedAt = "2026-10-11T00:00:00Z",
+        state = state,
     )
 
     @Test fun badgesComeOnlyFromLocalStateAndHideAtZero() {

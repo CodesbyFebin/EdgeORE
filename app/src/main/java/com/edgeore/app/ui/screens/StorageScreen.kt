@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.EdgeOreViewModel
-import com.edgeore.app.device.ReadingFreshness
 import com.edgeore.app.StorageState
+import com.edgeore.app.device.ReadingFreshness
 import com.edgeore.app.settings.Control
 import com.edgeore.app.storage.BackupStage
 import com.edgeore.app.storage.LocalState
@@ -61,17 +61,21 @@ import com.edgeore.app.ui.theme.EdgeColors
 import kotlinx.coroutines.delay
 
 @Composable
-fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
+fun StorageScreen(
+    vm: EdgeOreViewModel,
+    onBrowser: () -> Unit,
+) {
     val st by vm.storage.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var exportId by rememberSaveable { mutableStateOf<String?>(null) }
     // Storage Access Framework: the user picks the document; the app never gets broad file access.
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if (uri != null) vm.importVault(uri) }
-    val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
-        val id = exportId
-        if (uri != null && id != null) vm.exportVault(id, uri)
-        exportId = null
-    }
+    val save =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
+            val id = exportId
+            if (uri != null && id != null) vm.exportVault(id, uri)
+            exportId = null
+        }
     LaunchedEffect(Unit) {
         vm.refreshStorage()
         delay(900)
@@ -82,7 +86,10 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     StorageVaultSection(
         st,
         onImport = { pick.launch(arrayOf("*/*")) },
-        onExport = { id, name -> exportId = id; save.launch(name) },
+        onExport = { id, name ->
+            exportId = id
+            save.launch(name)
+        },
         onDelete = vm::deleteVault,
         onAllowance = vm::setAllocationMb,
     )
@@ -94,16 +101,42 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text("Bandwidth sharing", style = MaterialTheme.typography.titleMedium)
-                Text(if (st.sharingConsent) "Consent on. This app is not sending shared traffic." else "Sharing OFF", color = if (st.sharingConsent) EdgeColors.mint else EdgeColors.textMuted)
+                Text(
+                    if (st.sharingConsent) "Consent on. This app is not sending shared traffic." else "Sharing OFF",
+                    color = if (st.sharingConsent) EdgeColors.mint else EdgeColors.textMuted,
+                )
             }
-            Switch(st.sharingConsent, vm::setSharingConsent, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
+            Switch(
+                st.sharingConsent,
+                vm::setSharingConsent,
+                colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction),
+            )
         }
         EffectNote(Control.SHARING_CONSENT)
         Text("Received since boot ${shown(device?.rxSinceBoot)}", style = MaterialTheme.typography.bodyMedium)
         Text("Sent since boot ${shown(device?.txSinceBoot)}", style = MaterialTheme.typography.bodyMedium)
-        Text("Shared by EdgeORE: 0 B. Consent does not start a sharing protocol.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
-        Text("Daily quota you set: ${st.quotaMb} MB. It is not a measured total.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Slider(st.quotaMb.toFloat(), { vm.setQuotaMb(it.toInt()) }, valueRange = 50f..2000f, modifier = Modifier.fillMaxWidth().height(48.dp), colors = SliderDefaults.colors(thumbColor = EdgeColors.copper, activeTrackColor = EdgeColors.copper))
+        Text(
+            "Shared by EdgeORE: 0 B. Consent does not start a sharing protocol.",
+            color = EdgeColors.copper,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            "Daily quota you set: ${st.quotaMb} MB. It is not a measured total.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Slider(
+            st.quotaMb.toFloat(),
+            {
+                vm.setQuotaMb(it.toInt())
+            },
+            valueRange = 50f..2000f,
+            modifier =
+                Modifier.fillMaxWidth().height(
+                    48.dp,
+                ),
+            colors = SliderDefaults.colors(thumbColor = EdgeColors.copper, activeTrackColor = EdgeColors.copper),
+        )
         EffectNote(Control.SHARING_QUOTA)
         PrimaryAction("Stop all sharing", icon = EdgeIcons.Pause, enabled = st.sharingConsent) { vm.setSharingConsent(false) }
     }
@@ -112,13 +145,21 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
         Text("Bandwidth earning", style = MaterialTheme.typography.titleMedium)
         Text("Protocol not qualified", color = EdgeColors.copper)
         Text("ORE rewards: Not observed", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
-        Text("No bandwidth-to-ORE contract is verified. Claim stays off.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "No bandwidth-to-ORE contract is verified. Claim stays off.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         SecondaryAction("Claim (Not available)", enabled = false) {}
     }
 
     EdgeCard {
         Text("In-app browser", style = MaterialTheme.typography.titleMedium)
-        Text("Open tabs in this app: 0 until you load one https page. Cookies start off.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Open tabs in this app: 0 until you load one https page. Cookies start off.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         SecondaryAction("Open browser") { onBrowser() }
     }
 
@@ -133,10 +174,18 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
             color = EdgeColors.copper,
         )
         SecondaryAction("Connect") { vm.setBlockOnDisconnect(st.blockOnDisconnect) }
-        Text("Connect does not start a tunnel. No endpoint is configured.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)
+        Text(
+            "Connect does not start a tunnel. No endpoint is configured.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.labelSmall,
+        )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("Block traffic on disconnect", modifier = Modifier.weight(1f))
-            Switch(st.blockOnDisconnect, vm::setBlockOnDisconnect, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
+            Switch(
+                st.blockOnDisconnect,
+                vm::setBlockOnDisconnect,
+                colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction),
+            )
         }
         EffectNote(Control.KILL_SWITCH)
     }
@@ -144,11 +193,25 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     EdgeCard {
         Text("Resource telemetry", style = MaterialTheme.typography.titleMedium)
         val freshness = ReadingFreshness.label(device?.observedAtElapsedMs, android.os.SystemClock.elapsedRealtime(), st.deviceReadFailed)
-        Text("$freshness. Applies to every device reading on this page.",
-            color = if (freshness.startsWith("Read under")) EdgeColors.textMuted else EdgeColors.copper, style = MaterialTheme.typography.labelSmall)
-        Text("CPU ${device?.cpuPercent?.let { "$it% between readings" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)
-        Text("Battery ${device?.batteryPercent?.let { "$it%" } ?: "not observed"} · drain ${device?.batteryPercentPerHour?.let { "$it% per hour at the current draw" } ?: "not reported"}", style = MaterialTheme.typography.bodyMedium)
-        Text("Disk I/O ${device?.ioBytesPerSec?.let { "${formatBytes(it)}/s since the last reading" } ?: "waiting for a second reading"}", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "$freshness. Applies to every device reading on this page.",
+            color = if (freshness.startsWith("Read under")) EdgeColors.textMuted else EdgeColors.copper,
+            style = MaterialTheme.typography.labelSmall,
+        )
+        Text(
+            "CPU ${device?.cpuPercent?.let { "$it% between readings" } ?: "waiting for a second reading"}",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            "Battery ${device?.batteryPercent?.let {
+                "$it%"
+            } ?: "not observed"} · drain ${device?.batteryPercentPerHour?.let { "$it% per hour at the current draw" } ?: "not reported"}",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            "Disk I/O ${device?.ioBytesPerSec?.let { "${formatBytes(it)}/s since the last reading" } ?: "waiting for a second reading"}",
+            style = MaterialTheme.typography.bodyMedium,
+        )
         SecondaryAction("Read again") { vm.refreshStorage() }
     }
 
@@ -165,7 +228,11 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
         Text("No idle sync job is registered.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("Pause sharing consent on metered")
-            Switch(st.pauseOnMetered, vm::setPauseOnMetered, colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction))
+            Switch(
+                st.pauseOnMetered,
+                vm::setPauseOnMetered,
+                colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.onAction),
+            )
         }
         EffectNote(Control.PAUSE_ON_METERED)
     }
@@ -173,27 +240,41 @@ fun StorageScreen(vm: EdgeOreViewModel, onBrowser: () -> Unit) {
     EdgeCard {
         Text("Storage audit trail", style = MaterialTheme.typography.titleMedium)
         Text("${st.auditCount} event(s) written on this phone.", style = MaterialTheme.typography.bodyMedium)
-        Text(st.auditOk?.let { if (it) "Chain matches." else "Chain does not match." } ?: "Integrity not checked yet.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            st.auditOk?.let {
+                if (it) "Chain matches." else "Chain does not match."
+            } ?: "Integrity not checked yet.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SecondaryAction("Verify integrity", Modifier.weight(1f)) { vm.verifyStorageAudit() }
             SecondaryAction("Export log", Modifier.weight(1f)) {
                 val text = vm.storageAuditText()
                 val file = java.io.File(context.cacheDir, "edgeore-storage-audit.jsonl")
                 file.writeText(text)
-                Toast.makeText(context, if (text.isEmpty()) "Audit log is empty." else "Wrote ${file.name} in cache.", Toast.LENGTH_LONG).show()
+                Toast
+                    .makeText(
+                        context,
+                        if (text.isEmpty()) "Audit log is empty." else "Wrote ${file.name} in cache.",
+                        Toast.LENGTH_LONG,
+                    ).show()
             }
         }
     }
 
     EdgeCard {
         Text("Permissions", style = MaterialTheme.typography.titleMedium)
-        Text("Revoke clears sharing consent. Encrypted files stay until you delete them.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Revoke clears sharing consent. Encrypted files stay until you delete them.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SecondaryAction("Revoke access", Modifier.weight(1f)) { vm.restoreStorageDefaults() }
             SecondaryAction("Restore secure defaults", Modifier.weight(1f)) { vm.restoreStorageDefaults() }
         }
     }
-
 }
 
 @Composable
@@ -215,7 +296,10 @@ fun BrowserScreen() {
                     loadUrl(go)
                 }
             },
-            update = { it.settings.javaScriptEnabled = script; if (it.url != go) it.loadUrl(go) },
+            update = {
+                it.settings.javaScriptEnabled = script
+                if (it.url != go) it.loadUrl(go)
+            },
             modifier = Modifier.fillMaxWidth().height(420.dp),
         )
     } else if (go.isNotEmpty()) {
@@ -226,19 +310,36 @@ fun BrowserScreen() {
 @Composable
 private fun UsageRing(fraction: Float) {
     Canvas(Modifier.size(88.dp)) {
-        drawArc(EdgeColors.border, 0f, 360f, false, style = androidx.compose.ui.graphics.drawscope.Stroke(10.dp.toPx()))
-        drawArc(EdgeColors.mint, -90f, 360f * fraction, false, style = androidx.compose.ui.graphics.drawscope.Stroke(10.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
+        drawArc(
+            EdgeColors.border,
+            0f,
+            360f,
+            false,
+            style =
+                androidx.compose.ui.graphics.drawscope
+                    .Stroke(10.dp.toPx()),
+        )
+        drawArc(
+            EdgeColors.mint,
+            -90f,
+            360f * fraction,
+            false,
+            style =
+                androidx.compose.ui.graphics.drawscope
+                    .Stroke(10.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round),
+        )
     }
 }
 
 internal fun shown(n: Long?): String = if (n == null) "not observed" else formatBytes(n)
 
-internal fun formatBytes(n: Long): String = when {
-    n < 1024 -> "$n B"
-    n < 1024 * 1024 -> "${n / 1024} KB"
-    n < 1024L * 1024 * 1024 -> "%.1f MB".format(n / (1024.0 * 1024.0))
-    else -> "%.2f GB".format(n / (1024.0 * 1024.0 * 1024.0))
-}
+internal fun formatBytes(n: Long): String =
+    when {
+        n < 1024 -> "$n B"
+        n < 1024 * 1024 -> "${n / 1024} KB"
+        n < 1024L * 1024 * 1024 -> "%.1f MB".format(n / (1024.0 * 1024.0))
+        else -> "%.2f GB".format(n / (1024.0 * 1024.0 * 1024.0))
+    }
 
 /**
  * The Storage page's vault and remote-backup sections. Stateless apart from dialog visibility, so it
@@ -253,23 +354,37 @@ fun StorageVaultSection(
     onDelete: (id: String) -> Unit,
     onAllowance: (Int) -> Unit,
 ) {
-    com.edgeore.app.ui.components.SecureWindow()
+    com.edgeore.app.ui.components
+        .SecureWindow()
     var confirmExport by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var inspect by rememberSaveable { mutableStateOf<String?>(null) }
     var configure by rememberSaveable { mutableStateOf(false) }
     // Hardening 16: the vault is created by the first import, so the loss warning is shown (and acknowledged) then.
-    val prefs = androidx.compose.ui.platform.LocalContext.current.getSharedPreferences("vault_ui", android.content.Context.MODE_PRIVATE)
+    val prefs =
+        androidx.compose.ui.platform.LocalContext.current
+            .getSharedPreferences("vault_ui", android.content.Context.MODE_PRIVATE)
     var lossWarning by rememberSaveable { mutableStateOf(false) }
-    val startImport = { if (VaultLossWarning.needed(st.files.isEmpty(), prefs.getBoolean(VaultLossWarning.ACK_KEY, false))) lossWarning = true else onImport() }
+    val startImport = {
+        if (VaultLossWarning.needed(st.files.isEmpty(), prefs.getBoolean(VaultLossWarning.ACK_KEY, false))) {
+            lossWarning =
+                true
+        } else {
+            onImport()
+        }
+    }
     if (lossWarning) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { lossWarning = false },
             title = { Text(VaultLossWarning.TITLE) },
             text = { Text(VaultLossWarning.BODY) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = {
-                prefs.edit().putBoolean(VaultLossWarning.ACK_KEY, true).apply(); lossWarning = false; onImport()
-            }) { Text("I understand, create vault") } },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    prefs.edit().putBoolean(VaultLossWarning.ACK_KEY, true).apply()
+                    lossWarning = false
+                    onImport()
+                }) { Text("I understand, create vault") }
+            },
             dismissButton = { androidx.compose.material3.TextButton(onClick = { lossWarning = false }) { Text("Cancel") } },
         )
     }
@@ -280,18 +395,47 @@ fun StorageVaultSection(
 
     EdgeCard {
         Text("Encrypted vault", style = MaterialTheme.typography.titleMedium)
-        Text("AES-256-GCM. The key stays in this phone's Android Keystore.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "AES-256-GCM. The key stays in this phone's Android Keystore.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         KeyValue("Vault usage", "${formatBytes(st.usedBytes)} encrypted · ${st.files.size} file(s)")
-        KeyValue("Configured allowance", if (st.allocationMb == 0) "Not set" else "${st.allocationMb} MB · ${formatBytes((allowanceBytes - st.usedBytes).coerceAtLeast(0))} left")
+        KeyValue(
+            "Configured allowance",
+            if (st.allocationMb ==
+                0
+            ) {
+                "Not set"
+            } else {
+                "${st.allocationMb} MB · ${formatBytes((allowanceBytes - st.usedBytes).coerceAtLeast(0))} left"
+            },
+        )
         KeyValue("Available on device", if (free == null) "Not observed" else formatBytes(free))
-        Text("Limits enforced while reading: ${LocalVault.MAX_PLAIN_BYTES / 1_000_000} MB per file, the allowance if set, and phone free space.",
-            color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Slider(st.allocationMb.toFloat(), { onAllowance(it.toInt()) }, valueRange = 0f..2048f, modifier = Modifier.fillMaxWidth().height(48.dp),
-            colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint))
+        Text(
+            "Limits enforced while reading: ${LocalVault.MAX_PLAIN_BYTES / 1_000_000} MB per file, the allowance if set, and phone free space.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Slider(
+            st.allocationMb.toFloat(),
+            { onAllowance(it.toInt()) },
+            valueRange = 0f..2048f,
+            modifier = Modifier.fillMaxWidth().height(48.dp),
+            colors = SliderDefaults.colors(thumbColor = EdgeColors.mint, activeTrackColor = EdgeColors.mint),
+        )
         EffectNote(Control.VAULT_ALLOWANCE)
-        PrimaryAction(if (st.busy) "Working…" else "Import file", icon = EdgeIcons.Storage, enabled = !st.busy, loading = st.busy) { startImport() }
-        Text("Only this installation's Keystore key can decrypt these files. Uninstalling the app, resetting the phone or losing the device-bound key makes them unrecoverable.",
-            color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+        PrimaryAction(
+            if (st.busy) "Working…" else "Import file",
+            icon = EdgeIcons.Storage,
+            enabled = !st.busy,
+            loading = st.busy,
+        ) { startImport() }
+        Text(
+            "Only this installation's Keystore key can decrypt these files. Uninstalling the app, resetting the phone or losing the device-bound key makes them unrecoverable.",
+            color = EdgeColors.copper,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         if (st.note.isNotBlank()) Text(st.note, color = EdgeColors.textPrimary, style = MaterialTheme.typography.bodyMedium)
     }
 
@@ -299,23 +443,39 @@ fun StorageVaultSection(
         Text("Files", style = MaterialTheme.typography.titleMedium)
         if (st.views.isEmpty()) {
             Text("No files in the vault yet.", style = MaterialTheme.typography.bodyMedium)
-            Text("Tap Import file and choose a document. EdgeORE encrypts it on this phone and keeps only the encrypted copy.",
-                color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Tap Import file and choose a document. EdgeORE encrypts it on this phone and keeps only the encrypted copy.",
+                color = EdgeColors.textMuted,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
-        st.views.forEach { f -> FileRow(f, onExport = { confirmExport = f.entry.id }, onInspect = { inspect = f.entry.id }, onDelete = { confirmDelete = f.entry.id }) }
+        st.views.forEach { f ->
+            FileRow(f, onExport = { confirmExport = f.entry.id }, onInspect = { inspect = f.entry.id }, onDelete = {
+                confirmDelete =
+                    f.entry.id
+            })
+        }
     }
 
     EdgeCard {
         Text("Remote backup", style = MaterialTheme.typography.titleMedium)
-        val (label, color) = when (val b = st.backup) {
-            is ProviderAvailability.NotConfigured -> "Not configured" to EdgeColors.copper
-            is ProviderAvailability.Unavailable -> "Unavailable: ${b.reason}" to EdgeColors.copper
-            is ProviderAvailability.Configured -> "Configured: ${b.label}" to EdgeColors.mint
-        }
+        val (label, color) =
+            when (val b = st.backup) {
+                is ProviderAvailability.NotConfigured -> "Not configured" to EdgeColors.copper
+                is ProviderAvailability.Unavailable -> "Unavailable: ${b.reason}" to EdgeColors.copper
+                is ProviderAvailability.Configured -> "Configured: ${b.label}" to EdgeColors.mint
+            }
         Text(label, color = color)
-        Text("Optional device-bound encrypted backup: this phone → an authenticated EdgeORE backend → your own IPFS node. Only ciphertext would be sent; file names stay on this phone.",
-            color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Text("Nothing is uploaded until a backend is configured. Cross-device recovery is not implemented.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Optional device-bound encrypted backup: this phone → an authenticated EdgeORE backend → your own IPFS node. Only ciphertext would be sent; file names stay on this phone.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            "Nothing is uploaded until a backend is configured. Cross-device recovery is not implemented.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         SecondaryAction("Configure remote backup") { configure = true }
     }
 
@@ -325,8 +485,17 @@ fun StorageVaultSection(
         AlertDialog(
             onDismissRequest = { confirmExport = null },
             title = { Text("Export a decrypted copy?") },
-            text = { Text("EdgeORE will decrypt ${f.entry.displayName} and write it to a location you choose. That copy is no longer protected by the vault.") },
-            confirmButton = { TextButton(onClick = { confirmExport = null; onExport(f.entry.id, f.entry.displayName) }) { Text("Export decrypted copy") } },
+            text = {
+                Text(
+                    "EdgeORE will decrypt ${f.entry.displayName} and write it to a location you choose. That copy is no longer protected by the vault.",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmExport = null
+                    onExport(f.entry.id, f.entry.displayName)
+                }) { Text("Export decrypted copy") }
+            },
             dismissButton = { TextButton(onClick = { confirmExport = null }) { Text("Cancel") } },
         )
     }
@@ -337,10 +506,23 @@ fun StorageVaultSection(
             onDismissRequest = { confirmDelete = null },
             title = { Text("Delete ${f.entry.displayName} from this phone?") },
             text = {
-                Text("This deletes the local encrypted copy. It cannot be undone. " +
-                    if (remote != null) "The remote backup is not deleted by this action; remove it on your node." else "There is no remote backup of this file.")
+                Text(
+                    "This deletes the local encrypted copy. It cannot be undone. " +
+                        if (remote !=
+                            null
+                        ) {
+                            "The remote backup is not deleted by this action; remove it on your node."
+                        } else {
+                            "There is no remote backup of this file."
+                        },
+                )
             },
-            confirmButton = { TextButton(onClick = { confirmDelete = null; onDelete(f.entry.id) }) { Text("Delete local copy", color = EdgeColors.danger) } },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = null
+                    onDelete(f.entry.id)
+                }) { Text("Delete local copy", color = EdgeColors.danger) }
+            },
             dismissButton = { TextButton(onClick = { confirmDelete = null }) { Text("Cancel") } },
         )
     }
@@ -360,9 +542,16 @@ fun StorageVaultSection(
             title = { Text("Remote backup: Not configured") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("This build has no EdgeORE backup backend to connect to, so there is nothing to configure yet and no upload can run.")
-                    Text("A backend must authenticate this phone, keep IPFS credentials and administrative endpoints on the server, and report a pin only after your node acknowledges it.")
-                    Text("Backups would be device-bound: only this installation's Keystore key can decrypt them. Cross-device recovery is not implemented.", color = EdgeColors.copper)
+                    Text(
+                        "This build has no EdgeORE backup backend to connect to, so there is nothing to configure yet and no upload can run.",
+                    )
+                    Text(
+                        "A backend must authenticate this phone, keep IPFS credentials and administrative endpoints on the server, and report a pin only after your node acknowledges it.",
+                    )
+                    Text(
+                        "Backups would be device-bound: only this installation's Keystore key can decrypt them. Cross-device recovery is not implemented.",
+                        color = EdgeColors.copper,
+                    )
                 }
             },
             confirmButton = { TextButton(onClick = { configure = false }) { Text("Close") } },
@@ -371,14 +560,28 @@ fun StorageVaultSection(
 }
 
 @Composable
-private fun FileRow(f: VaultFileView, onExport: () -> Unit, onInspect: () -> Unit, onDelete: () -> Unit) {
+private fun FileRow(
+    f: VaultFileView,
+    onExport: () -> Unit,
+    onInspect: () -> Unit,
+    onDelete: () -> Unit,
+) {
     Column(
         Modifier.fillMaxWidth().border(1.dp, EdgeColors.border, RoundedCornerShape(12.dp)).padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(f.entry.displayName, style = MaterialTheme.typography.titleSmall)
-        Text(if (f.entry.plainBytes >= 0) formatBytes(f.entry.plainBytes) else "Size unknown" + if (f.entry.legacy) " · legacy format" else "",
-            color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            if (f.entry.plainBytes >=
+                0
+            ) {
+                formatBytes(f.entry.plainBytes)
+            } else {
+                "Size unknown" + if (f.entry.legacy) " · legacy format" else ""
+            },
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         StateLine("Local", f.local.label, if (f.local == LocalState.ENCRYPTED_LOCALLY) EdgeColors.mint else EdgeColors.danger)
         StateLine("Remote backup", f.remote.label, remoteColor(f.remote))
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -390,19 +593,24 @@ private fun FileRow(f: VaultFileView, onExport: () -> Unit, onInspect: () -> Uni
 }
 
 @Composable
-private fun StateLine(key: String, value: String, color: Color) {
+private fun StateLine(
+    key: String,
+    value: String,
+    color: Color,
+) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(key, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         Text(value, color = color, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
-private fun remoteColor(r: RemoteState): Color = when (r) {
-    RemoteState.PINNED, RemoteState.RESTORE_VERIFIED -> EdgeColors.mint
-    RemoteState.FAILED -> EdgeColors.danger
-    RemoteState.NO_BACKUP -> EdgeColors.textMuted
-    else -> EdgeColors.copper
-}
+private fun remoteColor(r: RemoteState): Color =
+    when (r) {
+        RemoteState.PINNED, RemoteState.RESTORE_VERIFIED -> EdgeColors.mint
+        RemoteState.FAILED -> EdgeColors.danger
+        RemoteState.NO_BACKUP -> EdgeColors.textMuted
+        else -> EdgeColors.copper
+    }
 
 /** Each checkpoint is shown separately; an earlier one never implies a later one. */
 @Composable
@@ -410,6 +618,7 @@ private fun BackupStatusDetail(f: VaultFileView) {
     val j = f.job
     val restore = j?.restoreStage ?: RestoreStage.NONE
     val reached = { s: RestoreStage -> j != null && restore != RestoreStage.FAILED && restore.ordinal >= s.ordinal }
+
     fun mark(b: Boolean) = if (b) "Observed" else "Not observed"
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         KeyValue("Local", f.local.label)
@@ -421,8 +630,16 @@ private fun BackupStatusDetail(f: VaultFileView) {
         KeyValue("Restore verified", mark(reached(RestoreStage.RESTORE_VERIFIED)))
         j?.lastObservation?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }
         j?.restoreDetail?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }
-        if (j == null) Text("No backup job exists for this file.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        Text("Device-bound encrypted backup only: cross-device recovery is not implemented.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+        if (j ==
+            null
+        ) {
+            Text("No backup job exists for this file.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+        }
+        Text(
+            "Device-bound encrypted backup only: cross-device recovery is not implemented.",
+            color = EdgeColors.copper,
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
@@ -431,28 +648,62 @@ private fun BackupStatusDetail(f: VaultFileView) {
  * encrypted-chunk round trip. SPKI pins are required: without one the part stays "Not configured".
  */
 @Composable
-fun GatewaySetupCard(g: com.edgeore.app.GatewayState, onSave: (endpoint: String, token: String, pins: String) -> Unit, onRemove: () -> Unit) {
+fun GatewaySetupCard(
+    g: com.edgeore.app.GatewayState,
+    onSave: (endpoint: String, token: String, pins: String) -> Unit,
+    onRemove: () -> Unit,
+) {
     var endpoint by rememberSaveable { mutableStateOf(g.endpoint ?: "") }
     var token by remember { mutableStateOf("") }
     var pins by rememberSaveable { mutableStateOf("") }
     EdgeCard {
         Text("Your storage gateway", style = MaterialTheme.typography.titleMedium)
         if (g.endpoint != null) {
-            Text("Set up: ${g.endpoint} · ${g.pinCount} SPKI pin${if (g.pinCount == 1) "" else "s"} · token ${if (g.tokenStored) "stored (Keystore-encrypted)" else "missing"}",
-                color = EdgeColors.mint, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Set up: ${g.endpoint} · ${g.pinCount} SPKI pin${if (g.pinCount == 1) "" else "s"} · token ${if (g.tokenStored) "stored (Keystore-encrypted)" else "missing"}",
+                color = EdgeColors.mint,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         } else {
-            Text("Set up storage to let Start Mining store an encrypted chunk on your own gateway.", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Set up storage to let Start Mining store an encrypted chunk on your own gateway.",
+                color = EdgeColors.copper,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
-        Text("Run services/storage-gateway on a host you own behind an HTTPS proxy. Enter its origin, its bearer token and the SHA-256 SPKI pin of its certificate (sha256/… as printed by openssl). Requests are refused in the TLS handshake unless the pin matches.",
-            color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(endpoint, { endpoint = it }, label = { Text("Gateway origin (https://host:port)") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(token, { token = it }, label = { Text("Bearer token (32+ characters)") }, singleLine = true,
-            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(pins, { pins = it }, label = { Text("SPKI pins, one per line") }, minLines = 2, modifier = Modifier.fillMaxWidth())
+        Text(
+            "Run services/storage-gateway on a host you own behind an HTTPS proxy. Enter its origin, its bearer token and the SHA-256 SPKI pin of its certificate (sha256/… as printed by openssl). Requests are refused in the TLS handshake unless the pin matches.",
+            color = EdgeColors.textMuted,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        OutlinedTextField(endpoint, {
+            endpoint = it
+        }, label = { Text("Gateway origin (https://host:port)") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            token,
+            { token = it },
+            label = { Text("Bearer token (32+ characters)") },
+            singleLine = true,
+            visualTransformation =
+                androidx.compose.ui.text.input
+                    .PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            pins,
+            { pins = it },
+            label = { Text("SPKI pins, one per line") },
+            minLines = 2,
+            modifier = Modifier.fillMaxWidth(),
+        )
         g.error?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium) }
         g.note?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SecondaryAction("Save gateway", enabled = endpoint.isNotBlank() && token.isNotBlank() && pins.isNotBlank()) { onSave(endpoint, token, pins); token = "" }
+            SecondaryAction("Save gateway", enabled = endpoint.isNotBlank() && token.isNotBlank() && pins.isNotBlank()) {
+                onSave(endpoint, token, pins)
+                token =
+                    ""
+            }
             if (g.endpoint != null) SecondaryAction("Remove", danger = true, onClick = onRemove)
         }
     }
@@ -462,8 +713,13 @@ fun GatewaySetupCard(g: com.edgeore.app.GatewayState, onSave: (endpoint: String,
 object VaultLossWarning {
     const val ACK_KEY = "vault_loss_warning_ack_v1"
     const val TITLE = "Files in this vault can be lost for good"
-    const val BODY = "The vault key lives only in this phone's Android Keystore. If you uninstall EdgeORE, clear its data, " +
-        "reset or lose the phone, or the Keystore key is invalidated, every file in the vault becomes unreadable. " +
-        "There is no recovery phrase and EdgeORE cannot restore them. Keep your own copy of anything important."
-    fun needed(vaultEmpty: Boolean, acknowledged: Boolean): Boolean = vaultEmpty && !acknowledged
+    const val BODY =
+        "The vault key lives only in this phone's Android Keystore. If you uninstall EdgeORE, clear its data, " +
+            "reset or lose the phone, or the Keystore key is invalidated, every file in the vault becomes unreadable. " +
+            "There is no recovery phrase and EdgeORE cannot restore them. Keep your own copy of anything important."
+
+    fun needed(
+        vaultEmpty: Boolean,
+        acknowledged: Boolean,
+    ): Boolean = vaultEmpty && !acknowledged
 }

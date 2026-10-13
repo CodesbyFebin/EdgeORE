@@ -18,9 +18,21 @@ import javax.net.ssl.SSLSession
 import javax.net.ssl.X509TrustManager
 
 sealed class NodeResult<out T> {
-    data class Ok<T>(val value: T, val operationId: String?, val payloadSha256: String?) : NodeResult<T>()
-    data class Refused(val code: String, val message: String, val operationId: String?) : NodeResult<Nothing>()
-    data class Unreachable(val message: String) : NodeResult<Nothing>()
+    data class Ok<T>(
+        val value: T,
+        val operationId: String?,
+        val payloadSha256: String?,
+    ) : NodeResult<T>()
+
+    data class Refused(
+        val code: String,
+        val message: String,
+        val operationId: String?,
+    ) : NodeResult<Nothing>()
+
+    data class Unreachable(
+        val message: String,
+    ) : NodeResult<Nothing>()
 }
 
 /**
@@ -28,14 +40,26 @@ sealed class NodeResult<out T> {
  * established only by pinning the exact certificate SHA-256 the agent prints at start-up.
  * No arbitrary shell commands exist in this protocol.
  */
-class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeoutMs: Int = 10_000) {
+class NodeAgentClient(
+    endpoint: String,
+    certSha256Hex: String,
+    private val timeoutMs: Int = 10_000,
+) {
     val baseUrl: String
     private val pin: ByteArray
+
     /** Set when the owner pinned the agent's public key (SPKI SHA-256) instead of the exact certificate. */
     private val spkiPin: ByteArray?
 
     init {
-        val uri = try { URI(endpoint.trim().trimEnd('/')) } catch (_: Exception) { throw IllegalArgumentException("Endpoint is not a valid URL") }
+        val uri =
+            try {
+                URI(endpoint.trim().trimEnd('/'))
+            } catch (
+                _: Exception,
+            ) {
+                throw IllegalArgumentException("Endpoint is not a valid URL")
+            }
         require(uri.scheme == "https") { "Endpoint must use https://" }
         require(!uri.host.isNullOrBlank()) { "Endpoint needs a host" }
         require(uri.rawPath.isNullOrEmpty() && uri.rawQuery == null && uri.userInfo == null) { "Endpoint must be scheme://host:port only" }
@@ -43,7 +67,9 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
         val raw = certSha256Hex.trim()
         if (raw.startsWith("sha256/")) {
             // SPKI pin (hardening 8): survives a certificate re-issue that keeps the agent's key pair.
-            spkiPin = com.edgeore.app.storage.SpkiPinning.parse(raw)
+            spkiPin =
+                com.edgeore.app.storage.SpkiPinning
+                    .parse(raw)
             pin = ByteArray(0)
         } else {
             val cleaned = raw.lowercase().replace(":", "")
@@ -54,35 +80,55 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
     }
 
     /** Exact-certificate pin (legacy form) or SPKI pin; never CA trust. */
-    internal fun matches(leaf: X509Certificate): Boolean = spkiPin?.let { MessageDigest.isEqual(com.edgeore.app.storage.SpkiPinning.spkiSha256(leaf), it) }
-        ?: MessageDigest.isEqual(Sha256.digest(leaf.encoded), pin)
+    internal fun matches(leaf: X509Certificate): Boolean =
+        spkiPin?.let {
+            MessageDigest.isEqual(
+                com.edgeore.app.storage.SpkiPinning
+                    .spkiSha256(leaf),
+                it,
+            )
+        }
+            ?: MessageDigest.isEqual(Sha256.digest(leaf.encoded), pin)
 
     // Deliberate: this is certificate pinning (exact leaf SHA-256), stricter than CA trust for a
     // self-signed, owner-run agent. It never accepts an unpinned certificate.
     @SuppressLint("CustomX509TrustManager")
-    private val trustManager = object : X509TrustManager {
-        override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-            throw java.security.cert.CertificateException("Client certificates are not accepted")
-        }
-        override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-            val leaf = chain?.firstOrNull() ?: throw java.security.cert.CertificateException("No server certificate")
-            if (!matches(leaf)) {
-                throw java.security.cert.CertificateException("Certificate does not match the pinned SHA-256")
+    private val trustManager =
+        object : X509TrustManager {
+            override fun checkClientTrusted(
+                chain: Array<out X509Certificate>?,
+                authType: String?,
+            ): Unit = throw java.security.cert.CertificateException("Client certificates are not accepted")
+
+            override fun checkServerTrusted(
+                chain: Array<out X509Certificate>?,
+                authType: String?,
+            ) {
+                val leaf = chain?.firstOrNull() ?: throw java.security.cert.CertificateException("No server certificate")
+                if (!matches(leaf)) {
+                    throw java.security.cert.CertificateException("Certificate does not match the pinned SHA-256")
+                }
+                leaf.checkValidity()
             }
-            leaf.checkValidity()
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
         }
-        override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
-    }
 
     /** The pinned leaf replaces name-based trust (agent certs name only 127.0.0.1/localhost). */
-    private val pinVerifier = HostnameVerifier { _: String?, session: SSLSession ->
-        val leaf = session.peerCertificates.firstOrNull() as? X509Certificate
-        leaf != null && matches(leaf)
-    }
+    private val pinVerifier =
+        HostnameVerifier { _: String?, session: SSLSession ->
+            val leaf = session.peerCertificates.firstOrNull() as? X509Certificate
+            leaf != null && matches(leaf)
+        }
 
     private val sslContext: SSLContext = SSLContext.getInstance("TLS").apply { init(null, arrayOf(trustManager), null) }
 
-    fun pair(challenge: NodeAgentProtocol.Challenge, code: String, scopes: List<String>, key: Ed25519.KeyPair): NodeResult<String> {
+    fun pair(
+        challenge: NodeAgentProtocol.Challenge,
+        code: String,
+        scopes: List<String>,
+        key: Ed25519.KeyPair,
+    ): NodeResult<String> {
         require(scopes.isNotEmpty() && scopes.all { it in NodeAgentProtocol.KNOWN_SCOPES }) { "Unsupported scope" }
         require(code.isNotBlank()) { "Pairing code required" }
         val pub = NodeAgentProtocol.b64(key.publicKey)
@@ -98,7 +144,13 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
         }
     }
 
-    fun command(sessionId: String, key: Ed25519.KeyPair, action: String, now: Instant = Instant.now(), paramsJson: String = "{}"): NodeResult<JSONObject> {
+    fun command(
+        sessionId: String,
+        key: Ed25519.KeyPair,
+        action: String,
+        now: Instant = Instant.now(),
+        paramsJson: String = "{}",
+    ): NodeResult<JSONObject> {
         val op = NodeAgentProtocol.newOperationId()
         val payload = NodeAgentProtocol.commandPayload(sessionId, op, now.plusSeconds(30), action, paramsJson).toByteArray(Charsets.UTF_8)
         val body = NodeAgentProtocol.signedEnvelope(payload, key.sign(payload))
@@ -111,13 +163,31 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
     }
 
     private sealed interface HttpOutcome {
-        data class Ok(val json: JSONObject) : HttpOutcome
-        data class Error(val code: String) : HttpOutcome
-        data class Unreachable(val message: String) : HttpOutcome
+        data class Ok(
+            val json: JSONObject,
+        ) : HttpOutcome
+
+        data class Error(
+            val code: String,
+        ) : HttpOutcome
+
+        data class Unreachable(
+            val message: String,
+        ) : HttpOutcome
     }
 
-    private fun post(path: String, body: String): HttpOutcome {
-        val conn = try { URL(baseUrl + path).openConnection() as HttpsURLConnection } catch (e: Exception) { return HttpOutcome.Unreachable("Invalid endpoint") }
+    private fun post(
+        path: String,
+        body: String,
+    ): HttpOutcome {
+        val conn =
+            try {
+                URL(baseUrl + path).openConnection() as HttpsURLConnection
+            } catch (
+                e: Exception,
+            ) {
+                return HttpOutcome.Unreachable("Invalid endpoint")
+            }
         return try {
             conn.sslSocketFactory = sslContext.socketFactory
             conn.hostnameVerifier = pinVerifier
@@ -136,7 +206,14 @@ class NodeAgentClient(endpoint: String, certSha256Hex: String, private val timeo
             if (status in 200..299) {
                 HttpOutcome.Ok(JSONObject(text))
             } else {
-                val code = try { JSONObject(text).optString("error", "HTTP_$status") } catch (_: Exception) { text.trim().ifEmpty { "HTTP_$status" }.take(80) }
+                val code =
+                    try {
+                        JSONObject(text).optString("error", "HTTP_$status")
+                    } catch (
+                        _: Exception,
+                    ) {
+                        text.trim().ifEmpty { "HTTP_$status" }.take(80)
+                    }
                 HttpOutcome.Error(code)
             }
         } catch (e: javax.net.ssl.SSLException) {

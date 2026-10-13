@@ -15,17 +15,22 @@ import org.junit.runner.RunWith
 /** Launches the real Activity and walks the five destinations, checking honest default states. */
 @RunWith(AndroidJUnit4::class)
 class AppSmokeTest {
-    @get:Rule(order = 0) val onboarded = OnboardingSeenRule()
-    @get:Rule(order = 1) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val onboarded = OnboardingSeenRule()
 
-    private fun exists(text: String, substring: Boolean = true) =
-        assertTrue("missing: $text", rule.onAllNodesWithText(text, substring = substring).fetchSemanticsNodes().isNotEmpty())
+    @get:Rule(order = 1)
+    val rule = createAndroidComposeRule<MainActivity>()
+
+    private fun exists(
+        text: String,
+        substring: Boolean = true,
+    ) = assertTrue("missing: $text", rule.onAllNodesWithText(text, substring = substring).fetchSemanticsNodes().isNotEmpty())
 
     @Test fun walksAllDestinations() {
         exists("Edge Mode")
         exists("Not connected")
         exists("Not observed")
-        exists("Saved only")          // CPU limit states it is not enforced
+        exists("Saved only") // CPU limit states it is not enforced
 
         rule.onNodeWithText("AI", substring = false).performClick()
         exists("Personal Edge AI")
@@ -35,9 +40,9 @@ class AppSmokeTest {
 
         rule.onNodeWithText("Storage", substring = false).performClick()
         exists("Encrypted on this device. Backup stays under your control.")
-        exists("Not configured")      // remote backup: no EdgeORE backend in this build
+        exists("Not configured") // remote backup: no EdgeORE backend in this build
         exists("No files in the vault yet.")
-        exists("Unavailable")         // kill switch: no VPN tunnel exists
+        exists("Unavailable") // kill switch: no VPN tunnel exists
 
         rule.onNodeWithText("Nodes", substring = false).performClick()
         exists("Owned Nodes")

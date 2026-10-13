@@ -1,15 +1,18 @@
 package com.edgeore.app
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.unit.dp
 import com.edgeore.app.ore.AdvisorState
 import com.edgeore.app.ore.OreAdvisor
 import com.edgeore.app.ore.OreSnapshot
@@ -18,19 +21,15 @@ import com.edgeore.app.ore.OreV3
 import com.edgeore.app.ui.screens.ORE_DEPLOY_UNAVAILABLE
 import com.edgeore.app.ui.screens.OreContent
 import com.edgeore.app.ui.theme.EdgeOreTheme
-import org.junit.Assert.assertEquals
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
-import org.robolectric.annotation.GraphicsMode
-import org.robolectric.annotation.ConscryptMode
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.ConscryptMode
+import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @ConscryptMode(ConscryptMode.Mode.OFF)
@@ -38,11 +37,31 @@ import org.robolectric.annotation.Config
 class OreScreenTest {
     @get:Rule val rule = createComposeRule()
     private val f = OreV3Test.Fixture("mainnet-round-437127.json")
-    private val snap = OreSnapshot("https://api.mainnet-beta.solana.com", OreV3.decodeBoard(f.board.owner, f.board.data), f.slot("board"),
-        OreV3.decodeTreasury(f.treasury.owner, f.treasury.data), OreV3.decodeRound(f.round.owner, f.round.data), f.slot("round"), 1_000L, f.rate)
+    private val snap =
+        OreSnapshot(
+            "https://api.mainnet-beta.solana.com",
+            OreV3.decodeBoard(f.board.owner, f.board.data),
+            f.slot("board"),
+            OreV3.decodeTreasury(f.treasury.owner, f.treasury.data),
+            OreV3.decodeRound(f.round.owner, f.round.data),
+            f.slot("round"),
+            1_000L,
+            f.rate,
+        )
 
-    private fun show(state: OreState, backend: String?, advisor: AdvisorState = AdvisorState()) = rule.setContent {
-        EdgeOreTheme { androidx.compose.foundation.layout.Column(androidx.compose.ui.Modifier.androidxScroll()) { OreContent(state, advisor, backend, 1_000L, {}, {}, {}, {}) } }
+    private fun show(
+        state: OreState,
+        backend: String?,
+        advisor: AdvisorState = AdvisorState(),
+    ) = rule.setContent {
+        EdgeOreTheme {
+            androidx.compose.foundation.layout.Column(
+                androidx.compose.ui.Modifier
+                    .androidxScroll(),
+            ) {
+                OreContent(state, advisor, backend, 1_000L, {}, {}, {}, {})
+            }
+        }
     }
 
     @Test fun proGridShowsTheRealPerSquareSolAndNoActingControls() {
@@ -98,18 +117,37 @@ class OreScreenTest {
 @Config(sdk = [28], qualifiers = "w360dp-h1600dp-xhdpi")
 class OrePreviewFrames {
     @get:Rule val rule = createComposeRule()
+
     @Test fun frames() {
         val out = System.getenv("ORE_FRAMES_OUT")
         org.junit.Assume.assumeTrue(!out.isNullOrBlank())
         val dir = java.io.File(out!!).apply { mkdirs() }
         val f = OreV3Test.Fixture(System.getenv("ORE_FRAMES_FIXTURE") ?: "mainnet-round-437134.json")
-        val snap = OreSnapshot(f.j.getString("rpc"), OreV3.decodeBoard(f.board.owner, f.board.data), f.slot("board"),
-            OreV3.decodeTreasury(f.treasury.owner, f.treasury.data), OreV3.decodeRound(f.round.owner, f.round.data), f.slot("round"),
-            java.time.Instant.parse(f.j.getString("capturedAtUtc")).toEpochMilli(), f.rate)
+        val snap =
+            OreSnapshot(
+                f.j.getString("rpc"),
+                OreV3.decodeBoard(f.board.owner, f.board.data),
+                f.slot("board"),
+                OreV3.decodeTreasury(f.treasury.owner, f.treasury.data),
+                OreV3.decodeRound(f.round.owner, f.round.data),
+                f.slot("round"),
+                java.time.Instant
+                    .parse(f.j.getString("capturedAtUtc"))
+                    .toEpochMilli(),
+                f.rate,
+            )
         rule.setContent {
             EdgeOreTheme {
-                androidx.compose.material3.Surface(androidx.compose.ui.Modifier.fillMaxSizeCompat(), color = com.edgeore.app.ui.theme.EdgeColors.background, contentColor = com.edgeore.app.ui.theme.EdgeColors.textPrimary) {
-                    androidx.compose.foundation.layout.Column(androidx.compose.ui.Modifier.padding16()) {
+                androidx.compose.material3.Surface(
+                    androidx.compose.ui.Modifier
+                        .fillMaxSizeCompat(),
+                    color = com.edgeore.app.ui.theme.EdgeColors.background,
+                    contentColor = com.edgeore.app.ui.theme.EdgeColors.textPrimary,
+                ) {
+                    androidx.compose.foundation.layout.Column(
+                        androidx.compose.ui.Modifier
+                            .padding16(),
+                    ) {
                         OreContent(OreState(snapshot = snap), AdvisorState(), null, snap.observedAtMs, {}, {}, {}, {})
                     }
                 }
@@ -117,11 +155,18 @@ class OrePreviewFrames {
         }
         rule.waitForIdle()
         rule.onRoot().captureRoboImage(java.io.File(dir, "ore-pro.png").path)
-        rule.onNodeWithText("Lite").performClick(); rule.waitForIdle()
+        rule.onNodeWithText("Lite").performClick()
+        rule.waitForIdle()
         rule.onRoot().captureRoboImage(java.io.File(dir, "ore-lite.png").path)
     }
 }
 
 private fun androidx.compose.ui.Modifier.fillMaxSizeCompat() = this.fillMaxSize()
-private fun androidx.compose.ui.Modifier.padding16() = this.then(androidx.compose.ui.Modifier.padding(16.dp))
+
+private fun androidx.compose.ui.Modifier.padding16() =
+    this.then(
+        androidx.compose.ui.Modifier
+            .padding(16.dp),
+    )
+
 private fun androidx.compose.ui.Modifier.androidxScroll(): androidx.compose.ui.Modifier = this

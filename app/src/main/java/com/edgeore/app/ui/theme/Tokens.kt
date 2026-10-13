@@ -42,12 +42,25 @@ object EdgeTouch {
 
 object EdgeType {
     /** Large numbers (balances, counts) with tight tracking. */
-    fun display(size: Int, weight: FontWeight = FontWeight.SemiBold) =
-        TextStyle(fontSize = size.sp, fontWeight = weight, letterSpacing = (-0.02).em, lineHeight = (size * 1.2f).sp)
+    fun display(
+        size: Int,
+        weight: FontWeight = FontWeight.SemiBold,
+    ) = TextStyle(fontSize = size.sp, fontWeight = weight, letterSpacing = (-0.02).em, lineHeight = (size * 1.2f).sp)
 
     /** Hashes, addresses, byte counts and codes only (design.md §2). */
-    fun mono(size: Int = 12, weight: FontWeight = FontWeight.Normal) =
-        TextStyle(fontSize = size.coerceAtLeast(12).sp, fontWeight = weight, fontFamily = FontFamily.Monospace, lineHeight = (size.coerceAtLeast(12) * 1.34f).sp)
+    fun mono(
+        size: Int = 12,
+        weight: FontWeight = FontWeight.Normal,
+    ) = TextStyle(
+        fontSize = size.coerceAtLeast(12).sp,
+        fontWeight = weight,
+        fontFamily = FontFamily.Monospace,
+        lineHeight =
+            (
+                size.coerceAtLeast(12) *
+                    1.34f
+            ).sp,
+    )
 
     /** Small uppercase-free caption used above a value. Never below 12 sp. */
     val caption = TextStyle(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium)

@@ -2,9 +2,9 @@ package com.edgeore.app
 
 import com.edgeore.app.device.BatteryDrain
 import com.edgeore.app.device.CpuSample
+import com.edgeore.app.device.DiskSample
 import com.edgeore.app.device.ReadingFreshness
 import com.edgeore.app.device.ReadingFreshness.State
-import com.edgeore.app.device.DiskSample
 import com.edgeore.app.device.ioBytesPerSecond
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -26,12 +26,13 @@ class DeviceMetersTest {
 
     @Test
     fun diskSkipsPartitions() {
-        val text = """
+        val text =
+            """
             8 0 sda 1 0 100 0 1 0 50 0 0 0 0
             8 1 sda1 9 0 900 0 9 0 900 0 0 0 0
             259 0 nvme0n1 0 0 10 0 0 0 0 0 0 0 0
             259 1 nvme0n1p1 0 0 99 0 0 0 0 0 0 0 0
-        """.trimIndent()
+            """.trimIndent()
         assertEquals((100 + 50 + 10) * 512L, DiskSample.parse(text)!!.bytes)
     }
 

@@ -28,7 +28,9 @@ import javax.net.ssl.X509TrustManager
  * - Hostname: platform hostname check, or a pinned leaf (owned hosts are often reached by IP literal).
  * Every refusal happens in the TLS handshake, before any request header or body is written.
  */
-class SpkiPinning(pins: Collection<String>) {
+class SpkiPinning(
+    pins: Collection<String>,
+) {
     private val pins: List<ByteArray> = pins.map(::parse)
 
     val isEmpty: Boolean get() = pins.isEmpty()
@@ -38,41 +40,61 @@ class SpkiPinning(pins: Collection<String>) {
         return pins.any { MessageDigest.isEqual(it, spki) }
     }
 
-    private val platform: X509TrustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-        .apply { init(null as KeyStore?) }.trustManagers.filterIsInstance<X509TrustManager>().first()
+    private val platform: X509TrustManager =
+        TrustManagerFactory
+            .getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            .apply { init(null as KeyStore?) }
+            .trustManagers
+            .filterIsInstance<X509TrustManager>()
+            .first()
 
     @SuppressLint("CustomX509TrustManager") // Delegates to the platform and only ever narrows what it accepts.
-    private val trustManager = object : X509TrustManager {
-        override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-            throw CertificateException("Client certificates are not accepted")
-        }
+    private val trustManager =
+        object : X509TrustManager {
+            override fun checkClientTrusted(
+                chain: Array<out X509Certificate>?,
+                authType: String?,
+            ): Unit = throw CertificateException("Client certificates are not accepted")
 
-        override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-            if (chain.isNullOrEmpty()) throw CertificateException("No server certificate")
-            val platformTrusted = try { platform.checkServerTrusted(chain, authType); true } catch (e: CertificateException) {
-                if (pins.isEmpty()) throw CertificateException("Server certificate is not trusted by a public CA and no SPKI pin was configured", e)
-                false
+            override fun checkServerTrusted(
+                chain: Array<out X509Certificate>?,
+                authType: String?,
+            ) {
+                if (chain.isNullOrEmpty()) throw CertificateException("No server certificate")
+                val platformTrusted =
+                    try {
+                        platform.checkServerTrusted(chain, authType)
+                        true
+                    } catch (e: CertificateException) {
+                        if (pins.isEmpty()) {
+                            throw CertificateException(
+                                "Server certificate is not trusted by a public CA and no SPKI pin was configured",
+                                e,
+                            )
+                        }
+                        false
+                    }
+                if (pins.isEmpty()) return
+                if (platformTrusted) {
+                    if (chain.none(::pinned)) throw CertificateException("No certificate in the chain matches a configured SPKI pin")
+                } else {
+                    val leaf = chain[0]
+                    if (!pinned(leaf)) throw CertificateException("Self-signed or private certificate does not match a configured SPKI pin")
+                    leaf.checkValidity()
+                }
             }
-            if (pins.isEmpty()) return
-            if (platformTrusted) {
-                if (chain.none(::pinned)) throw CertificateException("No certificate in the chain matches a configured SPKI pin")
-            } else {
-                val leaf = chain[0]
-                if (!pinned(leaf)) throw CertificateException("Self-signed or private certificate does not match a configured SPKI pin")
-                leaf.checkValidity()
-            }
-        }
 
-        override fun getAcceptedIssuers(): Array<X509Certificate> = platform.acceptedIssuers
-    }
+            override fun getAcceptedIssuers(): Array<X509Certificate> = platform.acceptedIssuers
+        }
 
     val socketFactory: SSLSocketFactory = SSLContext.getInstance("TLS").apply { init(null, arrayOf(trustManager), null) }.socketFactory
 
-    val hostnameVerifier = HostnameVerifier { host, session ->
-        if (HttpsURLConnection.getDefaultHostnameVerifier().verify(host, session)) return@HostnameVerifier true
-        val leaf = runCatching { session.peerCertificates.firstOrNull() as? X509Certificate }.getOrNull()
-        pins.isNotEmpty() && leaf != null && pinned(leaf)
-    }
+    val hostnameVerifier =
+        HostnameVerifier { host, session ->
+            if (HttpsURLConnection.getDefaultHostnameVerifier().verify(host, session)) return@HostnameVerifier true
+            val leaf = runCatching { session.peerCertificates.firstOrNull() as? X509Certificate }.getOrNull()
+            pins.isNotEmpty() && leaf != null && pinned(leaf)
+        }
 
     fun apply(connection: HttpsURLConnection) {
         connection.sslSocketFactory = socketFactory

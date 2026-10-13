@@ -23,10 +23,17 @@ class DurableSpendTest {
     @get:Rule val tmp = TemporaryFolder()
     private var now = Instant.parse("2026-10-09T10:00:00Z")
     private val file get() = File(tmp.root, "ops.json")
+
     private fun store() = OperationStore(file, { now })
 
-    private fun reserve(s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0) =
-        s.reserve(cluster, signer, "to", lamports, ByteArray(4) { lamports.toByte() }, "m$lamports", "bh", 10, limit, external)
+    private fun reserve(
+        s: OperationStore,
+        signer: String,
+        lamports: Long,
+        limit: Long = 100,
+        cluster: String = "devnet",
+        external: Long = 0,
+    ) = s.reserve(cluster, signer, "to", lamports, ByteArray(4) { lamports.toByte() }, "m$lamports", "bh", 10, limit, external)
 
     private fun id(r: OperationStore.ReserveResult) = (r as OperationStore.ReserveResult.Reserved).op.id
 
@@ -41,7 +48,7 @@ class DurableSpendTest {
         val s = store()
         val a = id(reserve(s, "A", 60))
         val c = TransferCoordinator(s, FakeGateway(), { now })
-        c.beginSigning(a)                                  // A is now SIGNING: still held
+        c.beginSigning(a) // A is now SIGNING: still held
         assertTrue(reserve(s, "A", 50) is OperationStore.ReserveResult.Refused)
         assertEquals(60L, s.exposure("A", "devnet"))
     }
@@ -49,7 +56,7 @@ class DurableSpendTest {
     @Test fun newReviewAbandonsTheOldUnsignedDraft() {
         val s = store()
         val first = id(reserve(s, "A", 60))
-        val second = id(reserve(s, "A", 70))               // allowed: the unsigned 60 is abandoned, not double counted
+        val second = id(reserve(s, "A", 70)) // allowed: the unsigned 60 is abandoned, not double counted
         assertEquals(OpState.ABANDONED, s.get(first)!!.state)
         assertEquals(OpState.REVIEWED, s.get(second)!!.state)
         assertEquals(70L, s.exposure("A", "devnet"))
@@ -81,20 +88,34 @@ class DurableSpendTest {
 
     @Test fun overflowAndInvalidInputsRefused() {
         val s = store()
-        assertTrue(s.reserve("devnet", "A", "to", Long.MAX_VALUE, ByteArray(1), "m", "bh", 1, Long.MAX_VALUE, externalLamports = 1) is OperationStore.ReserveResult.Refused)
+        assertTrue(
+            s.reserve(
+                "devnet",
+                "A",
+                "to",
+                Long.MAX_VALUE,
+                ByteArray(1),
+                "m",
+                "bh",
+                1,
+                Long.MAX_VALUE,
+                externalLamports = 1,
+            ) is OperationStore.ReserveResult.Refused,
+        )
         assertTrue(reserve(s, "A", 0) is OperationStore.ReserveResult.Refused)
         assertTrue(reserve(s, "A", 10, limit = -1) is OperationStore.ReserveResult.Refused)
         assertTrue(reserve(s, "A", 10, external = -5) is OperationStore.ReserveResult.Refused)
     }
 
-    @Test fun concurrentReservationsNeverExceedTheLimit() = runBlocking {
-        val s = store()
-        // 40 different signers' worth of threads racing on one signer: the unsigned-draft replacement
-        // rule means at most one REVIEWED draft remains, and exposure can never exceed the limit.
-        val results = (1..40).map { i -> async(Dispatchers.Default) { reserve(s, "A", 30 + (i % 3).toLong()) } }.awaitAll()
-        assertTrue(results.any { it is OperationStore.ReserveResult.Reserved })
-        assertTrue(s.exposure("A", "devnet") <= 100)
-        assertEquals(1, s.all().count { it.state == OpState.REVIEWED })
-        assertEquals(s.all().size, OperationStore(file, { now }).all().size) // all persisted
-    }
+    @Test fun concurrentReservationsNeverExceedTheLimit() =
+        runBlocking {
+            val s = store()
+            // 40 different signers' worth of threads racing on one signer: the unsigned-draft replacement
+            // rule means at most one REVIEWED draft remains, and exposure can never exceed the limit.
+            val results = (1..40).map { i -> async(Dispatchers.Default) { reserve(s, "A", 30 + (i % 3).toLong()) } }.awaitAll()
+            assertTrue(results.any { it is OperationStore.ReserveResult.Reserved })
+            assertTrue(s.exposure("A", "devnet") <= 100)
+            assertEquals(1, s.all().count { it.state == OpState.REVIEWED })
+            assertEquals(s.all().size, OperationStore(file, { now }).all().size) // all persisted
+        }
 }

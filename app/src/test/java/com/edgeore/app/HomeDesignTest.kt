@@ -39,14 +39,31 @@ import org.robolectric.annotation.ConscryptMode
 class HomeDesignTest {
     @get:Rule val rule = createComposeRule()
 
-    private fun home(cluster: Cluster, deploy: OreDeployUi) = rule.setContent {
+    private fun home(
+        cluster: Cluster,
+        deploy: OreDeployUi,
+    ) = rule.setContent {
         EdgeOreTheme {
             Surface(Modifier.fillMaxSize(), color = EdgeColors.background, contentColor = EdgeColors.textPrimary) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     NetworkSelector(cluster, {})
                     WalletConnectRow(null, false, cluster, {}, {}, {}, {})
-                    BalanceRow(com.edgeore.app.solana.Balances(), 0L, false, "ORE")
-                    EdgeNodeCard(com.edgeore.app.contribution.SessionView(), false, "", {}, {}, {})
+                    BalanceRow(
+                        com.edgeore.app.solana
+                            .Balances(),
+                        0L,
+                        false,
+                        "ORE",
+                    )
+                    EdgeNodeCard(
+                        com.edgeore.app.contribution
+                            .SessionView(),
+                        false,
+                        "",
+                        {},
+                        {},
+                        {},
+                    )
                     ResourceGrid(null, null, null, com.edgeore.app.device.NetActivity.UNAVAILABLE, true)
                     OreMiningCard(deploy, false, null, {}, {}, {})
                     ContributionToggles(true, true, 20, { it.effect.label }, {}, {})
@@ -55,16 +72,23 @@ class HomeDesignTest {
         }
     }
 
-    private val proDeploy = OreDeployUi(pro = true, proMask = (1 shl 2) or (1 shl 7) or (1 shl 12) or (1 shl 17) or (1 shl 22),
-        availability = OreDeployAvailability.Available("https://api.mainnet-beta.solana.com", 1, 1, 0), mainnet = true)
+    private val proDeploy =
+        OreDeployUi(
+            pro = true,
+            proMask = (1 shl 2) or (1 shl 7) or (1 shl 12) or (1 shl 17) or (1 shl 22),
+            availability = OreDeployAvailability.Available("https://api.mainnet-beta.solana.com", 1, 1, 0),
+            mainnet = true,
+        )
 
     @Test fun homeFollowsTheDesignAndOneNetworkSwitch() {
         home(Cluster.MAINNET, proDeploy)
         rule.onNodeWithText("Wallet not connected").assertExists()
         rule.onNodeWithText("Connect wallet").assertExists()
         rule.onNodeWithText("Round blocks").assertExists()
-        rule.onNodeWithText("01", useUnmergedTree = true).assertExists(); rule.onNodeWithText("25", useUnmergedTree = true).assertExists()
-        rule.onNodeWithTag("check-2", useUnmergedTree = true).assertExists(); rule.onNodeWithTag("check-0", useUnmergedTree = true).assertDoesNotExist()
+        rule.onNodeWithText("01", useUnmergedTree = true).assertExists()
+        rule.onNodeWithText("25", useUnmergedTree = true).assertExists()
+        rule.onNodeWithTag("check-2", useUnmergedTree = true).assertExists()
+        rule.onNodeWithTag("check-0", useUnmergedTree = true).assertDoesNotExist()
         rule.onNodeWithText("Amount per round").assertExists()
         rule.onNodeWithText("Device preferences").assertExists()
         rule.onNodeWithText("Network: Mainnet (from the selector at the top)").assertExists()
@@ -75,7 +99,10 @@ class HomeDesignTest {
         rule.onNodeWithText("Design concept", substring = true).assertDoesNotExist()
         rule.onNodeWithText("Preview only", substring = true).assertDoesNotExist()
         val dir = System.getenv("HOME_FINAL_DIR")
-        if (!dir.isNullOrBlank()) { rule.waitForIdle(); rule.onRoot().captureRoboImage("$dir/home.png") }
+        if (!dir.isNullOrBlank()) {
+            rule.waitForIdle()
+            rule.onRoot().captureRoboImage("$dir/home.png")
+        }
     }
 
     @Test fun homeRendersInLight() {
@@ -85,7 +112,14 @@ class HomeDesignTest {
             rule.onNodeWithText("Round blocks").assertExists()
             org.junit.Assert.assertSame(com.edgeore.app.ui.theme.LightPalette, EdgeColors.palette)
             val dir = System.getenv("HOME_FINAL_DIR")
-            if (!dir.isNullOrBlank()) { rule.waitForIdle(); rule.onRoot().captureRoboImage("$dir/home-light.png") }
-        } finally { com.edgeore.app.ui.theme.ThemeState.mode = com.edgeore.app.ui.theme.ThemeMode.DARK; EdgeColors.palette = com.edgeore.app.ui.theme.DarkPalette }
+            if (!dir.isNullOrBlank()) {
+                rule.waitForIdle()
+                rule.onRoot().captureRoboImage("$dir/home-light.png")
+            }
+        } finally {
+            com.edgeore.app.ui.theme.ThemeState.mode = com.edgeore.app.ui.theme.ThemeMode.DARK
+            EdgeColors.palette =
+                com.edgeore.app.ui.theme.DarkPalette
+        }
     }
 }

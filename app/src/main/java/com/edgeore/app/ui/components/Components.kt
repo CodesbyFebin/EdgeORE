@@ -59,16 +59,24 @@ fun EMark(size: Dp = 32.dp) {
         val skew = w * 0.12f
         listOf(1f, 0.72f, 1f).forEachIndexed { i, len ->
             val top = i * (barH + gap)
-            val p = Path().apply {
-                moveTo(skew, top); lineTo(w * len, top); lineTo(w * len - skew, top + barH); lineTo(0f, top + barH); close()
-            }
+            val p =
+                Path().apply {
+                    moveTo(skew, top)
+                    lineTo(w * len, top)
+                    lineTo(w * len - skew, top + barH)
+                    lineTo(0f, top + barH)
+                    close()
+                }
             drawPath(p, EdgeColors.markGradient)
         }
     }
 }
 
 @Composable
-fun EdgeOreHeader(onSettings: (() -> Unit)? = null, onReview: (() -> Unit)? = null) {
+fun EdgeOreHeader(
+    onSettings: (() -> Unit)? = null,
+    onReview: (() -> Unit)? = null,
+) {
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         EMark(30.dp)
         Spacer(Modifier.width(10.dp))
@@ -77,7 +85,9 @@ fun EdgeOreHeader(onSettings: (() -> Unit)? = null, onReview: (() -> Unit)? = nu
                 withStyle(SpanStyle(color = EdgeColors.textPrimary)) { append("Edge") }
                 withStyle(SpanStyle(color = EdgeColors.copper)) { append("ORE") }
             },
-            fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.weight(1f),
+            fontSize = 28.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.weight(1f),
         )
         if (onReview != null) {
             IconAction(EdgeIcons.Review, "Review a transaction", onReview)
@@ -93,12 +103,18 @@ fun EdgeOreHeader(onSettings: (() -> Unit)? = null, onReview: (() -> Unit)? = nu
 @Composable
 fun ConceptBadge(text: String = "CONCEPT · SAMPLE DATA") {
     Text(
-        text, color = EdgeColors.copper, style = MaterialTheme.typography.labelSmall,
+        text,
+        color = EdgeColors.copper,
+        style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.border(1.dp, EdgeColors.copper, RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 3.dp),
     )
 }
 
-enum class Capability(val label: String, val color: Color, val icon: ImageVector) {
+enum class Capability(
+    val label: String,
+    val color: Color,
+    val icon: ImageVector,
+) {
     IMPLEMENTED("Implemented", EdgeColors.mint, EdgeIcons.Check),
     AVAILABLE("Available", EdgeColors.mint, EdgeIcons.Check),
     UNAVAILABLE("Unavailable", EdgeColors.danger, EdgeIcons.Cross),
@@ -110,7 +126,10 @@ enum class Capability(val label: String, val color: Color, val icon: ImageVector
 
 /** Status always uses text + icon, never color alone. */
 @Composable
-fun CapabilityBadge(cap: Capability, text: String = cap.label) {
+fun CapabilityBadge(
+    cap: Capability,
+    text: String = cap.label,
+) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         Icon(cap.icon, contentDescription = null, tint = cap.color, modifier = Modifier.size(16.dp))
         Text(text, color = cap.color, style = MaterialTheme.typography.bodyMedium)
@@ -118,15 +137,34 @@ fun CapabilityBadge(cap: Capability, text: String = cap.label) {
 }
 
 @Composable
-fun EdgeCard(modifier: Modifier = Modifier, inset: Boolean = false, onClick: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
-    var m = modifier.fillMaxWidth().clip(CardShape).background(if (inset) EdgeColors.surfaceInset else EdgeColors.surface)
-        .border(BorderStroke(1.dp, androidx.compose.ui.graphics.Brush.verticalGradient(listOf(EdgeColors.holoBorder, EdgeColors.border))), CardShape)
+fun EdgeCard(
+    modifier: Modifier = Modifier,
+    inset: Boolean = false,
+    onClick: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    var m =
+        modifier
+            .fillMaxWidth()
+            .clip(CardShape)
+            .background(if (inset) EdgeColors.surfaceInset else EdgeColors.surface)
+            .border(
+                BorderStroke(
+                    1.dp,
+                    androidx.compose.ui.graphics.Brush
+                        .verticalGradient(listOf(EdgeColors.holoBorder, EdgeColors.border)),
+                ),
+                CardShape,
+            )
     if (onClick != null) m = m.clickable(role = Role.Button, onClick = onClick)
     Column(m.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
 }
 
 @Composable
-fun SectionTitle(title: String, subtitle: String? = null) {
+fun SectionTitle(
+    title: String,
+    subtitle: String? = null,
+) {
     Column(Modifier.fillMaxWidth().padding(top = 4.dp)) {
         Text(title, style = MaterialTheme.typography.headlineMedium, color = EdgeColors.textPrimary)
         if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
@@ -135,50 +173,119 @@ fun SectionTitle(title: String, subtitle: String? = null) {
 
 /** Value, source and freshness. A missing value is shown as text, never as zero. */
 @Composable
-fun ObservationCard(modifier: Modifier, icon: ImageVector, title: String, value: String?, missing: String, source: String? = null) {
+fun ObservationCard(
+    modifier: Modifier,
+    icon: ImageVector,
+    title: String,
+    value: String?,
+    missing: String,
+    source: String? = null,
+) {
     EdgeCard(modifier) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Icon(icon, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.size(18.dp))
             Text(title, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textPrimary)
         }
-        Text(value ?: missing, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = if (value == null) EdgeColors.copper else EdgeColors.textPrimary)
+        Text(
+            value ?: missing,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color =
+                if (value ==
+                    null
+                ) {
+                    EdgeColors.copper
+                } else {
+                    EdgeColors.textPrimary
+                },
+        )
         if (source != null) Text(source, style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
     }
 }
 
 @Composable
-fun PrimaryAction(text: String, modifier: Modifier = Modifier, icon: ImageVector? = null, enabled: Boolean = true, loading: Boolean = false, onClick: () -> Unit) {
+fun PrimaryAction(
+    text: String,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    loading: Boolean = false,
+    onClick: () -> Unit,
+) {
     val active = enabled && !loading
     Row(
-        modifier.fillMaxWidth().heightIn(min = 56.dp).clip(ControlShape)
-            .background(if (active) EdgeColors.actionGradient else androidx.compose.ui.graphics.SolidColor(EdgeColors.disabledSurface))
-            .clickable(enabled = active, role = Role.Button, onClick = onClick)
+        modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp)
+            .clip(ControlShape)
+            .background(
+                if (active) {
+                    EdgeColors.actionGradient
+                } else {
+                    androidx.compose.ui.graphics
+                        .SolidColor(EdgeColors.disabledSurface)
+                },
+            ).clickable(enabled = active, role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
     ) {
-        if (loading) CircularProgressIndicator(Modifier.size(20.dp), color = EdgeColors.onAction, strokeWidth = 2.dp)
-        else if (icon != null) Icon(icon, contentDescription = null, tint = if (active) EdgeColors.onAction else EdgeColors.textMuted)
+        if (loading) {
+            CircularProgressIndicator(Modifier.size(20.dp), color = EdgeColors.onAction, strokeWidth = 2.dp)
+        } else if (icon != null) {
+            Icon(icon, contentDescription = null, tint = if (active) EdgeColors.onAction else EdgeColors.textMuted)
+        }
         Spacer(Modifier.width(10.dp))
         Text(text, color = if (active) EdgeColors.onAction else EdgeColors.textMuted, fontWeight = FontWeight.Bold, fontSize = 16.sp)
     }
 }
 
 @Composable
-fun SecondaryAction(text: String, modifier: Modifier = Modifier, enabled: Boolean = true, danger: Boolean = false, onClick: () -> Unit) {
-    val c = if (!enabled) EdgeColors.textMuted else if (danger) EdgeColors.danger else EdgeColors.mint
+fun SecondaryAction(
+    text: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    danger: Boolean = false,
+    onClick: () -> Unit,
+) {
+    val c =
+        if (!enabled) {
+            EdgeColors.textMuted
+        } else if (danger) {
+            EdgeColors.danger
+        } else {
+            EdgeColors.mint
+        }
     Box(
-        modifier.heightIn(min = 48.dp).clip(ControlShape).border(1.dp, c, ControlShape)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier
+            .heightIn(min = 48.dp)
+            .clip(ControlShape)
+            .border(1.dp, c, ControlShape)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center,
     ) { Text(text, color = if (enabled) c else EdgeColors.textMuted, fontWeight = FontWeight.SemiBold) }
 }
 
 /** A row that opens a scoped operation. */
 @Composable
-fun OperationRow(icon: ImageVector, title: String, subtitle: String, enabled: Boolean = true, onClick: () -> Unit) {
+fun OperationRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+) {
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 56.dp).clip(CardShape).clickable(enabled = enabled, role = Role.Button, onClick = onClick).padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
+        Modifier
+            .fillMaxWidth()
+            .heightIn(
+                min = 56.dp,
+            ).clip(CardShape)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Icon(icon, contentDescription = null, tint = if (enabled) EdgeColors.copper else EdgeColors.border)
         Column(Modifier.weight(1f)) {
@@ -190,8 +297,20 @@ fun OperationRow(icon: ImageVector, title: String, subtitle: String, enabled: Bo
 }
 
 @Composable
-fun ResourceControl(icon: ImageVector, label: String, explanation: String, checked: Boolean, enforcement: String, enabled: Boolean = true, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+fun ResourceControl(
+    icon: ImageVector,
+    label: String,
+    explanation: String,
+    checked: Boolean,
+    enforcement: String,
+    enabled: Boolean = true,
+    onChange: (Boolean) -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
         Icon(icon, contentDescription = null, tint = EdgeColors.mint)
         Column(Modifier.weight(1f)) {
             Text(label, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
@@ -199,7 +318,9 @@ fun ResourceControl(icon: ImageVector, label: String, explanation: String, check
             Text(enforcement, style = MaterialTheme.typography.labelSmall, color = EdgeColors.copper)
         }
         Switch(
-            checked = checked, onCheckedChange = onChange, enabled = enabled,
+            checked = checked,
+            onCheckedChange = onChange,
+            enabled = enabled,
             colors = SwitchDefaults.colors(checkedTrackColor = EdgeColors.mint, checkedThumbColor = EdgeColors.textPrimary),
             modifier = Modifier.semantics { contentDescription = label },
         )
@@ -207,47 +328,81 @@ fun ResourceControl(icon: ImageVector, label: String, explanation: String, check
 }
 
 @Composable
-fun KeyValue(key: String, value: String, mono: Boolean = false) {
+fun KeyValue(
+    key: String,
+    value: String,
+    mono: Boolean = false,
+) {
     Column(Modifier.fillMaxWidth()) {
         Text(key, style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
-        Text(value, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textPrimary, fontFamily = if (mono) FontFamily.Monospace else FontFamily.Default)
+        Text(
+            value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = EdgeColors.textPrimary,
+            fontFamily = if (mono) FontFamily.Monospace else FontFamily.Default,
+        )
     }
 }
 
 @Composable
-fun Notice(text: String, error: Boolean = false) {
+fun Notice(
+    text: String,
+    error: Boolean = false,
+) {
     Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Icon(if (error) EdgeIcons.Cross else EdgeIcons.Info, contentDescription = if (error) "Error" else "Note", tint = if (error) EdgeColors.danger else EdgeColors.textMuted, modifier = Modifier.size(18.dp))
+        Icon(
+            if (error) EdgeIcons.Cross else EdgeIcons.Info,
+            contentDescription = if (error) "Error" else "Note",
+            tint = if (error) EdgeColors.danger else EdgeColors.textMuted,
+            modifier = Modifier.size(18.dp),
+        )
         Text(text, color = if (error) EdgeColors.danger else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
 /** Simple line chart; used only for clearly labelled concept previews or measured series. */
 @Composable
-fun LineChart(series: List<Pair<List<Float>, Color>>, modifier: Modifier) {
+fun LineChart(
+    series: List<Pair<List<Float>, Color>>,
+    modifier: Modifier,
+) {
     Canvas(modifier) {
         val maxV = series.flatMap { it.first }.maxOrNull()?.coerceAtLeast(1f) ?: 1f
         series.forEach { (pts, color) ->
             if (pts.size < 2) return@forEach
             val stepX = size.width / (pts.size - 1)
             for (i in 1 until pts.size) {
-                drawLine(color, Offset((i - 1) * stepX, size.height * (1 - pts[i - 1] / maxV)), Offset(i * stepX, size.height * (1 - pts[i] / maxV)), strokeWidth = 4f)
+                drawLine(
+                    color,
+                    Offset((i - 1) * stepX, size.height * (1 - pts[i - 1] / maxV)),
+                    Offset(
+                        i * stepX,
+                        size.height * (1 - pts[i] / maxV),
+                    ),
+                    strokeWidth = 4f,
+                )
             }
         }
     }
 }
 
 @Composable
-fun RowScope.Tile(content: @Composable ColumnScope.() -> Unit) { Column(Modifier.weight(1f), content = content) }
+fun RowScope.Tile(content: @Composable ColumnScope.() -> Unit) {
+    Column(Modifier.weight(1f), content = content)
+}
 
 /** States the real effect of a control: Enforced / Saved only / Unavailable, with text and icon. */
 @Composable
-fun EffectNote(control: com.edgeore.app.settings.Control, detail: String = control.detail) {
-    val cap = when (control.effect) {
-        com.edgeore.app.settings.Effect.ENFORCED -> Capability.IMPLEMENTED
-        com.edgeore.app.settings.Effect.SAVED_ONLY -> Capability.NOT_OBSERVED
-        com.edgeore.app.settings.Effect.UNAVAILABLE -> Capability.UNAVAILABLE
-    }
+fun EffectNote(
+    control: com.edgeore.app.settings.Control,
+    detail: String = control.detail,
+) {
+    val cap =
+        when (control.effect) {
+            com.edgeore.app.settings.Effect.ENFORCED -> Capability.IMPLEMENTED
+            com.edgeore.app.settings.Effect.SAVED_ONLY -> Capability.NOT_OBSERVED
+            com.edgeore.app.settings.Effect.UNAVAILABLE -> Capability.UNAVAILABLE
+        }
     Column(Modifier.fillMaxWidth().semantics { contentDescription = "${control.title}: ${control.effect.label}. $detail" }) {
         CapabilityBadge(cap, control.effect.label)
         Text(detail, style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)

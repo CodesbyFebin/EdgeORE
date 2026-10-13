@@ -1,8 +1,8 @@
 package com.edgeore.app.screens
 
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.edgeore.app.MainActivity
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -17,10 +17,16 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = "w360dp-h800dp-normal-notround-any-420dpi-keyshidden-nonav")
 class MintInterfaceTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val onboarded = OnboardingSeen()
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
+
+    @get:Rule(order = 1)
+    val onboarded = OnboardingSeen()
+
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
     private val out = System.getProperty("screens.out") ?: "build/screenshots"
+
     @Test fun connectShowsSolanaConsentWithoutSigning() {
         rule.onNodeWithTag("connect").performScrollTo().performClick()
         // Merged Mine (#22) also titles its card "Connect a Solana wallet", so the sheet adds a second node.
@@ -28,11 +34,13 @@ class MintInterfaceTest {
         rule.onNodeWithText("Continue to wallet", substring = false).assertExists()
         rule.onAllNodes(isRoot()).onLast().captureRoboImage("$out/mint/wallet-chooser.png")
     }
+
     @Test fun settingsUseOptInRemindersAndScrollableBuildDisclosure() {
         rule.onNodeWithContentDescription("Settings and build").performClick()
         rule.onNodeWithText("Optional daily reminder", substring = false).assertExists()
         rule.onAllNodes(isRoot()).onLast().captureRoboImage("$out/mint/settings.png")
     }
+
     @Test fun helpShowsCurrentStateWithoutClaimingEarnings() {
         rule.onNodeWithContentDescription("ORE Bot help").performClick()
         rule.onNodeWithText("ORE Bot · Basic help", substring = false).assertExists()
@@ -45,16 +53,30 @@ class MintInterfaceTest {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = "w360dp-h800dp-normal-notround-any-420dpi-keyshidden-nonav", fontScale = 2f)
 class MintLargeTextTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val onboarded = OnboardingSeen()
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
+
+    @get:Rule(order = 1)
+    val onboarded = OnboardingSeen()
+
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
+
     @Test fun walletAndReviewRemainReachableAtTwoHundredPercent() {
         rule.onNodeWithTag("connect").performScrollTo().assertHasClickAction()
         rule.onNodeWithText("Send SOL (devnet transfer review)", substring = false).performScrollTo().performClick()
         rule.onAllNodesWithText("Review", substring = true).onFirst().assertExists()
         rule.onAllNodes(isRoot()).onLast().captureRoboImage("${System.getProperty("screens.out")}/mint/review-200percent.png")
-        rule.onNodeWithTag("nav-Settings").performScrollTo().assertIsDisplayed().performClick()
-        rule.onNodeWithTag("settings-receipts").performScrollTo().assertIsDisplayed().performClick()
+        rule
+            .onNodeWithTag("nav-Settings")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
+        rule
+            .onNodeWithTag("settings-receipts")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
         rule.onNodeWithText("No receipts yet.", substring = false).assertExists()
     }
 }

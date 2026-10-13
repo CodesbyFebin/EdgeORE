@@ -4,11 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -52,10 +52,28 @@ fun NodesScreen(vm: EdgeOreViewModel) {
 
     EdgeCard {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            com.edgeore.app.ui.components.IconTile(EdgeIcons.Nodes, tint = if (rec == null) EdgeColors.copper else EdgeColors.mint)
+            com.edgeore.app.ui.components
+                .IconTile(EdgeIcons.Nodes, tint = if (rec == null) EdgeColors.copper else EdgeColors.mint)
             Column(Modifier.weight(1f)) {
                 Text("Ubuntu host", style = MaterialTheme.typography.titleMedium)
-                Text(if (rec == null) "No node paired" else Format.short(rec.fingerprint, 8), color = if (rec == null) EdgeColors.copper else EdgeColors.textPrimary, fontFamily = FontFamily.Monospace)
+                Text(
+                    if (rec ==
+                        null
+                    ) {
+                        "No node paired"
+                    } else {
+                        Format.short(rec.fingerprint, 8)
+                    },
+                    color =
+                        if (rec ==
+                            null
+                        ) {
+                            EdgeColors.copper
+                        } else {
+                            EdgeColors.textPrimary
+                        },
+                    fontFamily = FontFamily.Monospace,
+                )
             }
             when {
                 rec == null -> CapabilityBadge(Capability.UNAVAILABLE, "Not paired")
@@ -70,34 +88,71 @@ fun NodesScreen(vm: EdgeOreViewModel) {
             KeyValue("Scopes", rec.scopes.joinToString())
             KeyValue("Paired", Format.time(rec.pairedAt) + " · session ≤24 h")
             KeyValue("Observation freshness", node.healthObservedAt?.let { Format.ago(it) } ?: "Never read")
-            Text("Pairing key: Ed25519 in software, seed wrapped by Android Keystore AES-GCM.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+            Text(
+                "Pairing key: Ed25519 in software, seed wrapped by Android Keystore AES-GCM.",
+                style = MaterialTheme.typography.labelSmall,
+                color = EdgeColors.textMuted,
+            )
         }
     }
 
     node.status?.let { Notice(it) }
-    node.error?.let { com.edgeore.app.ui.components.PlainNotice(it, com.edgeore.app.ui.components.PlainError.Area.NODE) }
+    node.error?.let {
+        com.edgeore.app.ui.components
+            .PlainNotice(it, com.edgeore.app.ui.components.PlainError.Area.NODE)
+    }
 
     if (rec == null) PairingForm(vm, node.busy)
 
     EdgeCard {
         Text("Scoped operations", style = MaterialTheme.typography.titleMedium)
-        Text("Each row sends one Ed25519-signed command with a 30-second deadline. No arbitrary shell commands exist.", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+        Text(
+            "Each row sends one Ed25519-signed command with a 30-second deadline. No arbitrary shell commands exist.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = EdgeColors.textMuted,
+        )
         OperationRow(EdgeIcons.Pulse, "Read health", "observe · scope READ_NODE", enabled = rec != null && !node.busy) { vm.readHealth() }
         HorizontalDivider(color = EdgeColors.border)
-        OperationRow(EdgeIcons.Doc, "Review logs", "Operations this phone sent (${node.ops.size})", enabled = node.ops.isNotEmpty()) { showLogs = !showLogs }
+        OperationRow(EdgeIcons.Doc, "Review logs", "Operations this phone sent (${node.ops.size})", enabled = node.ops.isNotEmpty()) {
+            showLogs =
+                !showLogs
+        }
         HorizontalDivider(color = EdgeColors.border)
-        OperationRow(EdgeIcons.Shield, "Revoke access", "revoke · ends this session on the node", enabled = rec != null && !node.busy) { confirmRevoke = true }
-        if (rec?.revocationPending == true) SecondaryAction("Forget locally (node not acknowledged)", Modifier.fillMaxWidth(), danger = true) { vm.forgetNode() }
+        OperationRow(EdgeIcons.Shield, "Revoke access", "revoke · ends this session on the node", enabled = rec != null && !node.busy) {
+            confirmRevoke =
+                true
+        }
+        if (rec?.revocationPending ==
+            true
+        ) {
+            SecondaryAction("Forget locally (node not acknowledged)", Modifier.fillMaxWidth(), danger = true) { vm.forgetNode() }
+        }
     }
 
-    if (showLogs) EdgeCard(inset = true) {
-        Text("Operation log (this phone)", style = MaterialTheme.typography.titleMedium)
-        Notice("The node agent exposes no remote log endpoint; this is the phone's record of signed operations and outcomes.")
-        node.ops.take(30).forEach { op ->
-            Column {
-                Text("${Format.time(op.time)} · ${op.action} · ${op.outcome}", style = MaterialTheme.typography.bodyMedium)
-                op.operationId?.let { Text("op $it", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted, fontFamily = FontFamily.Monospace) }
-                op.payloadSha256?.let { Text("payload sha256 ${Format.short(it, 8)}", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted, fontFamily = FontFamily.Monospace) }
+    if (showLogs) {
+        EdgeCard(inset = true) {
+            Text("Operation log (this phone)", style = MaterialTheme.typography.titleMedium)
+            Notice("The node agent exposes no remote log endpoint; this is the phone's record of signed operations and outcomes.")
+            node.ops.take(30).forEach { op ->
+                Column {
+                    Text("${Format.time(op.time)} · ${op.action} · ${op.outcome}", style = MaterialTheme.typography.bodyMedium)
+                    op.operationId?.let {
+                        Text(
+                            "op $it",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = EdgeColors.textMuted,
+                            fontFamily = FontFamily.Monospace,
+                        )
+                    }
+                    op.payloadSha256?.let {
+                        Text(
+                            "payload sha256 ${Format.short(it, 8)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = EdgeColors.textMuted,
+                            fontFamily = FontFamily.Monospace,
+                        )
+                    }
+                }
             }
         }
     }
@@ -116,30 +171,59 @@ fun NodesScreen(vm: EdgeOreViewModel) {
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         EdgeCard(Modifier.weight(1f)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { androidx.compose.material3.Icon(EdgeIcons.Storage, null, tint = EdgeColors.mint); Text("Storage", style = MaterialTheme.typography.titleMedium) }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                androidx.compose.material3.Icon(EdgeIcons.Storage, null, tint = EdgeColors.mint)
+                Text("Storage", style = MaterialTheme.typography.titleMedium)
+            }
             Text("Capacity unavailable", color = EdgeColors.copper)
-            Text("The node agent does not report provisioned capacity.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+            Text(
+                "The node agent does not report provisioned capacity.",
+                style = MaterialTheme.typography.labelSmall,
+                color = EdgeColors.textMuted,
+            )
         }
         EdgeCard(Modifier.weight(1f)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { androidx.compose.material3.Icon(EdgeIcons.Wifi, null, tint = EdgeColors.mint); Text("Bandwidth", style = MaterialTheme.typography.titleMedium) }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                androidx.compose.material3.Icon(EdgeIcons.Wifi, null, tint = EdgeColors.mint)
+                Text("Bandwidth", style = MaterialTheme.typography.titleMedium)
+            }
             Text("OFF", color = EdgeColors.copper)
-            Text("Cannot enable: destination policy, quotas and consent withdrawal are not configured in this app.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+            Text(
+                "Cannot enable: destination policy, quotas and consent withdrawal are not configured in this app.",
+                style = MaterialTheme.typography.labelSmall,
+                color = EdgeColors.textMuted,
+            )
         }
     }
     Notice("Connect only infrastructure you own.")
 
-    if (confirmRevoke && rec != null) AlertDialog(
-        onDismissRequest = { confirmRevoke = false },
-        title = { Text("Revoke node access?") },
-        text = { Text("Sends a signed revoke for this session to ${rec.endpoint}. Active flows owned by this session are cancelled on the node. The local pairing key is destroyed once the node acknowledges.") },
-        confirmButton = { TextButton(onClick = { confirmRevoke = false; vm.revokeNode() }) { Text("Revoke", color = EdgeColors.danger) } },
-        dismissButton = { TextButton(onClick = { confirmRevoke = false }) { Text("Cancel") } },
-    )
+    if (confirmRevoke && rec != null) {
+        AlertDialog(
+            onDismissRequest = { confirmRevoke = false },
+            title = { Text("Revoke node access?") },
+            text = {
+                Text(
+                    "Sends a signed revoke for this session to ${rec.endpoint}. Active flows owned by this session are cancelled on the node. The local pairing key is destroyed once the node acknowledges.",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmRevoke = false
+                    vm.revokeNode()
+                }) { Text("Revoke", color = EdgeColors.danger) }
+            },
+            dismissButton = { TextButton(onClick = { confirmRevoke = false }) { Text("Cancel") } },
+        )
+    }
 }
 
 @Composable
-private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
-    com.edgeore.app.ui.components.SecureWindow()
+private fun PairingForm(
+    vm: EdgeOreViewModel,
+    busy: Boolean,
+) {
+    com.edgeore.app.ui.components
+        .SecureWindow()
     var endpoint by rememberSaveable { mutableStateOf("https://127.0.0.1:9843") }
     var cert by rememberSaveable { mutableStateOf("") }
     var challenge by rememberSaveable { mutableStateOf("") }
@@ -153,26 +237,80 @@ private fun PairingForm(vm: EdgeOreViewModel, busy: Boolean) {
             androidx.compose.material3.Icon(EdgeIcons.Link, null, tint = EdgeColors.copper)
             Text("Scoped pairing", style = MaterialTheme.typography.titleMedium)
         }
-        Text("On your Ubuntu host run the DeProof node agent: deproof-node -pair-scopes READ_NODE (add ,RUN_PROOF_JOB and -proof-tool/-proof-job/-proof-owner for Start Mining's proof job). It prints a 2-minute challenge, a single-use code and its TLS certificate SHA-256. The agent listens on loopback only; reach it with `adb reverse tcp:9843 tcp:9843` or an SSH tunnel.",
-            style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+        Text(
+            "On your Ubuntu host run the DeProof node agent: deproof-node -pair-scopes READ_NODE (add ,RUN_PROOF_JOB and -proof-tool/-proof-job/-proof-owner for Start Mining's proof job). It prints a 2-minute challenge, a single-use code and its TLS certificate SHA-256. The agent listens on loopback only; reach it with `adb reverse tcp:9843 tcp:9843` or an SSH tunnel.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = EdgeColors.textMuted,
+        )
         val shape = RoundedCornerShape(24.dp)
-        OutlinedTextField(endpoint, { endpoint = it }, label = { Text("Node endpoint (https)") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(cert, { cert = it }, label = { Text("TLS certificate SHA-256") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(challenge, { challenge = it }, label = { Text("Pairing challenge JSON") }, minLines = 2, shape = shape, modifier = Modifier.fillMaxWidth())
-        parsed.onSuccess { c ->
-            Text("Confirm this fingerprint matches the host output:", style = MaterialTheme.typography.bodyMedium)
-            Text(c.fingerprint, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.mint)
-            Text("Challenge expires ${Format.time(c.expiresAt)}", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
-        }.onFailure { if (challenge.isNotBlank()) Notice(it.message ?: "Invalid challenge", error = true) }
-        OutlinedTextField(code, { code = it }, label = { Text("Single-use pairing code") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
-        Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = true, onCheckedChange = null, enabled = false); Text("READ_NODE (required: health)") }
+        OutlinedTextField(endpoint, {
+            endpoint = it
+        }, label = { Text("Node endpoint (https)") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(cert, {
+            cert = it
+        }, label = { Text("TLS certificate SHA-256") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(challenge, {
+            challenge = it
+        }, label = { Text("Pairing challenge JSON") }, minLines = 2, shape = shape, modifier = Modifier.fillMaxWidth())
+        parsed
+            .onSuccess { c ->
+                Text("Confirm this fingerprint matches the host output:", style = MaterialTheme.typography.bodyMedium)
+                Text(c.fingerprint, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.mint)
+                Text(
+                    "Challenge expires ${Format.time(c.expiresAt)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = EdgeColors.textMuted,
+                )
+            }.onFailure { if (challenge.isNotBlank()) Notice(it.message ?: "Invalid challenge", error = true) }
+        OutlinedTextField(code, {
+            code = it
+        }, label = { Text("Single-use pairing code") }, singleLine = true, shape = shape, modifier = Modifier.fillMaxWidth())
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = true, onCheckedChange = null, enabled = false)
+            Text("READ_NODE (required: health)")
+        }
         // The whole row (box + label) is one 48dp+ toggle, so TalkBack reads the label with the checked state.
-        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = exportScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = { exportScope = it }),
-            verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = exportScope, onCheckedChange = null); Text("EXPORT_PUBLIC_RECORDS (optional; host must allow)") }
-        Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = proofScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = { proofScope = it }),
-            verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = proofScope, onCheckedChange = null); Text("RUN_PROOF_JOB (optional; lets Start Mining run the node's pinned proof job)") }
-        PrimaryAction("Pair your node", icon = EdgeIcons.Link, enabled = parsed.isSuccess && cert.isNotBlank() && code.isNotBlank(), loading = busy) {
-            vm.pairNode(endpoint, cert, challenge, code, listOfNotNull("READ_NODE", if (exportScope) "EXPORT_PUBLIC_RECORDS" else null, if (proofScope) "RUN_PROOF_JOB" else null))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(
+                    min = 48.dp,
+                ).toggleable(value = exportScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = {
+                    exportScope =
+                        it
+                }),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(checked = exportScope, onCheckedChange = null)
+            Text("EXPORT_PUBLIC_RECORDS (optional; host must allow)")
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(
+                    min = 48.dp,
+                ).toggleable(value = proofScope, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = {
+                    proofScope =
+                        it
+                }),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(checked = proofScope, onCheckedChange = null)
+            Text("RUN_PROOF_JOB (optional; lets Start Mining run the node's pinned proof job)")
+        }
+        PrimaryAction(
+            "Pair your node",
+            icon = EdgeIcons.Link,
+            enabled = parsed.isSuccess && cert.isNotBlank() && code.isNotBlank(),
+            loading = busy,
+        ) {
+            vm.pairNode(
+                endpoint,
+                cert,
+                challenge,
+                code,
+                listOfNotNull("READ_NODE", if (exportScope) "EXPORT_PUBLIC_RECORDS" else null, if (proofScope) "RUN_PROOF_JOB" else null),
+            )
         }
     }
 }

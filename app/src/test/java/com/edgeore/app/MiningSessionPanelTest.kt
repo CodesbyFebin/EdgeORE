@@ -1,7 +1,7 @@
 package com.edgeore.app
 
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,10 +46,11 @@ import org.robolectric.annotation.GraphicsMode
 class MiningSessionPanelTest {
     @get:Rule val rule = createComposeRule()
 
-    private val notConfigured = listOf(
-        PartView(PartKind.NODE_PROOF, PartStatus.NotConfigured("Set up: pair a node (Nodes tab).")),
-        PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.NotConfigured("Set up your storage gateway (Storage tab).")),
-    )
+    private val notConfigured =
+        listOf(
+            PartView(PartKind.NODE_PROOF, PartStatus.NotConfigured("Set up: pair a node (Nodes tab).")),
+            PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.NotConfigured("Set up your storage gateway (Storage tab).")),
+        )
     private val sent = Measurement("Sent to your gateway", 262_205, "bytes", "counted by this phone as written to the TLS stream")
 
     private var starts = 0
@@ -61,19 +62,42 @@ class MiningSessionPanelTest {
         rule.setContent {
             EdgeOreTheme {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
-                    MiningSessionPanel(view, edgeModeResumed = true, headline = "", onStart = { starts++ }, onStop = { stops++ }, onToggleEdgeMode = {})
+                    MiningSessionPanel(
+                        view,
+                        edgeModeResumed = true,
+                        headline = "",
+                        onStart = { starts++ },
+                        onStop = { stops++ },
+                        onToggleEdgeMode = {},
+                    )
                 }
             }
         }
         rule.mainClock.advanceTimeByFrame()
     }
 
-    private fun pose() = rule.onNodeWithTag("mining-animation").fetchSemanticsNode().config.getOrNull(SemanticsProperties.StateDescription)
-    private fun texts() = rule.onAllNodesWithText("", substring = true).fetchSemanticsNodes().flatMap { it.config.getOrNull(SemanticsProperties.Text).orEmpty().map { t -> t.text } }
+    private fun pose() =
+        rule
+            .onNodeWithTag("mining-animation")
+            .fetchSemanticsNode()
+            .config
+            .getOrNull(SemanticsProperties.StateDescription)
+
+    private fun texts() =
+        rule.onAllNodesWithText("", substring = true).fetchSemanticsNodes().flatMap {
+            it.config
+                .getOrNull(SemanticsProperties.Text)
+                .orEmpty()
+                .map { t -> t.text }
+        }
 
     @Test fun idleShowsAClickableStartMiningAndARestingPickaxe() {
         show()
-        rule.onNodeWithText("Mine").assertHasClickAction().assertIsEnabled().performClick()
+        rule
+            .onNodeWithText("Mine")
+            .assertHasClickAction()
+            .assertIsEnabled()
+            .performClick()
         assertEquals(1, starts)
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText(SESSION_EXPLAINER).assertExists()
@@ -86,11 +110,25 @@ class MiningSessionPanelTest {
         rule.onNodeWithText("Set up: pair a node (Nodes tab).").assertExists()
         rule.onNodeWithText("Set up your storage gateway (Storage tab).").assertExists()
         val all = texts()
-        assertFalse("no measurement line without a source: $all", all.any { it.contains(" bytes") || it.contains(" ms ·") || it.contains(" · this phone") })
+        assertFalse(
+            "no measurement line without a source: $all",
+            all.any {
+                it.contains(" bytes") ||
+                    it.contains(" ms ·") ||
+                    it.contains(" · this phone")
+            },
+        )
     }
 
     @Test fun activeSwingsShowsStopAndOnlyReportedMeasurements() {
-        view = SessionView(SessionPhase.ACTIVE, listOf(PartView(PartKind.NODE_PROOF, PartStatus.Running), PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.Waiting, listOf(sent), rounds = 1)))
+        view =
+            SessionView(
+                SessionPhase.ACTIVE,
+                listOf(
+                    PartView(PartKind.NODE_PROOF, PartStatus.Running),
+                    PartView(PartKind.GATEWAY_ROUND_TRIP, PartStatus.Waiting, listOf(sent), rounds = 1),
+                ),
+            )
         show()
         assertEquals(MiningPose.SWINGING.name, pose())
         rule.onNodeWithText("Stop").assertHasClickAction().performClick()
@@ -106,14 +144,21 @@ class MiningSessionPanelTest {
         show()
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText("Stop").assertExists()
-        view = SessionView(SessionPhase.STOPPING, notConfigured); androidx.compose.runtime.snapshots.Snapshot.sendApplyNotifications(); rule.mainClock.advanceTimeByFrame()
+        view = SessionView(SessionPhase.STOPPING, notConfigured)
+        androidx.compose.runtime.snapshots.Snapshot
+            .sendApplyNotifications()
+        rule.mainClock.advanceTimeByFrame()
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithTag("stopping-mining").assertIsNotEnabled()
-        view = SessionView(SessionPhase.FAILED, notConfigured, failure = "Not started: an unmetered network (Wi-Fi) is not observed"); androidx.compose.runtime.snapshots.Snapshot.sendApplyNotifications(); rule.mainClock.advanceTimeByFrame()
+        view = SessionView(SessionPhase.FAILED, notConfigured, failure = "Not started: an unmetered network (Wi-Fi) is not observed")
+        androidx.compose.runtime.snapshots.Snapshot
+            .sendApplyNotifications()
+        rule.mainClock.advanceTimeByFrame()
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText("Not started: an unmetered network (Wi-Fi) is not observed").assertExists()
         rule.onNodeWithText("Mine").assertHasClickAction()
     }
+
     @Test fun activeWithoutWorkerResultKeepsPickaxeStill() {
         view = SessionView(SessionPhase.ACTIVE, listOf(PartView(PartKind.NODE_PROOF, PartStatus.Running)))
         show()

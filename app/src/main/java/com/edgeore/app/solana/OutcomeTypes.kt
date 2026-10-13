@@ -6,18 +6,32 @@ package com.edgeore.app.solana
  */
 sealed interface BlockhashCheckResult {
     /** At least [marginBlocks] blocks remain before lastValidBlockHeight. */
-    data class Valid(val height: Long, val lastValidBlockHeight: Long, val remainingBlocks: Long) : BlockhashCheckResult
+    data class Valid(
+        val height: Long,
+        val lastValidBlockHeight: Long,
+        val remainingBlocks: Long,
+    ) : BlockhashCheckResult
+
     /** Past or within the margin of lastValidBlockHeight. Only never-sent bytes may be released on this. */
-    data class Expired(val height: Long, val lastValidBlockHeight: Long) : BlockhashCheckResult
+    data class Expired(
+        val height: Long,
+        val lastValidBlockHeight: Long,
+    ) : BlockhashCheckResult
+
     /** Height could not be read, so validity cannot be shown. Never treated as valid or as expired. */
     data object Unavailable : BlockhashCheckResult
 
     companion object {
-        fun of(height: Long?, lastValidBlockHeight: Long, marginBlocks: Long = 0): BlockhashCheckResult = when {
-            height == null -> Unavailable
-            height > lastValidBlockHeight - marginBlocks -> Expired(height, lastValidBlockHeight)
-            else -> Valid(height, lastValidBlockHeight, lastValidBlockHeight - height)
-        }
+        fun of(
+            height: Long?,
+            lastValidBlockHeight: Long,
+            marginBlocks: Long = 0,
+        ): BlockhashCheckResult =
+            when {
+                height == null -> Unavailable
+                height > lastValidBlockHeight - marginBlocks -> Expired(height, lastValidBlockHeight)
+                else -> Valid(height, lastValidBlockHeight, lastValidBlockHeight - height)
+            }
     }
 }
 
@@ -28,39 +42,58 @@ sealed interface BlockhashCheckResult {
  */
 sealed interface OperationOutcome {
     /** No bytes have left the app yet (reviewed, signing, signed-but-unsent). */
-    data class NotSent(val state: OpState) : OperationOutcome
+    data class NotSent(
+        val state: OpState,
+    ) : OperationOutcome
+
     /** Never sent and finished: refused, abandoned, or expired before sending. Reservation released. */
-    data class NeverSent(val state: OpState) : OperationOutcome
+    data class NeverSent(
+        val state: OpState,
+    ) : OperationOutcome
+
     /** The RPC accepted the bytes. Not a confirmation. */
     data object Submitted : OperationOutcome
+
     /** Bytes may or may not have reached the cluster. */
     data object Unknown : OperationOutcome
-    data class Landed(val finalized: Boolean) : OperationOutcome
+
+    data class Landed(
+        val finalized: Boolean,
+    ) : OperationOutcome
+
     data object Failed : OperationOutcome
 
     companion object {
-        fun of(state: OpState): OperationOutcome = when (state) {
-            OpState.REVIEWED, OpState.SIGNING, OpState.SIGNED -> NotSent(state)
-            OpState.EXPIRED, OpState.REFUSED, OpState.ABANDONED -> NeverSent(state)
-            OpState.SUBMIT_ATTEMPTED, OpState.OUTCOME_UNKNOWN -> Unknown
-            OpState.SUBMITTED -> Submitted
-            OpState.CONFIRMED -> Landed(finalized = false)
-            OpState.FINALIZED -> Landed(finalized = true)
-            OpState.FAILED -> Failed
-        }
+        fun of(state: OpState): OperationOutcome =
+            when (state) {
+                OpState.REVIEWED, OpState.SIGNING, OpState.SIGNED -> NotSent(state)
+                OpState.EXPIRED, OpState.REFUSED, OpState.ABANDONED -> NeverSent(state)
+                OpState.SUBMIT_ATTEMPTED, OpState.OUTCOME_UNKNOWN -> Unknown
+                OpState.SUBMITTED -> Submitted
+                OpState.CONFIRMED -> Landed(finalized = false)
+                OpState.FINALIZED -> Landed(finalized = true)
+                OpState.FAILED -> Failed
+            }
 
         /**
          * Applies one chain observation. Unknown/Submitted move only on a positive status (landed or failed);
          * NOT_FOUND (null) or a time-based check never resolves them, whatever the block height.
          */
-        fun observed(current: OperationOutcome, landed: Boolean?, failed: Boolean, finalized: Boolean): OperationOutcome = when (current) {
-            Unknown, Submitted -> when {
-                failed -> Failed
-                landed == true -> Landed(finalized)
-                else -> current
+        fun observed(
+            current: OperationOutcome,
+            landed: Boolean?,
+            failed: Boolean,
+            finalized: Boolean,
+        ): OperationOutcome =
+            when (current) {
+                Unknown, Submitted ->
+                    when {
+                        failed -> Failed
+                        landed == true -> Landed(finalized)
+                        else -> current
+                    }
+                is Landed -> if (finalized) Landed(true) else current
+                is NotSent, is NeverSent, Failed -> current
             }
-            is Landed -> if (finalized) Landed(true) else current
-            is NotSent, is NeverSent, Failed -> current
-        }
     }
 }

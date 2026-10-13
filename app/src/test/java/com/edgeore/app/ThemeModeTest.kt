@@ -31,20 +31,26 @@ import org.robolectric.annotation.ConscryptMode
 class ThemeModeTest {
     @get:Rule val rule = createComposeRule()
 
-    @After fun reset() { ThemeState.mode = ThemeMode.DARK; EdgeColors.palette = DarkPalette }
+    @After fun reset() {
+        ThemeState.mode = ThemeMode.DARK
+        EdgeColors.palette = DarkPalette
+    }
 
     @Test fun choiceIsPersistedAndDefaultsToDark() {
         val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
         assertEquals(ThemeMode.DARK, ThemePrefs.read(ctx))
-        ThemePrefs.write(ctx, ThemeMode.LIGHT); assertEquals(ThemeMode.LIGHT, ThemePrefs.read(ctx))
-        ThemePrefs.write(ctx, ThemeMode.SYSTEM); assertEquals(ThemeMode.SYSTEM, ThemePrefs.read(ctx))
+        ThemePrefs.write(ctx, ThemeMode.LIGHT)
+        assertEquals(ThemeMode.LIGHT, ThemePrefs.read(ctx))
+        ThemePrefs.write(ctx, ThemeMode.SYSTEM)
+        assertEquals(ThemeMode.SYSTEM, ThemePrefs.read(ctx))
     }
 
     @Test fun switchAppliesTheLightPaletteToTheTokens() {
         rule.setContent { EdgeOreTheme { ThemeSwitch(ThemeState.mode) { ThemeState.mode = it } } }
         rule.onNodeWithTag("theme-dark").assertIsSelected()
         assertSame(DarkPalette, EdgeColors.palette)
-        rule.onNodeWithTag("theme-light").performClick(); rule.waitForIdle()
+        rule.onNodeWithTag("theme-light").performClick()
+        rule.waitForIdle()
         rule.onNodeWithTag("theme-light").assertIsSelected()
         assertSame(LightPalette, EdgeColors.palette)
         assertEquals(LightPalette.background, EdgeColors.background)
@@ -54,8 +60,13 @@ class ThemeModeTest {
         fun ch(v: Float) = if (v <= 0.03928) v / 12.92 else Math.pow((v + 0.055) / 1.055, 2.4)
         return 0.2126 * ch(c.red) + 0.7152 * ch(c.green) + 0.0722 * ch(c.blue)
     }
-    private fun contrast(a: androidx.compose.ui.graphics.Color, b: androidx.compose.ui.graphics.Color): Double {
-        val (x, y) = lum(a) to lum(b); return (maxOf(x, y) + 0.05) / (minOf(x, y) + 0.05)
+
+    private fun contrast(
+        a: androidx.compose.ui.graphics.Color,
+        b: androidx.compose.ui.graphics.Color,
+    ): Double {
+        val (x, y) = lum(a) to lum(b)
+        return (maxOf(x, y) + 0.05) / (minOf(x, y) + 0.05)
     }
 
     @Test fun lightPaletteTextAndAccentsMeetAa() {

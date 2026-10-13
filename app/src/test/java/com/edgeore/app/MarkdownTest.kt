@@ -18,7 +18,8 @@ class MarkdownTest {
     }
 
     @OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
-    @Test fun modelLinksShowTheirDestinationAndAreNotClickable() {
+    @Test
+    fun modelLinksShowTheirDestinationAndAreNotClickable() {
         val a = markdown("see [docs](https://example.org/x)")
         assertEquals("see docs (https://example.org/x)", a.text)
         assertTrue(a.getLinkAnnotations(0, a.length).isEmpty())
