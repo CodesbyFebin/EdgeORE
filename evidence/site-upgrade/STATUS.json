@@ -1,0 +1,30 @@
+{
+  "sourceBase": "541c05c",
+  "testedEnvironment": "Local HTTP server; /usr/bin/chromium; mobile Lighthouse simulated throttling",
+  "date": "2026-10-13",
+  "lighthouseVersion": "13.5.0",
+  "categories": {
+    "performance": 100,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "files": {
+    "docs/site/.nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/site/README.md": "48c7333b6a0cbd30d9215de72a0bd58f378d91a76b23a5158b9f2489242b88a2",
+    "docs/site/assets/ai.webp": "3083ec22255427f0f61eb2e3691848f97ce65990c1c23f25a03a5d373e389d14",
+    "docs/site/assets/home.webp": "b5170bd602be02dbda6676208e5de072d80cf5893d60c7e5ba8f3c393cdcb09c",
+    "docs/site/assets/mark.svg": "e33841466354301805690a772a792a45fcee89b3609fc83b1cfb20a79a634841",
+    "docs/site/assets/proof.webp": "f6ba281683e73514804390b7047a2b7f2d9a5fb7b6dff32e752503d3a2a9c8a8",
+    "docs/site/assets/settings.webp": "df5e6f5faf0364814e7058c7f8fa82f81487c501c5c3c05311f7d09b2aa7f908",
+    "docs/site/assets/social.webp": "d891e63aa29e36f5f21cbd70182034e734c9d6600234ddb7d8a79efa9f751067",
+    "docs/site/index.html": "6a5f3bd04eaf652a23dbd7638a2dfd81ac5d31ea6b2a01fdf53f96b135f2ee7b",
+    "docs/site/llms.txt": "b36eea6e43f355c27638ab6e0bc6d3c7019260dcbcb2511d0228b427c6928b0e",
+    "docs/site/robots.txt": "cb92aa4f5f4331cebd044ca1006b46bc7089960e232635cd3b1c8aede7398b90",
+    "docs/site/sitemap.xml": "9126f948bd713cda0dd6946b0a892a197b6e24bef425b603fa911d911ec14074",
+    "docs/site/style.css": "fc434c818cdb134f4f1e51014017271e2c3d55b815e50cb0355bcfb36a9401f3"
+  },
+  "productionHostVisit": "BLOCKED: outbound host policy HTTP 403",
+  "deployedVerification": "NOT_RUN",
+  "rankingOrAICitationScore": "NOT_MEASURED"
+}

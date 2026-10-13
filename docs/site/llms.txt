@@ -1,0 +1,13 @@
+# EdgeORE
+
+> Native Android ORE v3 client for Solana Mobile. Built by CodesbyFebin. Review candidate; no income claims.
+
+## Product
+- [Website](https://codesbyfebin.github.io/EdgeORE/): ORE board, capped deploy workflow, exact-message review and FAQ.
+- [Repository](https://github.com/CodesbyFebin/EdgeORE): current implementation, artifact and source identities.
+- [ORE mainnet integration](https://github.com/CodesbyFebin/EdgeORE/blob/main/docs/ore/MAINNET-DEPLOY.md): 0.01 SOL deployed-amount cap; rent and fees extra; real-device mainnet signing and landing unverified.
+- [Receipt checker](https://github.com/CodesbyFebin/EdgeORE/tree/main/tools/receipt-checker): verifies signed contents, not chain confirmation or payments.
+- [Releases](https://github.com/CodesbyFebin/EdgeORE/releases): check public artifact availability; drafts are not public downloads.
+
+## Boundaries
+The website does not connect wallets or call RPC. ORE deploy code is not phone CPU mining. Checkpoint and reward claim are not implemented. Optional AI needs setup; ZK prover is not configured. UI images are JVM renders. No affiliation with Regolith Labs. Apache-2.0 project license; third-party notices remain separate.
