@@ -281,13 +281,14 @@ fun ReviewScreen(
                 CapabilityBadge(Capability.IMPLEMENTED, "Signature verified over reviewed bytes")
                 KeyValue("Signature", st.verified?.signature ?: st.operation?.signature ?: "", mono = true)
                 Text(
-                    "Signed but not broadcast. Submitting spends devnet SOL only.",
+                    "Signed but not broadcast. Submitting sends it once to " +
+                        "${clusterLabel(st.operation?.cluster)}; it is never resent.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = EdgeColors.textMuted,
                 )
             }
             PrimaryAction(
-                "Submit to devnet",
+                "Submit to ${clusterLabel(st.operation?.cluster)}",
                 icon = EdgeIcons.Send,
                 enabled = st.phase == ReviewPhase.SIGNED,
                 loading =
@@ -295,26 +296,63 @@ fun ReviewScreen(
             ) { vm.submitSigned() }
             SecondaryAction("Keep unsent · new review", Modifier.fillMaxWidth()) { vm.resetReview() }
         }
-        ReviewPhase.SUBMITTED -> {
+        ReviewPhase.SUBMITTED, ReviewPhase.UNKNOWN -> {
+            val op = st.operation
+            val view =
+                op?.let {
+                    com.edgeore.app.solana.Confirmation
+                        .view(it, st.confirmationPolls)
+                }
+            val net = clusterLabel(op?.cluster)
+            val sig = st.submittedSignature ?: op?.signature
             EdgeCard {
-                KeyValue("Submitted signature", st.submittedSignature ?: "", mono = true)
-                KeyValue("Confirmation", st.confirmation ?: "Not observed yet")
-            }
-            PrimaryAction("Check devnet status", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }
-            SecondaryAction("New review", Modifier.fillMaxWidth()) { vm.resetReview() }
-        }
-        ReviewPhase.UNKNOWN -> {
-            EdgeCard {
-                CapabilityBadge(Capability.UNAVAILABLE, "Outcome unknown")
-                KeyValue("Known signature", st.operation?.signature ?: "", mono = true)
+                when (view) {
+                    is com.edgeore.app.solana.ConfirmationView.Confirmed ->
+                        CapabilityBadge(
+                            Capability.IMPLEMENTED,
+                            com.edgeore.app.solana.Confirmation
+                                .label(view),
+                        )
+                    com.edgeore.app.solana.ConfirmationView.Waiting, null ->
+                        CapabilityBadge(
+                            Capability.NOT_OBSERVED,
+                            com.edgeore.app.solana.Confirmation
+                                .label(com.edgeore.app.solana.ConfirmationView.Waiting),
+                        )
+                    else ->
+                        CapabilityBadge(
+                            Capability.UNAVAILABLE,
+                            com.edgeore.app.solana.Confirmation
+                                .label(view),
+                        )
+                }
+                KeyValue("Signature", sig ?: "", mono = true)
                 KeyValue("Last observation", st.confirmation ?: "Not observed yet")
+                if (sig != null && op != null) {
+                    val url =
+                        runCatching {
+                            com.edgeore.app.solana.Confirmation
+                                .solscanUrl(sig, op.cluster)
+                        }.getOrNull()
+                    if (url != null) {
+                        val uri = androidx.compose.ui.platform.LocalUriHandler.current
+                        androidx.compose.material3.TextButton(
+                            onClick = { runCatching { uri.openUri(url) } },
+                            modifier = Modifier.testTag("solscan-link"),
+                        ) {
+                            Text(
+                                solscanLabel(view is com.edgeore.app.solana.ConfirmationView.Confirmed, net),
+                            )
+                        }
+                    }
+                }
                 Text(
-                    "The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until devnet reports it confirmed or failed. Not being found, even after the blockhash expires, does not prove it never landed, so the amount stays counted in today's budget.",
+                    NO_RESEND_TEXT,
                     style = MaterialTheme.typography.bodyMedium,
                     color = EdgeColors.textMuted,
                 )
             }
-            PrimaryAction("Observe status (read-only)", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }
+            PrimaryAction("Observe $net status (read-only)", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }
             SecondaryAction("New review", Modifier.fillMaxWidth()) { vm.resetReview() }
         }
         ReviewPhase.REFUSED -> SecondaryAction("Start a new review", Modifier.fillMaxWidth()) { vm.resetReview() }
@@ -387,3 +425,20 @@ fun ConceptPreviewScreen() {
         ).forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
     }
 }
+
+/** Human cluster name for review text; unknown values read as devnet only when the operation says devnet. */
+internal fun clusterLabel(cluster: String?): String =
+    when (cluster) {
+        com.edgeore.app.solana.Cluster.MAINNET.id -> "mainnet"
+        com.edgeore.app.solana.Cluster.TESTNET.id -> "testnet"
+        else -> "devnet"
+    }
+
+internal fun solscanLabel(
+    confirmed: Boolean,
+    net: String,
+): String = (if (confirmed) "View" else "Check") + " on Solscan ($net)"
+
+private const val NO_RESEND_TEXT =
+    "EdgeORE submitted these bytes once and will not resend them. Not being found, even after the " +
+        "blockhash expires, does not prove it never landed, so the amount stays counted in today's budget."

@@ -1445,7 +1445,30 @@ class EdgeOreViewModel(
             flushOperationReceipts()
             syncReview(id)
             if (out is TransferCoordinator.Outcome.NotAllowed) _review.update { it.copy(message = out.reason) }
+            if (out is TransferCoordinator.Outcome.Done && out.op.state.needsObservation) pollConfirmation(id)
         }
+
+    /**
+     * After the single submit: read-only getSignatureStatuses polls until confirmed/finalized/failed, the blockhash
+     * expires, or the poll budget is spent. Never resends. Each read is written to the operation and its receipt.
+     */
+    private suspend fun pollConfirmation(id: String) {
+        val c = coordinator ?: return
+        var polls = 0
+        var settled = false
+        while (!settled && polls < com.edgeore.app.solana.Confirmation.MAX_POLLS) {
+            kotlinx.coroutines.delay(com.edgeore.app.solana.Confirmation.POLL_INTERVAL_MS)
+            c.observe(id)
+            polls++
+            _review.update { if (it.operationId == id) it.copy(confirmationPolls = polls) else it }
+            flushOperationReceipts()
+            if (_review.value.operationId == id) syncReview(id)
+            settled = opStore?.get(id)?.let {
+                com.edgeore.app.solana.Confirmation
+                    .done(it)
+            } ?: true
+        }
+    }
 
     /** Read-only status observation by the known signature. Never resends. */
     fun checkConfirmation() {

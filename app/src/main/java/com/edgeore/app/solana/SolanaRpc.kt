@@ -100,7 +100,10 @@ class SolanaRpc(
             }
         }
 
-    /** Submits already signed, already verified bytes. Returns the RPC-reported signature. */
+    /**
+     * Submits already signed, already verified bytes once. maxRetries 0: the RPC node does not rebroadcast either.
+     * Returns the RPC-reported signature.
+     */
     suspend fun sendTransaction(signedTx: ByteArray): String =
         withContext(Dispatchers.IO) {
             val r =
@@ -108,7 +111,12 @@ class SolanaRpc(
                     "sendTransaction",
                     JSONArray()
                         .put(Base64.getEncoder().encodeToString(signedTx))
-                        .put(JSONObject().put("encoding", "base64").put("preflightCommitment", "confirmed")),
+                        .put(
+                            JSONObject()
+                                .put("encoding", "base64")
+                                .put("preflightCommitment", "confirmed")
+                                .put("maxRetries", 0),
+                        ),
                 )
             r.getString("result")
         }
