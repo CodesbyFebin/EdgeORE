@@ -101,7 +101,7 @@ class MiningSessionPanelTest {
         assertEquals(1, starts)
         assertEquals(MiningPose.RESTING.name, pose())
         rule.onNodeWithText(SESSION_EXPLAINER).assertExists()
-        assertTrue(SESSION_EXPLAINER.contains("Nothing is earned: no ORE, SKR, points or payment."))
+        assertTrue(SESSION_EXPLAINER.contains("Nothing is earned: no ORE, points or payment."))
         assertEquals(0, rule.onAllNodesWithText("Stop").fetchSemanticsNodes().size)
     }
 

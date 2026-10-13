@@ -283,7 +283,7 @@ fun balanceText(
                 (r.reason + (r.last?.let { " · last read ${hm(it.atMs)}" } ?: ""))
     }
 
-/** TokenBalanceCard ×3: SOL, ORE, SKR for the selected cluster. */
+/** TokenBalanceCard ×2: SOL and ORE for the selected cluster. */
 @Composable
 fun BalanceRow(
     b: Balances,
@@ -295,7 +295,6 @@ fun BalanceRow(
         listOf(
             Triple("SOL", b.sol, EdgeColors.mint),
             Triple(oreLabel, b.ore, EdgeColors.copper),
-            Triple("SKR", b.skr, EdgeColors.mintSoft),
         ).forEach { (sym, r, col) ->
             val (v, note) = balanceText(r, nowMs, connected)
             Column(

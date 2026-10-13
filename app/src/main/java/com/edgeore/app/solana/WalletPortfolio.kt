@@ -30,7 +30,7 @@ data class AssetBalance(
 data class WalletPortfolio(
     val account: String? = null,
     val network: ObservationNetwork = ObservationNetwork.DEVNET,
-    val assets: List<AssetBalance> = listOf(AssetBalance("SOL"), AssetBalance("ORE"), AssetBalance("SKR")),
+    val assets: List<AssetBalance> = listOf(AssetBalance("SOL"), AssetBalance("ORE")),
     val observedAt: Long? = null,
     val loading: Boolean = false,
     val error: String? = null,
@@ -95,7 +95,7 @@ class PortfolioRpc(
             WalletPortfolio(
                 account,
                 network,
-                listOf(solAsset, ore, AssetBalance("SKR", status = "Mint registry not verified")),
+                listOf(solAsset, ore),
                 System.currentTimeMillis(),
             )
         }

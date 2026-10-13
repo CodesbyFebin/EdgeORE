@@ -68,6 +68,9 @@ fun MineScreen(
     onOre: () -> Unit = {},
     onOreMode: (pro: Boolean) -> Unit = { onOre() },
     onSettings: () -> Unit = {},
+    onHistory: () -> Unit = {},
+    onProofs: () -> Unit = {},
+    onAlerts: (Boolean) -> Unit = vm::setRoundAlerts,
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
@@ -209,6 +212,7 @@ fun MineScreen(
             onOpenReview()
         },
     )
+    EdgeInsightsSection(vm, onOpenReview, onHistory, onProofs, onAlerts)
     ContributionToggles(
         settings.chargeOnly,
         settings.thermalGuard,
@@ -475,7 +479,7 @@ const val SESSION_EXPLAINER =
     "Mine runs a session on your own equipment only: proof jobs on your paired node, and one 256 KiB " +
         "encrypted chunk stored on your storage gateway, sent and read back each round. It repeats until you tap Stop, up to " +
         "$MAX_ROUNDS rounds or ${MAX_DURATION_MS / 60_000} minutes, and only on Wi-Fi with Edge Mode on and your charge, heat and battery limits met. " +
-        "Nothing is earned: no ORE, SKR, points or payment."
+        "Nothing is earned: no ORE, points or payment."
 
 fun SessionPhase.label(): String =
     when (this) {

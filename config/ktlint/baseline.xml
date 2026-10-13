@@ -2,10 +2,119 @@
 <baseline version="1.0">
     <file name="app/src/main/java/com/edgeore/app/EdgeOreViewModel.kt">
         <error line="366" column="141" source="standard:max-line-length" />
-        <error line="1974" column="141" source="standard:max-line-length" />
-        <error line="2148" column="141" source="standard:max-line-length" />
-        <error line="2319" column="141" source="standard:max-line-length" />
-        <error line="2340" column="141" source="standard:max-line-length" />
+        <error line="628" column="50" source="standard:chain-method-continuation" />
+        <error line="638" column="46" source="standard:chain-method-continuation" />
+        <error line="638" column="53" source="standard:chain-method-continuation" />
+        <error line="664" column="57" source="standard:chain-method-continuation" />
+        <error line="664" column="61" source="standard:argument-list-wrapping" />
+        <error line="664" column="73" source="standard:argument-list-wrapping" />
+        <error line="664" column="89" source="standard:argument-list-wrapping" />
+        <error line="664" column="137" source="standard:argument-list-wrapping" />
+        <error line="664" column="141" source="standard:max-line-length" />
+        <error line="664" column="150" source="standard:argument-list-wrapping" />
+        <error line="688" column="15" source="standard:chain-method-continuation" />
+        <error line="688" column="21" source="standard:argument-list-wrapping" />
+        <error line="688" column="35" source="standard:argument-list-wrapping" />
+        <error line="688" column="60" source="standard:binary-expression-wrapping" />
+        <error line="688" column="141" source="standard:max-line-length" />
+        <error line="688" column="145" source="standard:argument-list-wrapping" />
+        <error line="696" column="51" source="standard:chain-method-continuation" />
+        <error line="696" column="96" source="standard:chain-method-continuation" />
+        <error line="698" column="18" source="standard:chain-method-continuation" />
+        <error line="698" column="25" source="standard:chain-method-continuation" />
+        <error line="698" column="36" source="standard:argument-list-wrapping" />
+        <error line="698" column="47" source="standard:argument-list-wrapping" />
+        <error line="698" column="81" source="standard:chain-method-continuation" />
+        <error line="698" column="89" source="standard:argument-list-wrapping" />
+        <error line="698" column="90" source="standard:chain-method-continuation" />
+        <error line="698" column="104" source="standard:chain-method-continuation" />
+        <error line="698" column="113" source="standard:chain-method-continuation" />
+        <error line="698" column="123" source="standard:argument-list-wrapping" />
+        <error line="698" column="125" source="standard:argument-list-wrapping" />
+        <error line="698" column="126" source="standard:chain-method-continuation" />
+        <error line="698" column="134" source="standard:argument-list-wrapping" />
+        <error line="698" column="135" source="standard:argument-list-wrapping" />
+        <error line="698" column="136" source="standard:chain-method-continuation" />
+        <error line="698" column="141" source="standard:max-line-length" />
+        <error line="706" column="28" source="standard:chain-method-continuation" />
+        <error line="706" column="34" source="standard:chain-method-continuation" />
+        <error line="708" column="44" source="standard:argument-list-wrapping" />
+        <error line="708" column="50" source="standard:argument-list-wrapping" />
+        <error line="708" column="66" source="standard:argument-list-wrapping" />
+        <error line="708" column="75" source="standard:argument-list-wrapping" />
+        <error line="708" column="88" source="standard:argument-list-wrapping" />
+        <error line="708" column="130" source="standard:argument-list-wrapping" />
+        <error line="708" column="137" source="standard:function-literal" />
+        <error line="708" column="141" source="standard:max-line-length" />
+        <error line="708" column="144" source="standard:binary-expression-wrapping" />
+        <error line="708" column="150" source="standard:function-literal" />
+        <error line="715" column="45" source="standard:chain-method-continuation" />
+        <error line="723" column="57" source="standard:chain-method-continuation" />
+        <error line="724" column="54" source="standard:chain-method-continuation" />
+        <error line="763" column="22" source="standard:chain-method-continuation" />
+        <error line="763" column="29" source="standard:argument-list-wrapping" />
+        <error line="763" column="53" source="standard:argument-list-wrapping" />
+        <error line="763" column="77" source="standard:argument-list-wrapping" />
+        <error line="763" column="80" source="standard:chain-method-continuation" />
+        <error line="763" column="89" source="standard:function-literal" />
+        <error line="763" column="140" source="standard:function-literal" />
+        <error line="763" column="141" source="standard:chain-method-continuation" />
+        <error line="763" column="141" source="standard:max-line-length" />
+        <error line="763" column="147" source="standard:argument-list-wrapping" />
+        <error line="765" column="68" source="standard:chain-method-continuation" />
+        <error line="773" column="49" source="standard:chain-method-continuation" />
+        <error line="779" column="57" source="standard:chain-method-continuation" />
+        <error line="779" column="102" source="standard:chain-method-continuation" />
+        <error line="780" column="57" source="standard:chain-method-continuation" />
+        <error line="780" column="102" source="standard:chain-method-continuation" />
+        <error line="799" column="66" source="standard:chain-method-continuation" />
+        <error line="808" column="68" source="standard:chain-method-continuation" />
+        <error line="809" column="60" source="standard:chain-method-continuation" />
+        <error line="810" column="46" source="standard:chain-method-continuation" />
+        <error line="810" column="59" source="standard:chain-method-continuation" />
+        <error line="810" column="120" source="standard:chain-method-continuation" />
+        <error line="812" column="59" source="standard:function-literal" />
+        <error line="812" column="73" source="standard:function-literal" />
+        <error line="812" column="106" source="standard:chain-method-continuation" />
+        <error line="812" column="119" source="standard:argument-list-wrapping" />
+        <error line="812" column="121" source="standard:argument-list-wrapping" />
+        <error line="812" column="122" source="standard:chain-method-continuation" />
+        <error line="812" column="141" source="standard:max-line-length" />
+        <error line="812" column="142" source="standard:function-literal" />
+        <error line="812" column="143" source="standard:chain-method-continuation" />
+        <error line="812" column="157" source="standard:argument-list-wrapping" />
+        <error line="812" column="162" source="standard:argument-list-wrapping" />
+        <error line="812" column="164" source="standard:function-literal" />
+        <error line="815" column="40" source="standard:argument-list-wrapping" />
+        <error line="815" column="51" source="standard:argument-list-wrapping" />
+        <error line="815" column="60" source="standard:argument-list-wrapping" />
+        <error line="815" column="69" source="standard:argument-list-wrapping" />
+        <error line="815" column="86" source="standard:argument-list-wrapping" />
+        <error line="815" column="103" source="standard:function-literal" />
+        <error line="815" column="124" source="standard:function-literal" />
+        <error line="815" column="127" source="standard:argument-list-wrapping" />
+        <error line="815" column="139" source="standard:argument-list-wrapping" />
+        <error line="815" column="141" source="standard:max-line-length" />
+        <error line="815" column="142" source="standard:argument-list-wrapping" />
+        <error line="816" column="94" source="standard:chain-method-continuation" />
+        <error line="819" column="17" source="standard:chain-method-continuation" />
+        <error line="826" column="141" source="standard:max-line-length" />
+        <error line="832" column="53" source="standard:argument-list-wrapping" />
+        <error line="832" column="64" source="standard:argument-list-wrapping" />
+        <error line="832" column="140" source="standard:argument-list-wrapping" />
+        <error line="832" column="141" source="standard:max-line-length" />
+        <error line="840" column="59" source="standard:chain-method-continuation" />
+        <error line="849" column="69" source="standard:chain-method-continuation" />
+        <error line="850" column="69" source="standard:chain-method-continuation" />
+        <error line="850" column="84" source="standard:chain-method-continuation" />
+        <error line="850" column="98" source="standard:chain-method-continuation" />
+        <error line="850" column="107" source="standard:chain-method-continuation" />
+        <error line="850" column="121" source="standard:chain-method-continuation" />
+        <error line="853" column="104" source="standard:chain-method-continuation" />
+        <error line="2228" column="141" source="standard:max-line-length" />
+        <error line="2402" column="141" source="standard:max-line-length" />
+        <error line="2573" column="141" source="standard:max-line-length" />
+        <error line="2594" column="141" source="standard:max-line-length" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ai/OwnedHostModel.kt">
         <error line="187" column="140" source="standard:max-line-length" />
@@ -38,6 +147,33 @@
         <error line="29" column="141" source="standard:max-line-length" />
         <error line="30" column="141" source="standard:max-line-length" />
     </file>
+    <file name="app/src/main/java/com/edgeore/app/solana/AccountReader.kt">
+        <error line="44" column="21" source="standard:function-signature" />
+        <error line="44" column="30" source="standard:argument-list-wrapping" />
+        <error line="44" column="39" source="standard:argument-list-wrapping" />
+        <error line="44" column="47" source="standard:parameter-list-wrapping" />
+        <error line="44" column="50" source="standard:function-literal" />
+        <error line="44" column="63" source="standard:argument-list-wrapping" />
+        <error line="44" column="71" source="standard:argument-list-wrapping" />
+        <error line="44" column="86" source="standard:function-literal" />
+        <error line="44" column="87" source="standard:wrapping" />
+        <error line="44" column="98" source="standard:parameter-list-wrapping" />
+        <error line="44" column="101" source="standard:function-literal" />
+        <error line="44" column="114" source="standard:argument-list-wrapping" />
+        <error line="44" column="123" source="standard:argument-list-wrapping" />
+        <error line="44" column="129" source="standard:chain-method-continuation" />
+        <error line="44" column="137" source="standard:argument-list-wrapping" />
+        <error line="44" column="141" source="standard:max-line-length" />
+        <error line="44" column="143" source="standard:argument-list-wrapping" />
+        <error line="44" column="151" source="standard:argument-list-wrapping" />
+        <error line="44" column="162" source="standard:argument-list-wrapping" />
+        <error line="44" column="163" source="standard:argument-list-wrapping" />
+        <error line="44" column="164" source="standard:argument-list-wrapping" />
+        <error line="44" column="166" source="standard:function-literal" />
+        <error line="44" column="168" source="standard:function-literal" />
+        <error line="44" column="169" source="standard:argument-list-wrapping" />
+        <error line="44" column="171" source="standard:function-literal" />
+    </file>
     <file name="app/src/main/java/com/edgeore/app/solana/Operations.kt">
         <error line="224" column="141" source="standard:max-line-length" />
     </file>
@@ -56,7 +192,9 @@
         <error line="464" column="23" source="standard:if-else-wrapping" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/EdgeOreApp.kt">
-        <error line="113" column="5" source="standard:function-naming" />
+        <error line="118" column="5" source="standard:function-naming" />
+        <error line="310" column="65" source="standard:chain-method-continuation" />
+        <error line="313" column="51" source="standard:chain-method-continuation" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/components/Charts.kt">
         <error line="138" column="5" source="standard:function-naming" />
@@ -134,6 +272,17 @@
     <file name="app/src/main/java/com/edgeore/app/ui/screens/AiScreen.kt">
         <error line="65" column="5" source="standard:function-naming" />
     </file>
+    <file name="app/src/main/java/com/edgeore/app/ui/screens/EdgePanels.kt">
+        <error line="64" column="5" source="standard:function-naming" />
+        <error line="117" column="141" source="standard:max-line-length" />
+        <error line="166" column="5" source="standard:function-naming" />
+        <error line="196" column="5" source="standard:function-naming" />
+        <error line="218" column="5" source="standard:function-naming" />
+        <error line="269" column="5" source="standard:function-naming" />
+        <error line="302" column="5" source="standard:function-naming" />
+        <error line="357" column="5" source="standard:function-naming" />
+        <error line="457" column="5" source="standard:function-naming" />
+    </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/FourScreens.kt">
         <error line="51" column="5" source="standard:function-naming" />
         <error line="114" column="5" source="standard:function-naming" />
@@ -169,21 +318,21 @@
         <error line="151" column="5" source="standard:function-naming" />
         <error line="225" column="13" source="standard:function-naming" />
         <error line="288" column="5" source="standard:function-naming" />
-        <error line="340" column="5" source="standard:function-naming" />
-        <error line="474" column="5" source="standard:function-naming" />
-        <error line="536" column="22" source="standard:function-naming" />
-        <error line="595" column="5" source="standard:function-naming" />
+        <error line="339" column="5" source="standard:function-naming" />
+        <error line="473" column="5" source="standard:function-naming" />
+        <error line="535" column="22" source="standard:function-naming" />
+        <error line="594" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/MineScreen.kt">
         <error line="60" column="5" source="standard:function-naming" />
-        <error line="280" column="141" source="standard:max-line-length" />
-        <error line="399" column="13" source="standard:function-naming" />
-        <error line="426" column="22" source="standard:function-naming" />
-        <error line="445" column="13" source="standard:function-naming" />
-        <error line="477" column="141" source="standard:max-line-length" />
-        <error line="495" column="5" source="standard:function-naming" />
-        <error line="582" column="13" source="standard:function-naming" />
-        <error line="614" column="5" source="standard:function-naming" />
+        <error line="284" column="141" source="standard:max-line-length" />
+        <error line="403" column="13" source="standard:function-naming" />
+        <error line="430" column="22" source="standard:function-naming" />
+        <error line="449" column="13" source="standard:function-naming" />
+        <error line="481" column="141" source="standard:max-line-length" />
+        <error line="499" column="5" source="standard:function-naming" />
+        <error line="586" column="13" source="standard:function-naming" />
+        <error line="618" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/NodesScreen.kt">
         <error line="45" column="5" source="standard:function-naming" />
@@ -251,6 +400,7 @@
         <error line="95" column="141" source="standard:max-line-length" />
     </file>
     <file name="app/src/test/java/com/edgeore/app/OreReadOnlyArchitectureTest.kt">
+        <error line="46" column="141" source="standard:max-line-length" />
         <error line="109" column="141" source="standard:max-line-length" />
     </file>
     <file name="app/src/test/java/com/edgeore/app/OreRemindersTest.kt">
@@ -273,9 +423,176 @@
     </file>
     <file name="tools/receipt-checker/src/main/kotlin/ReceiptChecker.kt">
         <error line="8" column="141" source="standard:max-line-length" />
+        <error line="109" column="29" source="standard:chain-method-continuation" />
+        <error line="109" column="78" source="standard:chain-method-continuation" />
+        <error line="109" column="103" source="standard:chain-method-continuation" />
+        <error line="114" column="48" source="standard:chain-method-continuation" />
+        <error line="159" column="54" source="standard:parameter-list-wrapping" />
+        <error line="159" column="57" source="standard:function-literal" />
+        <error line="159" column="79" source="standard:argument-list-wrapping" />
+        <error line="159" column="95" source="standard:argument-list-wrapping" />
+        <error line="159" column="96" source="standard:argument-list-wrapping" />
+        <error line="159" column="108" source="standard:argument-list-wrapping" />
+        <error line="159" column="114" source="standard:argument-list-wrapping" />
+        <error line="159" column="115" source="standard:argument-list-wrapping" />
+        <error line="159" column="121" source="standard:function-literal" />
+        <error line="159" column="136" source="standard:argument-list-wrapping" />
+        <error line="159" column="140" source="standard:argument-list-wrapping" />
+        <error line="159" column="141" source="standard:max-line-length" />
+        <error line="159" column="144" source="standard:binary-expression-wrapping" />
+        <error line="159" column="148" source="standard:function-literal" />
+        <error line="159" column="150" source="standard:function-literal" />
+        <error line="162" column="53" source="standard:chain-method-continuation" />
+        <error line="162" column="60" source="standard:argument-list-wrapping" />
+        <error line="162" column="66" source="standard:argument-list-wrapping" />
+        <error line="162" column="83" source="standard:argument-list-wrapping" />
+        <error line="162" column="116" source="standard:argument-list-wrapping" />
+        <error line="162" column="124" source="standard:argument-list-wrapping" />
+        <error line="162" column="141" source="standard:max-line-length" />
+        <error line="162" column="163" source="standard:argument-list-wrapping" />
+        <error line="164" column="12" source="standard:chain-method-continuation" />
+        <error line="164" column="21" source="standard:argument-list-wrapping" />
+        <error line="164" column="141" source="standard:max-line-length" />
+        <error line="164" column="162" source="standard:argument-list-wrapping" />
+        <error line="166" column="18" source="standard:multiline-expression-wrapping" />
+        <error line="167" column="72" source="standard:condition-wrapping" />
     </file>
     <file name="tools/receipt-checker/src/test/kotlin/ReceiptCheckerTest.kt">
         <error line="1" column="1" source="standard:no-wildcard-imports" />
         <error line="3" column="1" source="standard:no-wildcard-imports" />
+        <error line="249" column="36" source="standard:chain-method-continuation" />
+        <error line="249" column="89" source="standard:chain-method-continuation" />
+        <error line="258" column="51" source="standard:chain-method-continuation" />
+        <error line="259" column="73" source="standard:chain-method-continuation" />
+        <error line="264" column="52" source="standard:chain-method-continuation" />
+        <error line="264" column="84" source="standard:chain-method-continuation" />
+        <error line="268" column="37" source="standard:argument-list-wrapping" />
+        <error line="268" column="49" source="standard:argument-list-wrapping" />
+        <error line="268" column="68" source="standard:argument-list-wrapping" />
+        <error line="268" column="91" source="standard:argument-list-wrapping" />
+        <error line="269" column="110" source="standard:chain-method-continuation" />
+        <error line="273" column="80" source="standard:chain-method-continuation" />
+        <error line="310" column="43" source="standard:chain-method-continuation" />
+        <error line="310" column="96" source="standard:chain-method-continuation" />
+        <error line="313" column="40" source="standard:statement-wrapping" />
+        <error line="313" column="63" source="standard:statement-wrapping" />
+        <error line="313" column="85" source="standard:statement-wrapping" />
+        <error line="314" column="58" source="standard:chain-method-continuation" />
+        <error line="325" column="51" source="standard:chain-method-continuation" />
+        <error line="326" column="73" source="standard:chain-method-continuation" />
+        <error line="331" column="36" source="standard:chain-method-continuation" />
+        <error line="331" column="91" source="standard:chain-method-continuation" />
+        <error line="332" column="10" source="standard:chain-method-continuation" />
+        <error line="332" column="28" source="standard:chain-method-continuation" />
+        <error line="332" column="46" source="standard:chain-method-continuation" />
+        <error line="332" column="56" source="standard:chain-method-continuation" />
+        <error line="332" column="67" source="standard:chain-method-continuation" />
+        <error line="332" column="78" source="standard:chain-method-continuation" />
+        <error line="340" column="24" source="standard:function-signature" />
+        <error line="340" column="43" source="standard:function-signature" />
+        <error line="340" column="64" source="standard:function-signature" />
+        <error line="341" column="36" source="standard:chain-method-continuation" />
+        <error line="341" column="50" source="standard:chain-method-continuation" />
+        <error line="342" column="10" source="standard:chain-method-continuation" />
+        <error line="342" column="28" source="standard:chain-method-continuation" />
+        <error line="342" column="46" source="standard:chain-method-continuation" />
+        <error line="342" column="65" source="standard:chain-method-continuation" />
+        <error line="342" column="80" source="standard:chain-method-continuation" />
+        <error line="342" column="99" source="standard:chain-method-continuation" />
+        <error line="351" column="53" source="standard:chain-method-continuation" />
+        <error line="351" column="79" source="standard:chain-method-continuation" />
+        <error line="351" column="86" source="standard:function-literal" />
+        <error line="351" column="87" source="standard:wrapping" />
+        <error line="351" column="93" source="standard:argument-list-wrapping" />
+        <error line="351" column="123" source="standard:chain-method-continuation" />
+        <error line="351" column="141" source="standard:max-line-length" />
+        <error line="351" column="155" source="standard:argument-list-wrapping" />
+        <error line="351" column="168" source="standard:chain-method-continuation" />
+        <error line="351" column="183" source="standard:argument-list-wrapping" />
+        <error line="351" column="184" source="standard:argument-list-wrapping" />
+        <error line="351" column="186" source="standard:function-literal" />
+        <error line="354" column="58" source="standard:chain-method-continuation" />
+        <error line="354" column="65" source="standard:argument-list-wrapping" />
+        <error line="354" column="104" source="standard:chain-method-continuation" />
+        <error line="354" column="112" source="standard:argument-list-wrapping" />
+        <error line="354" column="117" source="standard:argument-list-wrapping" />
+        <error line="354" column="121" source="standard:argument-list-wrapping" />
+        <error line="354" column="135" source="standard:binary-expression-wrapping" />
+        <error line="354" column="135" source="standard:argument-list-wrapping" />
+        <error line="354" column="140" source="standard:binary-expression-wrapping" />
+        <error line="354" column="141" source="standard:max-line-length" />
+        <error line="354" column="144" source="standard:argument-list-wrapping" />
+        <error line="354" column="154" source="standard:argument-list-wrapping" />
+        <error line="354" column="156" source="standard:argument-list-wrapping" />
+        <error line="354" column="158" source="standard:function-literal" />
+        <error line="354" column="159" source="standard:wrapping" />
+        <error line="354" column="162" source="standard:function-literal" />
+        <error line="354" column="163" source="standard:argument-list-wrapping" />
+        <error line="354" column="164" source="standard:argument-list-wrapping" />
+        <error line="355" column="50" source="standard:chain-method-continuation" />
+        <error line="355" column="66" source="standard:chain-method-continuation" />
+        <error line="355" column="71" source="standard:function-literal" />
+        <error line="355" column="73" source="standard:statement-wrapping" />
+        <error line="355" column="78" source="standard:argument-list-wrapping" />
+        <error line="355" column="84" source="standard:argument-list-wrapping" />
+        <error line="355" column="94" source="standard:argument-list-wrapping" />
+        <error line="355" column="96" source="standard:statement-wrapping" />
+        <error line="355" column="104" source="standard:argument-list-wrapping" />
+        <error line="355" column="109" source="standard:argument-list-wrapping" />
+        <error line="355" column="112" source="standard:argument-list-wrapping" />
+        <error line="355" column="120" source="standard:argument-list-wrapping" />
+        <error line="355" column="122" source="standard:statement-wrapping" />
+        <error line="355" column="141" source="standard:max-line-length" />
+        <error line="355" column="143" source="standard:statement-wrapping" />
+        <error line="355" column="143" source="standard:function-literal" />
+        <error line="360" column="41" source="standard:argument-list-wrapping" />
+        <error line="360" column="54" source="standard:argument-list-wrapping" />
+        <error line="360" column="68" source="standard:argument-list-wrapping" />
+        <error line="360" column="91" source="standard:argument-list-wrapping" />
+        <error line="360" column="104" source="standard:argument-list-wrapping" />
+        <error line="361" column="68" source="standard:chain-method-continuation" />
+        <error line="362" column="85" source="standard:chain-method-continuation" />
+        <error line="364" column="45" source="standard:argument-list-wrapping" />
+        <error line="364" column="61" source="standard:chain-method-continuation" />
+        <error line="364" column="74" source="standard:chain-method-continuation" />
+        <error line="364" column="90" source="standard:argument-list-wrapping" />
+        <error line="364" column="93" source="standard:argument-list-wrapping" />
+        <error line="364" column="96" source="standard:argument-list-wrapping" />
+        <error line="364" column="125" source="standard:chain-method-continuation" />
+        <error line="364" column="133" source="standard:argument-list-wrapping" />
+        <error line="364" column="136" source="standard:argument-list-wrapping" />
+        <error line="364" column="139" source="standard:argument-list-wrapping" />
+        <error line="364" column="141" source="standard:max-line-length" />
+        <error line="364" column="168" source="standard:chain-method-continuation" />
+        <error line="364" column="176" source="standard:argument-list-wrapping" />
+        <error line="364" column="179" source="standard:argument-list-wrapping" />
+        <error line="364" column="180" source="standard:argument-list-wrapping" />
+        <error line="369" column="42" source="standard:chain-method-continuation" />
+        <error line="369" column="61" source="standard:argument-list-wrapping" />
+        <error line="369" column="70" source="standard:argument-list-wrapping" />
+        <error line="369" column="73" source="standard:argument-list-wrapping" />
+        <error line="370" column="47" source="standard:argument-list-wrapping" />
+        <error line="370" column="84" source="standard:argument-list-wrapping" />
+        <error line="374" column="37" source="standard:argument-list-wrapping" />
+        <error line="374" column="61" source="standard:argument-list-wrapping" />
+        <error line="374" column="80" source="standard:argument-list-wrapping" />
+        <error line="374" column="103" source="standard:argument-list-wrapping" />
+        <error line="375" column="110" source="standard:chain-method-continuation" />
+        <error line="379" column="51" source="standard:chain-method-continuation" />
+        <error line="386" column="53" source="standard:chain-method-continuation" />
+        <error line="390" column="26" source="standard:argument-list-wrapping" />
+        <error line="390" column="45" source="standard:argument-list-wrapping" />
+        <error line="390" column="64" source="standard:argument-list-wrapping" />
+        <error line="390" column="87" source="standard:argument-list-wrapping" />
+        <error line="390" column="114" source="standard:argument-list-wrapping" />
+        <error line="390" column="134" source="standard:argument-list-wrapping" />
+        <error line="390" column="141" source="standard:max-line-length" />
+        <error line="390" column="148" source="standard:argument-list-wrapping" />
+        <error line="390" column="153" source="standard:argument-list-wrapping" />
+        <error line="390" column="156" source="standard:chain-method-continuation" />
+        <error line="390" column="166" source="standard:argument-list-wrapping" />
+        <error line="390" column="167" source="standard:argument-list-wrapping" />
+        <error line="390" column="168" source="standard:argument-list-wrapping" />
+        <error line="410" column="52" source="standard:chain-method-continuation" />
     </file>
 </baseline>

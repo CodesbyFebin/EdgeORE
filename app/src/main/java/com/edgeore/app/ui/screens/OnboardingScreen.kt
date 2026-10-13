@@ -75,7 +75,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 EdgeColors.danger,
                 "What it does not do",
                 listOf(
-                    "No mining income, ORE rewards, SKR payments or token. \$EdgeORE is a product name, not a token.",
+                    "No mining income, ORE rewards, payments or token. \$EdgeORE is a product name, not a token.",
                     "Transfers are devnet only. The one mainnet action is an optional ORE Deploy you switch on, review and sign yourself, capped at 0.01 SOL, which may be lost. Nothing here is a store-ready or production release.",
                     "It never sees your wallet keys and never sends a transaction you have not reviewed and approved.",
                 ),

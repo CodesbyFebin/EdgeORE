@@ -36,6 +36,11 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
             vm.setReminders(granted)
         }
 
+    private val alertPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            vm.setRoundAlerts(granted)
+        }
+
     // QR address scan for the review destination. Each launcher is registered before STARTED, as required.
     private val scanResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
@@ -85,6 +90,36 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                         notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                     } else {
                         vm.setReminders(enabled)
+                    }
+                }
+
+                override fun setRoundAlerts(enabled: Boolean) {
+                    if (enabled &&
+                        android.os.Build.VERSION.SDK_INT >= 33 &&
+                        !com.edgeore.app.notifications.OreReminders
+                            .permitted(this@MainActivity)
+                    ) {
+                        alertPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        vm.setRoundAlerts(enabled)
+                    }
+                }
+
+                override fun exportRoundProof(proof: com.edgeore.app.edge.StoredProof) {
+                    lifecycleScope.launch {
+                        try {
+                            val file = vm.exportRoundProof(proof)
+                            val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", file)
+                            val send =
+                                Intent(Intent.ACTION_SEND)
+                                    .setType("application/octet-stream")
+                                    .putExtra(Intent.EXTRA_STREAM, uri)
+                                    .putExtra(Intent.EXTRA_SUBJECT, file.name)
+                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            startActivity(Intent.createChooser(send, "Export Round Proof (.oreproof)"))
+                        } catch (e: Exception) {
+                            Toast.makeText(this@MainActivity, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
 

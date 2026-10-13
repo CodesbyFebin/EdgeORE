@@ -47,7 +47,6 @@ object TokenRegistry {
             Cluster.MAINNET ->
                 listOf(
                     TokenMint("ORE", "ORE", ORE_MINT, 11, SPL_TOKEN, true),
-                    TokenMint("SKR", "SKR", SKR_MINT, 6, SPL_TOKEN, true),
                 )
             // The ORE mint address exists on devnet with a different mint authority than mainnet: a test mint, not official ORE.
             Cluster.DEVNET -> listOf(TokenMint("ORE", "Test ORE", ORE_MINT, 11, SPL_TOKEN, false))

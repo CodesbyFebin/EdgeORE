@@ -36,6 +36,12 @@ interface AccountReader {
     suspend fun accounts(addresses: List<String>): AccountsAt
 
     suspend fun slotRate(): SlotRate?
+
+    /** First [length] bytes of each account (dataSlice). Default reads whole accounts. */
+    suspend fun accountsHead(
+        addresses: List<String>,
+        length: Int,
+    ): AccountsAt = accounts(addresses).let { a -> AccountsAt(a.slot, a.accounts.map { it?.let { r -> RawAccount(r.owner, r.data.copyOf(minOf(length, r.data.size))) } }) }
 }
 
 /**
@@ -70,6 +76,32 @@ class ReadOnlyAccountRpc(
                         JSONArray()
                             .put(JSONArray(addresses))
                             .put(JSONObject().put("encoding", "base64").put("commitment", "confirmed")),
+                    ).getJSONObject("result")
+            parseMultipleAccounts(r, addresses.size)
+        }
+
+    override suspend fun accountsHead(
+        addresses: List<String>,
+        length: Int,
+    ): AccountsAt =
+        withContext(Dispatchers.IO) {
+            require(addresses.size in 1..10 && length in 0..1024)
+            addresses.forEach {
+                com.edgeore.app.crypto.Base58
+                    .decodePublicKey(it)
+            }
+            val r =
+                http
+                    .call(
+                        "getMultipleAccounts",
+                        JSONArray()
+                            .put(JSONArray(addresses))
+                            .put(
+                                JSONObject()
+                                    .put("encoding", "base64")
+                                    .put("commitment", "confirmed")
+                                    .put("dataSlice", JSONObject().put("offset", 0).put("length", length)),
+                            ),
                     ).getJSONObject("result")
             parseMultipleAccounts(r, addresses.size)
         }
