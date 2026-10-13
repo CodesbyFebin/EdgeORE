@@ -22,6 +22,7 @@
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun nodeCommand(action: String)</ID>
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate(s: ResourceSettings, d: DeviceSnapshot?): EdgeEvaluation</ID>
+    <ID>CyclomaticComplexMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun RoundBlocks(ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -&gt; Unit)</ID>
@@ -92,6 +93,13 @@
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatCell(label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false)</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatusPill(text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null)</ID>
     <ID>FunctionNaming:EdgeOreApp.kt$@Composable fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun CopperButton(text: String, icon: ImageVector?, tag: String, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun Hero(art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun NavRow(icon: ImageVector, label: String, value: String, tag: String, sub: String? = null, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun SectionCard(title: String, subtitle: String? = null, icon: ImageVector? = null, tag: String = "", content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun SettingsScreen(vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun ZkProofScreen()</ID>
     <ID>FunctionNaming:Holo.kt$@Composable fun HoloRing(size: Dp, modifier: Modifier = Modifier, bright: Boolean = false, content: @Composable BoxScope.() -&gt; Unit)</ID>
     <ID>FunctionNaming:HolographicKit.kt$@Composable fun EmptyState(icon: ImageVector, title: String, detail: String)</ID>
     <ID>FunctionNaming:HolographicKit.kt$@Composable fun IconAction(icon: ImageVector, label: String, onClick: () -&gt; Unit)</ID>
@@ -186,6 +194,9 @@
     <ID>LongParameterList:ContributionSession.kt$ContributionSession$( private val scope: CoroutineScope, private val parts: () -&gt; List&lt;SessionPart&gt;, private val blockedBy: () -&gt; String?, private val record: suspend (ReceiptDraft) -&gt; Unit, private val watchMs: Long = 2_000, val maxRounds: Int = MAX_ROUNDS, val maxDurationMs: Long = MAX_DURATION_MS, private val nowMs: () -&gt; Long = { System.nanoTime() / 1_000_000 }, private val newId: () -&gt; String = { UUID.randomUUID().toString().replace("-", "") }, )</ID>
     <ID>LongParameterList:DesignKit.kt$( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:DurableSpendTest.kt$DurableSpendTest$(s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0)</ID>
+    <ID>LongParameterList:FourScreens.kt$(art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String)</ID>
+    <ID>LongParameterList:FourScreens.kt$(icon: ImageVector, label: String, value: String, tag: String, sub: String? = null, onClick: () -&gt; Unit)</ID>
+    <ID>LongParameterList:FourScreens.kt$(vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit)</ID>
     <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>LongParameterList:MineDeploy.kt$(chargeOnly: Boolean, thermalGuard: Boolean, batteryReservePercent: Int, effect: (com.edgeore.app.settings.Control) -&gt; String, onChargeOnly: (Boolean) -&gt; Unit, onThermal: (Boolean) -&gt; Unit)</ID>
     <ID>LongParameterList:MineDeploy.kt$(label: String, value: String, enabled: Boolean, tag: String, note: String? = null, onAll: (() -&gt; Unit)? = null, onMinus: () -&gt; Unit = {}, onPlus: () -&gt; Unit = {})</ID>
@@ -290,6 +301,14 @@
     <ID>MagicNumber:Format.kt$Format$6</ID>
     <ID>MagicNumber:Format.kt$Format$60</ID>
     <ID>MagicNumber:Format.kt$Format$9</ID>
+    <ID>MagicNumber:FourScreens.kt$0x66060D0C</ID>
+    <ID>MagicNumber:FourScreens.kt$0xCC060D0C</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFF07110F</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFF19E6BC</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFFD5E0DC</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFFF2F7F5</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFFFF963F</ID>
+    <ID>MagicNumber:FourScreens.kt$4</ID>
     <ID>MagicNumber:Holo.kt$0.1f</ID>
     <ID>MagicNumber:Holo.kt$0.84f</ID>
     <ID>MagicNumber:Holo.kt$0.94f</ID>
@@ -887,6 +906,7 @@
     <ID>MaxLineLength:EdgeOreApp.kt$.</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Column(Modifier.fillMaxSize().padding(inner)) { OnboardingScreen(onDone = { Onboarding.set(context, true); onboarded = true }) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Destination$Mine : Destination</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$Destination.Storage$Storage</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$EnvironmentStrip(mainnet = headerDeploy.mainnet || headerCluster == com.edgeore.app.solana.Cluster.MAINNET)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Icon(EdgeIcons.Back, contentDescription = null, tint = EdgeColors.textMuted); Text(" Back", color = EdgeColors.textMuted)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Modifier.widthIn(max = 640.dp).fillMaxSize().background(EdgeColors.ambient).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 72.dp)</ID>
@@ -914,9 +934,11 @@
     <ID>MaxLineLength:EdgeOreApp.kt$if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$if (walletSheet) com.edgeore.app.ui.components.WalletConnectSheet(onDismiss = { walletSheet = false }, onConnect = { walletSheet = false; actions.connectWallet() })</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$onOpen = { r -&gt; tab = when (r) { "receipts" -&gt; Destination.Receipts; "storage" -&gt; Destination.Storage; else -&gt; Destination.Nodes }; route = null }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$onOpenReview = { route = "review" }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$selectedIconColor = if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$tab == Destination.Receipts -&gt; ReceiptsScreen(vm, onOpen = { route = "receipt:" + it.id }, onExport = actions::export)</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$tab == Destination.Settings</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$text</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$val tint = if (!selected) EdgeColors.textMuted else if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$var route by rememberSaveable { mutableStateOf&lt;String?&gt;(null) } // "review", "preview", "browser", "ore", "receipt:&lt;id&gt;"</ID>
@@ -1094,6 +1116,46 @@
     <ID>MaxLineLength:Format.kt$Format$fun sol(lamports: Long): String</ID>
     <ID>MaxLineLength:Format.kt$Format$n &gt;= 1_000_000L -&gt; BigDecimal(n).movePointLeft(6).setScale(1, java.math.RoundingMode.HALF_UP).toPlainString() + " MB"</ID>
     <ID>MaxLineLength:Format.kt$Format$n &gt;= 1_000_000_000L -&gt; BigDecimal(n).movePointLeft(9).setScale(2, java.math.RoundingMode.HALF_UP).toPlainString() + " GB"</ID>
+    <ID>MaxLineLength:FourScreens.kt$.</ID>
+    <ID>MaxLineLength:FourScreens.kt$/** Jav AI header: honest model state, wired to the existing allowlisted on-device loader (no import of arbitrary files). */</ID>
+    <ID>MaxLineLength:FourScreens.kt$Box</ID>
+    <ID>MaxLineLength:FourScreens.kt$Box(Modifier.fillMaxWidth().height(190.dp).background(Brush.verticalGradient(listOf(Color(0xCC060D0C), Color.Transparent, Color(0x66060D0C)))))</ID>
+    <ID>MaxLineLength:FourScreens.kt$Column</ID>
+    <ID>MaxLineLength:FourScreens.kt$Column { com.edgeore.app.solana.Cluster.entries.forEach { c -&gt; TextButton(onClick = { vm.selectCluster(c); net = false }) { Text(c.label + if (c == cluster) " (selected)" else "") } } }</ID>
+    <ID>MaxLineLength:FourScreens.kt$ContributionToggles</ID>
+    <ID>MaxLineLength:FourScreens.kt$Hero(R.drawable.hero_ai, "Jav AI", "Your on-device assistant for EdgeORE.", if (loaded != null) "Model loaded" else "Model not loaded", loaded != null, "jav-hero")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Hero(R.drawable.hero_settings, "Your device. Your rules.", "Configure your wallet, network, performance and privacy settings for EdgeORE.", cluster.label, cluster != com.edgeore.app.solana.Cluster.MAINNET, "settings-hero")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Hero(R.drawable.hero_zk, "Prove. Verify. Share.", "Proofs for supported computations.", "Prover not configured", false, "zk-hero")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Image(painterResource(art), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().height(190.dp))</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Circuit, "Circuit", "Select circuit", "zk-circuit") { info = "No circuits are available in this build yet." }</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Cube, "Backend", "Select prover", "zk-backend") { info = "No prover backend is configured in this build yet." }</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Cube, "Default model", od.models.firstOrNull { it.id == od.selectedId }?.name ?: "None selected", "settings-default-model", onClick = onAi)</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Key, "Verification key", "Not loaded", "zk-vk") { info = "No verification key is loaded. One becomes available only with a supported circuit." }</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Receipts, "Receipts", if (receipts.isEmpty()) "None yet" else "${receipts.size} stored", "settings-receipts") { onOpen("receipts") }</ID>
+    <ID>MaxLineLength:FourScreens.kt$Row</ID>
+    <ID>MaxLineLength:FourScreens.kt$SectionCard</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text("Choose a supported circuit and matching verification key.", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text("One network for the whole app. Mainnet ORE deploys still need the risk tick and are capped at 0.01 SOL.", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text("This build imports models only from its allowlist (Hugging Face, pinned commit, verified size and SHA-256). Picking an arbitrary file is not supported.")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(ZK_NOTE, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("zk-note"))</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(m.name + if (m.id in od.downloaded) " (installed)" else " · ${com.edgeore.app.ui.Format.bytes(m.sizeBytes)}")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(subtitle, color = Color(0xFFD5E0DC), fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp, end = 120.dp))</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(title, color = Color(0xFFF2F7F5), fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.weight(1f).semantics { heading() })</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(title, style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(wallet.address?.let { "${it.take(4)}…${it.takeLast(4)}" } ?: "Not connected", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:FourScreens.kt$TextButton</ID>
+    <ID>MaxLineLength:FourScreens.kt$color = if (wallet.address == null) EdgeColors.onAction else EdgeColors.danger</ID>
+    <ID>MaxLineLength:FourScreens.kt$const val ZK_NOTE = "No prover, circuit or verification key ships in this build, so no proof is generated or verified and no claim is made. This screen shows the setup a future prover would need."</ID>
+    <ID>MaxLineLength:FourScreens.kt$fun</ID>
+    <ID>MaxLineLength:FourScreens.kt$if (installed.isEmpty()) Text("No model is installed on this phone yet. Use Import model to download an allowlisted one.")</ID>
+    <ID>MaxLineLength:FourScreens.kt$info?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("zk-info")) }</ID>
+    <ID>MaxLineLength:FourScreens.kt$installed.forEach { m -&gt; TextButton(onClick = { vm.selectOnDeviceModel(m.id); choose = false }) { Text(m.name + if (m.id == od.selectedId) " (selected)" else "") } }</ID>
+    <ID>MaxLineLength:FourScreens.kt$modifier</ID>
+    <ID>MaxLineLength:FourScreens.kt$modifier = Modifier.background(if (pillOn) Color(0xFF19E6BC) else Color(0xFFFF963F), EdgeShapes.pill).padding(horizontal = 12.dp, vertical = 5.dp).testTag("$tag-pill")</ID>
+    <ID>MaxLineLength:FourScreens.kt$onChargeOnly = { v -&gt; vm.updateSettings { it.copy(chargeOnly = v) } }</ID>
+    <ID>MaxLineLength:FourScreens.kt$sub = loaded?.name ?: od.models.firstOrNull { it.id == od.selectedId &amp;&amp; it.id in od.downloaded }?.name ?: if (installed.isEmpty()) "No model installed" else "${installed.size} installed, none selected"</ID>
+    <ID>MaxLineLength:FourScreensTest.kt$FourScreensTest$private fun tab(label: String)</ID>
     <ID>MaxLineLength:GatewayProxyIntegrationTest.kt$GatewayProxyIntegrationTest$*</ID>
     <ID>MaxLineLength:GatewayProxyIntegrationTest.kt$GatewayProxyIntegrationTest$assumeTrue("EDGEORE_GATEWAY_IT not set; proxy integration test skipped", path.isNotEmpty() &amp;&amp; File(path).exists())</ID>
     <ID>MaxLineLength:GatewayProxyIntegrationTest.kt$GatewayProxyIntegrationTest$for</ID>
@@ -1119,6 +1181,7 @@
     <ID>MaxLineLength:Icons.kt$EdgeIcons$private</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Brain = outline("brain", "M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 3 5 3 3 0 0 0 5 1V5a2 2 0 0 0-3-1z", "M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-3 5 3 3 0 0 1-5 1")</ID>
+    <ID>MaxLineLength:Icons.kt$EdgeIcons$val Circuit = outline("circuit", "M5 5h14v14H5z", "M9 9h6v6H9z", "M9 2v3 M15 2v3 M9 19v3 M15 19v3 M2 9h3 M2 15h3 M19 9h3 M19 15h3")</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Coins = outline("coins", "M12 5c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3z", "M5 8v8c0 1.7 3 3 7 3s7-1.3 7-3V8", "M5 12c0 1.7 3 3 7 3s7-1.3 7-3")</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Cpu = outline("cpu", "M7 7h10v10H7z", "M10 3v4", "M14 3v4", "M10 17v4", "M14 17v4", "M3 10h4", "M3 14h4", "M17 10h4", "M17 14h4")</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Gift = outline("gift", "M4 10h16v10H4z", "M3 7h18v3H3z", "M12 7v13", "M12 7c-2-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3-2-5 1")</ID>
@@ -2163,9 +2226,9 @@
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$try { s.transition(op.id, setOf(OpState.REVIEWED), OpState.ABANDONED); fail("expected latch") } catch (_: OperationStoreUnavailable) {}</ID>
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$val r = s.reserve("devnet", fx.signer, fx.recipient, fx.lamports, fx.message, fx.messageSha256, "bh2", 200, limit)</ID>
     <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$/** dApp Store screenshots: the real MainActivity, fresh install (no wallet, so no balances), 1080x1920 portrait. Set -Dstore.out. */</ID>
-    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun oreCard()</ID>
-    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun receipts()</ID>
-    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun review()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun ai()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun settings()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun zk()</ID>
     <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$private fun shot(name: String)</ID>
     <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$private fun top()</ID>
     <ID>MaxLineLength:Telemetry.kt$Telemetry$/** This app's received + sent bytes (TrafficStats per-UID counters), or null when the platform does not report them. */</ID>

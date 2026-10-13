@@ -35,7 +35,7 @@ class StoreScreenshotTest {
     private fun shot(name: String) { assumeTrue(out != null); rule.waitForIdle(); rule.onRoot().captureRoboImage("$out/$name.png") }
 
     @Test fun home() { top(); shot("screenshot-1-home") }
-    @Test fun oreCard() { rule.onNode(hasTestTag("ore-mining")).performScrollTo(); rule.onNode(hasText("Round blocks")).performScrollTo(); shot("screenshot-2-ore-card") }
-    @Test fun review() { rule.onNode(hasText("Send SOL (devnet transfer review)") and hasClickAction()).performScrollTo().performClick(); rule.waitForIdle(); top(); shot("screenshot-3-review") }
-    @Test fun receipts() { rule.onNode(hasText("Receipts") and hasClickAction()).performClick(); rule.waitForIdle(); top(); shot("screenshot-4-receipts") }
+    @Test fun ai() { rule.onNode(hasText("AI") and hasClickAction()).performClick(); rule.waitForIdle(); top(); shot("screenshot-2-ai") }
+    @Test fun zk() { rule.onNode(hasText("ZK Proof") and hasClickAction()).performClick(); rule.waitForIdle(); top(); shot("screenshot-3-zk-proof") }
+    @Test fun settings() { rule.onNode(hasText("Settings") and hasClickAction()).performClick(); rule.waitForIdle(); top(); shot("screenshot-4-settings") }
 }

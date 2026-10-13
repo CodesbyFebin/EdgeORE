@@ -36,7 +36,14 @@ private val out: String = System.getProperty("screens.out") ?: "build/screenshot
 // render is deterministic. 0.1% only absorbs anti-aliasing noise; any text or layout change fails.
 private val options = RoborazziOptions(compareOptions = RoborazziOptions.CompareOptions(changeThreshold = 0.001f))
 
-private fun Rule_.tab(name: String) { onNode(hasText(name) and hasClickAction()).performClick(); waitForIdle() }
+// Storage, Nodes and Receipts moved off the bottom bar (Home | AI | ZK Proof | Settings); they open from Settings.
+private fun Rule_.tab(name: String) {
+    if (name in setOf("Storage", "Nodes", "Receipts")) {
+        onNode(hasText("Settings") and hasClickAction()).performClick(); waitForIdle()
+        onNode(androidx.compose.ui.test.hasTestTag("settings-${name.lowercase()}")).performScrollTo().performClick()
+    } else onNode(hasText(name) and hasClickAction()).performClick()
+    waitForIdle()
+}
 private fun Rule_.button(text: String) { onNode(hasText(text) and hasClickAction()).performScrollTo().performClick(); waitForIdle() }
 private fun Rule_.shot(file: String) {
     onAllNodes(hasScrollAction()).onFirst().performTouchInput { repeat(10) { swipeDown() } }
