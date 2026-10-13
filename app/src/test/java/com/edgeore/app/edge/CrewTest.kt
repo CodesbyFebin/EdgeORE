@@ -99,4 +99,31 @@ class CrewTest {
         assertTrue(t.contains("never holds funds"))
         for (bad in listOf("APR", "yield", "profit", "guarantee", "earn")) assertFalse(t.contains(bad, true))
     }
+
+    @Test fun reassignmentCoversAll25WithoutOverlapForAnyN() {
+        for (n in 1..25) {
+            val members = (1..n).map { Crew.Member(key(it), 1 shl (it - 1), 2_500_000) }
+            val p = Crew.Plan("c", "x", 1, key(1), members)
+            val r = Crew.reassign(p, members.map { it.wallet }.toSet())!!
+            assertEquals(n, r.members.size)
+            var union = 0
+            r.members.forEach { m ->
+                assertEquals(0, union and m.mask)
+                union = union or m.mask
+                assertTrue(m.totalLamports <= 2_500_000)
+            }
+            assertEquals((1 shl 25) - 1, union)
+            val counts = r.members.map { Integer.bitCount(it.mask) }
+            assertTrue(counts.max() - counts.min() <= 1)
+            assertEquals(r, Crew.reassign(p, members.map { it.wallet }.toSet()))
+        }
+    }
+
+    @Test fun dropoutsShiftSquaresToRemainingMembers() {
+        val r = Crew.reassign(plan(), setOf(b))!!
+        assertEquals(listOf(b), r.members.map { it.wallet })
+        assertEquals((1 shl 25) - 1, r.members[0].mask)
+        assertEquals(6_000_000L / 25, r.members[0].lamportsPerSquare)
+        assertNull(Crew.reassign(plan(), emptySet()))
+    }
 }

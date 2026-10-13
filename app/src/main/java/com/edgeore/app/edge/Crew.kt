@@ -223,6 +223,30 @@ object Crew {
         return out
     }
 
+    /**
+     * Suggested plan update when members drop out (for example, they did not acknowledge this round's plan). Deterministic:
+     * active wallets sorted, square i goes to active[i % n], so all 25 squares are covered with no overlap and counts
+     * differ by at most one. Each member keeps their own original total, spread over their new squares (floored), so no
+     * one's total grows and the per-deploy cap is unchanged. This is only a suggestion: it must be re-signed by the
+     * creator, and each member still reviews and signs their own deploy.
+     */
+    fun reassign(
+        plan: Plan,
+        active: Set<String>,
+    ): Plan? {
+        val keep = plan.members.filter { it.wallet in active }.sortedBy { it.wallet }
+        if (keep.isEmpty()) return null
+        val masks = IntArray(keep.size)
+        for (sq in 0 until 25) masks[sq % keep.size] = masks[sq % keep.size] or (1 shl sq)
+        val members =
+            keep
+                .mapIndexed { i, m ->
+                    val per = m.totalLamports / Integer.bitCount(masks[i])
+                    Member(m.wallet, masks[i], per)
+                }.filter { it.lamportsPerSquare > 0 }
+        return plan.copy(members = members)
+    }
+
     data class Stats(
         val coveredSquares: Int,
         val rounds: Int,

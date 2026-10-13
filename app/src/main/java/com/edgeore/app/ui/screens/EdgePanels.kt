@@ -483,6 +483,7 @@ fun CrewView(
     onImport: (String) -> Unit,
     onCreate: (String, List<com.edgeore.app.edge.Crew.Member>) -> Unit,
     onReviewMyShare: () -> Unit,
+    onReassign: (Set<String>) -> Unit = {},
 ) {
     var paste by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -550,6 +551,24 @@ fun CrewView(
                         color = EdgeColors.textMuted,
                         modifier = Modifier.testTag("crew-link"),
                     )
+                }
+            }
+            var active by remember(signed) { mutableStateOf(signed.plan.members.map { it.wallet }.toSet()) }
+            EdgeCard(Modifier.testTag("crew-reassign")) {
+                Text("Members who dropped out", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+                p.members.forEach { m ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        androidx.compose.material3.Checkbox(m.wallet in active, { on -> active = if (on) active + m.wallet else active - m.wallet })
+                        Text("${m.wallet.take(4)}…${m.wallet.takeLast(4)} acknowledged", color = EdgeColors.textMuted, fontSize = 12.sp)
+                    }
+                }
+                val suggested = if (active.size < p.members.size) com.edgeore.app.edge.Crew.reassign(p, active) else null
+                if (suggested != null) {
+                    Text("Suggested update: all 25 squares spread evenly over ${suggested.members.size} member(s); each keeps their own total.", color = EdgeColors.textMuted, fontSize = 12.sp)
+                    suggested.members.forEach { m ->
+                        Text("${m.wallet.take(4)}… · ${Integer.bitCount(m.mask)} squares · ${OreFormat.sol(m.totalLamports)} SOL", color = EdgeColors.textPrimary, fontSize = 12.sp)
+                    }
+                    SecondaryAction("Creator: sign plan update", Modifier.fillMaxWidth().testTag("crew-reassign-sign")) { onReassign(active) }
                 }
             }
             EdgeCard {
@@ -643,5 +662,6 @@ fun CrewScreen(
         vm::importCrew,
         { n, ms -> vm.createCrew(n, round, ms) },
         { if (vm.reviewMyCrewShare()) onOpenReview() },
+        vm::applyCrewReassign,
     )
 }
