@@ -10,11 +10,21 @@ Canonical source commit: `43afe9a238ff76be7fc542321d54f46dee5b3dc8` (stamped by 
 
 Version `0.1.0-clockin` (versionCode 12) · package `com.edgeore.app` · Kotlin / Jetpack Compose · Mobile Wallet Adapter · by **[CodesbyFebin](https://github.com/CodesbyFebin)** · Website: <https://codesbyfebin.github.io/EdgeORE/>
 
+## Screenshots (current build)
+
 | Home | AI | ZK Proof | Settings |
 |---|---|---|---|
 | <img src="docs/assets/screenshot-1-home.webp" width="200" alt="Home screen"> | <img src="docs/assets/screenshot-2-ai.webp" width="200" alt="AI screen"> | <img src="docs/assets/screenshot-3-zk-proof.webp" width="200" alt="ZK Proof screen"> | <img src="docs/assets/screenshot-4-settings.webp" width="200" alt="Settings screen"> |
 
-*JVM (Robolectric) renders of the app screens in the fresh-install state, not phone captures. Balances read "Not read" because no wallet is connected.*
+*Current build (Home / AI / ZK Proof / Settings). JVM (Robolectric) renders in the fresh-install state, not phone captures; balances read "Not read" because no wallet is connected.*
+
+### Earlier build (5-tab layout)
+
+| Home | ORE card | Review | Receipts |
+|---|---|---|---|
+| <img src="docs/assets/earlier-1-home.webp" width="200" alt="Home screen"> | <img src="docs/assets/earlier-2-ore-card.webp" width="200" alt="ORE card screen"> | <img src="docs/assets/earlier-3-review.webp" width="200" alt="Review screen"> | <img src="docs/assets/earlier-4-receipts.webp" width="200" alt="Receipts screen"> |
+
+*From the previous build (Mine / AI / Storage / Nodes / Receipts tabs), kept for reference. JVM (Robolectric) renders, not phone captures.*
 
 ## What This Is
 
