@@ -91,6 +91,7 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
                 pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
         }
+        com.edgeore.app.ui.theme.ThemeState.mode = com.edgeore.app.ui.theme.ThemePrefs.read(this)
         setContent { EdgeOreTheme { EdgeOreApp(vm, actions) } }
     }
 

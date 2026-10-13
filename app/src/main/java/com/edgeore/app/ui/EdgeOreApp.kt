@@ -216,6 +216,9 @@ fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions) {
         title = { Text("Settings & build") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                com.edgeore.app.ui.components.ThemeSwitch(com.edgeore.app.ui.theme.ThemeState.mode) { m ->
+                    com.edgeore.app.ui.theme.ThemeState.mode = m; com.edgeore.app.ui.theme.ThemePrefs.write(context, m)
+                }
                 Text("EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · transfers use Solana devnet; ORE Deploy is devnet by default with an opt-in mainnet option, capped at 0.01 SOL per deploy and signed in your wallet. Hackathon build 0.1.0-clockin; no rewards or income.")
                 com.edgeore.app.ui.components.ResourceControl(EdgeIcons.Bell, "Optional daily reminder", "Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android.", reminders, "Local notification · no eligibility or reward claim", onChange = actions::setReminders)
                 Text("Receipts signed with: ${vm.receiptSignerProtection.substringBefore(" · key ")}.")

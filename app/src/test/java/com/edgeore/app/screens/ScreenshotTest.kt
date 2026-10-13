@@ -56,7 +56,7 @@ class ScreenshotTest {
     @Test fun storage() { rule.tab("Storage"); rule.shot("03-storage") }
     @Test fun nodes() { rule.tab("Nodes"); rule.shot("04-nodes") }
     @Test fun receipts() { rule.tab("Receipts"); rule.shot("05-receipts") }
-    @Test fun review() { rule.button("Review a supported action"); rule.shot("06-review") }
+    @Test fun review() { rule.button("Send SOL (devnet transfer review)"); rule.shot("06-review") }
 }
 
 /** Same screens on a very tall viewport so every control and its effect label is visible in one image. */
@@ -79,5 +79,5 @@ class FullScreenshotTest {
     }
     @Test fun nodes() { rule.tab("Nodes"); rule.shot("full/04-nodes-full") }
     @Test fun receipts() { rule.tab("Receipts"); rule.shot("full/05-receipts-full") }
-    @Test fun review() { rule.button("Review a supported action"); rule.shot("full/06-review-full") }
+    @Test fun review() { rule.button("Send SOL (devnet transfer review)"); rule.shot("full/06-review-full") }
 }
