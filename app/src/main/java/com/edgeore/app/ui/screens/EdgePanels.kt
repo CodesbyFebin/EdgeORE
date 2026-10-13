@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.edgeore.app.EdgeOreViewModel
+import com.edgeore.app.edge.Crew
 import com.edgeore.app.edge.History
 import com.edgeore.app.edge.RoundExplainer
 import com.edgeore.app.edge.StoredProof
@@ -114,7 +116,8 @@ fun TileInsightPanel(
                 }
             }
             Text(
-                "Light = less SOL than average · Crowded = more than 1.5× · ★ solo tile: if it wins, one miner on it takes the round's ORE " +
+                "Light = less SOL than average · Crowded = more than 1.5×" +
+                    " · ★ solo tile: if it wins, one miner on it takes the round's ORE " +
                     "(chosen by SOL weight); other 15 tiles split it by SOL. Set by distribution_mask(round id) in ORE v3. " +
                     "Losing tiles keep about 89.1% of their SOL (1% admin + 10% protocol fee).",
                 color = EdgeColors.textMuted,
@@ -553,24 +556,7 @@ fun CrewView(
                     )
                 }
             }
-            var active by remember(signed) { mutableStateOf(signed.plan.members.map { it.wallet }.toSet()) }
-            EdgeCard(Modifier.testTag("crew-reassign")) {
-                Text("Members who dropped out", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
-                p.members.forEach { m ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        androidx.compose.material3.Checkbox(m.wallet in active, { on -> active = if (on) active + m.wallet else active - m.wallet })
-                        Text("${m.wallet.take(4)}…${m.wallet.takeLast(4)} acknowledged", color = EdgeColors.textMuted, fontSize = 12.sp)
-                    }
-                }
-                val suggested = if (active.size < p.members.size) com.edgeore.app.edge.Crew.reassign(p, active) else null
-                if (suggested != null) {
-                    Text("Suggested update: all 25 squares spread evenly over ${suggested.members.size} member(s); each keeps their own total.", color = EdgeColors.textMuted, fontSize = 12.sp)
-                    suggested.members.forEach { m ->
-                        Text("${m.wallet.take(4)}… · ${Integer.bitCount(m.mask)} squares · ${OreFormat.sol(m.totalLamports)} SOL", color = EdgeColors.textPrimary, fontSize = 12.sp)
-                    }
-                    SecondaryAction("Creator: sign plan update", Modifier.fillMaxWidth().testTag("crew-reassign-sign")) { onReassign(active) }
-                }
-            }
+            CrewReassignCard(signed.plan, onReassign)
             EdgeCard {
                 Text("Crew stats (from your receipts)", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
                 Text(
@@ -665,3 +651,42 @@ fun CrewScreen(
         vm::applyCrewReassign,
     )
 }
+
+/** Suggested plan update after dropouts: display only; the creator re-signs, each member signs their own deploy. */
+@Composable
+fun CrewReassignCard(
+    plan: com.edgeore.app.edge.Crew.Plan,
+    onReassign: (Set<String>) -> Unit,
+) {
+    var active by remember(plan) { mutableStateOf(plan.members.map { it.wallet }.toSet()) }
+    EdgeCard(Modifier.testTag("crew-reassign")) {
+        Text("Members who dropped out", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+        plan.members.forEachIndexed { i, m ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(m.wallet in active, { on ->
+                    active = if (on) active + m.wallet else active - m.wallet
+                }, Modifier.testTag("crew-ack-$i"))
+                Text(short(m.wallet) + " acknowledged", color = EdgeColors.textMuted, fontSize = 12.sp)
+            }
+        }
+        val suggested = if (active.size < plan.members.size) Crew.reassign(plan, active) else null
+        suggested?.let { sp ->
+            Text(
+                "Suggested update: all 25 squares spread evenly over ${sp.members.size} member(s); " +
+                    "each keeps their own total.",
+                color = EdgeColors.textMuted,
+                fontSize = 12.sp,
+            )
+            sp.members.forEach { m ->
+                val sol = OreFormat.sol(m.totalLamports)
+                val line = "${short(m.wallet)} · ${Integer.bitCount(m.mask)} squares · $sol SOL"
+                Text(line, color = EdgeColors.textPrimary, fontSize = 12.sp)
+            }
+            SecondaryAction("Creator: sign plan update", Modifier.fillMaxWidth().testTag("crew-reassign-sign")) {
+                onReassign(active)
+            }
+        }
+    }
+}
+
+private fun short(w: String) = "${w.take(4)}…${w.takeLast(4)}"

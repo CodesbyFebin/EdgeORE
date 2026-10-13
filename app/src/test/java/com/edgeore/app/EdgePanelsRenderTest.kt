@@ -175,8 +175,11 @@ class EdgePanelsRenderTest {
         }
         rule.onNodeWithTag("crew-custody").assertExists()
         rule.onNodeWithText("Not tampered", substring = true).assertExists()
-        shot("crew")
         rule.onNodeWithTag("crew-review").performClick()
         assertTrue(reviewed)
+        rule.onNodeWithTag("crew-ack-1").performClick()
+        rule.onNodeWithText("spread evenly over 1 member", substring = true).assertExists()
+        rule.onNodeWithText("· 25 squares · 0.003 SOL", substring = true).assertExists()
+        shot("crew")
     }
 }

@@ -286,17 +286,17 @@
         <error line="65" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/EdgePanels.kt">
-        <error line="64" column="5" source="standard:function-naming" />
-        <error line="117" column="141" source="standard:max-line-length" />
-        <error line="166" column="5" source="standard:function-naming" />
-        <error line="196" column="5" source="standard:function-naming" />
-        <error line="218" column="5" source="standard:function-naming" />
-        <error line="269" column="5" source="standard:function-naming" />
-        <error line="302" column="5" source="standard:function-naming" />
-        <error line="359" column="5" source="standard:function-naming" />
-        <error line="459" column="5" source="standard:function-naming" />
-        <error line="475" column="5" source="standard:function-naming" />
-        <error line="623" column="5" source="standard:function-naming" />
+        <error line="66" column="5" source="standard:function-naming" />
+        <error line="169" column="5" source="standard:function-naming" />
+        <error line="199" column="5" source="standard:function-naming" />
+        <error line="221" column="5" source="standard:function-naming" />
+        <error line="272" column="5" source="standard:function-naming" />
+        <error line="305" column="5" source="standard:function-naming" />
+        <error line="362" column="5" source="standard:function-naming" />
+        <error line="462" column="5" source="standard:function-naming" />
+        <error line="478" column="5" source="standard:function-naming" />
+        <error line="628" column="5" source="standard:function-naming" />
+        <error line="657" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/FourScreens.kt">
         <error line="51" column="5" source="standard:function-naming" />

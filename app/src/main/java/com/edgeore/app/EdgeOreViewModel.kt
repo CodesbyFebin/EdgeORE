@@ -920,18 +920,6 @@ class EdgeOreViewModel(
         _crew.value = CrewState(s, com.edgeore.app.edge.Crew.verify(s), com.edgeore.app.edge.Crew.encode(s))
     }
 
-    /** Creator only: re-sign a suggested plan without the members who dropped out. Nothing is deployed. */
-    fun applyCrewReassign(active: Set<String>) {
-        val s = _crew.value.signed ?: return
-        if (s.plan.creator != _wallet.value.address) {
-            _crew.update { it.copy(message = "Only the crew creator can sign a plan update") }
-            return
-        }
-        val next = com.edgeore.app.edge.Crew.reassign(s.plan, active) ?: return
-        val signed = com.edgeore.app.edge.Crew.signWithKeystore(next, signer)
-        _crew.value = CrewState(signed, com.edgeore.app.edge.Crew.verify(signed), com.edgeore.app.edge.Crew.encode(signed), "Plan updated. Share the new link; each member reviews and signs their own deploy.")
-    }
-
     /** Pre-fills only this wallet's own share and opens the normal review. Cap, risk tick and Rounds=1 still apply. */
     fun reviewMyCrewShare(): Boolean {
         val st = _crew.value
@@ -2722,5 +2710,10 @@ class EdgeOreViewModel(
         val online = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         val unmetered = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
         return online && !unmetered
+    }
+
+    /** Creator only: re-sign a suggested plan without the members who dropped out. Nothing is deployed. */
+    fun applyCrewReassign(active: Set<String>) {
+        _crew.value = reassignedCrewState(_crew.value, active, _wallet.value.address, signer)
     }
 }
