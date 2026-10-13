@@ -1,7 +1,7 @@
 # EdgeORE
 
 <!-- commit-stamp:begin -->
-Canonical source commit: `2ed7c06a60a6bcaa458d2a7aaa71fd2eec768592` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
+Canonical source commit: `43afe9a238ff76be7fc542321d54f46dee5b3dc8` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
 <!-- commit-stamp:end -->
 
 ![EdgeORE banner](docs/assets/banner.webp)
@@ -131,7 +131,7 @@ git clone https://github.com/CodesbyFebin/EdgeORE.git && cd EdgeORE
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Test results at source commit `2ed7c06`, each suite counted on its own (never summed):
+Test results at source commit `2ed7c06` (the README and images changed after; no code changed), each suite counted on its own (never summed):
 
 | Suite | Result |
 |---|---|
