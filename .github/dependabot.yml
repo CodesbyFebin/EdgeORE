@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: gradle
-    directories: ["/", "/tools/receipt-checker"]
+    directory: "/"
     schedule: { interval: weekly }
     groups:
       gradle-all: { patterns: ["*"] }
@@ -18,6 +18,17 @@ updates:
       - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-*"
       - dependency-name: "gradle-wrapper"
       - dependency-name: "com.google.ai.edge.litertlm:*"
+  - package-ecosystem: gradle
+    directory: "/tools/receipt-checker"
+    schedule: { interval: weekly }
+    groups:
+      receipt-checker: { patterns: ["*"] }
+    ignore:
+      # Kotlin is pinned to the app's tested toolchain (2.0.21); bump only by hand with a full re-test.
+      - dependency-name: "jvm"
+      - dependency-name: "org.jetbrains.kotlin.jvm"
+      - dependency-name: "org.jetbrains.kotlin*"
+      - dependency-name: "org.jetbrains.kotlin:*"
   - package-ecosystem: pip
     directories: ["/services/storage-gateway", "/tools/edgeore-kit"]
     schedule: { interval: weekly }
