@@ -307,6 +307,7 @@ fun EdgeOreApp(
                             onScanQr = actions::scanAddressQr,
                             onPickQrImage = actions::pickQrImage,
                         )
+                    r == "crew" -> com.edgeore.app.ui.screens.CrewScreen(vm) { route = "review" }
                     r == "history" -> com.edgeore.app.ui.screens.HistoryView(vm.historyRows())
                     r == "proofs" -> {
                         val edgeState by vm.edge.collectAsStateWithLifecycle()
@@ -347,6 +348,7 @@ fun EdgeOreApp(
                             onSettings = { about = true },
                             onHistory = { route = "history" },
                             onProofs = { route = "proofs" },
+                            onCrew = { route = "crew" },
                             onAlerts = actions::setRoundAlerts,
                         )
                     tab == Destination.AI -> {

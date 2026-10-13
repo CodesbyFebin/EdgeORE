@@ -77,6 +77,7 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
         )
+        intent?.data?.toString()?.takeIf { it.startsWith(com.edgeore.app.edge.Crew.LINK_PREFIX) }?.let(vm::importCrew)
         // Must be created before the Activity is STARTED (registers an activity-result launcher).
         val sender = ActivityResultSender(this)
         val actions =

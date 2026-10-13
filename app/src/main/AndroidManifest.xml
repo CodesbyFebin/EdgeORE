@@ -35,6 +35,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Crew Pool links: edgeore://crew?plan=... (a signed plan only; opening it never deploys) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="edgeore" android:host="crew" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".scan.QrScanActivity"

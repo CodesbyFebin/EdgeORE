@@ -22,13 +22,14 @@
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun nodeCommand(action: String)</ID>
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private suspend fun edgeAfterRead(snap: com.edgeore.app.ore.OreSnapshot)</ID>
+    <ID>CyclomaticComplexMethod:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate( s: ResourceSettings, d: DeviceSnapshot?, ): EdgeEvaluation</ID>
     <ID>CyclomaticComplexMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, synced: Boolean = snapshot != null, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MineHolo.kt$@Composable fun OreGridCard( cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit, )</ID>
-    <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, )</ID>
+    <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MiningAnimation.kt$@Composable fun MiningAnimation( phase: SessionPhase, modifier: Modifier = Modifier, reducedMotion: Boolean = rememberReducedMotion(), )</ID>
     <ID>CyclomaticComplexMethod:NodeAgentClient.kt$NodeAgentClient$private fun post( path: String, body: String, ): HttpOutcome</ID>
@@ -94,7 +95,9 @@
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatCell( label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false, )</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatusPill( text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null, )</ID>
     <ID>FunctionNaming:EdgeOreApp.kt$@Composable fun EdgeOreApp( vm: EdgeOreViewModel, actions: PlatformActions, )</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun EdgeInsightsSection( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, onHistory: () -&gt; Unit, onProofs: () -&gt; Unit, onAlerts: (Boolean) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewScreen( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun EdgeInsightsSection( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, onHistory: () -&gt; Unit, onProofs: () -&gt; Unit, onAlerts: (Boolean) -&gt; Unit, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun ExplainerCard( text: String?, backend: String?, onRound: () -&gt; Unit, onTile: (() -&gt; Unit)?, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun HistoryView(rows: List&lt;History.Row&gt;)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun PlanningCalculatorCard(initial: com.edgeore.app.edge.PlanningCalculator.Inputs? = null)</ID>
@@ -139,7 +142,7 @@
     <ID>FunctionNaming:MineHolo.kt$@Composable fun WalletConnectRow( address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable private fun Pill( text: String, modifier: Modifier, primary: Boolean = false, danger: Boolean = false, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable private fun RowScope.Res( icon: ImageVector, label: String, value: String, source: String, tag: String, dot: NetActivity? = null, reducedMotion: Boolean = true, )</ID>
-    <ID>FunctionNaming:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, )</ID>
+    <ID>FunctionNaming:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable fun OreEntry(onOpen: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable private fun LabeledSlider( icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange&lt;Float&gt;, onChange: (Int) -&gt; Unit, )</ID>
@@ -198,6 +201,7 @@
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun nodeCommand(action: String)</ID>
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private suspend fun edgeAfterRead(snap: com.edgeore.app.ore.OreSnapshot)</ID>
+    <ID>LongMethod:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, )</ID>
     <ID>LongMethod:EdgePanels.kt$@Composable fun PlanningCalculatorCard(initial: com.edgeore.app.edge.PlanningCalculator.Inputs? = null)</ID>
     <ID>LongMethod:EdgePanels.kt$@Composable fun TileInsightPanel( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
     <ID>LongMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
@@ -209,7 +213,7 @@
     <ID>LongMethod:MineHolo.kt$@Composable fun NetworkSelector( selected: Cluster, onSelect: (Cluster) -&gt; Unit, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>LongMethod:MineHolo.kt$@Composable fun OreGridCard( cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>LongMethod:MineHolo.kt$@Composable fun WalletConnectRow( address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit, )</ID>
-    <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, )</ID>
+    <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>LongMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>LongMethod:MiningAnimation.kt$@Composable fun MiningAnimation( phase: SessionPhase, modifier: Modifier = Modifier, reducedMotion: Boolean = rememberReducedMotion(), )</ID>
     <ID>LongMethod:MiningAnimationComposeTest.kt$MiningAnimationComposeTest$@Config(sdk = [28], qualifiers = "w360dp-h1000dp-hdpi") @Test fun frames()</ID>
@@ -243,7 +247,9 @@
     <ID>LongParameterList:DesignKit.kt$( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:DurableSpendTest.kt$DurableSpendTest$( s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0, )</ID>
     <ID>LongParameterList:EdgeDifferentiatorsTest.kt$RoundBytes$( id: Long, deployed: List&lt;Long&gt;, slotHash: ByteArray, motherlode: Long = 0, reward: Long = OreV3.GRAMS_PER_ORE, topMiner: ByteArray? = null, )</ID>
+    <ID>LongParameterList:EdgePanels.kt$( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, )</ID>
     <ID>LongParameterList:EdgePanels.kt$( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
+    <ID>LongParameterList:EdgePanels.kt$( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, onHistory: () -&gt; Unit, onProofs: () -&gt; Unit, onAlerts: (Boolean) -&gt; Unit, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:FourScreens.kt$( art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String, )</ID>
     <ID>LongParameterList:FourScreens.kt$( icon: ImageVector, label: String, value: String, tag: String, sub: String? = null, onClick: () -&gt; Unit, )</ID>
     <ID>LongParameterList:FourScreens.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit, )</ID>
@@ -258,7 +264,7 @@
     <ID>LongParameterList:MineHolo.kt$( text: String, modifier: Modifier, primary: Boolean = false, danger: Boolean = false, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -&gt; Unit, )</ID>
     <ID>LongParameterList:MineScreen.kt$( icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange&lt;Float&gt;, onChange: (Int) -&gt; Unit, )</ID>
     <ID>LongParameterList:MineScreen.kt$( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:MineScreen.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, )</ID>
+    <ID>LongParameterList:MineScreen.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:ModelDownloader.kt$ModelDownloader.Companion$( input: InputStream, expectedSize: Long, expectedSha256: String, part: File, dest: File, progress: (Long, Long) -&gt; Unit, cancelled: () -&gt; Boolean, )</ID>
     <ID>LongParameterList:OnDeviceAiController.kt$OnDeviceAiController$( private val store: ModelStore, catalog: () -&gt; List&lt;OnDeviceModel&gt;, private val scope: CoroutineScope, private val runtimeLoader: RuntimeLoader, private val networkUp: () -&gt; Boolean, private val metered: () -&gt; Boolean = { false }, private val ramBytes: () -&gt; Long = { 0L }, private val downloader: ModelDownloader = ModelDownloader(), private val io: CoroutineDispatcher = Dispatchers.IO, private val onCompleted: suspend ( model: OnDeviceModel, prompt: String, answer: String, location: ExecutionLocation, ) -&gt; Unit = { _, _, _, _ -&gt; }, )</ID>
     <ID>LongParameterList:OnDeviceAiTest.kt$OnDeviceAiTest$( m: OnDeviceModel, store: ModelStore, runtime: FakeRuntime, net: Boolean, conn: (URL) -&gt; HttpURLConnection, loads: MutableList&lt;String&gt;, done: MutableList&lt;ExecutionLocation&gt;, )</ID>
@@ -271,6 +277,7 @@
     <ID>LongParameterList:Theme.kt$EdgePalette$( val light: Boolean, val background: Color, val surface: Color, val surfaceRaised: Color, val surfacePressed: Color, val surfaceInset: Color, val mint: Color, val mintSoft: Color, val copper: Color, val copperDeep: Color, val mainnetWarning: Color, val textPrimary: Color, val textMuted: Color, val textTertiary: Color, val border: Color, val success: Color, val warning: Color, val danger: Color, val disabledSurface: Color, val disabledText: Color, val onAction: Color, val ambientTop: Color, val markEnd: Color, val copperEnd: Color, )</ID>
     <ID>LongParameterList:TransferReview.kt$TransferReview$( from: ByteArray, toAddress: String, amountSol: String, recentBlockhash: ByteArray, spentTodayLamports: Long, dailyLimitLamports: Long, )</ID>
     <ID>LoopWithTooManyJumpStatements:ContributionSession.kt$ContributionSession$while</ID>
+    <ID>LoopWithTooManyJumpStatements:Crew.kt$Crew$while</ID>
     <ID>LoopWithTooManyJumpStatements:DeviceMeters.kt$DiskSample.Companion$for</ID>
     <ID>LoopWithTooManyJumpStatements:EdgeOreViewModel.kt$EdgeOreViewModel$for</ID>
     <ID>LoopWithTooManyJumpStatements:Markdown.kt$while</ID>
@@ -302,6 +309,10 @@
     <ID>MagicNumber:ContributionSession.kt$ContributionSession$1_000_000</ID>
     <ID>MagicNumber:ContributionSession.kt$ContributionSession$60_000</ID>
     <ID>MagicNumber:CpuBudget.kt$CpuBudget$1000</ID>
+    <ID>MagicNumber:Crew.kt$Crew$16_000</ID>
+    <ID>MagicNumber:Crew.kt$Crew$25</ID>
+    <ID>MagicNumber:Crew.kt$Crew$6</ID>
+    <ID>MagicNumber:Crew.kt$Crew$8</ID>
     <ID>MagicNumber:DesignKit.kt$14</ID>
     <ID>MagicNumber:DesignKit.kt$99</ID>
     <ID>MagicNumber:DeviceMeters.kt$1000</ID>
@@ -347,6 +358,7 @@
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$32</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$32000</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$33</ID>
+    <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$40</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$4_000_000</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$5</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$500</ID>
@@ -356,8 +368,12 @@
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$90</ID>
     <ID>MagicNumber:EdgePanels.kt$11</ID>
     <ID>MagicNumber:EdgePanels.kt$16</ID>
+    <ID>MagicNumber:EdgePanels.kt$25</ID>
+    <ID>MagicNumber:EdgePanels.kt$3</ID>
+    <ID>MagicNumber:EdgePanels.kt$4</ID>
     <ID>MagicNumber:EdgePanels.kt$5</ID>
     <ID>MagicNumber:EdgePanels.kt$6</ID>
+    <ID>MagicNumber:EdgePanels.kt$64</ID>
     <ID>MagicNumber:Format.kt$Format$1000</ID>
     <ID>MagicNumber:Format.kt$Format$1_000_000L</ID>
     <ID>MagicNumber:Format.kt$Format$1_000_000_000L</ID>
@@ -829,6 +845,18 @@
     <ID>MaxLineLength:ControlEffectsTest.kt$ControlEffectsTest$private val controlCall = Regex("""^\s*(Switch|Slider|ResourceControl|LabeledSlider|PrivacySwitch)\(""", RegexOption.MULTILINE)</ID>
     <ID>MaxLineLength:ControlEffectsTest.kt$ControlEffectsTest$private val helperDef = Regex("""private fun (LabeledSlider|PrivacySwitch)\(.*?\n}\n""", RegexOption.DOT_MATCHES_ALL)</ID>
     <ID>MaxLineLength:CpuBudget.kt$CpuBudget$fun storedBudgetLabel(percent: Int): String</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$"EdgeORE never holds funds. There is no deposit and no shared wallet: each member deploys their own share from "</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$)</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$*</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$Signed(plan, j.getString("scheme"), j.getString("signature"), if (j.isNull("key")) null else j.getString("key"))</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$return LINK_PREFIX + Base64.getUrlEncoder().withoutPadding().encodeToString(j.toString().toByteArray(Charsets.UTF_8))</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$return Stats(last?.coverageMask?.let(Integer::bitCount) ?: 0, plans.map { it.roundId }.toSet().size, wins, last?.members?.size ?: 0)</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$val spki = s.keySpkiB64?.let { runCatching { Base64.getDecoder().decode(it) }.getOrNull() } ?: return Check.INVALID</ID>
+    <ID>MaxLineLength:Crew.kt$Crew.Signed$/** For keystore-p256: the SPKI of the signing key (base64). For the wallet scheme the creator address is the key. */</ID>
+    <ID>MaxLineLength:Crew.kt$Crew.Signed$/** Scheme "ed25519-wallet": creator's wallet signed the canonical bytes (signMessage). "keystore-p256": local Keystore. */</ID>
+    <ID>MaxLineLength:CrewTest.kt$CrewTest$// a deployed 3M got 0 back; b deployed 6M got 9M back. Net +0 overall -&gt; fair net 0 each... use concrete numbers.</ID>
+    <ID>MaxLineLength:CrewTest.kt$CrewTest$Crew.Plan("c1", "Night crew", 439200, creator, listOf(Crew.Member(a, 0b111, 1_000_000), Crew.Member(b, 0b111000, 2_000_000)))</ID>
+    <ID>MaxLineLength:CrewTest.kt$CrewTest$assertTrue(Crew.problems(plan().copy(members = listOf(Crew.Member(a, 1, 1), Crew.Member(a, 2, 1)))).isNotEmpty())</ID>
     <ID>MaxLineLength:DailyCheckIn.kt$DailyCheckIn$return Result.Started(s.copy(slotStarts = s.slotStarts + now, streakDays = streak, lastDay = today, points = s.points + 1))</ID>
     <ID>MaxLineLength:DefaultStateWalkTest.kt$DefaultStateWalkTest$)</ID>
     <ID>MaxLineLength:DesignKit.kt$/* * Small shared pieces: status pill, count badge, icon tile, stat cell, divider and the "fact card" layout * (icon tile + title/subtitle + status pill header, a content block, a muted footer line). * * Adapted from OptimAI Agentic for Android (MIT License, Copyright (c) 2026 OptimAI Agentic contributors; see NOTICE): * DSBadge, CountBadge, DSIconTile and DSDivider from ui/components/Components.kt, StatCell from ui/agent/AgentChatScreen.kt * and the header/content/footer layout of TechnicalCard from ui/agent/TechnicalCards.kt. Changes for EdgeORE: EdgeORE * colours, text is never below 12 sp, a pill always carries text (and optionally an icon) so status never relies on * colour alone, and the content is whatever real state the caller passes; nothing here has sample values. */</ID>
@@ -979,25 +1007,36 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val device = withContext(Dispatchers.IO) { runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull() }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val minerBytes = ma?.data?.takeIf { runCatching { com.edgeore.app.edge.RoundRules.decodeMiner(it).roundId == roundId }.getOrDefault(false) }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val userContent = if (doc != null) "Private document \"${st.documentName}\":\n&lt;&lt;&lt;\n$doc\n&gt;&gt;&gt;\n\nQuestion: $prompt" else prompt</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel.CrewState$// ---------- Crew Pool (non-custodial): signed plans only; each member deploys their own share via the normal review ----------</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"${m.wallet.take(4)}…${m.wallet.takeLast(4)} · squares $sq · ${OreFormat.sol(m.totalLamports)} SOL"</ID>
     <ID>MaxLineLength:EdgePanels.kt$"(chosen by SOL weight); other 15 tiles split it by SOL. Set by distribution_mask(round id) in ORE v3. "</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Break-even ORE price: " + (r.breakEvenOrePriceSol?.let { "${f(it)} SOL per ORE" } ?: "none (no ORE share)")</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Crowding and expected value per square from the live round. ${TileInsight.LABEL.replaceFirstChar { it.uppercase() }}."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Ignores the motherlode, later deploys that dilute your share, and price changes. Single rounds vary widely. Not advice."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Light = less SOL than average · Crowded = more than 1.5× · ★ solo tile: if it wins, one miner on it takes the round's ORE "</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Members ${stats.members} · squares covered ${stats.coveredSquares} · rounds ${stats.rounds} · rounds a crew square won ${stats.wins}"</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Opens the normal review for your share only. You sign in your wallet; nothing is sent automatically."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Presets only pick squares. You still review the exact message and sign each deploy in your wallet. Mainnet cap 0.01 SOL, Rounds 1."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Round ending, motherlode hit, your squares won. Local notifications from read-only polls while EdgeORE is open. No server."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Square ${t.square + 1}: ${OreFormat.sol(t.deployedLamports)} SOL · ${t.miners} miners · ${crowdWord(t.crowding)}"</ID>
     <ID>MaxLineLength:EdgePanels.kt$"The checker verifies the integrity of signed receipt contents, then re-derives these results offline."</ID>
     <ID>MaxLineLength:EdgePanels.kt$.</ID>
     <ID>MaxLineLength:EdgePanels.kt$ExplainerCard(edge.explanation, edge.explainerBackend, { vm.explain(null) }, selected?.let { s -&gt; { vm.explain(s) } })</ID>
+    <ID>MaxLineLength:EdgePanels.kt$PrimaryAction("Review my share", Modifier.fillMaxWidth().testTag("crew-review"), onClick = onReviewMyShare)</ID>
     <ID>MaxLineLength:EdgePanels.kt$SecondaryAction</ID>
     <ID>MaxLineLength:EdgePanels.kt$SectionTitle("Round Proof", "Settled rounds re-derived from the Round account, attached to your signed receipts.")</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("${p.name} · round #${p.roundId}", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:EdgePanels.kt$Text("Average ORE share per round: ${f(r.expectedOrePerRound)} ORE", color = EdgeColors.textPrimary, fontSize = 13.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Coverage: ${Integer.bitCount(p.coverageMask)} of 25 squares", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Crew stats (from your receipts)", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Nothing to settle, or no verified member receipts yet.", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
     <ID>MaxLineLength:EdgePanels.kt$Text("ORE credited by the rules: ${OreFormat.ore(t.oreGrams)}", color = EdgeColors.textMuted, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:EdgePanels.kt$Text("SOL deployed (settled): ${OreFormat.sol(t.deployedLamports)}", color = EdgeColors.textMuted, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:EdgePanels.kt$Text("SOL returned by the rules: ${OreFormat.sol(t.solBackLamports)}", color = EdgeColors.textMuted, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:EdgePanels.kt$Text("Strategy presets · pre-fill the review only", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:EdgePanels.kt$Text(com.edgeore.app.edge.ProtocolGuard.BANNER, color = EdgeColors.mainnetWarning, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$com.edgeore.app.edge.Crew.Check.VALID_KEYSTORE -&gt; "Plan signed by the creator's device key. Not tampered."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$com.edgeore.app.edge.Crew.Check.VALID_WALLET -&gt; "Plan signed by the creator's wallet. Not tampered."</ID>
     <ID>MaxLineLength:EdgePanels.kt$if (proofs.isEmpty()) Notice("No Round Proofs yet. One is made after a round you deployed in settles, while EdgeORE is open.")</ID>
     <ID>MaxLineLength:EdgePanels.kt$if (text != null) Text(text, color = EdgeColors.textPrimary, fontSize = 13.sp, modifier = Modifier.testTag("explainer-text"))</ID>
     <ID>MaxLineLength:EdgePanels.kt$modifier = Modifier.align(Alignment.TopEnd).padding(end = 3.dp).testTag("solo-${t.square}")</ID>
@@ -1661,6 +1700,7 @@
     <ID>ReturnCount:ContributionPolicy.kt$ContributionPolicy$fun view( s: ResourceSettings, snapshot: DeviceSnapshot?, observed: ConstraintObservation, job: JobState, qualifiedWorkload: Boolean = EdgePolicy.QUALIFIED_WORKLOAD_AVAILABLE &amp;&amp; REGISTERED_WORKLOADS &gt; 0, ): SchedulerView</ID>
     <ID>ReturnCount:ContributionWork.kt$ContributionScheduling$fun jobState(infos: List&lt;WorkInfo&gt;?): JobState</ID>
     <ID>ReturnCount:ContributionWork.kt$LastRunStore$fun read(prefs: SharedPreferences): LastRun?</ID>
+    <ID>ReturnCount:Crew.kt$Crew$fun verify(s: Signed): Check</ID>
     <ID>ReturnCount:DailyCheckIn.kt$DailyCheckIn$fun checkIn( s0: CheckInState, now: Long, ): Result</ID>
     <ID>ReturnCount:DeviceMeters.kt$CpuRateTracker$@Synchronized fun observe(sample: CpuSample?): Int?</ID>
     <ID>ReturnCount:DeviceMeters.kt$CpuSample.Companion$fun parse(line: String?): CpuSample?</ID>
@@ -1668,6 +1708,7 @@
     <ID>ReturnCount:DeviceResources.kt$BatteryDrain$fun percentPerHour( currentMicroamps: Int, chargeCounterUah: Int, capacityPercent: Int, charging: Boolean?, ): Int?</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$fun advisorBackend(): String?</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$fun askAdvisor(question: String)</ID>
+    <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$fun reviewMyCrewShare(): Boolean</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$private fun metered(): Boolean</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$private fun networkUp(): Boolean</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$private fun sessionBlocker(): String?</ID>
@@ -1775,6 +1816,7 @@
     <ID>TooManyFunctions:Components.kt$com.edgeore.app.ui.components.Components.kt</ID>
     <ID>TooManyFunctions:ContributionSession.kt$ContributionSession</ID>
     <ID>TooManyFunctions:EdgeOreViewModel.kt$EdgeOreViewModel : AndroidViewModel</ID>
+    <ID>TooManyFunctions:EdgePanels.kt$com.edgeore.app.ui.screens.EdgePanels.kt</ID>
     <ID>TooManyFunctions:LocalVault.kt$LocalVault</ID>
     <ID>TooManyFunctions:MineDeploy.kt$com.edgeore.app.ui.screens.MineDeploy.kt</ID>
     <ID>TooManyFunctions:MineHolo.kt$com.edgeore.app.ui.screens.MineHolo.kt</ID>

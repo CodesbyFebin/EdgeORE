@@ -71,6 +71,7 @@ fun MineScreen(
     onHistory: () -> Unit = {},
     onProofs: () -> Unit = {},
     onAlerts: (Boolean) -> Unit = vm::setRoundAlerts,
+    onCrew: () -> Unit = {},
 ) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val device by vm.device.collectAsStateWithLifecycle()
@@ -212,7 +213,7 @@ fun MineScreen(
             onOpenReview()
         },
     )
-    EdgeInsightsSection(vm, onOpenReview, onHistory, onProofs, onAlerts)
+    EdgeInsightsSection(vm, onOpenReview, onHistory, onProofs, onAlerts, onCrew)
     ContributionToggles(
         settings.chargeOnly,
         settings.thermalGuard,

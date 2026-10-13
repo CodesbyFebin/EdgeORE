@@ -124,4 +124,59 @@ class EdgePanelsRenderTest {
         rule.onNodeWithText("Not verified").assertExists()
         shot("edge-round-proof-history")
     }
+
+    @Test fun crewScreenRenders() {
+        val a =
+            com.edgeore.app.crypto.Base58
+                .encode(ByteArray(32) { 1 })
+        val b =
+            com.edgeore.app.crypto.Base58
+                .encode(ByteArray(32) { 2 })
+        val plan =
+            com.edgeore.app.edge.Crew.Plan(
+                "c1",
+                "Night crew",
+                round.id + 1,
+                a,
+                listOf(
+                    com.edgeore.app.edge.Crew
+                        .Member(a, 0b111, 1_000_000),
+                    com.edgeore.app.edge.Crew
+                        .Member(b, 0b111000, 1_500_000),
+                ),
+            )
+        val s =
+            com.edgeore.app.edge.Crew
+                .signWithKeystore(
+                    plan,
+                    com.edgeore.app.receipts
+                        .SoftwareReceiptSigner(),
+                )
+        var reviewed = false
+        host {
+            com.edgeore.app.ui.screens.CrewView(
+                s,
+                com.edgeore.app.edge.Crew
+                    .verify(s),
+                com.edgeore.app.edge.Crew
+                    .encode(s),
+                null,
+                a,
+                com.edgeore.app.edge.Crew
+                    .stats(listOf(plan), emptyMap()),
+                listOf(
+                    com.edgeore.app.edge.Crew
+                        .Transfer(b, a, 500_000),
+                ),
+                {},
+                { _, _ -> },
+                { reviewed = true },
+            )
+        }
+        rule.onNodeWithTag("crew-custody").assertExists()
+        rule.onNodeWithText("Not tampered", substring = true).assertExists()
+        shot("crew")
+        rule.onNodeWithTag("crew-review").performClick()
+        assertTrue(reviewed)
+    }
 }

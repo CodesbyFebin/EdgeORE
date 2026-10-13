@@ -870,6 +870,75 @@ class EdgeOreViewModel(
             File(dir, "edgeore-round-${p.roundId}.oreproof").apply { writeText(text, Charsets.UTF_8) }
         }
 
+    // ---------- Crew Pool (non-custodial): signed plans only; each member deploys their own share via the normal review ----------
+    data class CrewState(
+        val signed: com.edgeore.app.edge.Crew.Signed? = null,
+        val check: com.edgeore.app.edge.Crew.Check? = null,
+        val link: String? = null,
+        val message: String? = null,
+    )
+
+    private val _crew = MutableStateFlow(CrewState())
+    val crew: StateFlow<CrewState> = _crew.asStateFlow()
+
+    fun importCrew(link: String) {
+        val s = com.edgeore.app.edge.Crew.decode(link.trim())
+        if (s == null) {
+            _crew.update { it.copy(message = "Not an EdgeORE crew link") }
+            return
+        }
+        _crew.value = CrewState(s, com.edgeore.app.edge.Crew.verify(s), link.trim())
+    }
+
+    /** Signs the plan with this install's Keystore receipt key (wallet message-signing is not wired yet). */
+    fun createCrew(
+        name: String,
+        roundId: Long,
+        members: List<com.edgeore.app.edge.Crew.Member>,
+    ) {
+        val me = _wallet.value.address
+        if (me == null) {
+            _crew.update { it.copy(message = "Connect a wallet first: the creator address goes into the plan") }
+            return
+        }
+        val plan =
+            com.edgeore.app.edge.Crew.Plan(
+                java.util.UUID
+                    .randomUUID()
+                    .toString(),
+                name.trim().take(40),
+                roundId,
+                me,
+                members,
+            )
+        val bad = com.edgeore.app.edge.Crew.problems(plan)
+        if (bad.isNotEmpty()) {
+            _crew.update { it.copy(message = bad.joinToString("; ")) }
+            return
+        }
+        val s = com.edgeore.app.edge.Crew.signWithKeystore(plan, signer)
+        _crew.value = CrewState(s, com.edgeore.app.edge.Crew.verify(s), com.edgeore.app.edge.Crew.encode(s))
+    }
+
+    /** Pre-fills only this wallet's own share and opens the normal review. Cap, risk tick and Rounds=1 still apply. */
+    fun reviewMyCrewShare(): Boolean {
+        val st = _crew.value
+        val s = st.signed ?: return false
+        if (st.check != com.edgeore.app.edge.Crew.Check.VALID_KEYSTORE && st.check != com.edgeore.app.edge.Crew.Check.VALID_WALLET) {
+            _crew.update { it.copy(message = "The plan signature does not verify; nothing was pre-filled") }
+            return false
+        }
+        val me = _wallet.value.address
+        val m = s.plan.members.firstOrNull { it.wallet == me }
+        if (m == null) {
+            _crew.update { it.copy(message = "Your connected wallet is not in this plan") }
+            return false
+        }
+        editOreDeploy { it.copy(pro = true, proMask = m.mask, totalLamports = m.totalLamports) }
+        prepareOreDeploy()
+        return true
+    }
+
     // ---------- ORE v3 Deploy: devnet by default, owner-switched mainnet capped at 0.01 SOL; each deploy reviewed, signed in the wallet and submitted separately ----------
     private val _oreDeploy = MutableStateFlow(OreDeployUi())
     val oreDeploy: StateFlow<OreDeployUi> = _oreDeploy.asStateFlow()

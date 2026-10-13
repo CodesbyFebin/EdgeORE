@@ -305,6 +305,7 @@ fun EdgeInsightsSection(
     onHistory: () -> Unit,
     onProofs: () -> Unit,
     onAlerts: (Boolean) -> Unit,
+    onCrew: () -> Unit = {},
 ) {
     val ore by vm.ore.collectAsStateWithLifecycle()
     val deploy by vm.oreDeploy.collectAsStateWithLifecycle()
@@ -344,6 +345,7 @@ fun EdgeInsightsSection(
         SecondaryAction("My history", Modifier.weight(1f).testTag("open-history"), onClick = onHistory)
         SecondaryAction("Round Proof", Modifier.weight(1f).testTag("open-proofs"), onClick = onProofs)
     }
+    SecondaryAction("Crew Pool", Modifier.fillMaxWidth().testTag("open-crew"), onClick = onCrew)
     if (snap == null) {
         Text(
             "Tile insight uses the mainnet board. Switch the network selector to Mainnet to read it.",
@@ -466,4 +468,180 @@ fun ProtocolBanner(r: com.edgeore.app.edge.ProtocolGuard.Result?) {
             )
         }
     }
+}
+
+/** Crew Pool screen. Stateless so it renders in JVM tests. */
+@Composable
+fun CrewView(
+    signed: com.edgeore.app.edge.Crew.Signed?,
+    check: com.edgeore.app.edge.Crew.Check?,
+    link: String?,
+    message: String?,
+    myWallet: String?,
+    stats: com.edgeore.app.edge.Crew.Stats,
+    split: List<com.edgeore.app.edge.Crew.Transfer>,
+    onImport: (String) -> Unit,
+    onCreate: (String, List<com.edgeore.app.edge.Crew.Member>) -> Unit,
+    onReviewMyShare: () -> Unit,
+) {
+    var paste by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var lines by remember { mutableStateOf("") }
+    Column(Modifier.testTag("crew"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionTitle("Crew Pool", "Plan a round together. Everyone signs and deploys their own share.")
+        EdgeCard(inset = true) {
+            Text(
+                com.edgeore.app.edge.Crew.CUSTODY_NOTE,
+                color = EdgeColors.textPrimary,
+                fontSize = 13.sp,
+                modifier = Modifier.testTag("crew-custody"),
+            )
+            Text(
+                "No income or reward is promised. SOL on squares that don't win can be lost.",
+                color = EdgeColors.textMuted,
+                fontSize = 12.sp,
+            )
+        }
+        if (message != null) Notice(message, error = true)
+        if (signed != null) {
+            val p = signed.plan
+            EdgeCard(Modifier.testTag("crew-plan")) {
+                Text("${p.name} · round #${p.roundId}", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+                Text(
+                    when (check) {
+                        com.edgeore.app.edge.Crew.Check.VALID_WALLET -> "Plan signed by the creator's wallet. Not tampered."
+                        com.edgeore.app.edge.Crew.Check.VALID_KEYSTORE -> "Plan signed by the creator's device key. Not tampered."
+                        com.edgeore.app.edge.Crew.Check.TAMPERED -> "Signature does NOT match: the plan was changed."
+                        else -> "Plan is invalid."
+                    },
+                    color =
+                        if (check == com.edgeore.app.edge.Crew.Check.TAMPERED ||
+                            check == com.edgeore.app.edge.Crew.Check.INVALID
+                        ) {
+                            EdgeColors.danger
+                        } else {
+                            EdgeColors.mint
+                        },
+                    fontSize = 12.sp,
+                    modifier = Modifier.testTag("crew-check"),
+                )
+                Text("Coverage: ${Integer.bitCount(p.coverageMask)} of 25 squares", color = EdgeColors.textMuted, fontSize = 12.sp)
+                p.members.forEach { m ->
+                    val sq = (0 until 25).filter { m.mask and (1 shl it) != 0 }.joinToString(",") { "${it + 1}" }
+                    Text(
+                        (if (m.wallet == myWallet) "You · " else "") +
+                            "${m.wallet.take(4)}…${m.wallet.takeLast(4)} · squares $sq · ${OreFormat.sol(m.totalLamports)} SOL",
+                        color = EdgeColors.textPrimary,
+                        fontSize = 12.sp,
+                    )
+                }
+                PrimaryAction("Review my share", Modifier.fillMaxWidth().testTag("crew-review"), onClick = onReviewMyShare)
+                Text(
+                    "Opens the normal review for your share only. You sign in your wallet; nothing is sent automatically.",
+                    color = EdgeColors.textMuted,
+                    fontSize = 11.sp,
+                )
+                if (link != null) {
+                    Text("Share (QR, file or message):", color = EdgeColors.textMuted, fontSize = 11.sp)
+                    Text(
+                        link.take(64) + "…",
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        color = EdgeColors.textMuted,
+                        modifier = Modifier.testTag("crew-link"),
+                    )
+                }
+            }
+            EdgeCard {
+                Text("Crew stats (from your receipts)", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+                Text(
+                    "Members ${stats.members} · squares covered ${stats.coveredSquares} · rounds ${stats.rounds} · rounds a crew square won ${stats.wins}",
+                    color = EdgeColors.textMuted,
+                    fontSize = 12.sp,
+                )
+            }
+            EdgeCard(Modifier.testTag("crew-split")) {
+                Text("Even split (optional)", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+                if (split.isEmpty()) {
+                    Text("Nothing to settle, or no verified member receipts yet.", color = EdgeColors.textMuted, fontSize = 12.sp)
+                } else {
+                    split.forEach { t ->
+                        Text(
+                            "${t.from.take(4)}… owes ${t.to.take(4)}… ${OreFormat.sol(t.lamports)} SOL",
+                            color = EdgeColors.textPrimary,
+                            fontSize = 12.sp,
+                        )
+                    }
+                }
+                Text(
+                    "Computed from members' signed receipts. Settling is up to you; EdgeORE never moves funds.",
+                    color = EdgeColors.textMuted,
+                    fontSize = 11.sp,
+                )
+            }
+        }
+        EdgeCard {
+            Text("Join a crew", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+            androidx.compose.material3.OutlinedTextField(paste, {
+                paste = it
+            }, label = { Text("Paste crew link", fontSize = 11.sp) }, modifier = Modifier.fillMaxWidth())
+            SecondaryAction("Open plan", Modifier.fillMaxWidth()) { onImport(paste) }
+        }
+        EdgeCard {
+            Text("Start a crew", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)
+            androidx.compose.material3.OutlinedTextField(name, {
+                name = it
+            }, label = { Text("Crew name", fontSize = 11.sp) }, modifier = Modifier.fillMaxWidth())
+            androidx.compose.material3.OutlinedTextField(
+                lines,
+                { lines = it },
+                label = { Text("One member per line: wallet squares(1,2,3) lamports-per-square", fontSize = 11.sp) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            SecondaryAction("Sign plan", Modifier.fillMaxWidth()) {
+                val ms =
+                    lines.lines().mapNotNull { l ->
+                        val parts = l.trim().split(Regex("\\s+"))
+                        if (parts.size != 3) return@mapNotNull null
+                        val mask =
+                            parts[1].split(",").mapNotNull { it.toIntOrNull() }.filter { it in 1..25 }.fold(0) { m, q ->
+                                m or
+                                    (1 shl (q - 1))
+                            }
+                        parts[2].toLongOrNull()?.let {
+                            com.edgeore.app.edge.Crew
+                                .Member(parts[0], mask, it)
+                        }
+                    }
+                onCreate(name, ms)
+            }
+        }
+    }
+}
+
+@Composable
+fun CrewScreen(
+    vm: EdgeOreViewModel,
+    onOpenReview: () -> Unit,
+) {
+    val st by vm.crew.collectAsStateWithLifecycle()
+    val wallet by vm.walletState.collectAsStateWithLifecycle()
+    val edge by vm.edge.collectAsStateWithLifecycle()
+    val deploy by vm.oreDeploy.collectAsStateWithLifecycle()
+    val plans = listOfNotNull(st.signed?.plan)
+    val winners = edge.proofs.mapNotNull { p -> p.check.winningSquare?.let { p.roundId to it - 1 } }.toMap()
+    val round = (deploy.availability as? com.edgeore.app.ore.OreDeployAvailability.Available)?.roundId ?: 0L
+    CrewView(
+        st.signed,
+        st.check,
+        st.link,
+        st.message,
+        wallet.address,
+        com.edgeore.app.edge.Crew
+            .stats(plans, winners),
+        emptyList(),
+        vm::importCrew,
+        { n, ms -> vm.createCrew(n, round, ms) },
+        { if (vm.reviewMyCrewShare()) onOpenReview() },
+    )
 }
