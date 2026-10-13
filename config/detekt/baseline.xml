@@ -22,10 +22,12 @@
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun nodeCommand(action: String)</ID>
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate(s: ResourceSettings, d: DeviceSnapshot?): EdgeEvaluation</ID>
+    <ID>CyclomaticComplexMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
+    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun RoundBlocks(ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -&gt; Unit)</ID>
     <ID>CyclomaticComplexMethod:MineHolo.kt$@Composable fun OreGridCard(cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit)</ID>
-    <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
+    <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MiningAnimation.kt$@Composable fun MiningAnimation( phase: SessionPhase, modifier: Modifier = Modifier, reducedMotion: Boolean = rememberReducedMotion(), )</ID>
     <ID>CyclomaticComplexMethod:NodeAgentClient.kt$NodeAgentClient$private fun post(path: String, body: String): HttpOutcome</ID>
@@ -91,6 +93,13 @@
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatCell(label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false)</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatusPill(text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null)</ID>
     <ID>FunctionNaming:EdgeOreApp.kt$@Composable fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun CopperButton(text: String, icon: ImageVector?, tag: String, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun Hero(art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun NavRow(icon: ImageVector, label: String, value: String, tag: String, sub: String? = null, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun SectionCard(title: String, subtitle: String? = null, icon: ImageVector? = null, tag: String = "", content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun SettingsScreen(vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:FourScreens.kt$@Composable fun ZkProofScreen()</ID>
     <ID>FunctionNaming:Holo.kt$@Composable fun HoloRing(size: Dp, modifier: Modifier = Modifier, bright: Boolean = false, content: @Composable BoxScope.() -&gt; Unit)</ID>
     <ID>FunctionNaming:HolographicKit.kt$@Composable fun EmptyState(icon: ImageVector, title: String, detail: String)</ID>
     <ID>FunctionNaming:HolographicKit.kt$@Composable fun IconAction(icon: ImageVector, label: String, onClick: () -&gt; Unit)</ID>
@@ -103,6 +112,7 @@
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineBalanceCards(connected: Boolean, balance: RpcObservation?)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineWalletRow(address: String?, busy: Boolean, onConnect: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable fun RoundBlocks(ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun Line(label: String, value: String, note: String)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun RowScope.Chip(text: String, enabled: Boolean = true, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun SmallCard(label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String)</ID>
@@ -114,13 +124,13 @@
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun ToggleTab(text: String, selected: Boolean, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable fun BalanceRow(b: Balances, nowMs: Long, connected: Boolean, oreLabel: String)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable fun DailyCheckInCard(state: CheckInState, nowMs: Long, reminders: Boolean, message: String?, tips: List&lt;String&gt;, onCheckIn: () -&gt; Unit, onReminders: (Boolean) -&gt; Unit)</ID>
-    <ID>FunctionNaming:MineHolo.kt$@Composable fun NetworkSelector(selected: Cluster, onSelect: (Cluster) -&gt; Unit)</ID>
+    <ID>FunctionNaming:MineHolo.kt$@Composable fun NetworkSelector(selected: Cluster, onSelect: (Cluster) -&gt; Unit, onSettings: () -&gt; Unit = {})</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable fun OreGridCard(cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable fun ResourceGrid(cores: Int?, memoryGb: Int?, storage: StorageReading?, net: NetActivity, reducedMotion: Boolean)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable fun WalletConnectRow(address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable private fun Pill(text: String, modifier: Modifier, primary: Boolean = false, danger: Boolean = false, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable private fun RowScope.Res(icon: ImageVector, label: String, value: String, source: String, tag: String, dot: NetActivity? = null, reducedMotion: Boolean = true)</ID>
-    <ID>FunctionNaming:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
+    <ID>FunctionNaming:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable fun OreEntry(onOpen: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable private fun LabeledSlider(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange&lt;Float&gt;, onChange: (Int) -&gt; Unit)</ID>
@@ -159,7 +169,8 @@
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun FileRow(f: VaultFileView, onExport: () -&gt; Unit, onInspect: () -&gt; Unit, onDelete: () -&gt; Unit)</ID>
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun StateLine(key: String, value: String, color: Color)</ID>
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun UsageRing(fraction: Float)</ID>
-    <ID>FunctionNaming:Theme.kt$@Composable fun EdgeOreTheme(content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun EdgeOreTheme(mode: ThemeMode = ThemeState.mode, content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:ThemeSwitch.kt$@Composable fun ThemeSwitch(mode: ThemeMode, onSelect: (ThemeMode) -&gt; Unit)</ID>
     <ID>FunctionNaming:WalletConnectSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WalletConnectSheet(onDismiss: () -&gt; Unit, onConnect: () -&gt; Unit)</ID>
     <ID>InstanceOfCheckForException:OreDeployAvailability.kt$OreDeployCheck$e is kotlinx.coroutines.CancellationException</ID>
     <ID>InstanceOfCheckForException:TransferCoordinator.kt$TransferCoordinator$e is java.net.SocketTimeoutException</ID>
@@ -168,7 +179,7 @@
     <ID>LongMethod:ContributionSessionE2ETest.kt$ContributionSessionE2ETest$@Test fun realSessionOnOwnedNodeAndGatewayThenCancelledSession()</ID>
     <ID>LongMethod:EdgeOreApp.kt$@Composable fun EdgeOreApp(vm: EdgeOreViewModel, actions: PlatformActions)</ID>
     <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
-    <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
+    <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>LongMethod:NodesScreen.kt$@Composable fun NodesScreen(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:OreScreen.kt$@Composable fun OreContent( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>LongMethod:Receipts.kt$ReceiptVerifier$fun verify(exportJson: String, trustedKeys: Collection&lt;ByteArray&gt;?, local: List&lt;StoredReceipt&gt;): Report</ID>
@@ -183,6 +194,9 @@
     <ID>LongParameterList:ContributionSession.kt$ContributionSession$( private val scope: CoroutineScope, private val parts: () -&gt; List&lt;SessionPart&gt;, private val blockedBy: () -&gt; String?, private val record: suspend (ReceiptDraft) -&gt; Unit, private val watchMs: Long = 2_000, val maxRounds: Int = MAX_ROUNDS, val maxDurationMs: Long = MAX_DURATION_MS, private val nowMs: () -&gt; Long = { System.nanoTime() / 1_000_000 }, private val newId: () -&gt; String = { UUID.randomUUID().toString().replace("-", "") }, )</ID>
     <ID>LongParameterList:DesignKit.kt$( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:DurableSpendTest.kt$DurableSpendTest$(s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0)</ID>
+    <ID>LongParameterList:FourScreens.kt$(art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String)</ID>
+    <ID>LongParameterList:FourScreens.kt$(icon: ImageVector, label: String, value: String, tag: String, sub: String? = null, onClick: () -&gt; Unit)</ID>
+    <ID>LongParameterList:FourScreens.kt$(vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit)</ID>
     <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
     <ID>LongParameterList:MineDeploy.kt$(chargeOnly: Boolean, thermalGuard: Boolean, batteryReservePercent: Int, effect: (com.edgeore.app.settings.Control) -&gt; String, onChargeOnly: (Boolean) -&gt; Unit, onThermal: (Boolean) -&gt; Unit)</ID>
     <ID>LongParameterList:MineDeploy.kt$(label: String, value: String, enabled: Boolean, tag: String, note: String? = null, onAll: (() -&gt; Unit)? = null, onMinus: () -&gt; Unit = {}, onPlus: () -&gt; Unit = {})</ID>
@@ -193,7 +207,7 @@
     <ID>LongParameterList:MineHolo.kt$(state: CheckInState, nowMs: Long, reminders: Boolean, message: String?, tips: List&lt;String&gt;, onCheckIn: () -&gt; Unit, onReminders: (Boolean) -&gt; Unit)</ID>
     <ID>LongParameterList:MineHolo.kt$(text: String, modifier: Modifier, primary: Boolean = false, danger: Boolean = false, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -&gt; Unit)</ID>
     <ID>LongParameterList:MineScreen.kt$( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:MineScreen.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, )</ID>
+    <ID>LongParameterList:MineScreen.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:MineScreen.kt$(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange&lt;Float&gt;, onChange: (Int) -&gt; Unit)</ID>
     <ID>LongParameterList:ModelDownloader.kt$ModelDownloader.Companion$(input: InputStream, expectedSize: Long, expectedSha256: String, part: File, dest: File, progress: (Long, Long) -&gt; Unit, cancelled: () -&gt; Boolean)</ID>
     <ID>LongParameterList:OnDeviceAiController.kt$OnDeviceAiController$( private val store: ModelStore, catalog: () -&gt; List&lt;OnDeviceModel&gt;, private val scope: CoroutineScope, private val runtimeLoader: RuntimeLoader, private val networkUp: () -&gt; Boolean, private val metered: () -&gt; Boolean = { false }, private val ramBytes: () -&gt; Long = { 0L }, private val downloader: ModelDownloader = ModelDownloader(), private val io: CoroutineDispatcher = Dispatchers.IO, private val onCompleted: suspend (model: OnDeviceModel, prompt: String, answer: String, location: ExecutionLocation) -&gt; Unit = { _, _, _, _ -&gt; }, )</ID>
@@ -203,6 +217,7 @@
     <ID>LongParameterList:OreScreen.kt$( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>LongParameterList:Receipts.kt$(count: Int, firstSeq: Long, lastSeq: Long, lastSha: String, bundle: String, exportedAt: String)</ID>
     <ID>LongParameterList:StorageController.kt$StorageController$( private val vault: LocalVault, private val jobs: BackupJobStore, private val provider: BackupProvider, private val audit: StorageAudit? = null, private val onEvent: suspend (StorageEvent) -&gt; Unit = {}, private val io: CoroutineDispatcher = Dispatchers.IO, private val newId: () -&gt; String = { java.util.UUID.randomUUID().toString() }, )</ID>
+    <ID>LongParameterList:Theme.kt$EdgePalette$( val light: Boolean, val background: Color, val surface: Color, val surfaceRaised: Color, val surfacePressed: Color, val surfaceInset: Color, val mint: Color, val mintSoft: Color, val copper: Color, val copperDeep: Color, val mainnetWarning: Color, val textPrimary: Color, val textMuted: Color, val textTertiary: Color, val border: Color, val success: Color, val warning: Color, val danger: Color, val disabledSurface: Color, val disabledText: Color, val onAction: Color, val ambientTop: Color, val markEnd: Color, val copperEnd: Color, )</ID>
     <ID>LongParameterList:TransferReview.kt$TransferReview$( from: ByteArray, toAddress: String, amountSol: String, recentBlockhash: ByteArray, spentTodayLamports: Long, dailyLimitLamports: Long, )</ID>
     <ID>LoopWithTooManyJumpStatements:ContributionSession.kt$ContributionSession$while</ID>
     <ID>LoopWithTooManyJumpStatements:DeviceMeters.kt$DiskSample.Companion$for</ID>
@@ -286,6 +301,14 @@
     <ID>MagicNumber:Format.kt$Format$6</ID>
     <ID>MagicNumber:Format.kt$Format$60</ID>
     <ID>MagicNumber:Format.kt$Format$9</ID>
+    <ID>MagicNumber:FourScreens.kt$0x66060D0C</ID>
+    <ID>MagicNumber:FourScreens.kt$0xCC060D0C</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFF07110F</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFF19E6BC</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFFD5E0DC</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFFF2F7F5</ID>
+    <ID>MagicNumber:FourScreens.kt$0xFFFF963F</ID>
+    <ID>MagicNumber:FourScreens.kt$4</ID>
     <ID>MagicNumber:Holo.kt$0.1f</ID>
     <ID>MagicNumber:Holo.kt$0.84f</ID>
     <ID>MagicNumber:Holo.kt$0.94f</ID>
@@ -310,6 +333,7 @@
     <ID>MagicNumber:LocalVault.kt$VaultException.TooLarge$1_000_000</ID>
     <ID>MagicNumber:MainActivity.kt$MainActivity$1600</ID>
     <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$33</ID>
+    <ID>MagicNumber:MineDeploy.kt$1.25f</ID>
     <ID>MagicNumber:MineDeploy.kt$1.6f</ID>
     <ID>MagicNumber:MineDeploy.kt$100_000_000</ID>
     <ID>MagicNumber:MineDeploy.kt$10_000_000</ID>
@@ -332,10 +356,8 @@
     <ID>MagicNumber:MineScreen.kt$100f</ID>
     <ID>MagicNumber:MineScreen.kt$10f</ID>
     <ID>MagicNumber:MineScreen.kt$15_000</ID>
-    <ID>MagicNumber:MineScreen.kt$1_000</ID>
     <ID>MagicNumber:MineScreen.kt$2_000</ID>
     <ID>MagicNumber:MineScreen.kt$5f</ID>
-    <ID>MagicNumber:MineScreen.kt$6</ID>
     <ID>MagicNumber:MineScreen.kt$90f</ID>
     <ID>MagicNumber:MineScreen.kt$DeviceFacts$30</ID>
     <ID>MagicNumber:MiningAnimation.kt$0.035f</ID>
@@ -532,31 +554,54 @@
     <ID>MagicNumber:StorageScreen.kt$900</ID>
     <ID>MagicNumber:StorageScreen.kt$90f</ID>
     <ID>MagicNumber:Telemetry.kt$Telemetry$1e9</ID>
+    <ID>MagicNumber:Theme.kt$0xFF060D0C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF07110F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF09130F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0A211B</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0A7560</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0D1917</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0E9F80</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0FB897</ID>
+    <ID>MagicNumber:Theme.kt$0xFF101414</ID>
+    <ID>MagicNumber:Theme.kt$0xFF142421</ID>
+    <ID>MagicNumber:Theme.kt$0xFF182421</ID>
+    <ID>MagicNumber:Theme.kt$0xFF19E6BC</ID>
+    <ID>MagicNumber:Theme.kt$0xFF1B7F55</ID>
+    <ID>MagicNumber:Theme.kt$0xFF1C3530</ID>
+    <ID>MagicNumber:Theme.kt$0xFF2C4740</ID>
     <ID>MagicNumber:Theme.kt$0xFF3E2515</ID>
     <ID>MagicNumber:Theme.kt$0xFF3F1622</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF060D0C</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF07110F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF09130F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF0A211B</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF0D1917</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF0FB897</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF142421</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF182421</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF19E6BC</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF1C3530</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF2C4740</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF43D99B</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF81968F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF89968F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFF8BF4DF</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFABBDB7</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFE8792A</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFF07A2E</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFF2F7F5</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFF6B79</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFF963F</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFFA365</ID>
-    <ID>MagicNumber:Theme.kt$EdgeColors$0xFFFFB65C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF43D99B</ID>
+    <ID>MagicNumber:Theme.kt$0xFF56625C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF5F6B66</ID>
+    <ID>MagicNumber:Theme.kt$0xFF6E7A75</ID>
+    <ID>MagicNumber:Theme.kt$0xFF81968F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF89968F</ID>
+    <ID>MagicNumber:Theme.kt$0xFF8A4614</ID>
+    <ID>MagicNumber:Theme.kt$0xFF8A5A00</ID>
+    <ID>MagicNumber:Theme.kt$0xFF8BF4DF</ID>
+    <ID>MagicNumber:Theme.kt$0xFF9A4E17</ID>
+    <ID>MagicNumber:Theme.kt$0xFF9C4C14</ID>
+    <ID>MagicNumber:Theme.kt$0xFFA0521A</ID>
+    <ID>MagicNumber:Theme.kt$0xFFABBDB7</ID>
+    <ID>MagicNumber:Theme.kt$0xFFB3261E</ID>
+    <ID>MagicNumber:Theme.kt$0xFFD5DCD9</ID>
+    <ID>MagicNumber:Theme.kt$0xFFDDEFE9</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE3F2EC</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE6EAE8</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE8792A</ID>
+    <ID>MagicNumber:Theme.kt$0xFFEEF2F0</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF07A2E</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF0F3F2</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF2F7F5</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF6F8F7</ID>
+    <ID>MagicNumber:Theme.kt$0xFFF9DEDC</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFBE3D2</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFF6B79</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFF963F</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFFA365</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFFB65C</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFFFFFF</ID>
     <ID>MagicNumber:Theme.kt$EdgeShapes$50</ID>
     <ID>MagicNumber:Tokens.kt$EdgeType$12</ID>
     <ID>MagicNumber:Trust.kt$SpendGuard$25</ID>
@@ -861,6 +906,7 @@
     <ID>MaxLineLength:EdgeOreApp.kt$.</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Column(Modifier.fillMaxSize().padding(inner)) { OnboardingScreen(onDone = { Onboarding.set(context, true); onboarded = true }) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Destination$Mine : Destination</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$Destination.Storage$Storage</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$EnvironmentStrip(mainnet = headerDeploy.mainnet || headerCluster == com.edgeore.app.solana.Cluster.MAINNET)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Icon(EdgeIcons.Back, contentDescription = null, tint = EdgeColors.textMuted); Text(" Back", color = EdgeColors.textMuted)</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$Modifier.widthIn(max = 640.dp).fillMaxSize().background(EdgeColors.ambient).verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 72.dp)</ID>
@@ -888,9 +934,11 @@
     <ID>MaxLineLength:EdgeOreApp.kt$if (rec == null) Notice("Receipt not found.", error = true) else ReceiptDetailScreen(rec) { actions.export(rec) }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$if (walletSheet) com.edgeore.app.ui.components.WalletConnectSheet(onDismiss = { walletSheet = false }, onConnect = { walletSheet = false; actions.connectWallet() })</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$modifier = if (badge != null) Modifier.semantics { stateDescription = badge.spoken } else Modifier</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$onOpen = { r -&gt; tab = when (r) { "receipts" -&gt; Destination.Receipts; "storage" -&gt; Destination.Storage; else -&gt; Destination.Nodes }; route = null }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$onOpenReview = { route = "review" }</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$selectedIconColor = if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$tab == Destination.Receipts -&gt; ReceiptsScreen(vm, onOpen = { route = "receipt:" + it.id }, onExport = actions::export)</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$tab == Destination.Settings</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$text</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$val tint = if (!selected) EdgeColors.textMuted else if (d == Destination.Mine) EdgeColors.copper else EdgeColors.mint</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$var route by rememberSaveable { mutableStateOf&lt;String?&gt;(null) } // "review", "preview", "browser", "ore", "receipt:&lt;id&gt;"</ID>
@@ -975,8 +1023,10 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$fun last(r: com.edgeore.app.solana.BalanceRead?)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$fun mintRead(sym: String)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$fun selectModel(name: String)</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (!ContributionScheduling.apply(getApplication(), want)) { _contributionJob.value = JobState.UNAVAILABLE; return }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (_cluster.value == c &amp;&amp; _wallet.value.address == owner) _balances.value = com.edgeore.app.solana.Balances(c, owner, sol, ore, skr)</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (_review.value.phase == ReviewPhase.PREPARING) { _review.update { it.copy(message = "Already preparing; wait for the devnet blockhash.") }; return@launch }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (a.selectedModel != null &amp;&amp; a.endpoint.isNotBlank()) return "${a.selectedModel} on your owned host (${a.location ?: a.endpoint})"</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (action == "revoke" &amp;&amp; r.code == "SESSION_REVOKED_OR_UNKNOWN") { vault.destroy(); saveNode(null); _node.value = NodeState(ops = _node.value.ops, status = "Session already revoked on node. Local key destroyed."); return@launch }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (action == "revoke") { val p = rec.copy(revocationPending = true); saveNode(p); _node.update { it.copy(record = p) } }</ID>
@@ -1066,6 +1116,46 @@
     <ID>MaxLineLength:Format.kt$Format$fun sol(lamports: Long): String</ID>
     <ID>MaxLineLength:Format.kt$Format$n &gt;= 1_000_000L -&gt; BigDecimal(n).movePointLeft(6).setScale(1, java.math.RoundingMode.HALF_UP).toPlainString() + " MB"</ID>
     <ID>MaxLineLength:Format.kt$Format$n &gt;= 1_000_000_000L -&gt; BigDecimal(n).movePointLeft(9).setScale(2, java.math.RoundingMode.HALF_UP).toPlainString() + " GB"</ID>
+    <ID>MaxLineLength:FourScreens.kt$.</ID>
+    <ID>MaxLineLength:FourScreens.kt$/** Jav AI header: honest model state, wired to the existing allowlisted on-device loader (no import of arbitrary files). */</ID>
+    <ID>MaxLineLength:FourScreens.kt$Box</ID>
+    <ID>MaxLineLength:FourScreens.kt$Box(Modifier.fillMaxWidth().height(190.dp).background(Brush.verticalGradient(listOf(Color(0xCC060D0C), Color.Transparent, Color(0x66060D0C)))))</ID>
+    <ID>MaxLineLength:FourScreens.kt$Column</ID>
+    <ID>MaxLineLength:FourScreens.kt$Column { com.edgeore.app.solana.Cluster.entries.forEach { c -&gt; TextButton(onClick = { vm.selectCluster(c); net = false }) { Text(c.label + if (c == cluster) " (selected)" else "") } } }</ID>
+    <ID>MaxLineLength:FourScreens.kt$ContributionToggles</ID>
+    <ID>MaxLineLength:FourScreens.kt$Hero(R.drawable.hero_ai, "Jav AI", "Your on-device assistant for EdgeORE.", if (loaded != null) "Model loaded" else "Model not loaded", loaded != null, "jav-hero")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Hero(R.drawable.hero_settings, "Your device. Your rules.", "Configure your wallet, network, performance and privacy settings for EdgeORE.", cluster.label, cluster != com.edgeore.app.solana.Cluster.MAINNET, "settings-hero")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Hero(R.drawable.hero_zk, "Prove. Verify. Share.", "Proofs for supported computations.", "Prover not configured", false, "zk-hero")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Image(painterResource(art), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().height(190.dp))</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Circuit, "Circuit", "Select circuit", "zk-circuit") { info = "No circuits are available in this build yet." }</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Cube, "Backend", "Select prover", "zk-backend") { info = "No prover backend is configured in this build yet." }</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Cube, "Default model", od.models.firstOrNull { it.id == od.selectedId }?.name ?: "None selected", "settings-default-model", onClick = onAi)</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Key, "Verification key", "Not loaded", "zk-vk") { info = "No verification key is loaded. One becomes available only with a supported circuit." }</ID>
+    <ID>MaxLineLength:FourScreens.kt$NavRow(EdgeIcons.Receipts, "Receipts", if (receipts.isEmpty()) "None yet" else "${receipts.size} stored", "settings-receipts") { onOpen("receipts") }</ID>
+    <ID>MaxLineLength:FourScreens.kt$Row</ID>
+    <ID>MaxLineLength:FourScreens.kt$SectionCard</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text("Choose a supported circuit and matching verification key.", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text("One network for the whole app. Mainnet ORE deploys still need the risk tick and are capped at 0.01 SOL.", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text("This build imports models only from its allowlist (Hugging Face, pinned commit, verified size and SHA-256). Picking an arbitrary file is not supported.")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(ZK_NOTE, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("zk-note"))</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(m.name + if (m.id in od.downloaded) " (installed)" else " · ${com.edgeore.app.ui.Format.bytes(m.sizeBytes)}")</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(subtitle, color = Color(0xFFD5E0DC), fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp, end = 120.dp))</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(title, color = Color(0xFFF2F7F5), fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.weight(1f).semantics { heading() })</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(title, style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })</ID>
+    <ID>MaxLineLength:FourScreens.kt$Text(wallet.address?.let { "${it.take(4)}…${it.takeLast(4)}" } ?: "Not connected", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:FourScreens.kt$TextButton</ID>
+    <ID>MaxLineLength:FourScreens.kt$color = if (wallet.address == null) EdgeColors.onAction else EdgeColors.danger</ID>
+    <ID>MaxLineLength:FourScreens.kt$const val ZK_NOTE = "No prover, circuit or verification key ships in this build, so no proof is generated or verified and no claim is made. This screen shows the setup a future prover would need."</ID>
+    <ID>MaxLineLength:FourScreens.kt$fun</ID>
+    <ID>MaxLineLength:FourScreens.kt$if (installed.isEmpty()) Text("No model is installed on this phone yet. Use Import model to download an allowlisted one.")</ID>
+    <ID>MaxLineLength:FourScreens.kt$info?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("zk-info")) }</ID>
+    <ID>MaxLineLength:FourScreens.kt$installed.forEach { m -&gt; TextButton(onClick = { vm.selectOnDeviceModel(m.id); choose = false }) { Text(m.name + if (m.id == od.selectedId) " (selected)" else "") } }</ID>
+    <ID>MaxLineLength:FourScreens.kt$modifier</ID>
+    <ID>MaxLineLength:FourScreens.kt$modifier = Modifier.background(if (pillOn) Color(0xFF19E6BC) else Color(0xFFFF963F), EdgeShapes.pill).padding(horizontal = 12.dp, vertical = 5.dp).testTag("$tag-pill")</ID>
+    <ID>MaxLineLength:FourScreens.kt$onChargeOnly = { v -&gt; vm.updateSettings { it.copy(chargeOnly = v) } }</ID>
+    <ID>MaxLineLength:FourScreens.kt$sub = loaded?.name ?: od.models.firstOrNull { it.id == od.selectedId &amp;&amp; it.id in od.downloaded }?.name ?: if (installed.isEmpty()) "No model installed" else "${installed.size} installed, none selected"</ID>
+    <ID>MaxLineLength:FourScreensTest.kt$FourScreensTest$private fun tab(label: String)</ID>
     <ID>MaxLineLength:GatewayProxyIntegrationTest.kt$GatewayProxyIntegrationTest$*</ID>
     <ID>MaxLineLength:GatewayProxyIntegrationTest.kt$GatewayProxyIntegrationTest$assumeTrue("EDGEORE_GATEWAY_IT not set; proxy integration test skipped", path.isNotEmpty() &amp;&amp; File(path).exists())</ID>
     <ID>MaxLineLength:GatewayProxyIntegrationTest.kt$GatewayProxyIntegrationTest$for</ID>
@@ -1082,10 +1172,16 @@
     <ID>MaxLineLength:HolographicKit.kt$Text(asset.amount ?: if (loading) "Reading…" else "Unavailable", style = if (asset.amount != null) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:HolographicKit.kt$Text(if (loading) "Loading" else asset.status, style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)</ID>
     <ID>MaxLineLength:HolographicKit.kt$asset.observedAt?.let { Text(com.edgeore.app.ui.Format.time(it), style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted) }</ID>
+    <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$/** The Home layout from the design concept: one network selector, wallet, balances, Edge node, metrics, ORE card with round blocks, preferences. */</ID>
+    <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$private</ID>
+    <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$rule.onNodeWithTag("check-2", useUnmergedTree = true).assertExists()</ID>
+    <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$rule.onNodeWithText("01", useUnmergedTree = true).assertExists()</ID>
+    <ID>MaxLineLength:HomeDesignTest.kt$HomeDesignTest$}</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$addPath(addPathNodes(it), stroke = SolidColor(Color.White), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round)</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$private</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Brain = outline("brain", "M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 3 5 3 3 0 0 0 5 1V5a2 2 0 0 0-3-1z", "M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-3 5 3 3 0 0 1-5 1")</ID>
+    <ID>MaxLineLength:Icons.kt$EdgeIcons$val Circuit = outline("circuit", "M5 5h14v14H5z", "M9 9h6v6H9z", "M9 2v3 M15 2v3 M9 19v3 M15 19v3 M2 9h3 M2 15h3 M19 9h3 M19 15h3")</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Coins = outline("coins", "M12 5c4 0 7 1.3 7 3s-3 3-7 3-7-1.3-7-3 3-3 7-3z", "M5 8v8c0 1.7 3 3 7 3s7-1.3 7-3V8", "M5 12c0 1.7 3 3 7 3s7-1.3 7-3")</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Cpu = outline("cpu", "M7 7h10v10H7z", "M10 3v4", "M14 3v4", "M10 17v4", "M14 17v4", "M3 10h4", "M3 14h4", "M17 10h4", "M17 14h4")</ID>
     <ID>MaxLineLength:Icons.kt$EdgeIcons$val Gift = outline("gift", "M4 10h16v10H4z", "M3 7h18v3H3z", "M12 7v13", "M12 7c-2-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3-2-5 1")</ID>
@@ -1132,22 +1228,26 @@
     <ID>MaxLineLength:MarkdownTest.kt$MarkdownTest$assertTrue(a.spanStyles.any { it.item.fontFamily == FontFamily.Monospace &amp;&amp; a.text.substring(it.start, it.end) == "code" })</ID>
     <ID>MaxLineLength:MarkdownTest.kt$MarkdownTest$assertTrue(a.spanStyles.any { it.item.fontWeight == FontWeight.Bold &amp;&amp; a.text.substring(it.start, it.end) == "bold" })</ID>
     <ID>MaxLineLength:MineDeploy.kt$.</ID>
+    <ID>MaxLineLength:MineDeploy.kt$/** "Round blocks": 01-25, mint check badge on selected squares, live per-square SOL only when the mainnet round was read. Pro taps toggle the draft. */</ID>
     <ID>MaxLineLength:MineDeploy.kt$/** The ORE Mining card, laid out like the ORE web app: stats, Lite/Pro, amount, chips, steppers, Deploy. Deploy only opens the review. */</ID>
     <ID>MaxLineLength:MineDeploy.kt$Box</ID>
     <ID>MaxLineLength:MineDeploy.kt$Chip("MAX", enabled = maxBal != null) { onEdit { it.copy(totalLamports = OreDeployLimits.max(maxBal, OreDeployNetwork.cluster(it.mainnet))) } }</ID>
     <ID>MaxLineLength:MineDeploy.kt$Column</ID>
     <ID>MaxLineLength:MineDeploy.kt$Line</ID>
-    <ID>MaxLineLength:MineDeploy.kt$PrimaryAction("Deploy", Modifier.fillMaxWidth().testTag("ore-deploy"), enabled = blocker == null, onClick = onDeploy)</ID>
+    <ID>MaxLineLength:MineDeploy.kt$PrimaryAction("Review deployment", Modifier.fillMaxWidth().testTag("ore-deploy"), enabled = blocker == null, onClick = onDeploy)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Row</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("CPU", cores?.let { "$it cores" } ?: "Not read", "Usage not sampled", Modifier.weight(1f), big = true, tag = "mine-cpu")</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("Memory", memoryGbClass?.let { "$it GB class" } ?: "Not read", "Usage not sampled", Modifier.weight(1f), big = true, tag = "mine-mem")</ID>
     <ID>MaxLineLength:MineDeploy.kt$SmallCard("ORE", "Not observed", "ORE token balance is not read in this build", Modifier.weight(1f), tag = "mine-ore")</ID>
     <ID>MaxLineLength:MineDeploy.kt$Stat("⬡ " + stats.motherlode, "MOTHERLODE", EdgeColors.mainnetWarning, Modifier.weight(1f), "stat-motherlode")</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text("$n selected" + if (snapshot == null) " · live per-block SOL not read" else " · live round ${snapshot.round.id}", color = EdgeColors.textMuted, fontSize = 12.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text("Amount per round", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.fillMaxWidth())</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("Check ${netLabel.lowercase()} again", color = EdgeColors.mint, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("Edge node", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("I understand this deploy uses real SOL that I may lose.", color = EdgeColors.textPrimary, style = MaterialTheme.typography.labelMedium)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("ORE Mining", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, modifier = Modifier.fillMaxWidth().semantics { heading() })</ID>
+    <ID>MaxLineLength:MineDeploy.kt$Text("Round blocks", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text("These gate Edge Mode and the Mine session on this phone. They do not cap CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(ORE_DEPLOY_NFA, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.testTag("ore-nfa"))</ID>
     <ID>MaxLineLength:MineDeploy.kt$Text(address?.let { "Connected · ${it.take(4)}…${it.takeLast(4)}" } ?: "Not connected", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
@@ -1174,6 +1274,7 @@
     <ID>MaxLineLength:MineDeploy.kt$onMinus = { onEdit { it.copy(proMask = stepTiles(it.proMask, -1)) } }</ID>
     <ID>MaxLineLength:MineDeploy.kt$private</ID>
     <ID>MaxLineLength:MineDeploy.kt$private fun Modifier.mineCard()</ID>
+    <ID>MaxLineLength:MineDeploy.kt$snapshot</ID>
     <ID>MaxLineLength:MineDeploy.kt$when { fresh != null -&gt; "Devnet · slot ${fresh.slot}"; connected -&gt; "Devnet · not read yet"; else -&gt; "Devnet · not read" }</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$(0 until ms.length()).map { k -&gt; ms.getJSONObject(k).let { m -&gt; com.edgeore.app.contribution.Measurement(m.getString("label"), m.getLong("value"), m.getString("unit"), m.getString("source")) } }</ID>
     <ID>MaxLineLength:MineDeployCardTest.kt$MineDeployCardTest$androidx.compose.foundation.layout</ID>
@@ -1201,10 +1302,11 @@
     <ID>MaxLineLength:MineHolo.kt$Box(Modifier.size(8.dp).alpha(a).background(if (dot == NetActivity.ACTIVE) EdgeColors.mint else EdgeColors.textMuted, CircleShape).testTag("net-dot"))</ID>
     <ID>MaxLineLength:MineHolo.kt$Column</ID>
     <ID>MaxLineLength:MineHolo.kt$Icon(EdgeIcons.Bell, contentDescription = null, tint = EdgeColors.textMuted, modifier = Modifier.size(20.dp))</ID>
-    <ID>MaxLineLength:MineHolo.kt$Icon(EdgeIcons.Globe, contentDescription = null, tint = EdgeColors.mint, modifier = Modifier.padding(horizontal = 8.dp).size(18.dp))</ID>
+    <ID>MaxLineLength:MineHolo.kt$Icon(EdgeIcons.Settings, contentDescription = null, tint = EdgeColors.textMuted, modifier = Modifier.size(22.dp))</ID>
     <ID>MaxLineLength:MineHolo.kt$Pill("Check in", Modifier.fillMaxWidth().testTag("check-in"), primary = DailyCheckIn.available(state, nowMs), enabled = DailyCheckIn.available(state, nowMs), icon = null, onClick = onCheckIn)</ID>
     <ID>MaxLineLength:MineHolo.kt$Res</ID>
-    <ID>MaxLineLength:MineHolo.kt$Res(EdgeIcons.Memory, "Memory", memoryGb?.let { "$it GB class" } ?: "Not read", "Total RAM (ActivityManager)", "res-mem")</ID>
+    <ID>MaxLineLength:MineHolo.kt$Res(EdgeIcons.Cpu, "CPU", cores?.let { "$it cores" } ?: "—", if (cores == null) "Awaiting device" else "Logical cores (Runtime)", "res-cpu")</ID>
+    <ID>MaxLineLength:MineHolo.kt$Res(EdgeIcons.Memory, "Memory", memoryGb?.let { "$it GB class" } ?: "—", if (memoryGb == null) "Awaiting device" else "Total RAM (ActivityManager)", "res-mem")</ID>
     <ID>MaxLineLength:MineHolo.kt$Res(EdgeIcons.Storage, "Storage", storage?.let { "${Telemetry.gb(it.freeBytes)} free" } ?: "Not read", storage?.let { "of ${Telemetry.gb(it.totalBytes)} (StatFs)" } ?: "StatFs unavailable", "res-storage")</ID>
     <ID>MaxLineLength:MineHolo.kt$Row</ID>
     <ID>MaxLineLength:MineHolo.kt$Switch</ID>
@@ -1213,16 +1315,19 @@
     <ID>MaxLineLength:MineHolo.kt$Text(" ORE v3 grid · ${cluster.label}", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })</ID>
     <ID>MaxLineLength:MineHolo.kt$Text("${i + 1}", color = EdgeColors.textTertiary, fontSize = 9.sp, modifier = Modifier.align(Alignment.TopStart))</ID>
     <ID>MaxLineLength:MineHolo.kt$Text("Daily check-in", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).padding(start = 8.dp).semantics { heading() })</ID>
+    <ID>MaxLineLength:MineHolo.kt$Text("Home", style = MaterialTheme.typography.titleLarge, color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))</ID>
     <ID>MaxLineLength:MineHolo.kt$Text("Off by default. One local notification when a slot opens.", color = EdgeColors.textTertiary, fontSize = 11.sp)</ID>
     <ID>MaxLineLength:MineHolo.kt$Text("Points ${state.points}", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.testTag("points"))</ID>
     <ID>MaxLineLength:MineHolo.kt$Text("Slots $used/${DailyCheckIn.SLOTS_PER_DAY}", color = EdgeColors.textMuted, fontSize = 13.sp, modifier = Modifier.testTag("slots-used"))</ID>
     <ID>MaxLineLength:MineHolo.kt$Text("Streak ${state.streakDays} day${if (state.streakDays == 1) "" else "s"}", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.testTag("streak"))</ID>
     <ID>MaxLineLength:MineHolo.kt$Text(DailyCheckIn.REWARD_LABEL, color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.testTag("no-token-reward"))</ID>
-    <ID>MaxLineLength:MineHolo.kt$Text(c.label, color = if (on) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal, fontSize = 13.sp)</ID>
-    <ID>MaxLineLength:MineHolo.kt$Text(if (address == null) "Connect a Solana wallet" else "Wallet connected", fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)</ID>
+    <ID>MaxLineLength:MineHolo.kt$Text(if (address == null) "Wallet not connected" else "Wallet connected", fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)</ID>
+    <ID>MaxLineLength:MineHolo.kt$Text(if (busy) "Waiting…" else "Connect wallet", color = EdgeColors.background, fontWeight = FontWeight.Bold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineHolo.kt$Text(note, color = if (r is BalanceRead.Failed) EdgeColors.warning else EdgeColors.textTertiary, fontSize = 10.sp, lineHeight = 12.sp)</ID>
+    <ID>MaxLineLength:MineHolo.kt$Text(selected.label + " ▾", color = if (selected == Cluster.MAINNET) EdgeColors.mainnetWarning else EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineHolo.kt$Text(text, color = when { primary -&gt; EdgeColors.onAction; danger -&gt; EdgeColors.danger; else -&gt; EdgeColors.textPrimary }, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)</ID>
     <ID>MaxLineLength:MineHolo.kt$Text(v, color = if (r is BalanceRead.Value) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = FontWeight.Bold, fontSize = if (v.length &gt; 9) 13.sp else 17.sp, maxLines = 2)</ID>
+    <ID>MaxLineLength:MineHolo.kt$androidx.compose.material3</ID>
     <ID>MaxLineLength:MineHolo.kt$cluster != Cluster.MAINNET</ID>
     <ID>MaxLineLength:MineHolo.kt$color = EdgeColors.textMuted</ID>
     <ID>MaxLineLength:MineHolo.kt$color = EdgeColors.warning</ID>
@@ -1251,43 +1356,31 @@
     <ID>MaxLineLength:MineScreen.kt$DeviceFacts$val mem = am?.let { val mi = android.app.ActivityManager.MemoryInfo(); it.getMemoryInfo(mi); mi.totalMem }?.takeIf { it &gt; 0 }</ID>
     <ID>MaxLineLength:MineScreen.kt$LabeledSlider(EdgeIcons.Battery, "Battery reserve", "Keep ${settings.batteryReservePercent}% minimum", gateText(eval, "Battery reserve"), settings.batteryReservePercent, 5f..90f) { v -&gt; vm.updateSettings { it.copy(batteryReservePercent = v) } }</ID>
     <ID>MaxLineLength:MineScreen.kt$LabeledSlider(EdgeIcons.Cpu, "CPU limit", "Stored limit ${settings.cpuLimitPercent}%", "Now: not applied", settings.cpuLimitPercent, 10f..100f) { v -&gt; vm.updateSettings { it.copy(cpuLimitPercent = v) } }</ID>
-    <ID>MaxLineLength:MineScreen.kt$ObservationCard</ID>
-    <ID>MaxLineLength:MineScreen.kt$ObservationCard(Modifier.weight(1f), EdgeIcons.Coins, "ORE rewards", null, "Not observed", "No qualified ORE adapter")</ID>
     <ID>MaxLineLength:MineScreen.kt$OreMiningCard</ID>
     <ID>MaxLineLength:MineScreen.kt$ResourceControl(EdgeIcons.Bolt, "Charge-only mode", "Run only when charging", settings.chargeOnly, gateText(eval, "Charge-only")) { v -&gt; vm.updateSettings { it.copy(chargeOnly = v) } }</ID>
     <ID>MaxLineLength:MineScreen.kt$ResourceControl(EdgeIcons.Thermo, "Thermal guard", "Pause at high temperature", settings.thermalGuard, gateText(eval, "Thermal guard")) { v -&gt; vm.updateSettings { it.copy(thermalGuard = v) } }</ID>
     <ID>MaxLineLength:MineScreen.kt$ResourceControl(EdgeIcons.Wifi, "Allow scheduled checks", "Check only on Wi-Fi, while charging, battery not low", settings.contributionOptIn, if (settings.contributionOptIn) "Now: opted in" else "Now: off") { v -&gt; vm.updateSettings { it.copy(contributionOptIn = v) } }</ID>
     <ID>MaxLineLength:MineScreen.kt$Row</ID>
     <ID>MaxLineLength:MineScreen.kt$SecondaryAction(if (edgeModeResumed) "Pause Edge Mode" else "Resume Edge Mode", Modifier.fillMaxWidth(), onClick = onToggleEdgeMode)</ID>
-    <ID>MaxLineLength:MineScreen.kt$SecondaryAction(if (wallet.busy) "Waiting…" else "Connect wallet", Modifier.fillMaxWidth(), enabled = !wallet.busy, onClick = onConnect)</ID>
     <ID>MaxLineLength:MineScreen.kt$SessionPhase.STOPPING -&gt; PrimaryAction("Stopping…", Modifier.testTag("stopping-mining"), enabled = false, loading = true, onClick = {})</ID>
     <ID>MaxLineLength:MineScreen.kt$StatusRow</ID>
     <ID>MaxLineLength:MineScreen.kt$Text</ID>
-    <ID>MaxLineLength:MineScreen.kt$Text("CPU, memory, storage and network are not sampled in this build. Missing readings are not shown as zero.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
-    <ID>MaxLineLength:MineScreen.kt$Text("Compatible MWA wallet required", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text("Each control states its effect: Enforced, Saved only or Unavailable. The gates use battery and thermal readings; nothing here caps CPU, memory, storage or network.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text("Not measured", color = EdgeColors.copper, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text("Now", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.semantics { heading() })</ID>
     <ID>MaxLineLength:MineScreen.kt$Text("Read-only · mainnet observation", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
-    <ID>MaxLineLength:MineScreen.kt$Text("Solana devnet · test SOL only", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text("The scheduler runs no workload in this build and measures nothing. It does not produce progress or any token.", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
-    <ID>MaxLineLength:MineScreen.kt$Text("Your device. Your resources. Your control.", color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text(ContributionPolicy.constraintLine("Battery not low", observed.batteryLow?.not()), color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text(ContributionPolicy.constraintLine("Charging", observed.charging), color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text(ContributionPolicy.constraintLine("Unmetered network (Wi-Fi)", observed.unmetered), color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text(SESSION_EXPLAINER, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)</ID>
-    <ID>MaxLineLength:MineScreen.kt$Text(WalletDisplay.statusLine(wallet), color = if (wallet.error != null &amp;&amp; wallet.address == null) EdgeColors.copper else EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text(sched.status.label, color = if (sched.status == SchedulerStatus.CHECKING) EdgeColors.mint else EdgeColors.copper, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)</ID>
     <ID>MaxLineLength:MineScreen.kt$Text(value, style = MaterialTheme.typography.bodyMedium, color = if (attention) EdgeColors.copper else EdgeColors.textMuted)</ID>
-    <ID>MaxLineLength:MineScreen.kt$WalletDisplay.balanceLine(balance) { b -&gt; "Devnet ${Format.sol(b.lamports)} · slot ${b.slot} · ${Format.ago(b.observedAt)}" }</ID>
-    <ID>MaxLineLength:MineScreen.kt$androidx.compose.runtime.LaunchedEffect(Unit) { while (true) { kotlinx.coroutines.delay(1_000); oreNow = System.currentTimeMillis() } }</ID>
     <ID>MaxLineLength:MineScreen.kt$androidx.compose.runtime.LaunchedEffect(ore.rpc) { while (true) { vm.refreshOre(); kotlinx.coroutines.delay(15_000) } }</ID>
     <ID>MaxLineLength:MineScreen.kt$com.edgeore.app.bot.OreBot.tips(wallet.address != null, sessionView.anyConfigured, com.edgeore.app.device.DailyCheckIn.available(checkIn, now), cluster.label)</ID>
-    <ID>MaxLineLength:MineScreen.kt$com.edgeore.app.ui.components.SectionTitle("Your edge, under your control", "What needs attention, your wallet, and the gates that decide when anything may run.")</ID>
     <ID>MaxLineLength:MineScreen.kt$const</ID>
     <ID>MaxLineLength:MineScreen.kt$eval.gates.firstOrNull { it.name == name }?.let { (if (it.allowed) "Now: pass · " else "Now: blocking · ") + it.explanation } ?: "Now: off"</ID>
     <ID>MaxLineLength:MineScreen.kt$if (!view.anyConfigured) Text("Nothing to run yet. Pair a node (Nodes) or set up your storage gateway (Storage).", color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium)</ID>
-    <ID>MaxLineLength:MineScreen.kt$if (sessionView.phase == SessionPhase.ACTIVE) "Work runs on your node and gateway" else "No workload is running"</ID>
     <ID>MaxLineLength:MineScreen.kt$if (view.phase == SessionPhase.ACTIVE &amp;&amp; !acknowledged) Text("Waiting for first worker result…", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$if (view.phase == SessionPhase.STARTING) Text("Starting… waiting for your node and gateway to acknowledge", color = EdgeColors.textMuted, style = MaterialTheme.typography.labelSmall)</ID>
     <ID>MaxLineLength:MineScreen.kt$onChargeOnly = { v -&gt; vm.updateSettings { it.copy(chargeOnly = v) } }</ID>
@@ -1298,7 +1391,6 @@
     <ID>MaxLineLength:MineScreen.kt$var diskReading by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf&lt;com.edgeore.app.device.StorageReading?&gt;(null) }</ID>
     <ID>MaxLineLength:MineScreen.kt$var net by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(com.edgeore.app.device.NetActivity.UNAVAILABLE) }</ID>
     <ID>MaxLineLength:MineScreen.kt$var now by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }</ID>
-    <ID>MaxLineLength:MineScreen.kt$var oreNow by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }</ID>
     <ID>MaxLineLength:MineScreen.kt$view.failure?.takeIf { view.phase == SessionPhase.FAILED }?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium) }</ID>
     <ID>MaxLineLength:MineScreen.kt$view.note?.takeIf { view.phase == SessionPhase.IDLE }?.let { Text(it, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium) }</ID>
     <ID>MaxLineLength:MiningAnimation.kt$MiningFrames$/** Frames of the rock-and-pickaxe loop (res/drawable-nodpi/mine_frame_NN.webp, cut from the user's GIF; see docs/design/mine-animation.md). */</ID>
@@ -1966,6 +2058,8 @@
     <ID>MaxLineLength:ReviewScreen.kt$Text(plain.headline, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)</ID>
     <ID>MaxLineLength:ReviewScreen.kt$fun</ID>
     <ID>MaxLineLength:ReviewScreen.kt$if (op.state == OpState.SIGNED) SecondaryAction("Discard unsent bytes", Modifier.weight(1f), danger = true) { vm.discardSigned(op.id) }</ID>
+    <ID>MaxLineLength:ReviewScreen.kt$if (st.draft != null) st.message?.let { Notice(it, error = st.phase == ReviewPhase.REFUSED || st.phase == ReviewPhase.EDITING) }</ID>
+    <ID>MaxLineLength:ReviewScreen.kt$if (st.draft == null) st.message?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("prepare-error")) }</ID>
     <ID>MaxLineLength:ReviewScreen.kt$if (wallet.address != null &amp;&amp; st.destination.isBlank()) SecondaryAction("Use my own address (self-transfer)", Modifier.fillMaxWidth()) { vm.editReview(destination = wallet.address) }</ID>
     <ID>MaxLineLength:ReviewScreen.kt$isError = amountCheck.error</ID>
     <ID>MaxLineLength:ReviewScreen.kt$op.lastObservation?.let { KeyValue("Last observation", it + (op.lastObservedAt?.let { t -&gt; " · $t" } ?: "")) }</ID>
@@ -2131,10 +2225,36 @@
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$try { s.markReceipted(op.id, OpState.REVIEWED); fail("expected OperationStoreUnavailable") } catch (_: OperationStoreUnavailable) {}</ID>
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$try { s.transition(op.id, setOf(OpState.REVIEWED), OpState.ABANDONED); fail("expected latch") } catch (_: OperationStoreUnavailable) {}</ID>
     <ID>MaxLineLength:StoreFailureAndSigningGateTest.kt$StoreFailureAndSigningGateTest$val r = s.reserve("devnet", fx.signer, fx.recipient, fx.lamports, fx.message, fx.messageSha256, "bh2", 200, limit)</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$/** dApp Store screenshots: the real MainActivity, fresh install (no wallet, so no balances), 1080x1920 portrait. Set -Dstore.out. */</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun ai()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun settings()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$@Test fun zk()</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$private fun shot(name: String)</ID>
+    <ID>MaxLineLength:StoreScreenshotTest.kt$StoreScreenshotTest$private fun top()</ID>
     <ID>MaxLineLength:Telemetry.kt$Telemetry$/** This app's received + sent bytes (TrafficStats per-UID counters), or null when the platform does not report them. */</ID>
     <ID>MaxLineLength:TestFixtures.kt$FakeGateway$override suspend fun blockHeight(): Long</ID>
     <ID>MaxLineLength:TestFixtures.kt$FakeGateway$override suspend fun status(signature: String): ChainStatus</ID>
     <ID>MaxLineLength:TestFixtures.kt$SignedFixture$val signedTx: ByteArray = SolanaMessage.unsignedTransaction(message).also { System.arraycopy(signatureBytes, 0, it, 1, 64) }</ID>
+    <ID>MaxLineLength:Theme.kt$EdgeColors$* Colour tokens. Every token reads the active palette, so all screens follow the Dark/Light setting from this one source.</ID>
+    <ID>MaxLineLength:Theme.kt$EdgeColors$val actionGradient get() = if (palette.light) Brush.horizontalGradient(listOf(mint, mint)) else Brush.horizontalGradient(listOf(mintSoft, mint))</ID>
+    <ID>MaxLineLength:Theme.kt$EdgePalette$val background: Color</ID>
+    <ID>MaxLineLength:Theme.kt$EdgePalette$val success: Color</ID>
+    <ID>MaxLineLength:Theme.kt$ThemePrefs$ctx.getSharedPreferences(FILE, android.content.Context.MODE_PRIVATE).getString(KEY, null)?.let { v -&gt; ThemeMode.entries.firstOrNull { it.name == v } } ?: ThemeMode.DARK</ID>
+    <ID>MaxLineLength:Theme.kt$background = Color(0xFF060D0C)</ID>
+    <ID>MaxLineLength:Theme.kt$background = Color(0xFFF6F8F7)</ID>
+    <ID>MaxLineLength:Theme.kt$mint = Color(0xFF0A7560)</ID>
+    <ID>MaxLineLength:Theme.kt$mint = Color(0xFF19E6BC)</ID>
+    <ID>MaxLineLength:Theme.kt$onAction = Color(0xFF07110F)</ID>
+    <ID>MaxLineLength:Theme.kt$onAction = Color(0xFFFFFFFF)</ID>
+    <ID>MaxLineLength:Theme.kt$success = Color(0xFF1B7F55)</ID>
+    <ID>MaxLineLength:Theme.kt$success = Color(0xFF43D99B)</ID>
+    <ID>MaxLineLength:Theme.kt$textPrimary = Color(0xFF101414)</ID>
+    <ID>MaxLineLength:Theme.kt$textPrimary = Color(0xFFF2F7F5)</ID>
+    <ID>MaxLineLength:Theme.kt$val dark = when (mode) { ThemeMode.DARK -&gt; true; ThemeMode.LIGHT -&gt; false; ThemeMode.SYSTEM -&gt; androidx.compose.foundation.isSystemInDarkTheme() }</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$.</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$Box</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$Row</ID>
+    <ID>MaxLineLength:ThemeSwitch.kt$Text(m.label, color = if (on) EdgeColors.textPrimary else EdgeColors.textMuted, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal)</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$class</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm()).apply { init(ks, password.toCharArray()) }</ID>
     <ID>MaxLineLength:TlsTestServer.kt$TlsTestServer$write("HTTP/1.1 $code X\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n".toByteArray())</ID>
@@ -2242,10 +2362,13 @@
     <ID>MaxLineLength:WalletConnection.kt$WalletConnection$WalletCoordinator.ConnectResult.Failed(WalletAuthorization.classifyThrowable(e, sentAuthToken = false, now = now()))</ID>
     <ID>MaxLineLength:WalletConnection.kt$WalletConnection$status = if (walletConfirmed) "Disconnected. The wallet confirmed deauthorization." else "Disconnected in EdgeORE. The wallet did not confirm deauthorization."</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$*</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$/** Points the adapter at [mainnet]'s chain. A token issued for the other chain is dropped so the wallet runs a fresh, visible authorize. */</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$currentCoroutineContext().ensureActive()</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$is WalletAuthorization.AccountCheck.Invalid -&gt; ConnectResult.Failed(ConnectFailure(check.code, Instant.now().toString(), null))</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$is WalletAuthorization.AccountCheck.Valid -&gt; ConnectResult.Authorized(check.publicKey, check.label, accounts?.size ?: 0)</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$return SignResult.Refused("Wallet session failed on ${adapter.blockchain.fullName}: ${e.javaClass.simpleName}")</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$suspend</ID>
-    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$val result = try { adapter.transact(sender) { _ -&gt; signTransactions(arrayOf(unsignedTransaction)) } } finally { adapter.blockchain = Solana.Devnet }</ID>
+    <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator$val</ID>
     <ID>MaxLineLength:WalletCoordinator.kt$WalletCoordinator.ConnectResult$Authorized : ConnectResult</ID>
     <ID>MaxLineLength:WalletPortfolio.kt$AssetBalance</ID>
     <ID>MaxLineLength:WalletPortfolio.kt$PortfolioRpc$WalletPortfolio(account, network, listOf(solAsset, ore, AssetBalance("SKR", status = "Mint registry not verified")), System.currentTimeMillis())</ID>
@@ -2326,7 +2449,8 @@
     <ID>ReturnCount:TransferReview.kt$TransferReview$fun verifyWalletReturn(reviewedMessage: ByteArray, signer: ByteArray, signedTransaction: ByteArray): WalletReturn</ID>
     <ID>ReturnCount:Trust.kt$SpendGuard$fun check(amount: Long, squares: Int, roundLimit: Long, spentToday: Long, dailyLimit: Long): String?</ID>
     <ID>ReturnCount:WalletAuthorization.kt$WalletAuthorization$fun validateAccounts(accounts: List&lt;AccountCandidate&gt;?): AccountCheck</ID>
-    <ID>ReturnCount:WalletCoordinator.kt$WalletCoordinator$suspend fun connect(sender: ActivityResultSender): ConnectResult</ID>
+    <ID>ReturnCount:WalletCoordinator.kt$WalletCoordinator$suspend fun connect(sender: ActivityResultSender, mainnet: Boolean = false): ConnectResult</ID>
+    <ID>ReturnCount:WalletCoordinator.kt$WalletCoordinator$suspend fun signTransaction(sender: ActivityResultSender, unsignedTransaction: ByteArray, mainnet: Boolean = false): SignResult</ID>
     <ID>SwallowedException:Backup.kt$BackupCoordinator$e: DownloadTooLargeException</ID>
     <ID>SwallowedException:EdgeOreViewModel.kt$EdgeOreViewModel$e: CancellationException</ID>
     <ID>SwallowedException:EdgeOreViewModel.kt$EdgeOreViewModel$e: Exception</ID>
@@ -2391,8 +2515,14 @@
     <ID>TooManyFunctions:SolanaMessage.kt$SolanaMessage</ID>
     <ID>TooManyFunctions:StorageScreen.kt$com.edgeore.app.ui.screens.StorageScreen.kt</ID>
     <ID>TooManyFunctions:TransferCoordinator.kt$TransferCoordinator</ID>
+    <ID>UnusedParameter:MineDeploy.kt$onNetwork: (mainnet: Boolean) -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:MineHolo.kt$connected: Boolean</ID>
+    <ID>UnusedParameter:MineScreen.kt$onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }</ID>
+    <ID>UnusedParameter:MineScreen.kt$onPreview: () -&gt; Unit</ID>
     <ID>UnusedPrivateMember:MineDeploy.kt$@Composable private fun SquarePicker(mask: Int, onChange: (Int) -&gt; Unit)</ID>
+    <ID>UnusedPrivateMember:MineScreen.kt$@Composable private fun RowScope.MetricTile(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String)</ID>
     <ID>UnusedPrivateMember:StorageScreen.kt$@Composable private fun UsageRing(fraction: Float)</ID>
+    <ID>UnusedPrivateProperty:MineScreen.kt$val oreState by vm.ore.collectAsStateWithLifecycle()</ID>
     <ID>UseCheckOrError:SessionParts.kt$GatewayRoundTripPart$throw IllegalStateException("Gateway did not acknowledge the chunk's SHA-256")</ID>
     <ID>WildcardImport:HolographicKit.kt$import androidx.compose.foundation.layout.*</ID>
     <ID>WildcardImport:HolographicKit.kt$import androidx.compose.material3.*</ID>

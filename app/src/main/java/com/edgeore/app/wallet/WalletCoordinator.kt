@@ -39,7 +39,19 @@ class WalletCoordinator {
      * (e.g. InterruptedException when the wallet activity returns RESULT_CANCELED before the session
      * completes) becomes a classified result; only cancellation of the caller's own coroutine propagates.
      */
-    suspend fun connect(sender: ActivityResultSender): ConnectResult {
+    /** The chain the current auth token was issued for ("solana:devnet" or "solana:mainnet"); null before authorize. */
+    var authorizedChain: String? = null
+        private set
+
+    /** Points the adapter at [mainnet]'s chain. A token issued for the other chain is dropped so the wallet runs a fresh, visible authorize. */
+    private fun useChain(mainnet: Boolean) {
+        val chain = if (mainnet) Solana.Mainnet else Solana.Devnet
+        if (authorizedChain != null && authorizedChain != chain.fullName) adapter.authToken = null
+        adapter.blockchain = chain
+    }
+
+    suspend fun connect(sender: ActivityResultSender, mainnet: Boolean = false): ConnectResult {
+        useChain(mainnet)
         val sentAuthToken = adapter.authToken != null
         val result = try {
             adapter.connect(sender)
@@ -49,6 +61,7 @@ class WalletCoordinator {
         } catch (e: Exception) {
             return ConnectResult.Failed(WalletAuthorization.classifyThrowable(e, sentAuthToken))
         }
+        if (result is TransactionResult.Success) authorizedChain = adapter.blockchain.fullName
         if (result !is TransactionResult.Success) {
             return ConnectResult.Failed(WalletAuthorization.classify(result, sentAuthToken)!!)
         }
@@ -78,8 +91,13 @@ class WalletCoordinator {
      * the wallet shows and simulates the transaction on the right cluster. The adapter returns to devnet afterwards.
      */
     suspend fun signTransaction(sender: ActivityResultSender, unsignedTransaction: ByteArray, mainnet: Boolean = false): SignResult {
-        adapter.blockchain = if (mainnet) Solana.Mainnet else Solana.Devnet
-        val result = try { adapter.transact(sender) { _ -> signTransactions(arrayOf(unsignedTransaction)) } } finally { adapter.blockchain = Solana.Devnet }
+        useChain(mainnet)
+        val result = try { adapter.transact(sender) { _ -> signTransactions(arrayOf(unsignedTransaction)) } } catch (e: CancellationException) {
+            currentCoroutineContext().ensureActive(); return SignResult.Refused("Wallet session ended before signing (${e.javaClass.simpleName})")
+        } catch (e: Exception) {
+            return SignResult.Refused("Wallet session failed on ${adapter.blockchain.fullName}: ${e.javaClass.simpleName}")
+        }
+        if (result is TransactionResult.Success) authorizedChain = adapter.blockchain.fullName
         return when (result) {
             is TransactionResult.Success -> {
                 val payloads = result.payload.signedPayloads
