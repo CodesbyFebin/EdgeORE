@@ -1,7 +1,7 @@
 # EdgeORE
 
 <!-- commit-stamp:begin -->
-Canonical source commit: `5df056299fedc7b9285d1d98c5cccf68a05381a4` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
+Canonical source commit: `5c56b3d50be05c3a4a66a80526c6600abc507dbd` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
 <!-- commit-stamp:end -->
 
 ![EdgeORE banner](docs/assets/banner.webp)
