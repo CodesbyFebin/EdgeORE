@@ -24,8 +24,8 @@
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate( s: ResourceSettings, d: DeviceSnapshot?, ): EdgeEvaluation</ID>
     <ID>CyclomaticComplexMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
-    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
-    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
+    <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, synced: Boolean = snapshot != null, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MineHolo.kt$@Composable fun OreGridCard( cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
@@ -106,8 +106,8 @@
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun EdgeNodeCard( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineBalanceCards( connected: Boolean, balance: RpcObservation?, )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable fun MineWalletRow( address: String?, busy: Boolean, onConnect: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
-    <ID>FunctionNaming:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
+    <ID>FunctionNaming:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, synced: Boolean = snapshot != null, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun Line( label: String, value: String, note: String, )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun RowScope.Chip( text: String, enabled: Boolean = true, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineDeploy.kt$@Composable private fun SmallCard( label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String, )</ID>
@@ -185,8 +185,8 @@
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
     <ID>LongMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:FourScreens.kt$@Composable fun SettingsScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit, )</ID>
-    <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
-    <ID>LongMethod:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, onToggle: (Int) -&gt; Unit, )</ID>
+    <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
+    <ID>LongMethod:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, synced: Boolean = snapshot != null, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>LongMethod:MineDeployCardTest.kt$MineDeployCardTest$@org.robolectric.annotation.GraphicsMode(org.robolectric.annotation.GraphicsMode.Mode.NATIVE) @Config(sdk = [28], qualifiers = "w360dp-h2200dp-hdpi") @Test fun minePreview()</ID>
     <ID>LongMethod:MineHolo.kt$@Composable fun DailyCheckInCard( state: CheckInState, nowMs: Long, reminders: Boolean, message: String?, tips: List&lt;String&gt;, onCheckIn: () -&gt; Unit, onReminders: (Boolean) -&gt; Unit, )</ID>
     <ID>LongMethod:MineHolo.kt$@Composable fun NetworkSelector( selected: Cluster, onSelect: (Cluster) -&gt; Unit, onSettings: () -&gt; Unit = {}, )</ID>
@@ -228,7 +228,7 @@
     <ID>LongParameterList:MineDeploy.kt$( chargeOnly: Boolean, thermalGuard: Boolean, batteryReservePercent: Int, effect: (com.edgeore.app.settings.Control) -&gt; String, onChargeOnly: (Boolean) -&gt; Unit, onThermal: (Boolean) -&gt; Unit, )</ID>
     <ID>LongParameterList:MineDeploy.kt$( label: String, value: String, enabled: Boolean, tag: String, note: String? = null, onAll: (() -&gt; Unit)? = null, onMinus: () -&gt; Unit = {}, onPlus: () -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:MineDeploy.kt$( label: String, value: String, note: String, modifier: Modifier, big: Boolean = false, tag: String, )</ID>
-    <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), )</ID>
+    <ID>LongParameterList:MineDeploy.kt$( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
     <ID>LongParameterList:MineDeploy.kt$( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>LongParameterList:MineHolo.kt$( address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit, )</ID>
     <ID>LongParameterList:MineHolo.kt$( icon: ImageVector, label: String, value: String, source: String, tag: String, dot: NetActivity? = null, reducedMotion: Boolean = true, )</ID>
@@ -1298,7 +1298,6 @@
     <ID>MaxLineLength:ReviewScreen.kt$"Each operation counts once from review until it is refused, abandoned, failed, or expired without ever being sent. Anything that may have been sent stays counted until the chain reports it."</ID>
     <ID>MaxLineLength:ReviewScreen.kt$"Observation never re-sends. Only never-sent bytes expire; a sent transfer that is not found stays uncertain and counted."</ID>
     <ID>MaxLineLength:ReviewScreen.kt$"Read from the decoded message bytes, not from what you typed. The exact fields below are what the wallet signs."</ID>
-    <ID>MaxLineLength:ReviewScreen.kt$"The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until devnet reports it confirmed or failed. Not being found, even after the blockhash expires, does not prove it never landed, so the amount stays counted in today's budget."</ID>
     <ID>MaxLineLength:ReviewScreen.kt$"The camera is asked for only when you tap Scan QR. Frames are decoded on this phone and never saved or sent."</ID>
     <ID>MaxLineLength:ReviewScreen.kt$(0 until 25).filter { dec.deploy.mask and (1 shl it) != 0 }.joinToString(", ") { "${it + 1}" }</ID>
     <ID>MaxLineLength:ReviewScreen.kt$// Shown right under the button so a refused or failed prepare is never silent (it used to render far below).</ID>

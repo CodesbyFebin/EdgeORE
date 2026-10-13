@@ -324,12 +324,18 @@ fun OreMiningCard(
     onNetwork: (mainnet: Boolean) -> Unit = {},
     snapshot: com.edgeore.app.ore.OreSnapshot? = null,
     nowMs: Long = System.currentTimeMillis(),
+    syncError: String? = null,
 ) {
     val total = ui.totalLamports ?: 0
+
+    // The live board is the mainnet ORE v3 board; on devnet nothing from it is shown.
+    @Suppress("NAME_SHADOWING")
+    val snapshot = snapshot.takeIf { ui.mainnet }
     val blocker = deployBlocker(ui, walletConnected, balanceLamports)
     val cluster = OreDeployNetwork.cluster(ui.mainnet)
     val cap = OreDeployLimits.cap(cluster)
     val stats = oreHeaderStats(snapshot, nowMs)
+    val sync = boardSyncLabel(ui.mainnet, snapshot, syncError, nowMs)
     Column(
         Modifier.mineCard().testTag("ore-mining"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -354,13 +360,7 @@ fun OreMiningCard(
             Stat(stats.time, "TIME", EdgeColors.textPrimary, Modifier.weight(1f), "stat-time")
         }
         Text(
-            if (snapshot ==
-                null
-            ) {
-                "Live round not read yet (mainnet board)."
-            } else {
-                "Live mainnet round ${snapshot.round.id}. Pool values, not your earnings."
-            },
+            sync,
             color = EdgeColors.textMuted,
             fontSize = 11.sp,
         )
@@ -391,7 +391,7 @@ fun OreMiningCard(
                 ) {
                     androidx.compose.material3.Checkbox(ui.riskAcknowledged, null)
                     Text(
-                        "I understand this deploy uses real SOL that I may lose.",
+                        "I understand SOL on squares that don't win can be lost.",
                         color = EdgeColors.textPrimary,
                         style = MaterialTheme.typography.labelMedium,
                     )
@@ -402,7 +402,11 @@ fun OreMiningCard(
             ToggleTab("Lite", !ui.pro) { onEdit { it.copy(pro = false) } }
             ToggleTab("Pro", ui.pro) { onEdit { it.copy(pro = true) } }
         }
-        RoundBlocks(ui, snapshot.takeIf { ui.mainnet }) { i -> onEdit { it.copy(proMask = it.proMask xor (1 shl i)) } }
+        RoundBlocks(
+            ui,
+            snapshot,
+            synced = snapshot != null && syncError == null,
+        ) { i -> onEdit { it.copy(proMask = it.proMask xor (1 shl i)) } }
         Text(
             "Amount per round",
             color = EdgeColors.textMuted,
@@ -746,12 +750,21 @@ private fun ToggleRow(
 fun RoundBlocks(
     ui: OreDeployUi,
     snapshot: com.edgeore.app.ore.OreSnapshot?,
+    synced: Boolean = snapshot != null,
     onToggle: (Int) -> Unit,
 ) {
     Column(Modifier.fillMaxWidth().testTag("round-blocks"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("Round blocks", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
             Text(if (ui.pro) "Select blocks" else "Lite: all 25", color = EdgeColors.textMuted, fontSize = 12.sp)
+        }
+        if (snapshot != null) {
+            Text(
+                "Each block: miners (top left), SOL deployed (bottom)",
+                color = EdgeColors.textMuted,
+                fontSize = 11.sp,
+                modifier = Modifier.fillMaxWidth().testTag("grid-legend"),
+            )
         }
         for (r in 0 until 5) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -779,7 +792,9 @@ fun RoundBlocks(
                                     "Block ${i + 1}" +
                                     (
                                         snapshot?.let { s ->
-                                            ", ${com.edgeore.app.ore.OreFormat.sol(s.round.deployedLamports[i])} SOL"
+                                            ", ${com.edgeore.app.ore.OreFormat.sol(
+                                                s.round.deployedLamports[i],
+                                            )} SOL, ${s.round.count[i]} miners"
                                         } ?: ""
                                     ) +
                                     if (on) ", selected" else ""
@@ -806,7 +821,21 @@ fun RoundBlocks(
                                         .sol(s.round.deployedLamports[i]),
                                 color = EdgeColors.textMuted,
                                 fontSize = 9.sp,
-                                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 2.dp),
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .padding(bottom = 2.dp)
+                                        .testTag("sol-$i"),
+                            )
+                            Text(
+                                "${s.round.count[i]}",
+                                color = EdgeColors.textMuted,
+                                fontSize = 9.sp,
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.TopStart)
+                                        .padding(start = 4.dp, top = 2.dp)
+                                        .testTag("miners-$i"),
                             )
                         }
                         if (on &&
@@ -837,7 +866,7 @@ fun RoundBlocks(
                 ) {
                     " · live per-block SOL not read"
                 } else {
-                    " · live round ${snapshot.round.id}"
+                    " · round #${snapshot.round.id}" + if (synced) "" else " · Not synced (last good read)"
                 },
             color = EdgeColors.textMuted,
             fontSize = 12.sp,
@@ -846,3 +875,39 @@ fun RoundBlocks(
         )
     }
 }
+
+/**
+ * One line under the ORE stats: which board this is and whether the last read worked. Devnet never shows the mainnet
+ * board. A failed read says "Not synced"; an older good read stays visible, labelled with its age.
+ */
+fun boardSyncLabel(
+    mainnet: Boolean,
+    snapshot: com.edgeore.app.ore.OreSnapshot?,
+    syncError: String?,
+    nowMs: Long,
+): String {
+    val head =
+        when {
+            !mainnet -> "ORE v3 is not deployed on devnet. The live board is mainnet only."
+            snapshot == null && syncError != null -> "Not synced. $syncError"
+            snapshot == null -> "Live round not read yet (mainnet board)."
+            else -> null
+        }
+    if (head != null || snapshot == null) return head.orEmpty()
+    val clock =
+        com.edgeore.app.ore.OreClock
+            .at(snapshot.board, snapshot.boardSlot, nowMs - snapshot.observedAtMs, snapshot.slotRate)
+    val left =
+        when (clock) {
+            com.edgeore.app.ore.RoundClock.WaitingForFirstDeploy -> "Waiting for first deploy"
+            is com.edgeore.app.ore.RoundClock.Live ->
+                "${clock.slotsLeft} slots left" +
+                    clock.secondsLeft?.let { " (~${com.edgeore.app.ore.OreClock.mmss(it)})" }.orEmpty()
+            is com.edgeore.app.ore.RoundClock.Ended -> "Ended · awaiting reset"
+        }
+    val base = "Mainnet round #${snapshot.round.id} · $left. Pool values, not your earnings."
+    val ageS = ((nowMs - snapshot.observedAtMs) / MS_PER_S).coerceAtLeast(0)
+    return if (syncError == null) base else "Not synced. Showing the read from ${ageS}s ago. $base"
+}
+
+private const val MS_PER_S = 1000L

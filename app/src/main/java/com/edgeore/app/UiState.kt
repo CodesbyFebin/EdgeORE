@@ -95,6 +95,8 @@ data class ReviewState(
     val verified: TransferReview.WalletReturn.Verified? = null,
     val submittedSignature: String? = null,
     val confirmation: String? = null,
+    /** Read-only status polls made after the single submit (see Confirmation.MAX_POLLS). */
+    val confirmationPolls: Int = 0,
     val message: String? = null,
     /** Non-error guidance, e.g. what a scanned QR code filled in. Cleared by the next edit. */
     val info: String? = null,

@@ -138,8 +138,9 @@ fun MineScreen(
         vm.checkOreDeployCluster()
     }
     val ore by vm.ore.collectAsStateWithLifecycle()
-    androidx.compose.runtime.LaunchedEffect(ore.rpc) {
-        while (true) {
+    // Mainnet board only, and only while the selector is on Mainnet; 15 s keeps well under public RPC limits.
+    androidx.compose.runtime.LaunchedEffect(ore.rpc, cluster) {
+        while (cluster == com.edgeore.app.solana.Cluster.MAINNET) {
             vm.refreshOre()
             kotlinx.coroutines.delay(15_000)
         }
@@ -202,6 +203,7 @@ fun MineScreen(
         },
         snapshot = ore.snapshot,
         nowMs = now,
+        syncError = ore.error,
         onDeploy = {
             vm.prepareOreDeploy()
             onOpenReview()
