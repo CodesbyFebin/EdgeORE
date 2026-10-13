@@ -15,7 +15,8 @@ import org.junit.Test
 import java.net.InetAddress
 
 class PolicyAndEndpointTest {
-    private fun ip(s: String): (String) -> InetAddress = { InetAddress.getByAddress(it, s.split('.').map { p -> p.toInt().toByte() }.toByteArray()) }
+    private fun ip(s: String): (String) -> InetAddress =
+        { InetAddress.getByAddress(it, s.split('.').map { p -> p.toInt().toByte() }.toByteArray()) }
 
     @Test fun loopbackAllowedPublicRefused() {
         assertTrue(EndpointPolicy.check("http://127.0.0.1:11434", ip("127.0.0.1")) is EndpointPolicy.Decision.Allowed)

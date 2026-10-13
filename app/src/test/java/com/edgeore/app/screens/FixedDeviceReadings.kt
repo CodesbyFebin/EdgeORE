@@ -18,9 +18,13 @@ class FixedDeviceReadings : ExternalResource() {
         com.edgeore.app.ore.OreDeployCheck.testSource = { com.edgeore.app.ore.OreDeployAvailability.NotChecked }
         com.edgeore.app.ui.AppClock.testBuildStamp = "JVM render"
         com.edgeore.app.ui.AppClock.testNow = { 1_791_763_200_000L }
-        com.edgeore.app.device.ResourceTelemetryReader.testSource = { com.edgeore.app.device.ResourceTelemetry() }
+        com.edgeore.app.device.ResourceTelemetryReader.testSource = {
+            com.edgeore.app.device
+                .ResourceTelemetry()
+        }
         DeviceResourcesReader.testSource = { UNOBSERVED.copy(observedAtElapsedMs = android.os.SystemClock.elapsedRealtime()) }
     }
+
     override fun after() {
         DeviceResourcesReader.testSource = null
         com.edgeore.app.ui.screens.DeviceFacts.testSource = null
@@ -34,10 +38,18 @@ class FixedDeviceReadings : ExternalResource() {
     }
 
     companion object {
-        val UNOBSERVED = DeviceResources(
-            storageTotal = null, storageFree = null, rxSinceBoot = null, txSinceBoot = null,
-            batteryPercent = null, batteryPercentPerHour = null, cpuPercent = null, ioBytesPerSec = null,
-            vpnActive = null, metered = null,
-        )
+        val UNOBSERVED =
+            DeviceResources(
+                storageTotal = null,
+                storageFree = null,
+                rxSinceBoot = null,
+                txSinceBoot = null,
+                batteryPercent = null,
+                batteryPercentPerHour = null,
+                cpuPercent = null,
+                ioBytesPerSec = null,
+                vpnActive = null,
+                metered = null,
+            )
     }
 }

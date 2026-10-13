@@ -10,13 +10,32 @@ import com.edgeore.app.ui.components.PillTone
  * The tab-badge idea is adapted from OptimAI Agentic for Android, ui/AppRoot.kt (MIT; see NOTICE).
  */
 object NavBadges {
-    data class Badge(val count: Int, val tone: PillTone, val spoken: String)
+    data class Badge(
+        val count: Int,
+        val tone: PillTone,
+        val spoken: String,
+    )
 
     fun waiting(ops: List<PendingOperation>): Int = ops.count { it.state.needsObservation || it.state == OpState.SIGNED }
 
-    fun of(ops: List<PendingOperation>, damagedLines: Int): Map<Destination, Badge> = buildMap {
-        val w = waiting(ops)
-        if (w > 0) put(Destination.Mine, Badge(w, PillTone.COPPER, "$w operation${if (w == 1) "" else "s"} awaiting an outcome"))
-        if (damagedLines > 0) put(Destination.Receipts, Badge(damagedLines, PillTone.DANGER, "$damagedLines receipt line${if (damagedLines == 1) "" else "s"} could not be read"))
-    }
+    fun of(
+        ops: List<PendingOperation>,
+        damagedLines: Int,
+    ): Map<Destination, Badge> =
+        buildMap {
+            val w = waiting(ops)
+            if (w > 0) put(Destination.Mine, Badge(w, PillTone.COPPER, "$w operation${if (w == 1) "" else "s"} awaiting an outcome"))
+            if (damagedLines >
+                0
+            ) {
+                put(
+                    Destination.Receipts,
+                    Badge(
+                        damagedLines,
+                        PillTone.DANGER,
+                        "$damagedLines receipt line${if (damagedLines == 1) "" else "s"} could not be read",
+                    ),
+                )
+            }
+        }
 }

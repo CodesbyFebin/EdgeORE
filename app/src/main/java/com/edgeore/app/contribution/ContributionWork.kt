@@ -23,11 +23,13 @@ object ContributionScheduling {
     const val OUTPUT_OUTCOME = "outcome"
 
     /** Android starts the job only on an unmetered network, while charging, with battery not low. */
-    fun constraints(): Constraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.UNMETERED)
-        .setRequiresCharging(true)
-        .setRequiresBatteryNotLow(true)
-        .build()
+    fun constraints(): Constraints =
+        Constraints
+            .Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .setRequiresCharging(true)
+            .setRequiresBatteryNotLow(true)
+            .build()
 
     fun request(): PeriodicWorkRequest =
         PeriodicWorkRequestBuilder<ContributionWorker>(PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
@@ -36,12 +38,22 @@ object ContributionScheduling {
             .build()
 
     /** Enqueue when opted in and resumed; cancel otherwise. Returns false if WorkManager could not be reached. */
-    fun apply(context: Context, schedule: Boolean): Boolean = runCatching {
-        val wm = WorkManager.getInstance(context)
-        if (schedule) wm.enqueueUniquePeriodicWork(UNIQUE_NAME, ExistingPeriodicWorkPolicy.UPDATE, request())
-        else wm.cancelUniqueWork(UNIQUE_NAME)
-        true
-    }.getOrElse { Log.w(TAG, "scheduler_apply_failed schedule=$schedule exception=${it.javaClass.name}"); false }
+    fun apply(
+        context: Context,
+        schedule: Boolean,
+    ): Boolean =
+        runCatching {
+            val wm = WorkManager.getInstance(context)
+            if (schedule) {
+                wm.enqueueUniquePeriodicWork(UNIQUE_NAME, ExistingPeriodicWorkPolicy.UPDATE, request())
+            } else {
+                wm.cancelUniqueWork(UNIQUE_NAME)
+            }
+            true
+        }.getOrElse {
+            Log.w(TAG, "scheduler_apply_failed schedule=$schedule exception=${it.javaClass.name}")
+            false
+        }
 
     fun jobState(infos: List<WorkInfo>?): JobState {
         if (infos == null) return JobState.UNAVAILABLE
@@ -59,18 +71,30 @@ object ContributionScheduling {
 }
 
 /** Last outcome the job recorded, kept in the same settings file. Not a receipt; it says nothing ran. */
-data class LastRun(val outcome: RunOutcome, val atMillis: Long)
+data class LastRun(
+    val outcome: RunOutcome,
+    val atMillis: Long,
+)
 
 object LastRunStore {
     private const val OUTCOME = "sched.lastOutcome"
     private const val AT = "sched.lastAt"
+
     fun read(prefs: SharedPreferences): LastRun? {
         val o = RunOutcome.fromCode(prefs.getString(OUTCOME, null)) ?: return null
         val at = prefs.getLong(AT, -1).takeIf { it > 0 } ?: return null
         return LastRun(o, at)
     }
-    fun write(prefs: SharedPreferences, run: LastRun) {
-        prefs.edit().putString(OUTCOME, run.outcome.code).putLong(AT, run.atMillis).apply()
+
+    fun write(
+        prefs: SharedPreferences,
+        run: LastRun,
+    ) {
+        prefs
+            .edit()
+            .putString(OUTCOME, run.outcome.code)
+            .putLong(AT, run.atMillis)
+            .apply()
     }
 }
 
@@ -78,7 +102,10 @@ object LastRunStore {
  * The scheduled job. It re-reads the user's settings and the device gates, records what it decided,
  * and exits. It never runs a workload EdgeORE does not have and never reports progress.
  */
-class ContributionWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+class ContributionWorker(
+    context: Context,
+    params: WorkerParameters,
+) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val prefs = ResourceSettingsStore.prefs(applicationContext)
         val settings = ResourceSettingsStore.load(prefs)

@@ -32,7 +32,9 @@ data class OnDeviceModel(
     val downloadable: Boolean get() = !gated && sha256 != null
 }
 
-class AllowlistException(message: String) : Exception(message)
+class AllowlistException(
+    message: String,
+) : Exception(message)
 
 object OnDeviceCatalog {
     const val ASSET = "ai/ondevice-model-allowlist.json"
@@ -44,36 +46,76 @@ object OnDeviceCatalog {
 
     /** Strict parse: a malformed entry rejects the whole list rather than being shown half-checked. */
     fun parse(json: String): List<OnDeviceModel> {
-        val root = try { JSONObject(json) } catch (e: Exception) { throw AllowlistException("Allowlist is not JSON") }
+        val root =
+            try {
+                JSONObject(json)
+            } catch (e: Exception) {
+                throw AllowlistException("Allowlist is not JSON")
+            }
         val arr = root.optJSONArray("models") ?: throw AllowlistException("Allowlist has no models array")
-        val out = (0 until arr.length()).map { i ->
-            val o = arr.optJSONObject(i) ?: throw AllowlistException("Entry $i is not an object")
-            fun str(k: String): String = o.optString(k, "").takeIf { o.has(k) && !o.isNull(k) && it.isNotBlank() } ?: throw AllowlistException("Entry $i: $k missing")
-            val id = str("id").also { if (!ID.matches(it)) throw AllowlistException("Entry $i: bad id") }
-            val repo = str("modelId").also { if (!REPO.matches(it) || ".." in it) throw AllowlistException("$id: bad modelId") }
-            val file = str("modelFile").also { if (!FILE.matches(it) || ".." in it) throw AllowlistException("$id: modelFile must be a plain .litertlm name") }
-            val commit = str("commitHash").also { if (!COMMIT.matches(it)) throw AllowlistException("$id: commitHash must be a 40-hex commit pin") }
-            val size = o.optLong("sizeInBytes", -1).also { if (it <= 0) throw AllowlistException("$id: sizeInBytes must be positive") }
-            val gated = o.optBoolean("gated", false)
-            val sha = if (o.isNull("sha256") || !o.has("sha256")) null else o.getString("sha256").lowercase().also { if (!SHA256.matches(it)) throw AllowlistException("$id: bad sha256") }
-            if (!gated && sha == null) throw AllowlistException("$id: an ungated entry needs a sha256 pin")
-            val cfg = o.optJSONObject("defaultConfig") ?: JSONObject()
-            OnDeviceModel(
-                id, str("name"), repo, file, commit, size, sha, str("license"), gated,
-                o.optInt("minDeviceMemoryInGb", 0).takeIf { it > 0 },
-                cfg.optInt("topK", 40).coerceIn(1, 256), cfg.optDouble("topP", 0.95).coerceIn(0.0, 1.0),
-                cfg.optDouble("temperature", 0.8).coerceIn(0.0, 2.0), cfg.optInt("maxTokens", 1024).coerceIn(64, 8192),
-            )
-        }
+        val out =
+            (0 until arr.length()).map { i ->
+                val o = arr.optJSONObject(i) ?: throw AllowlistException("Entry $i is not an object")
+
+                fun str(k: String): String =
+                    o.optString(k, "").takeIf { o.has(k) && !o.isNull(k) && it.isNotBlank() }
+                        ?: throw AllowlistException("Entry $i: $k missing")
+                val id = str("id").also { if (!ID.matches(it)) throw AllowlistException("Entry $i: bad id") }
+                val repo = str("modelId").also { if (!REPO.matches(it) || ".." in it) throw AllowlistException("$id: bad modelId") }
+                val file =
+                    str("modelFile").also {
+                        if (!FILE.matches(it) ||
+                            ".." in it
+                        ) {
+                            throw AllowlistException("$id: modelFile must be a plain .litertlm name")
+                        }
+                    }
+                val commit =
+                    str(
+                        "commitHash",
+                    ).also { if (!COMMIT.matches(it)) throw AllowlistException("$id: commitHash must be a 40-hex commit pin") }
+                val size = o.optLong("sizeInBytes", -1).also { if (it <= 0) throw AllowlistException("$id: sizeInBytes must be positive") }
+                val gated = o.optBoolean("gated", false)
+                val sha =
+                    if (o.isNull("sha256") ||
+                        !o.has("sha256")
+                    ) {
+                        null
+                    } else {
+                        o.getString("sha256").lowercase().also { if (!SHA256.matches(it)) throw AllowlistException("$id: bad sha256") }
+                    }
+                if (!gated && sha == null) throw AllowlistException("$id: an ungated entry needs a sha256 pin")
+                val cfg = o.optJSONObject("defaultConfig") ?: JSONObject()
+                OnDeviceModel(
+                    id,
+                    str("name"),
+                    repo,
+                    file,
+                    commit,
+                    size,
+                    sha,
+                    str("license"),
+                    gated,
+                    o.optInt("minDeviceMemoryInGb", 0).takeIf { it > 0 },
+                    cfg.optInt("topK", 40).coerceIn(1, 256),
+                    cfg.optDouble("topP", 0.95).coerceIn(0.0, 1.0),
+                    cfg.optDouble("temperature", 0.8).coerceIn(0.0, 2.0),
+                    cfg.optInt("maxTokens", 1024).coerceIn(64, 8192),
+                )
+            }
         if (out.map { it.id }.toSet().size != out.size) throw AllowlistException("Duplicate model id")
         return out
     }
 }
 
 /** Downloaded weights live in app-private storage: filesDir/models/<id>/<file>. Nothing is written to shared storage. */
-class ModelStore(val root: File) {
+class ModelStore(
+    val root: File,
+) {
     fun dirFor(m: OnDeviceModel) = File(root, m.id)
+
     fun fileFor(m: OnDeviceModel) = File(dirFor(m), m.file)
+
     fun partFor(m: OnDeviceModel) = File(dirFor(m), m.file + ".part")
 
     /** Present only when the file exists at the exact allowlisted size. The SHA-256 is checked once, at download time. */

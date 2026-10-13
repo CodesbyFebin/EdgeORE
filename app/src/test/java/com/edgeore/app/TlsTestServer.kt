@@ -22,23 +22,48 @@ import kotlin.concurrent.thread
  * [requests] counts requests whose request line was read; [bodyBytes] counts request-body bytes read. A handshake that
  * the client refuses leaves both at zero, which is how the tests show nothing was sent.
  */
-class TlsTestServer(private val respond: (method: String, path: String, body: ByteArray) -> Pair<Int, String>) : AutoCloseable {
+class TlsTestServer(
+    private val respond: (method: String, path: String, body: ByteArray) -> Pair<Int, String>,
+) : AutoCloseable {
     val certificate: X509Certificate
     val requests = AtomicInteger()
     val bodyBytes = AtomicLong()
     val handshakeFailures = AtomicInteger()
     private val server: SSLServerSocket
-    private val dir: File = kotlin.io.path.createTempDirectory("edgeore-tls").toFile()
+    private val dir: File =
+        kotlin.io.path
+            .createTempDirectory("edgeore-tls")
+            .toFile()
 
     init {
         val password = ByteArray(18).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
         val store = File(dir, "server.p12")
         val keytool = File(System.getProperty("java.home"), "bin/keytool").path
-        val p = ProcessBuilder(
-            keytool, "-genkeypair", "-alias", "server", "-keyalg", "EC", "-groupname", "secp256r1",
-            "-dname", "CN=edgeore-test", "-ext", "san=ip:127.0.0.1", "-validity", "2",
-            "-storetype", "PKCS12", "-keystore", store.path, "-storepass", password, "-keypass", password,
-        ).redirectErrorStream(true).start()
+        val p =
+            ProcessBuilder(
+                keytool,
+                "-genkeypair",
+                "-alias",
+                "server",
+                "-keyalg",
+                "EC",
+                "-groupname",
+                "secp256r1",
+                "-dname",
+                "CN=edgeore-test",
+                "-ext",
+                "san=ip:127.0.0.1",
+                "-validity",
+                "2",
+                "-storetype",
+                "PKCS12",
+                "-keystore",
+                store.path,
+                "-storepass",
+                password,
+                "-keypass",
+                password,
+            ).redirectErrorStream(true).start()
         val out = p.inputStream.readBytes().toString(Charsets.UTF_8)
         check(p.waitFor() == 0) { "keytool failed: $out" }
         val ks = KeyStore.getInstance("PKCS12").apply { store.inputStream().use { load(it, password.toCharArray()) } }
@@ -70,7 +95,12 @@ class TlsTestServer(private val respond: (method: String, path: String, body: By
 
     private fun serve(s: SSLSocket) {
         s.soTimeout = 5_000
-        try { s.startHandshake() } catch (_: Exception) { handshakeFailures.incrementAndGet(); return }
+        try {
+            s.startHandshake()
+        } catch (_: Exception) {
+            handshakeFailures.incrementAndGet()
+            return
+        }
         val input = s.inputStream
         val requestLine = readLine(input) ?: return
         requests.incrementAndGet()
@@ -87,8 +117,12 @@ class TlsTestServer(private val respond: (method: String, path: String, body: By
         val (code, json) = respond(method, path, body)
         val bytes = json.toByteArray(Charsets.UTF_8)
         s.outputStream.apply {
-            write("HTTP/1.1 $code X\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n".toByteArray())
-            write(bytes); flush()
+            write(
+                "HTTP/1.1 $code X\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n"
+                    .toByteArray(),
+            )
+            write(bytes)
+            flush()
         }
     }
 

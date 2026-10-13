@@ -26,7 +26,10 @@ import java.util.UUID
 enum class ReceiptKind { REVIEW, NODE, LOCAL_AI, POLICY, STORAGE }
 
 /** One evidence dimension: its state and exactly what was checked. Missing never means "passed". */
-data class Evidence(val state: String, val checked: String) {
+data class Evidence(
+    val state: String,
+    val checked: String,
+) {
     companion object {
         val NOT_AVAILABLE = Evidence("NOT_AVAILABLE", "Nothing was checked for this dimension")
     }
@@ -36,7 +39,11 @@ data class Evidence(val state: String, val checked: String) {
  * Wallet authorization evidence carried inside a receipt so a second machine can check the wallet's
  * Ed25519 signature over the exact reviewed message without trusting the app's own claim.
  */
-data class WalletEvidence(val messageBase64: String, val signerBase58: String, val signatureBase58: String)
+data class WalletEvidence(
+    val messageBase64: String,
+    val signerBase58: String,
+    val signatureBase58: String,
+)
 
 data class ReceiptDraft(
     val kind: ReceiptKind,
@@ -61,8 +68,11 @@ data class ReceiptDraft(
 /** Signs receipt digests with an app-held key (Android Keystore in production). Not a wallet signature. */
 interface ReceiptSigner {
     val algorithm: String
+
     fun publicKeySpki(): ByteArray
+
     fun sign(data: ByteArray): ByteArray
+
     /** How the private key is protected, shown to the user and recorded with the key epoch. */
     val protection: String get() = "Software key"
 }
@@ -70,7 +80,9 @@ interface ReceiptSigner {
 /** Stable key identity: SHA-256 of the SubjectPublicKeyInfo. */
 fun ReceiptSigner.keyId(): String = Sha256.hex(publicKeySpki())
 
-class SoftwareReceiptSigner(private val keyPair: KeyPair = generate()) : ReceiptSigner {
+class SoftwareReceiptSigner(
+    private val keyPair: KeyPair = generate(),
+) : ReceiptSigner {
     companion object {
         fun generate(): KeyPair = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec("secp256r1")) }.generateKeyPair()
 
@@ -88,48 +100,102 @@ class SoftwareReceiptSigner(private val keyPair: KeyPair = generate()) : Receipt
                 return SoftwareReceiptSigner(KeyPair(pub, priv))
             }
             val kp = generate()
-            AtomicFiles.write(file, JSONObject().put("spki", Base64.getEncoder().encodeToString(kp.public.encoded))
-                .put("pkcs8", Base64.getEncoder().encodeToString(kp.private.encoded)).toString().toByteArray(Charsets.UTF_8))
+            AtomicFiles.write(
+                file,
+                JSONObject()
+                    .put("spki", Base64.getEncoder().encodeToString(kp.public.encoded))
+                    .put("pkcs8", Base64.getEncoder().encodeToString(kp.private.encoded))
+                    .toString()
+                    .toByteArray(Charsets.UTF_8),
+            )
             return SoftwareReceiptSigner(kp)
         }
     }
+
     override val algorithm = "SHA256withECDSA"
     override val protection = "Software key in app storage (Keystore unavailable; weaker)"
+
     override fun publicKeySpki(): ByteArray = keyPair.public.encoded
-    override fun sign(data: ByteArray): ByteArray = Signature.getInstance(algorithm).run { initSign(keyPair.private); update(data); sign() }
+
+    override fun sign(data: ByteArray): ByteArray =
+        Signature.getInstance(algorithm).run {
+            initSign(keyPair.private)
+            update(data)
+            sign()
+        }
 }
 
 /** Every receipt-signing key this installation has used, so old records keep verifying after a key change. */
-class KeyRegistry(private val file: File) {
-    data class KeyEpoch(val keyId: String, val algorithm: String, val spkiBase64: String, val protection: String, val firstUsedAt: String)
+class KeyRegistry(
+    private val file: File,
+) {
+    data class KeyEpoch(
+        val keyId: String,
+        val algorithm: String,
+        val spkiBase64: String,
+        val protection: String,
+        val firstUsedAt: String,
+    )
+
     private val keys = LinkedHashMap<String, KeyEpoch>()
 
     init {
         if (file.exists()) {
             val arr = JSONArray(String(FileInputStream(file).use { BoundedInput.readAtMost(it, 1024 * 1024) }, Charsets.UTF_8))
-            for (i in 0 until arr.length()) arr.getJSONObject(i).let {
-                keys[it.getString("keyId")] = KeyEpoch(it.getString("keyId"), it.getString("algorithm"), it.getString("spkiBase64"), it.getString("protection"), it.getString("firstUsedAt"))
+            for (i in 0 until arr.length()) {
+                arr.getJSONObject(i).let {
+                    keys[it.getString("keyId")] =
+                        KeyEpoch(
+                            it.getString("keyId"),
+                            it.getString("algorithm"),
+                            it.getString("spkiBase64"),
+                            it.getString("protection"),
+                            it.getString("firstUsedAt"),
+                        )
+                }
             }
         }
     }
 
-    @Synchronized fun register(signer: ReceiptSigner, at: Instant = Instant.now()): KeyEpoch {
+    @Synchronized fun register(
+        signer: ReceiptSigner,
+        at: Instant = Instant.now(),
+    ): KeyEpoch {
         val id = signer.keyId()
         keys[id]?.let { return it }
         val e = KeyEpoch(id, signer.algorithm, Base64.getEncoder().encodeToString(signer.publicKeySpki()), signer.protection, at.toString())
         keys[id] = e
-        AtomicFiles.write(file, JSONArray(keys.values.map { k ->
-            JSONObject().put("keyId", k.keyId).put("algorithm", k.algorithm).put("spkiBase64", k.spkiBase64).put("protection", k.protection).put("firstUsedAt", k.firstUsedAt)
-        }).toString().toByteArray(Charsets.UTF_8))
+        AtomicFiles.write(
+            file,
+            JSONArray(
+                keys.values.map { k ->
+                    JSONObject()
+                        .put(
+                            "keyId",
+                            k.keyId,
+                        ).put(
+                            "algorithm",
+                            k.algorithm,
+                        ).put("spkiBase64", k.spkiBase64)
+                        .put("protection", k.protection)
+                        .put("firstUsedAt", k.firstUsedAt)
+                },
+            ).toString().toByteArray(Charsets.UTF_8),
+        )
         return e
     }
 
     @Synchronized fun all(): List<KeyEpoch> = keys.values.toList()
+
     @Synchronized fun get(id: String): KeyEpoch? = keys[id]
 }
 
 /** A stored receipt: the exact body string that was written, its digest, and the device signature. */
-data class StoredReceipt(val body: String, val sha256: String, val deviceSignature: String) {
+data class StoredReceipt(
+    val body: String,
+    val sha256: String,
+    val deviceSignature: String,
+) {
     val json: JSONObject by lazy { JSONObject(body) }
     val id: String get() = json.getString("id")
     val sequence: Long get() = json.getLong("sequence")
@@ -160,8 +226,15 @@ data class StoredReceipt(val body: String, val sha256: String, val deviceSignatu
 }
 
 /** One unreadable line in the receipt log. Valid records around it stay visible. */
-data class DamagedLine(val lineNumber: Int, val reason: String)
-data class ReceiptReadResult(val receipts: List<StoredReceipt>, val damaged: List<DamagedLine>) {
+data class DamagedLine(
+    val lineNumber: Int,
+    val reason: String,
+)
+
+data class ReceiptReadResult(
+    val receipts: List<StoredReceipt>,
+    val damaged: List<DamagedLine>,
+) {
     val isDamaged: Boolean get() = damaged.isNotEmpty()
 }
 
@@ -180,6 +253,7 @@ class ReceiptLog(
     companion object {
         const val SCHEMA = "edgeore.receipt.v1"
         const val SCHEMA_V2 = "edgeore.receipt.v2"
+
         /** v3: the device signature covers a domain-separated payload naming the descriptive fields, not only the digest. */
         const val SCHEMA_V3 = "edgeore.receipt.v3"
         const val SIGNATURE_DOMAIN_V3 = "edgeore.receipt-signature.v3"
@@ -188,6 +262,7 @@ class ReceiptLog(
         const val EXPORT_SCHEMA_V2 = "edgeore.receipt-export.v2"
         const val CHECKPOINT_DOMAIN = "edgeore.export-checkpoint.v1"
         const val ENVELOPE_DOMAIN = "edgeore.export-envelope.v1"
+
         /**
          * Top-level flag written by every export from this version on. true: this export was written with a signed
          * envelope, so a verifier must reject it if the envelope is missing. Absent: a legacy export from before the
@@ -198,38 +273,79 @@ class ReceiptLog(
         const val GENESIS = "0000000000000000000000000000000000000000000000000000000000000000"
         const val MAX_LINE_CHARS = 256 * 1024
         const val MAX_FILE_BYTES = 64L * 1024 * 1024
-        val EXCLUSIONS = listOf(
-            "Private keys (wallet keys stay in the wallet; node and device keys stay in Android Keystore)",
-            "Document contents and AI prompts/responses (only SHA-256 digests are included)",
-            "Node endpoints' credentials and pairing codes",
-        )
+        val EXCLUSIONS =
+            listOf(
+                "Private keys (wallet keys stay in the wallet; node and device keys stay in Android Keystore)",
+                "Document contents and AI prompts/responses (only SHA-256 digests are included)",
+                "Node endpoints' credentials and pairing codes",
+            )
     }
 
     enum class ExportMode { FULL_CHAIN, SELECTED }
 
     private var tail: Pair<Long, String>? = null // (last valid sequence, its sha256), cached after first read
 
-    init { keys?.register(signer) }
+    init {
+        keys?.register(signer)
+    }
 
     /** Reads every line; malformed, oversized or truncated lines are reported with their line number. */
     @Synchronized
     fun read(): ReceiptReadResult {
         if (!file.exists()) return ReceiptReadResult(emptyList(), emptyList())
-        if (file.length() > MAX_FILE_BYTES) return ReceiptReadResult(emptyList(), listOf(DamagedLine(0, "Log is larger than ${MAX_FILE_BYTES / (1024 * 1024)} MB; refusing to load it whole")))
+        if (file.length() >
+            MAX_FILE_BYTES
+        ) {
+            return ReceiptReadResult(
+                emptyList(),
+                listOf(DamagedLine(0, "Log is larger than ${MAX_FILE_BYTES / (1024 * 1024)} MB; refusing to load it whole")),
+            )
+        }
         val ok = mutableListOf<StoredReceipt>()
         val damaged = mutableListOf<DamagedLine>()
-        val endsWithNewline = file.length() == 0L || RandomAccessFile(file, "r").use { it.seek(it.length() - 1); it.read() == '\n'.code }
+        val endsWithNewline =
+            file.length() == 0L ||
+                RandomAccessFile(file, "r").use {
+                    it.seek(it.length() - 1)
+                    it.read() == '\n'.code
+                }
         val lines = file.readLines(Charsets.UTF_8)
         lines.forEachIndexed { i, line ->
             if (line.isBlank()) return@forEachIndexed
             val n = i + 1
             val isLast = i == lines.lastIndex
-            if (line.length > MAX_LINE_CHARS) { damaged += DamagedLine(n, "Line exceeds ${MAX_LINE_CHARS} characters"); return@forEachIndexed }
-            val r = try { StoredReceipt.fromLine(JSONObject(line)) } catch (_: Exception) {
-                damaged += DamagedLine(n, if (isLast && !endsWithNewline) "Truncated final line (write was interrupted)" else "Not a valid receipt line"); return@forEachIndexed
+            if (line.length >
+                MAX_LINE_CHARS
+            ) {
+                damaged += DamagedLine(n, "Line exceeds ${MAX_LINE_CHARS} characters")
+                return@forEachIndexed
             }
-            if (!r.integrityOk) { damaged += DamagedLine(n, "SHA-256 does not match body"); return@forEachIndexed }
-            if (runCatching { r.json.getString("schema") in KNOWN_SCHEMAS && r.sequence > 0 }.getOrDefault(false).not()) { damaged += DamagedLine(n, "Unknown schema or missing sequence"); return@forEachIndexed }
+            val r =
+                try {
+                    StoredReceipt.fromLine(JSONObject(line))
+                } catch (_: Exception) {
+                    damaged +=
+                        DamagedLine(
+                            n,
+                            if (isLast &&
+                                !endsWithNewline
+                            ) {
+                                "Truncated final line (write was interrupted)"
+                            } else {
+                                "Not a valid receipt line"
+                            },
+                        )
+                    return@forEachIndexed
+                }
+            if (!r.integrityOk) {
+                damaged += DamagedLine(n, "SHA-256 does not match body")
+                return@forEachIndexed
+            }
+            if (runCatching { r.json.getString("schema") in KNOWN_SCHEMAS && r.sequence > 0 }.getOrDefault(false).not()) {
+                damaged +=
+                    DamagedLine(n, "Unknown schema or missing sequence")
+                return@forEachIndexed
+            }
             ok += r
         }
         return ReceiptReadResult(ok, damaged)
@@ -242,39 +358,57 @@ class ReceiptLog(
     @Synchronized
     fun append(d: ReceiptDraft): StoredReceipt {
         val (lastSeq, lastSha) = tail ?: read().receipts.lastOrNull().let { (it?.sequence ?: 0L) to (it?.sha256 ?: GENESIS) }
-        val evidence = JSONObject()
-            .put("localObservation", ev(d.localObservation))
-            .put("nodeSignature", ev(d.nodeSignature))
-            .put("independentVerification", ev(d.independentVerification))
-            .put("providerAcknowledgement", ev(d.providerAcknowledgement))
+        val evidence =
+            JSONObject()
+                .put("localObservation", ev(d.localObservation))
+                .put("nodeSignature", ev(d.nodeSignature))
+                .put("independentVerification", ev(d.independentVerification))
+                .put("providerAcknowledgement", ev(d.providerAcknowledgement))
         val digests = JSONObject().also { o -> d.digests.toSortedMap().forEach { (k, v) -> o.put(k, v) } }
-        val body = JSONObject()
-            .put("schema", SCHEMA_V3)
-            .put("id", UUID.randomUUID().toString())
-            .put("sequence", lastSeq + 1)
-            .put("previousSha256", lastSha)
-            .put("createdAt", clock().toString())
-            .put("kind", d.kind.name)
-            .put("outcome", d.outcome)
-            .put("title", d.title)
-            .put("detail", d.detail)
-            .put("source", d.source)
-            .put("cluster", d.cluster ?: JSONObject.NULL)
-            .put("operationId", d.operationId ?: JSONObject.NULL)
-            .put("solanaSignature", d.solanaSignature ?: JSONObject.NULL)
-            .put("relatesTo", d.relatesTo ?: JSONObject.NULL)
-            .put("lamports", d.lamports ?: JSONObject.NULL)
-            .put("digests", digests)
-            .put("evidence", evidence)
-            .put("payment", d.payment)
-            .put("signerKeyId", signer.keyId())
-            .put("wallet", d.wallet?.let { JSONObject().put("messageBase64", it.messageBase64).put("signer", it.signerBase58).put("signature", it.signatureBase58) } ?: JSONObject.NULL)
-            .toString()
+        val body =
+            JSONObject()
+                .put("schema", SCHEMA_V3)
+                .put("id", UUID.randomUUID().toString())
+                .put("sequence", lastSeq + 1)
+                .put("previousSha256", lastSha)
+                .put("createdAt", clock().toString())
+                .put("kind", d.kind.name)
+                .put("outcome", d.outcome)
+                .put("title", d.title)
+                .put("detail", d.detail)
+                .put("source", d.source)
+                .put("cluster", d.cluster ?: JSONObject.NULL)
+                .put("operationId", d.operationId ?: JSONObject.NULL)
+                .put("solanaSignature", d.solanaSignature ?: JSONObject.NULL)
+                .put("relatesTo", d.relatesTo ?: JSONObject.NULL)
+                .put("lamports", d.lamports ?: JSONObject.NULL)
+                .put("digests", digests)
+                .put("evidence", evidence)
+                .put("payment", d.payment)
+                .put("signerKeyId", signer.keyId())
+                .put(
+                    "wallet",
+                    d.wallet?.let {
+                        JSONObject()
+                            .put(
+                                "messageBase64",
+                                it.messageBase64,
+                            ).put("signer", it.signerBase58)
+                            .put("signature", it.signatureBase58)
+                    }
+                        ?: JSONObject.NULL,
+                ).toString()
         val sha = Sha256.hex(body)
         val sig = Base64.getEncoder().encodeToString(signer.sign(receiptSignaturePayload(JSONObject(body), sha)))
         val stored = StoredReceipt(body, sha, sig)
         // A torn final line from an earlier crash stays in place (and is reported); the new record starts on its own line.
-        val needsNewline = file.exists() && file.length() > 0 && RandomAccessFile(file, "r").use { it.seek(it.length() - 1); it.read() != '\n'.code }
+        val needsNewline =
+            file.exists() &&
+                file.length() > 0 &&
+                RandomAccessFile(file, "r").use {
+                    it.seek(it.length() - 1)
+                    it.read() != '\n'.code
+                }
         AtomicFiles.appendDurably(file, ((if (needsNewline) "\n" else "") + stored.toLine().toString() + "\n").toByteArray(Charsets.UTF_8))
         tail = stored.sequence to sha
         return stored
@@ -282,43 +416,71 @@ class ReceiptLog(
 
     private fun ev(e: Evidence) = JSONObject().put("state", e.state).put("checked", e.checked)
 
-    private fun keyJson(k: KeyRegistry.KeyEpoch) = JSONObject().put("keyId", k.keyId).put("algorithm", k.algorithm)
-        .put("publicKeySpkiBase64", k.spkiBase64).put("protection", k.protection).put("firstUsedAt", k.firstUsedAt)
+    private fun keyJson(k: KeyRegistry.KeyEpoch) =
+        JSONObject()
+            .put("keyId", k.keyId)
+            .put("algorithm", k.algorithm)
+            .put("publicKeySpkiBase64", k.spkiBase64)
+            .put("protection", k.protection)
+            .put("firstUsedAt", k.firstUsedAt)
 
     /**
      * Builds the export document. With no subset the export is FULL_CHAIN and carries a checkpoint
      * signed by the current key over (count, first/last sequence, last digest, bundle digest). A subset
      * is SELECTED: each record verifies on its own, and completeness is explicitly not claimed.
      */
-    fun export(subset: List<StoredReceipt>? = null, hideDeviceKey: Boolean = false): String {
+    fun export(
+        subset: List<StoredReceipt>? = null,
+        hideDeviceKey: Boolean = false,
+    ): String {
         val read = read()
         val mode = if (subset == null) ExportMode.FULL_CHAIN else ExportMode.SELECTED
         val list = subset ?: read.receipts
         val exclusions = EXCLUSIONS.toMutableList()
-        if (hideDeviceKey) exclusions += "Device public keys omitted by the export-privacy control. This file cannot be signature-checked until those keys are supplied separately."
+        if (hideDeviceKey) {
+            exclusions +=
+                "Device public keys omitted by the export-privacy control. This file cannot be signature-checked until those keys are supplied separately."
+        }
         val exportedAt = clock().toString()
         val bundle = bundleDigest(list.map { it.sha256 })
-        val doc = JSONObject()
-            .put("schema", EXPORT_SCHEMA_V2)
-            .put("mode", mode.name)
-            .put("exportedAt", exportedAt)
-            .put("note", "Device-key signatures show these bytes were written by an install holding these keys. They are not independent verification, provider acknowledgement or payment. Wallet signatures, where present, can be checked separately.")
-            .put("exclusions", JSONArray(exclusions))
-            .put("receipts", JSONArray().also { a -> list.forEach { a.put(it.toLine()) } })
-            .put("bundleSha256", bundle)
-            .put("payment", "NOT_OBSERVED")
-            .put("location", JSONObject.NULL)
+        val doc =
+            JSONObject()
+                .put("schema", EXPORT_SCHEMA_V2)
+                .put("mode", mode.name)
+                .put("exportedAt", exportedAt)
+                .put(
+                    "note",
+                    "Device-key signatures show these bytes were written by an install holding these keys. They are not independent verification, provider acknowledgement or payment. Wallet signatures, where present, can be checked separately.",
+                ).put("exclusions", JSONArray(exclusions))
+                .put("receipts", JSONArray().also { a -> list.forEach { a.put(it.toLine()) } })
+                .put("bundleSha256", bundle)
+                .put("payment", "NOT_OBSERVED")
+                .put("location", JSONObject.NULL)
         if (mode == ExportMode.FULL_CHAIN && read.isDamaged) {
             doc.put("damagedLines", JSONArray(read.damaged.map { JSONObject().put("line", it.lineNumber).put("reason", it.reason) }))
         }
         if (hideDeviceKey) {
             doc.put("deviceKey", JSONObject.NULL).put("deviceKeys", JSONArray())
         } else {
-            doc.put("deviceKey", JSONObject().put("algorithm", signer.algorithm).put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(signer.publicKeySpki())))
+            doc.put(
+                "deviceKey",
+                JSONObject()
+                    .put(
+                        "algorithm",
+                        signer.algorithm,
+                    ).put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(signer.publicKeySpki())),
+            )
             val used = list.mapNotNull { it.signerKeyId }.toSet() + signer.keyId()
             val epochs = (keys?.all() ?: emptyList()).filter { it.keyId in used }.toMutableList()
             if (epochs.none { it.keyId == signer.keyId() }) {
-                epochs += KeyRegistry.KeyEpoch(signer.keyId(), signer.algorithm, Base64.getEncoder().encodeToString(signer.publicKeySpki()), signer.protection, exportedAt)
+                epochs +=
+                    KeyRegistry.KeyEpoch(
+                        signer.keyId(),
+                        signer.algorithm,
+                        Base64.getEncoder().encodeToString(signer.publicKeySpki()),
+                        signer.protection,
+                        exportedAt,
+                    )
             }
             doc.put("deviceKeys", JSONArray(epochs.map(::keyJson)))
         }
@@ -326,18 +488,36 @@ class ReceiptLog(
             val first = list.firstOrNull()?.sequence ?: 0
             val last = list.lastOrNull()
             val cp = checkpointPayload(list.size, first, last?.sequence ?: 0, last?.sha256 ?: GENESIS, bundle, exportedAt)
-            doc.put("checkpoint", JSONObject().put("receiptCount", list.size).put("firstSequence", first).put("lastSequence", last?.sequence ?: 0)
-                .put("lastSha256", last?.sha256 ?: GENESIS).put("bundleSha256", bundle).put("exportedAt", exportedAt)
-                .put("keyId", signer.keyId()).put("signature", Base64.getEncoder().encodeToString(signer.sign(cp.toByteArray(Charsets.UTF_8)))))
+            doc.put(
+                "checkpoint",
+                JSONObject()
+                    .put("receiptCount", list.size)
+                    .put("firstSequence", first)
+                    .put(
+                        "lastSequence",
+                        last?.sequence ?: 0,
+                    ).put("lastSha256", last?.sha256 ?: GENESIS)
+                    .put("bundleSha256", bundle)
+                    .put("exportedAt", exportedAt)
+                    .put(
+                        "keyId",
+                        signer.keyId(),
+                    ).put("signature", Base64.getEncoder().encodeToString(signer.sign(cp.toByteArray(Charsets.UTF_8)))),
+            )
         }
         // Additive, optional field (hardening backlog H4): the export schema, receipt lines and checkpoint are unchanged,
         // and a checker that predates it ignores unknown top-level fields.
         doc.put(ENVELOPE_REQUIRED_FIELD, !hideDeviceKey)
         if (!hideDeviceKey) {
             val payload = envelopePayload(doc)
-            doc.put("envelope", JSONObject().put("domain", ENVELOPE_DOMAIN).put("keyId", signer.keyId())
-                .put("fieldsSha256", Sha256.hex(payload))
-                .put("signature", Base64.getEncoder().encodeToString(signer.sign(payload.toByteArray(Charsets.UTF_8)))))
+            doc.put(
+                "envelope",
+                JSONObject()
+                    .put("domain", ENVELOPE_DOMAIN)
+                    .put("keyId", signer.keyId())
+                    .put("fieldsSha256", Sha256.hex(payload))
+                    .put("signature", Base64.getEncoder().encodeToString(signer.sign(payload.toByteArray(Charsets.UTF_8)))),
+            )
         }
         return doc.toString(2)
     }
@@ -354,9 +534,38 @@ fun envelopePayload(doc: JSONObject): String {
     fun q(v: Any?): String = if (v == null || v == JSONObject.NULL) "null" else JSONObject.quote(v.toString())
     val lines = mutableListOf(ReceiptLog.ENVELOPE_DOMAIN)
     for (k in listOf("exportedAt", "note", "payment", "location")) lines += "$k=" + q(doc.opt(k))
-    doc.optJSONArray("exclusions").let { a -> lines += "exclusions=" + (a?.length() ?: -1); if (a != null) for (i in 0 until a.length()) lines += "exclusion=" + q(a.opt(i)) }
-    doc.optJSONArray("damagedLines").let { a -> lines += "damagedLines=" + (a?.length() ?: -1); if (a != null) for (i in 0 until a.length()) { val d = a.optJSONObject(i); lines += "damaged=" + q(d?.opt("line")) + "," + q(d?.opt("reason")) } }
-    doc.optJSONArray("deviceKeys").let { a -> lines += "deviceKeys=" + (a?.length() ?: -1); if (a != null) for (i in 0 until a.length()) { val k = a.optJSONObject(i); lines += "key=" + q(k?.opt("keyId")) + "," + q(k?.opt("protection")) + "," + q(k?.opt("firstUsedAt")) } }
+    doc.optJSONArray("exclusions").let { a ->
+        lines += "exclusions=" + (a?.length() ?: -1)
+        if (a !=
+            null
+        ) {
+            for (i in 0 until a.length()) lines += "exclusion=" + q(a.opt(i))
+        }
+    }
+    doc.optJSONArray("damagedLines").let { a ->
+        lines += "damagedLines=" + (a?.length() ?: -1)
+        if (a !=
+            null
+        ) {
+            for (i in 0 until a.length()) {
+                val d = a.optJSONObject(i)
+                lines +=
+                    "damaged=" + q(d?.opt("line")) + "," + q(d?.opt("reason"))
+            }
+        }
+    }
+    doc.optJSONArray("deviceKeys").let { a ->
+        lines += "deviceKeys=" + (a?.length() ?: -1)
+        if (a !=
+            null
+        ) {
+            for (i in 0 until a.length()) {
+                val k = a.optJSONObject(i)
+                lines +=
+                    "key=" + q(k?.opt("keyId")) + "," + q(k?.opt("protection")) + "," + q(k?.opt("firstUsedAt"))
+            }
+        }
+    }
     return lines.joinToString("\n")
 }
 
@@ -366,8 +575,12 @@ fun envelopePayload(doc: JSONObject): String {
  * descriptive field (kind, outcome, title, detail, source, cluster, payment, createdAt) next to the digest, so the
  * signature itself binds what a reader is shown and cannot be replayed under another schema or key epoch.
  */
-fun receiptSignaturePayload(body: JSONObject, sha256: String): ByteArray {
+fun receiptSignaturePayload(
+    body: JSONObject,
+    sha256: String,
+): ByteArray {
     if (body.optString("schema") != ReceiptLog.SCHEMA_V3) return sha256.toByteArray(Charsets.US_ASCII)
+
     fun q(k: String): String = if (!body.has(k) || body.isNull(k)) "null" else JSONObject.quote(body.get(k).toString())
     val lines = mutableListOf(ReceiptLog.SIGNATURE_DOMAIN_V3, "schema=" + q("schema"), "signerKeyId=" + q("signerKeyId"))
     for (k in listOf("kind", "outcome", "title", "detail", "source", "cluster", "payment", "createdAt")) lines += "$k=" + q(k)
@@ -377,12 +590,35 @@ fun receiptSignaturePayload(body: JSONObject, sha256: String): ByteArray {
 
 fun bundleDigest(shas: List<String>): String = Sha256.hex(shas.joinToString("\n"))
 
-fun checkpointPayload(count: Int, firstSeq: Long, lastSeq: Long, lastSha: String, bundle: String, exportedAt: String): String =
-    listOf(ReceiptLog.CHECKPOINT_DOMAIN, count.toString(), firstSeq.toString(), lastSeq.toString(), lastSha, bundle, exportedAt).joinToString("|")
+fun checkpointPayload(
+    count: Int,
+    firstSeq: Long,
+    lastSeq: Long,
+    lastSha: String,
+    bundle: String,
+    exportedAt: String,
+): String =
+    listOf(
+        ReceiptLog.CHECKPOINT_DOMAIN,
+        count.toString(),
+        firstSeq.toString(),
+        lastSeq.toString(),
+        lastSha,
+        bundle,
+        exportedAt,
+    ).joinToString("|")
 
 /** A chain or broadcast claim with no signature is a false outcome, not a missing observation. */
-fun chainClaimContradictsSignature(payment: String, broadcast: Boolean, solanaSignature: String): Boolean {
-    val claimsChain = broadcast || payment in setOf("OBSERVED", "CONFIRMED", "FINALIZED", "PAID", "SUBMITTED") || payment.startsWith("OBSERVED_") || payment.startsWith("SUBMITTED_")
+fun chainClaimContradictsSignature(
+    payment: String,
+    broadcast: Boolean,
+    solanaSignature: String,
+): Boolean {
+    val claimsChain =
+        broadcast ||
+            payment in setOf("OBSERVED", "CONFIRMED", "FINALIZED", "PAID", "SUBMITTED") ||
+            payment.startsWith("OBSERVED_") ||
+            payment.startsWith("SUBMITTED_")
     return claimsChain && solanaSignature.isBlank()
 }
 
@@ -396,6 +632,7 @@ fun chainClaimContradictsSignature(payment: String, broadcast: Boolean, solanaSi
  */
 object ReceiptVerifier {
     enum class Provenance { PINNED_KEY, UNPINNED_KEY, KEY_MISMATCH }
+
     enum class Completeness { FULL_CHAIN_CHECKPOINTED, SELECTED_SUBSET, NOT_ESTABLISHED }
 
     data class Report(
@@ -413,51 +650,108 @@ object ReceiptVerifier {
         val v3Receipts: Int = 0,
         val legacyReceipts: Int = 0,
     ) {
-        val summary: String get() = buildString {
-            append(if (accepted) "Integrity OK for $verifiedReceipts receipt(s)" else "REJECTED")
-            append(" · key ").append(when (provenance) { Provenance.PINNED_KEY -> "matches pinned key"; Provenance.UNPINNED_KEY -> "not pinned (self-contained only)"; Provenance.KEY_MISMATCH -> "does NOT match pinned key" })
-            append(" · ").append(when (completeness) { Completeness.FULL_CHAIN_CHECKPOINTED -> "full chain through signed checkpoint"; Completeness.SELECTED_SUBSET -> "selected subset, completeness not established"; Completeness.NOT_ESTABLISHED -> "completeness not established" })
-            append(" · wallet signatures verified: $walletSignaturesVerified")
-            append(when {
-                descriptiveFieldsSigned -> " · descriptive fields covered by the signed envelope"
-                legacyWithoutEnvelope -> " · descriptive fields not signed (legacy export without envelope)"
-                else -> " · descriptive fields not signed (no envelope)"
-            })
-            append(" · chain status not checked offline")
-        }
+        val summary: String get() =
+            buildString {
+                append(if (accepted) "Integrity OK for $verifiedReceipts receipt(s)" else "REJECTED")
+                append(" · key ").append(
+                    when (provenance) {
+                        Provenance.PINNED_KEY -> "matches pinned key"
+                        Provenance.UNPINNED_KEY -> "not pinned (self-contained only)"
+                        Provenance.KEY_MISMATCH -> "does NOT match pinned key"
+                    },
+                )
+                append(" · ").append(
+                    when (completeness) {
+                        Completeness.FULL_CHAIN_CHECKPOINTED -> "full chain through signed checkpoint"
+                        Completeness.SELECTED_SUBSET -> "selected subset, completeness not established"
+                        Completeness.NOT_ESTABLISHED -> "completeness not established"
+                    },
+                )
+                append(" · wallet signatures verified: $walletSignaturesVerified")
+                append(
+                    when {
+                        descriptiveFieldsSigned -> " · descriptive fields covered by the signed envelope"
+                        legacyWithoutEnvelope -> " · descriptive fields not signed (legacy export without envelope)"
+                        else -> " · descriptive fields not signed (no envelope)"
+                    },
+                )
+                append(" · chain status not checked offline")
+            }
     }
 
-    fun verify(exportJson: String, trustedDeviceKeySpki: ByteArray? = null, local: List<StoredReceipt> = emptyList()): Report =
-        verify(exportJson, trustedDeviceKeySpki?.let { listOf(it) }, local)
+    fun verify(
+        exportJson: String,
+        trustedDeviceKeySpki: ByteArray? = null,
+        local: List<StoredReceipt> = emptyList(),
+    ): Report = verify(exportJson, trustedDeviceKeySpki?.let { listOf(it) }, local)
 
-    fun verify(exportJson: String, trustedKeys: Collection<ByteArray>?, local: List<StoredReceipt>): Report {
+    fun verify(
+        exportJson: String,
+        trustedKeys: Collection<ByteArray>?,
+        local: List<StoredReceipt>,
+    ): Report {
         val findings = mutableListOf<String>()
-        val doc = try { JSONObject(exportJson) } catch (_: Exception) { return Report(false, 0, listOf("Not a JSON document")) }
+        val doc =
+            try {
+                JSONObject(exportJson)
+            } catch (_: Exception) {
+                return Report(false, 0, listOf("Not a JSON document"))
+            }
         val schema = doc.optString("schema")
-        if (schema != ReceiptLog.EXPORT_SCHEMA && schema != ReceiptLog.EXPORT_SCHEMA_V2) return Report(false, 0, listOf("Unknown export schema"))
+        if (schema != ReceiptLog.EXPORT_SCHEMA &&
+            schema != ReceiptLog.EXPORT_SCHEMA_V2
+        ) {
+            return Report(false, 0, listOf("Unknown export schema"))
+        }
         val v2 = schema == ReceiptLog.EXPORT_SCHEMA_V2
 
         val keyB64 = doc.optJSONObject("deviceKey")?.optString("publicKeySpkiBase64").orEmpty()
         val algorithm = doc.optJSONObject("deviceKey")?.optString("algorithm").orEmpty()
         if (algorithm != "SHA256withECDSA") return Report(false, 0, listOf("Unsupported device signature algorithm"))
-        val currentKey: PublicKey = try { ecKey(keyB64) } catch (_: Exception) { return Report(false, 0, listOf("Device public key is missing or malformed")) }
+        val currentKey: PublicKey =
+            try {
+                ecKey(keyB64)
+            } catch (
+                _: Exception,
+            ) {
+                return Report(false, 0, listOf("Device public key is missing or malformed"))
+            }
         val keysById = HashMap<String, PublicKey>()
         keysById[Sha256.hex(currentKey.encoded)] = currentKey
         doc.optJSONArray("deviceKeys")?.let { arr ->
             for (i in 0 until arr.length()) {
                 val k = arr.optJSONObject(i) ?: continue
-                if (k.optString("algorithm") != "SHA256withECDSA") { findings += "Key epoch #${i + 1}: unsupported algorithm"; continue }
-                val pk = try { ecKey(k.optString("publicKeySpkiBase64")) } catch (_: Exception) { findings += "Key epoch #${i + 1}: malformed key"; continue }
+                if (k.optString("algorithm") != "SHA256withECDSA") {
+                    findings += "Key epoch #${i + 1}: unsupported algorithm"
+                    continue
+                }
+                val pk =
+                    try {
+                        ecKey(k.optString("publicKeySpkiBase64"))
+                    } catch (_: Exception) {
+                        findings +=
+                            "Key epoch #${i + 1}: malformed key"
+                        continue
+                    }
                 val id = Sha256.hex(pk.encoded)
-                if (k.optString("keyId") != id) { findings += "Key epoch #${i + 1}: keyId does not match its key"; continue }
+                if (k.optString("keyId") != id) {
+                    findings += "Key epoch #${i + 1}: keyId does not match its key"
+                    continue
+                }
                 keysById[id] = pk
             }
         }
         var provenance = Provenance.UNPINNED_KEY
         if (trustedKeys != null) {
             val pinned = trustedKeys.map { Sha256.hex(it) }.toSet()
-            if (Sha256.hex(currentKey.encoded) !in pinned) { findings += "Signed by a different device key than this install"; provenance = Provenance.KEY_MISMATCH }
-            else provenance = Provenance.PINNED_KEY
+            if (Sha256.hex(currentKey.encoded) !in
+                pinned
+            ) {
+                findings += "Signed by a different device key than this install"
+                provenance = Provenance.KEY_MISMATCH
+            } else {
+                provenance = Provenance.PINNED_KEY
+            }
         }
 
         val arr = doc.optJSONArray("receipts") ?: return Report(false, 0, listOf("No receipts array"))
@@ -472,46 +766,118 @@ object ReceiptVerifier {
         val usedKeys = HashSet<String>()
         for (i in 0 until arr.length()) {
             val label = "Receipt #${i + 1}"
-            val r = try { StoredReceipt.fromLine(arr.getJSONObject(i)) } catch (_: Exception) { findings += "$label: malformed entry"; parsed += null; continue }
+            val r =
+                try {
+                    StoredReceipt.fromLine(arr.getJSONObject(i))
+                } catch (_: Exception) {
+                    findings += "$label: malformed entry"
+                    parsed +=
+                        null
+                    continue
+                }
             parsed += r
             shas += r.sha256
-            if (!r.integrityOk) { findings += "$label: SHA-256 does not match body (modified)"; previous = r; continue }
-            val body = try { r.json } catch (_: Exception) { findings += "$label: body is not JSON"; previous = r; continue }
-            if (body.optString("schema") !in ReceiptLog.KNOWN_SCHEMAS) { findings += "$label: unknown receipt schema"; previous = r; continue }
+            if (!r.integrityOk) {
+                findings += "$label: SHA-256 does not match body (modified)"
+                previous = r
+                continue
+            }
+            val body =
+                try {
+                    r.json
+                } catch (_: Exception) {
+                    findings += "$label: body is not JSON"
+                    previous = r
+                    continue
+                }
+            if (body.optString("schema") !in
+                ReceiptLog.KNOWN_SCHEMAS
+            ) {
+                findings += "$label: unknown receipt schema"
+                previous = r
+                continue
+            }
             val keyId = body.optString("signerKeyId").takeIf { it.isNotEmpty() && !body.isNull("signerKeyId") }
             val key = if (keyId != null) keysById[keyId] else currentKey
-            if (key == null) { findings += "$label: signing key epoch $keyId is not included in the export"; previous = r; continue }
-            if (keyId != null) usedKeys += keyId
-            if (trustedKeys != null && keyId != null && provenance == Provenance.PINNED_KEY && Sha256.hex(key.encoded) !in trustedKeys.map { Sha256.hex(it) }) {
-                findings += "$label: signed by key epoch $keyId which is not pinned"; provenance = Provenance.KEY_MISMATCH
+            if (key == null) {
+                findings += "$label: signing key epoch $keyId is not included in the export"
+                previous = r
+                continue
             }
-            val sigOk = try {
-                Signature.getInstance("SHA256withECDSA").run { initVerify(key); update(receiptSignaturePayload(body, r.sha256)); verify(Base64.getDecoder().decode(r.deviceSignature)) }
-            } catch (_: Exception) { false }
-            if (!sigOk) { findings += "$label: device signature invalid"; previous = r; continue }
+            if (keyId != null) usedKeys += keyId
+            if (trustedKeys != null &&
+                keyId != null &&
+                provenance == Provenance.PINNED_KEY &&
+                Sha256.hex(key.encoded) !in trustedKeys.map { Sha256.hex(it) }
+            ) {
+                findings += "$label: signed by key epoch $keyId which is not pinned"
+                provenance = Provenance.KEY_MISMATCH
+            }
+            val sigOk =
+                try {
+                    Signature.getInstance("SHA256withECDSA").run {
+                        initVerify(key)
+                        update(receiptSignaturePayload(body, r.sha256))
+                        verify(Base64.getDecoder().decode(r.deviceSignature))
+                    }
+                } catch (_: Exception) {
+                    false
+                }
+            if (!sigOk) {
+                findings += "$label: device signature invalid"
+                previous = r
+                continue
+            }
             val schemaProblem = schemaFinding(body)
-            if (schemaProblem != null) { findings += "$label: $schemaProblem"; previous = r; continue }
-            if (chainClaimContradictsSignature(body.optString("payment"), body.optBoolean("broadcast"), if (body.isNull("solanaSignature")) "" else body.optString("solanaSignature"))) {
-                findings += "$label: claims a chain outcome without a signature"; previous = r; continue
+            if (schemaProblem != null) {
+                findings += "$label: $schemaProblem"
+                previous = r
+                continue
+            }
+            if (chainClaimContradictsSignature(
+                    body.optString("payment"),
+                    body.optBoolean("broadcast"),
+                    if (body.isNull("solanaSignature")) "" else body.optString("solanaSignature"),
+                )
+            ) {
+                findings += "$label: claims a chain outcome without a signature"
+                previous = r
+                continue
             }
             when (val w = walletCheck(body)) {
                 WalletCheck.Absent -> Unit
                 WalletCheck.Verified -> walletOk++
-                is WalletCheck.Invalid -> { findings += "$label: ${w.reason}"; previous = r; continue }
+                is WalletCheck.Invalid -> {
+                    findings += "$label: ${w.reason}"
+                    previous = r
+                    continue
+                }
             }
             if (previous != null && previous.integrityOk) {
                 val prevSeq = runCatching { previous.sequence }.getOrNull()
                 if (prevSeq != null && body.optLong("sequence") == prevSeq + 1 && body.optString("previousSha256") != previous.sha256) {
-                    findings += "$label: chain link to previous receipt broken"; previous = r; continue
+                    findings += "$label: chain link to previous receipt broken"
+                    previous = r
+                    continue
                 }
             }
             val localCopy = localById[body.optString("id")]
-            if (localCopy != null && localCopy.sha256 != r.sha256) { findings += "$label: differs from the copy stored on this device"; previous = r; continue }
+            if (localCopy != null &&
+                localCopy.sha256 != r.sha256
+            ) {
+                findings += "$label: differs from the copy stored on this device"
+                previous = r
+                continue
+            }
             ok++
             if (body.optString("schema") == ReceiptLog.SCHEMA_V3) v3++ else legacySig++
             previous = r
         }
-        if (doc.optString("bundleSha256") != bundleDigest(shas)) findings += "Bundle digest does not match the receipt list (receipt added, removed or reordered)"
+        if (doc.optString("bundleSha256") !=
+            bundleDigest(shas)
+        ) {
+            findings += "Bundle digest does not match the receipt list (receipt added, removed or reordered)"
+        }
 
         var completeness = Completeness.NOT_ESTABLISHED
         if (v2) {
@@ -522,7 +888,10 @@ object ReceiptVerifier {
                     if (chainProblem != null) findings += "Full chain: $chainProblem"
                     if (cpProblem != null) findings += "Checkpoint: $cpProblem"
                     if (chainProblem == null && cpProblem == null) completeness = Completeness.FULL_CHAIN_CHECKPOINTED
-                    doc.optJSONArray("damagedLines")?.takeIf { it.length() > 0 }?.let { findings += "Exporter reported ${it.length()} damaged log line(s); history is not complete" }
+                    doc.optJSONArray("damagedLines")?.takeIf { it.length() > 0 }?.let {
+                        findings +=
+                            "Exporter reported ${it.length()} damaged log line(s); history is not complete"
+                    }
                 }
                 "SELECTED" -> completeness = Completeness.SELECTED_SUBSET
                 else -> findings += "Unknown export mode"
@@ -544,10 +913,22 @@ object ReceiptVerifier {
         val legacy = envelope == null && required == null
         val accepted = findings.isEmpty() && ok == arr.length() && ok > 0
         if (ok == 0 && arr.length() == 0) findings += "Export contains no receipts"
-        return Report(accepted, ok, findings, provenance, if (accepted) completeness else Completeness.NOT_ESTABLISHED, walletOk, accepted && envelopeOk, accepted && legacy, v3, legacySig)
+        return Report(
+            accepted,
+            ok,
+            findings,
+            provenance,
+            if (accepted) completeness else Completeness.NOT_ESTABLISHED,
+            walletOk,
+            accepted && envelopeOk,
+            accepted && legacy,
+            v3,
+            legacySig,
+        )
     }
 
-    private fun ecKey(b64: String): PublicKey = KeyFactory.getInstance("EC").generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(b64)))
+    private fun ecKey(b64: String): PublicKey =
+        KeyFactory.getInstance("EC").generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(b64)))
 
     private val REQUIRED = listOf("id", "sequence", "previousSha256", "createdAt", "kind", "outcome", "payment")
 
@@ -560,8 +941,16 @@ object ReceiptVerifier {
         if (!b.isNull("lamports") && b.has("lamports") && b.optLong("lamports", -1) < 0) return "negative amount"
         val outcome = b.getString("outcome")
         val payment = b.getString("payment")
-        if (outcome == "REFUSED" && (payment.startsWith("OBSERVED") || payment.startsWith("SUBMITTED"))) return "a refused review cannot carry a payment observation"
-        if (b.getString("kind") != ReceiptKind.REVIEW.name && (payment.startsWith("OBSERVED") || payment.startsWith("SUBMITTED"))) return "only wallet reviews can carry a payment observation"
+        if (outcome == "REFUSED" &&
+            (payment.startsWith("OBSERVED") || payment.startsWith("SUBMITTED"))
+        ) {
+            return "a refused review cannot carry a payment observation"
+        }
+        if (b.getString("kind") != ReceiptKind.REVIEW.name &&
+            (payment.startsWith("OBSERVED") || payment.startsWith("SUBMITTED"))
+        ) {
+            return "only wallet reviews can carry a payment observation"
+        }
         if (b.has("solanaSignature") && !b.isNull("solanaSignature")) {
             val sig = b.getString("solanaSignature")
             val decoded = runCatching { Base58.decode(sig) }.getOrNull()
@@ -572,20 +961,42 @@ object ReceiptVerifier {
 
     private sealed interface WalletCheck {
         data object Absent : WalletCheck
+
         data object Verified : WalletCheck
-        data class Invalid(val reason: String) : WalletCheck
+
+        data class Invalid(
+            val reason: String,
+        ) : WalletCheck
     }
 
     /** Re-checks the wallet's Ed25519 signature over the exact reviewed message carried in the receipt. */
     private fun walletCheck(b: JSONObject): WalletCheck {
         val w = b.optJSONObject("wallet") ?: return WalletCheck.Absent
-        val message = runCatching { Base64.getDecoder().decode(w.getString("messageBase64")) }.getOrNull() ?: return WalletCheck.Invalid("wallet message is not base64")
-        val signer = runCatching { Base58.decode(w.getString("signer")) }.getOrNull()?.takeIf { it.size == 32 } ?: return WalletCheck.Invalid("wallet signer is not a 32-byte key")
-        val sig = runCatching { Base58.decode(w.getString("signature")) }.getOrNull()?.takeIf { it.size == 64 } ?: return WalletCheck.Invalid("wallet signature is not 64 bytes")
+        val message =
+            runCatching { Base64.getDecoder().decode(w.getString("messageBase64")) }.getOrNull()
+                ?: return WalletCheck.Invalid("wallet message is not base64")
+        val signer =
+            runCatching { Base58.decode(w.getString("signer")) }.getOrNull()?.takeIf { it.size == 32 }
+                ?: return WalletCheck.Invalid("wallet signer is not a 32-byte key")
+        val sig =
+            runCatching { Base58.decode(w.getString("signature")) }.getOrNull()?.takeIf { it.size == 64 }
+                ?: return WalletCheck.Invalid("wallet signature is not 64 bytes")
         val digest = b.optJSONObject("digests")?.optString("messageSha256").orEmpty()
         if (digest != Sha256.hex(message)) return WalletCheck.Invalid("wallet message does not match the recorded message digest")
-        if (!b.isNull("solanaSignature") && b.has("solanaSignature") && b.getString("solanaSignature") != w.getString("signature")) return WalletCheck.Invalid("transaction signature differs from the wallet signature")
-        if (!Ed25519.verify(signer, message, sig)) return WalletCheck.Invalid("wallet Ed25519 signature does not verify over the recorded message")
+        if (!b.isNull("solanaSignature") &&
+            b.has("solanaSignature") &&
+            b.getString("solanaSignature") != w.getString("signature")
+        ) {
+            return WalletCheck.Invalid("transaction signature differs from the wallet signature")
+        }
+        if (!Ed25519.verify(
+                signer,
+                message,
+                sig,
+            )
+        ) {
+            return WalletCheck.Invalid("wallet Ed25519 signature does not verify over the recorded message")
+        }
         return WalletCheck.Verified
     }
 
@@ -608,18 +1019,34 @@ object ReceiptVerifier {
     }
 
     /** A present envelope must verify; editing any descriptive field after export is then detected. */
-    private fun envelopeFinding(doc: JSONObject, env: JSONObject, keys: Map<String, PublicKey>): String? {
+    private fun envelopeFinding(
+        doc: JSONObject,
+        env: JSONObject,
+        keys: Map<String, PublicKey>,
+    ): String? {
         if (env.optString("domain") != ReceiptLog.ENVELOPE_DOMAIN) return "unknown domain"
         val key = keys[env.optString("keyId")] ?: return "signed by a key not present in the export"
         val payload = envelopePayload(doc)
         if (env.optString("fieldsSha256") != Sha256.hex(payload)) return "descriptive fields changed after export"
-        val ok = try {
-            Signature.getInstance("SHA256withECDSA").run { initVerify(key); update(payload.toByteArray(Charsets.UTF_8)); verify(Base64.getDecoder().decode(env.optString("signature"))) }
-        } catch (_: Exception) { false }
+        val ok =
+            try {
+                Signature.getInstance("SHA256withECDSA").run {
+                    initVerify(key)
+                    update(payload.toByteArray(Charsets.UTF_8))
+                    verify(Base64.getDecoder().decode(env.optString("signature")))
+                }
+            } catch (_: Exception) {
+                false
+            }
         return if (ok) null else "signature invalid"
     }
 
-    private fun checkpointFinding(doc: JSONObject, list: List<StoredReceipt?>, shas: List<String>, keys: Map<String, PublicKey>): String? {
+    private fun checkpointFinding(
+        doc: JSONObject,
+        list: List<StoredReceipt?>,
+        shas: List<String>,
+        keys: Map<String, PublicKey>,
+    ): String? {
         val cp = doc.optJSONObject("checkpoint") ?: return "missing"
         val key = keys[cp.optString("keyId")] ?: return "signed by a key not present in the export"
         val last = list.lastOrNull()
@@ -628,12 +1055,25 @@ object ReceiptVerifier {
         val lastSeq = last?.let { runCatching { it.sequence }.getOrNull() } ?: 0L
         val lastSha = last?.sha256 ?: ReceiptLog.GENESIS
         val bundle = bundleDigest(shas)
-        if (cp.optInt("receiptCount", -1) != count || cp.optLong("firstSequence", -1) != first || cp.optLong("lastSequence", -1) != lastSeq ||
-            cp.optString("lastSha256") != lastSha || cp.optString("bundleSha256") != bundle) return "does not describe the receipts in this file"
+        if (cp.optInt("receiptCount", -1) != count ||
+            cp.optLong("firstSequence", -1) != first ||
+            cp.optLong("lastSequence", -1) != lastSeq ||
+            cp.optString("lastSha256") != lastSha ||
+            cp.optString("bundleSha256") != bundle
+        ) {
+            return "does not describe the receipts in this file"
+        }
         val payload = checkpointPayload(count, first, lastSeq, lastSha, bundle, cp.optString("exportedAt"))
-        val ok = try {
-            Signature.getInstance("SHA256withECDSA").run { initVerify(key); update(payload.toByteArray(Charsets.UTF_8)); verify(Base64.getDecoder().decode(cp.optString("signature"))) }
-        } catch (_: Exception) { false }
+        val ok =
+            try {
+                Signature.getInstance("SHA256withECDSA").run {
+                    initVerify(key)
+                    update(payload.toByteArray(Charsets.UTF_8))
+                    verify(Base64.getDecoder().decode(cp.optString("signature")))
+                }
+            } catch (_: Exception) {
+                false
+            }
         return if (ok) null else "signature invalid"
     }
 }

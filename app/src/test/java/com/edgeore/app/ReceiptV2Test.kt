@@ -28,17 +28,51 @@ class ReceiptV2Test {
     private val logFile get() = File(tmp.root, "receipts/receipts.jsonl")
     private val registry get() = KeyRegistry(File(tmp.root, "receipts/keys.json"))
 
-    private fun walletDraft(f: SignedFixture = fx, outcome: String = "SIGNED_NOT_BROADCAST", payment: String = "NOT_OBSERVED") =
-        ReceiptDraft(ReceiptKind.REVIEW, outcome, "Signed", "test", "MWA", "devnet", operationId = "op-1", solanaSignature = f.signature,
-            digests = mapOf("messageSha256" to f.messageSha256), lamports = f.lamports, payment = payment,
-            wallet = WalletEvidence(Base64.getEncoder().encodeToString(f.message), f.signer, f.signature))
+    private fun walletDraft(
+        f: SignedFixture = fx,
+        outcome: String = "SIGNED_NOT_BROADCAST",
+        payment: String = "NOT_OBSERVED",
+    ) = ReceiptDraft(
+        ReceiptKind.REVIEW,
+        outcome,
+        "Signed",
+        "test",
+        "MWA",
+        "devnet",
+        operationId = "op-1",
+        solanaSignature = f.signature,
+        digests = mapOf("messageSha256" to f.messageSha256),
+        lamports = f.lamports,
+        payment = payment,
+        wallet = WalletEvidence(Base64.getEncoder().encodeToString(f.message), f.signer, f.signature),
+    )
 
-    private fun resign(doc: JSONObject, index: Int, signer: SoftwareReceiptSigner, edit: (JSONObject) -> Unit) {
+    private fun resign(
+        doc: JSONObject,
+        index: Int,
+        signer: SoftwareReceiptSigner,
+        edit: (JSONObject) -> Unit,
+    ) {
         val arr = doc.getJSONArray("receipts")
         val e = arr.getJSONObject(index)
         val body = JSONObject(e.getString("body")).also(edit).toString()
         val sha = Sha256.hex(body)
-        e.put("body", body).put("sha256", sha).put("deviceSignature", Base64.getEncoder().encodeToString(signer.sign(com.edgeore.app.receipts.receiptSignaturePayload(JSONObject(body.toString()), sha))))
+        e
+            .put(
+                "body",
+                body,
+            ).put(
+                "sha256",
+                sha,
+            ).put(
+                "deviceSignature",
+                Base64.getEncoder().encodeToString(
+                    signer.sign(
+                        com.edgeore.app.receipts
+                            .receiptSignaturePayload(JSONObject(body.toString()), sha),
+                    ),
+                ),
+            )
         doc.put("bundleSha256", bundleDigest((0 until arr.length()).map { arr.getJSONObject(it).getString("sha256") }))
     }
 
@@ -61,7 +95,10 @@ class ReceiptV2Test {
         // The exporting app itself re-signs a body whose amount was changed: app integrity holds, wallet evidence does not.
         val doc = JSONObject(log.export(listOf(log.all().single())))
         val other = SignedFixture(lamports = 9_000_000)
-        resign(doc, 0, s) { b -> b.getJSONObject("wallet").put("messageBase64", Base64.getEncoder().encodeToString(other.message)); b.getJSONObject("digests").put("messageSha256", other.messageSha256) }
+        resign(doc, 0, s) { b ->
+            b.getJSONObject("wallet").put("messageBase64", Base64.getEncoder().encodeToString(other.message))
+            b.getJSONObject("digests").put("messageSha256", other.messageSha256)
+        }
         val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
         assertFalse(r.accepted)
         assertTrue(r.findings.toString(), r.findings.any { it.contains("wallet Ed25519 signature does not verify") })
@@ -72,10 +109,16 @@ class ReceiptV2Test {
         val log = ReceiptLog(logFile, s, keys = registry)
         log.append(walletDraft())
         val one = log.all().single()
-        val d1 = JSONObject(log.export(listOf(one))); resign(d1, 0, s) { it.getJSONObject("digests").put("messageSha256", "00".repeat(32)) }
+        val d1 = JSONObject(log.export(listOf(one)))
+        resign(d1, 0, s) { it.getJSONObject("digests").put("messageSha256", "00".repeat(32)) }
         assertTrue(ReceiptVerifier.verify(d1.toString(), s.publicKeySpki(), emptyList()).findings.any { it.contains("message digest") })
-        val d2 = JSONObject(log.export(listOf(one))); resign(d2, 0, s) { it.put("solanaSignature", SignedFixture(seed = 8).signature) }
-        assertTrue(ReceiptVerifier.verify(d2.toString(), s.publicKeySpki(), emptyList()).findings.any { it.contains("differs from the wallet signature") })
+        val d2 = JSONObject(log.export(listOf(one)))
+        resign(d2, 0, s) { it.put("solanaSignature", SignedFixture(seed = 8).signature) }
+        assertTrue(
+            ReceiptVerifier.verify(d2.toString(), s.publicKeySpki(), emptyList()).findings.any {
+                it.contains("differs from the wallet signature")
+            },
+        )
     }
 
     @Test fun selfConsistentForgeryUnderAFreshKeyIsOnlyUnpinnedIntegrity() {
@@ -104,7 +147,8 @@ class ReceiptV2Test {
         val log = ReceiptLog(logFile, s, keys = registry)
         repeat(3) { log.append(ReceiptDraft(ReceiptKind.POLICY, "OK", "t$it", "d", "s")) }
         val doc = JSONObject(log.export())
-        val arr = doc.getJSONArray("receipts"); arr.remove(2)
+        val arr = doc.getJSONArray("receipts")
+        arr.remove(2)
         doc.put("bundleSha256", bundleDigest((0 until arr.length()).map { arr.getJSONObject(it).getString("sha256") }))
         val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
         assertFalse(r.accepted)
@@ -153,7 +197,12 @@ class ReceiptV2Test {
         val read = restarted.read()
         assertEquals(2, read.receipts.size)
         assertEquals(1, read.damaged.size)
-        assertTrue(read.damaged.single().reason.contains("Truncated"))
+        assertTrue(
+            read.damaged
+                .single()
+                .reason
+                .contains("Truncated"),
+        )
         val third = restarted.append(ReceiptDraft(ReceiptKind.POLICY, "OK", "three", "d", "s"))
         assertEquals(3L, third.sequence)
         assertEquals(read.receipts.last().sha256, third.json.getString("previousSha256"))
@@ -182,15 +231,27 @@ class ReceiptV2Test {
         val log = ReceiptLog(logFile, s, keys = registry)
         log.append(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "r", "d", "s", "devnet", lamports = 10))
         val one = log.all().single()
-        val cases = mapOf<String, (JSONObject) -> Unit>(
-            "refused review cannot carry" to { b -> b.put("payment", "OBSERVED_FINALIZED").put("solanaSignature", fx.signature) },
-            "claims a chain outcome without a signature" to { b -> b.put("outcome", "SUBMITTED").put("payment", "SUBMITTED_NOT_CONFIRMED") },
-            "not a 64-byte base58" to { b -> b.put("solanaSignature", "5Kb") },
-            "negative amount" to { b -> b.put("lamports", -1) },
-            "missing required field" to { b -> b.remove("payment") },
-            "unknown kind" to { b -> b.put("kind", "MINING_REWARD") },
-            "only wallet reviews" to { b -> b.put("kind", "NODE").put("outcome", "HEALTH_READ").put("payment", "OBSERVED_CONFIRMED").put("solanaSignature", fx.signature) },
-        )
+        val cases =
+            mapOf<String, (JSONObject) -> Unit>(
+                "refused review cannot carry" to { b -> b.put("payment", "OBSERVED_FINALIZED").put("solanaSignature", fx.signature) },
+                "claims a chain outcome without a signature" to { b ->
+                    b.put("outcome", "SUBMITTED").put("payment", "SUBMITTED_NOT_CONFIRMED")
+                },
+                "not a 64-byte base58" to { b -> b.put("solanaSignature", "5Kb") },
+                "negative amount" to { b -> b.put("lamports", -1) },
+                "missing required field" to { b -> b.remove("payment") },
+                "unknown kind" to { b -> b.put("kind", "MINING_REWARD") },
+                "only wallet reviews" to
+                    { b ->
+                        b
+                            .put(
+                                "kind",
+                                "NODE",
+                            ).put("outcome", "HEALTH_READ")
+                            .put("payment", "OBSERVED_CONFIRMED")
+                            .put("solanaSignature", fx.signature)
+                    },
+            )
         for ((expect, edit) in cases) {
             val doc = JSONObject(log.export(listOf(one)))
             resign(doc, 0, s, edit)
@@ -214,8 +275,14 @@ class ReceiptV2Test {
     }
 
     @Test fun claimGuardFromFeatureBranchStillApplies() {
-        assertTrue(com.edgeore.app.receipts.chainClaimContradictsSignature("OBSERVED_CONFIRMED", false, ""))
-        assertFalse(com.edgeore.app.receipts.chainClaimContradictsSignature("NOT_OBSERVED", false, ""))
+        assertTrue(
+            com.edgeore.app.receipts
+                .chainClaimContradictsSignature("OBSERVED_CONFIRMED", false, ""),
+        )
+        assertFalse(
+            com.edgeore.app.receipts
+                .chainClaimContradictsSignature("NOT_OBSERVED", false, ""),
+        )
     }
 
     @Test fun evidenceDefaultsAreNotPasses() {
@@ -243,14 +310,15 @@ class ReceiptV2Test {
 
     @Test fun editingAnyDescriptiveFieldBreaksTheEnvelope() {
         val (s, json) = envelopeExport()
-        val edits: List<(JSONObject) -> Unit> = listOf(
-            { d -> d.put("note", "Edited after export") },
-            { d -> d.put("payment", "OBSERVED 9 SOL") },
-            { d -> d.put("location", "Somewhere") },
-            { d -> d.getJSONArray("exclusions").put("added") },
-            { d -> d.getJSONArray("deviceKeys").getJSONObject(0).put("protection", "Android Keystore (StrongBox)") },
-            { d -> d.getJSONArray("deviceKeys").getJSONObject(0).put("firstUsedAt", "2020-01-01T00:00:00Z") },
-        )
+        val edits: List<(JSONObject) -> Unit> =
+            listOf(
+                { d -> d.put("note", "Edited after export") },
+                { d -> d.put("payment", "OBSERVED 9 SOL") },
+                { d -> d.put("location", "Somewhere") },
+                { d -> d.getJSONArray("exclusions").put("added") },
+                { d -> d.getJSONArray("deviceKeys").getJSONObject(0).put("protection", "Android Keystore (StrongBox)") },
+                { d -> d.getJSONArray("deviceKeys").getJSONObject(0).put("firstUsedAt", "2020-01-01T00:00:00Z") },
+            )
         for ((i, edit) in edits.withIndex()) {
             val doc = JSONObject(json).also(edit)
             val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
@@ -264,7 +332,16 @@ class ReceiptV2Test {
         val doc = JSONObject(json)
         val other = SoftwareReceiptSigner()
         val env = doc.getJSONObject("envelope")
-        env.put("signature", Base64.getEncoder().encodeToString(other.sign(com.edgeore.app.receipts.envelopePayload(doc).toByteArray())))
+        env.put(
+            "signature",
+            Base64.getEncoder().encodeToString(
+                other.sign(
+                    com.edgeore.app.receipts
+                        .envelopePayload(doc)
+                        .toByteArray(),
+                ),
+            ),
+        )
         val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
         assertFalse(r.accepted)
         assertTrue(r.findings.toString(), r.findings.contains("Envelope: signature invalid"))
@@ -286,7 +363,11 @@ class ReceiptV2Test {
 
     @Test fun malformedEnvelopeOrFlagIsRejected() {
         val (s, json) = envelopeExport()
-        for (edit in listOf<(JSONObject) -> Unit>({ it.put("envelope", "signed") }, { it.put(ReceiptLog.ENVELOPE_REQUIRED_FIELD, "yes") })) {
+        for (edit in listOf<
+            (
+                JSONObject,
+            ) -> Unit,
+        >({ it.put("envelope", "signed") }, { it.put(ReceiptLog.ENVELOPE_REQUIRED_FIELD, "yes") })) {
             val doc = JSONObject(json).also(edit)
             assertFalse(ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList()).accepted)
         }
@@ -296,7 +377,11 @@ class ReceiptV2Test {
         // Exports written before the envelope existed carry neither field. They keep verifying, never as signed.
         // Removing both fields from a new export looks the same: that downgrade is labelled, not detectable (documented).
         val (s, json) = envelopeExport()
-        val doc = JSONObject(json).also { it.remove("envelope"); it.remove(ReceiptLog.ENVELOPE_REQUIRED_FIELD) }
+        val doc =
+            JSONObject(json).also {
+                it.remove("envelope")
+                it.remove(ReceiptLog.ENVELOPE_REQUIRED_FIELD)
+            }
         val r = ReceiptVerifier.verify(doc.toString(), s.publicKeySpki(), emptyList())
         assertTrue(r.findings.toString(), r.accepted)
         assertFalse(r.descriptiveFieldsSigned)

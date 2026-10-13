@@ -42,16 +42,52 @@ import javax.crypto.KeyGenerator
  * Skipped (not failed) when EDGEORE_SESSION_IT is unset.
  */
 class ContributionSessionE2ETest {
-    private companion object { const val ROUNDS = 5 }
-    private fun viewJson(v: SessionView, atMs: Long) = JSONObject().put("tMs", atMs).put("phase", v.phase.name).put("failure", v.failure).put("note", v.note)
-        .put("parts", JSONArray(v.parts.map { p ->
-            JSONObject().put("kind", p.kind.name).put("status", p.status.toString()).put("rounds", p.rounds)
-                .put("measurements", JSONArray(p.measurements.map { m -> JSONObject().put("label", m.label).put("value", m.value).put("unit", m.unit).put("source", m.source) }))
-        }))
+    private companion object {
+        const val ROUNDS = 5
+    }
 
-    private fun waitFor(timeoutMs: Long, what: String, cond: () -> Boolean) {
+    private fun viewJson(
+        v: SessionView,
+        atMs: Long,
+    ) = JSONObject()
+        .put("tMs", atMs)
+        .put("phase", v.phase.name)
+        .put("failure", v.failure)
+        .put("note", v.note)
+        .put(
+            "parts",
+            JSONArray(
+                v.parts.map { p ->
+                    JSONObject()
+                        .put("kind", p.kind.name)
+                        .put("status", p.status.toString())
+                        .put("rounds", p.rounds)
+                        .put(
+                            "measurements",
+                            JSONArray(
+                                p.measurements.map { m ->
+                                    JSONObject()
+                                        .put("label", m.label)
+                                        .put("value", m.value)
+                                        .put("unit", m.unit)
+                                        .put("source", m.source)
+                                },
+                            ),
+                        )
+                },
+            ),
+        )
+
+    private fun waitFor(
+        timeoutMs: Long,
+        what: String,
+        cond: () -> Boolean,
+    ) {
         val end = System.currentTimeMillis() + timeoutMs
-        while (!cond()) { require(System.currentTimeMillis() < end) { "timed out waiting for $what" }; Thread.sleep(20) }
+        while (!cond()) {
+            require(System.currentTimeMillis() < end) { "timed out waiting for $what" }
+            Thread.sleep(20)
+        }
     }
 
     @Test fun realSessionOnOwnedNodeAndGatewayThenCancelledSession() {
@@ -63,9 +99,20 @@ class ContributionSessionE2ETest {
         // Pair with the scope the session needs, exactly as the Nodes screen does.
         val challenge = NodeAgentProtocol.parseChallenge(cfg.getString("challenge"))
         val key = Ed25519.generate()
-        val paired = NodeAgentClient(cfg.getString("nodeEndpoint"), cfg.getString("nodeCertSha256")).pair(challenge, cfg.getString("code"), listOf("READ_NODE", "RUN_PROOF_JOB"), key)
+        val paired =
+            NodeAgentClient(
+                cfg.getString("nodeEndpoint"),
+                cfg.getString("nodeCertSha256"),
+            ).pair(challenge, cfg.getString("code"), listOf("READ_NODE", "RUN_PROOF_JOB"), key)
         assertTrue("$paired", paired is NodeResult.Ok)
-        val node = PairedNode(cfg.getString("nodeEndpoint"), cfg.getString("nodeCertSha256"), challenge.fingerprint, (paired as NodeResult.Ok).value, listOf("READ_NODE", "RUN_PROOF_JOB"))
+        val node =
+            PairedNode(
+                cfg.getString("nodeEndpoint"),
+                cfg.getString("nodeCertSha256"),
+                challenge.fingerprint,
+                (paired as NodeResult.Ok).value,
+                listOf("READ_NODE", "RUN_PROOF_JOB"),
+            )
         val token = cfg.getString("gatewayToken")
         val gateway = GatewaySetup(cfg.getString("gatewayEndpoint"), listOf(cfg.getString("gatewaySpkiPin"))) { token }
         val tmp = Files.createTempDirectory("session-e2e").toFile()
@@ -75,32 +122,55 @@ class ContributionSessionE2ETest {
         val log = ReceiptLog(File(tmp, "receipts.jsonl"), signer)
 
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-        val session = ContributionSession(scope, { listOf(NodeProofPart(node, { key }), GatewayRoundTripPart(gateway, { vault })) }, { null }, { d -> log.append(d) }, maxRounds = ROUNDS)
+        val session =
+            ContributionSession(scope, {
+                listOf(NodeProofPart(node, { key }), GatewayRoundTripPart(gateway, { vault }))
+            }, { null }, { d -> log.append(d) }, maxRounds = ROUNDS)
         val trace = JSONArray()
         val t0 = System.currentTimeMillis()
-        fun sample() { trace.put(viewJson(session.view.value, System.currentTimeMillis() - t0)) }
+
+        fun sample() {
+            trace.put(viewJson(session.view.value, System.currentTimeMillis() - t0))
+        }
         try {
             // 1) A full session.
             assertEquals(SessionPhase.IDLE, session.view.value.phase)
-            assertTrue(session.view.value.parts.all { it.status == PartStatus.Ready && it.measurements.isEmpty() })
+            assertTrue(
+                session.view.value.parts
+                    .all { it.status == PartStatus.Ready && it.measurements.isEmpty() },
+            )
             assertTrue(session.start())
             val phases = mutableListOf<SessionPhase>()
             var activeSnapshot: SessionView? = null
             waitFor(120_000, "session to finish") {
                 val v = session.view.value
-                if (phases.lastOrNull() != v.phase) { phases += v.phase; sample() }
-                if (v.phase == SessionPhase.ACTIVE && v.parts.any { it.measurements.isNotEmpty() } && (activeSnapshot?.parts?.sumOf { it.measurements.size } ?: 0) < v.parts.sumOf { it.measurements.size }) { activeSnapshot = v; sample() }
+                if (phases.lastOrNull() != v.phase) {
+                    phases += v.phase
+                    sample()
+                }
+                if (v.phase == SessionPhase.ACTIVE &&
+                    v.parts.any { it.measurements.isNotEmpty() } &&
+                    (activeSnapshot?.parts?.sumOf { it.measurements.size } ?: 0) < v.parts.sumOf { it.measurements.size }
+                ) {
+                    activeSnapshot =
+                        v
+                    sample()
+                }
                 v.phase == SessionPhase.IDLE || v.phase == SessionPhase.FAILED
             }
             sample()
             val done = session.view.value
             assertEquals("${done.failure} ${done.parts}", SessionPhase.IDLE, done.phase)
-            assertTrue("$phases", phases.containsAll(listOf(SessionPhase.STARTING, SessionPhase.ACTIVE)) || phases.contains(SessionPhase.ACTIVE))
+            assertTrue(
+                "$phases",
+                phases.containsAll(listOf(SessionPhase.STARTING, SessionPhase.ACTIVE)) || phases.contains(SessionPhase.ACTIVE),
+            )
             val nodeView = done.parts.first { it.kind == PartKind.NODE_PROOF }
             val gwView = done.parts.first { it.kind == PartKind.GATEWAY_ROUND_TRIP }
             assertTrue("${nodeView.status}", nodeView.status is PartStatus.Done)
             assertTrue("${gwView.status}", gwView.status is PartStatus.Done)
-            assertEquals(ROUNDS, nodeView.rounds); assertEquals(ROUNDS, gwView.rounds)
+            assertEquals(ROUNDS, nodeView.rounds)
+            assertEquals(ROUNDS, gwView.rounds)
             val m = gwView.measurements.associateBy { it.label }
             val stored = m.getValue("Stored on your gateway").value
             assertTrue(stored > GatewayRoundTripPart.DEFAULT_CHUNK_BYTES)
@@ -114,26 +184,48 @@ class ContributionSessionE2ETest {
             // The chunk really is on the gateway.
             val receipts = log.read().receipts
             val gwReceipt = receipts.first { it.outcome == "GATEWAY_ROUND_TRIPS_VERIFIED" }
-            val obs = runBlocking { OwnedGatewayBackupProvider(gateway.endpoint, { token }, gateway.spkiPins).status(gwReceipt.operationId!!) }
+            val obs =
+                runBlocking { OwnedGatewayBackupProvider(gateway.endpoint, { token }, gateway.spkiPins).status(gwReceipt.operationId!!) }
             assertTrue("$obs", obs is ProviderObservation.Acknowledged)
-            assertEquals(listOf("PROOF_JOBS_VERIFIED", "GATEWAY_ROUND_TRIPS_VERIFIED", "CONTRIBUTION_SESSION_COMPLETED"), receipts.map { it.outcome })
+            assertEquals(
+                listOf("PROOF_JOBS_VERIFIED", "GATEWAY_ROUND_TRIPS_VERIFIED", "CONTRIBUTION_SESSION_COMPLETED"),
+                receipts.map { it.outcome },
+            )
 
             // 2) A session stopped while ACTIVE: the running part is cancelled on the node or gateway, then IDLE.
             assertTrue(session.start())
             // Stop in the middle of the second round's proof job.
-            waitFor(60_000, "second session in round 2") { session.view.value.parts.first { it.kind == PartKind.NODE_PROOF }.let { it.rounds == 1 && it.status == PartStatus.Running } }
+            waitFor(60_000, "second session in round 2") {
+                session.view.value.parts.first { it.kind == PartKind.NODE_PROOF }.let {
+                    it.rounds ==
+                        1 &&
+                        it.status == PartStatus.Running
+                }
+            }
             sample()
             session.stop()
             assertEquals(SessionPhase.STOPPING, session.view.value.phase)
             sample()
-            waitFor(90_000, "stop to complete") { session.view.value.phase == SessionPhase.IDLE || session.view.value.phase == SessionPhase.FAILED }
+            waitFor(90_000, "stop to complete") {
+                session.view.value.phase == SessionPhase.IDLE ||
+                    session.view.value.phase == SessionPhase.FAILED
+            }
             sample()
             val stopped = session.view.value
             assertEquals(SessionPhase.IDLE, stopped.phase)
             assertEquals("Stopped by you.", stopped.note)
             assertTrue("${stopped.parts}", stopped.parts.any { it.status == PartStatus.Cancelled })
             assertEquals(PartStatus.Cancelled, stopped.parts.first { it.kind == PartKind.NODE_PROOF }.status)
-            assertEquals(listOf("PROOF_JOBS_VERIFIED", "GATEWAY_ROUND_TRIPS_VERIFIED", "CONTRIBUTION_SESSION_STOPPED"), log.read().receipts.drop(3).map { it.outcome })
+            assertEquals(
+                listOf(
+                    "PROOF_JOBS_VERIFIED",
+                    "GATEWAY_ROUND_TRIPS_VERIFIED",
+                    "CONTRIBUTION_SESSION_STOPPED",
+                ),
+                log.read().receipts.drop(3).map {
+                    it.outcome
+                },
+            )
             // The node is no longer running a proof after the stop.
             val observe = NodeAgentClient(node.endpoint, node.certSha256).command(node.sessionId, key, "observe")
             assertTrue("$observe", observe is NodeResult.Ok && observe.value.optString("proofState") == "IDLE")
@@ -147,14 +239,23 @@ class ContributionSessionE2ETest {
             File(out, "final-session.json").writeText(viewJson(done, -1).toString(2))
             File(out, "receipts.jsonl").writeText(File(tmp, "receipts.jsonl").readText())
             File(out, "receipt-export.json").writeText(log.export())
-            File(out, "summary.txt").writeText(buildString {
-                appendLine("phases (session 1): ${phases.joinToString(" -> ")}")
-                done.parts.forEach { p -> appendLine("${p.kind}: ${p.status}, rounds=${p.rounds}"); p.measurements.forEach { appendLine("  ${it.label}: ${it.value} ${it.unit} [${it.source}]") } }
-                appendLine("session 2 (stopped during round 2): ${stopped.parts.joinToString { "${it.kind}=${it.status} rounds=${it.rounds}" }}; note=${stopped.note}")
-                appendLine("receipts: ${log.read().receipts.joinToString { it.outcome }}")
-                appendLine("receipt verifier: accepted=${report.accepted} ok=${report.verifiedReceipts}")
-                appendLine("node observe after stop: proofState=${(observe as NodeResult.Ok).value.optString("proofState")}")
-            })
+            File(out, "summary.txt").writeText(
+                buildString {
+                    appendLine("phases (session 1): ${phases.joinToString(" -> ")}")
+                    done.parts.forEach { p ->
+                        appendLine("${p.kind}: ${p.status}, rounds=${p.rounds}")
+                        p.measurements.forEach { appendLine("  ${it.label}: ${it.value} ${it.unit} [${it.source}]") }
+                    }
+                    appendLine(
+                        "session 2 (stopped during round 2): ${stopped.parts.joinToString {
+                            "${it.kind}=${it.status} rounds=${it.rounds}"
+                        }}; note=${stopped.note}",
+                    )
+                    appendLine("receipts: ${log.read().receipts.joinToString { it.outcome }}")
+                    appendLine("receipt verifier: accepted=${report.accepted} ok=${report.verifiedReceipts}")
+                    appendLine("node observe after stop: proofState=${(observe as NodeResult.Ok).value.optString("proofState")}")
+                },
+            )
         } finally {
             scope.cancel()
             tmp.deleteRecursively()

@@ -16,7 +16,10 @@ class PlainErrorTest {
 
     @Test fun technicalErrorsGetAPlainHeadlineAndKeepTheOriginal() {
         val tls = "TLS failed: Certificate pin mismatch (check the certificate SHA-256)"
-        assertEquals("The secure connection to your node was refused. Check the certificate SHA-256.", PlainError.headline(tls, PlainError.Area.NODE))
+        assertEquals(
+            "The secure connection to your node was refused. Check the certificate SHA-256.",
+            PlainError.headline(tls, PlainError.Area.NODE),
+        )
         val net = "Network error: ConnectException: failed to connect to /127.0.0.1"
         assertEquals("Couldn't reach your node. Check the network and the address.", PlainError.headline(net, PlainError.Area.NODE))
         assertEquals(net, PlainError.detail(net))

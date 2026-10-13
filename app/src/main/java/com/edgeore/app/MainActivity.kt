@@ -7,54 +7,64 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import com.edgeore.app.scan.QrDecoder
-import com.edgeore.app.scan.QrScanActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.SystemBarStyle
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.edgeore.app.receipts.StoredReceipt
+import com.edgeore.app.scan.QrDecoder
+import com.edgeore.app.scan.QrScanActivity
 import com.edgeore.app.ui.EdgeOreApp
 import com.edgeore.app.ui.PlatformActions
 import com.edgeore.app.ui.theme.EdgeOreTheme
 import com.solana.mobilewalletadapter.clientlib.ActivityResultSender
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // FragmentActivity (a ComponentActivity) so androidx.biometric can host its prompt before MWA dispatch.
 class MainActivity : androidx.fragment.app.FragmentActivity() {
     private val vm: EdgeOreViewModel by viewModels()
 
-    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        vm.setReminders(granted)
-    }
+    private val notificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            vm.setReminders(granted)
+        }
 
     // QR address scan for the review destination. Each launcher is registered before STARTED, as required.
-    private val scanResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
-        val text = r.data?.getStringExtra(QrScanActivity.EXTRA_TEXT)
-        val error = r.data?.getStringExtra(QrScanActivity.EXTRA_ERROR)
-        when {
-            r.resultCode == RESULT_OK && text != null -> vm.applyScannedQr(text)
-            error != null -> vm.scanFailed("Scan stopped: $error")
+    private val scanResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
+            val text = r.data?.getStringExtra(QrScanActivity.EXTRA_TEXT)
+            val error = r.data?.getStringExtra(QrScanActivity.EXTRA_ERROR)
+            when {
+                r.resultCode == RESULT_OK && text != null -> vm.applyScannedQr(text)
+                error != null -> vm.scanFailed("Scan stopped: $error")
+            }
         }
-    }
-    private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) scanResult.launch(Intent(this, QrScanActivity::class.java))
-        else vm.scanFailed("Camera permission was not granted, so nothing was scanned. You can paste the address or use QR from image instead.")
-    }
-    private val pickImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) lifecycleScope.launch {
-            val text = withContext(Dispatchers.Default) { runCatching { decodeQrImage(uri) }.getOrNull() }
-            if (text != null) vm.applyScannedQr(text) else vm.scanFailed("No QR code was found in that image.")
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                scanResult.launch(Intent(this, QrScanActivity::class.java))
+            } else {
+                vm.scanFailed(
+                    "Camera permission was not granted, so nothing was scanned. You can paste the address or use QR from image instead.",
+                )
+            }
         }
-    }
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                lifecycleScope.launch {
+                    val text = withContext(Dispatchers.Default) { runCatching { decodeQrImage(uri) }.getOrNull() }
+                    if (text != null) vm.applyScannedQr(text) else vm.scanFailed("No QR code was found in that image.")
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,34 +74,68 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
         )
         // Must be created before the Activity is STARTED (registers an activity-result launcher).
         val sender = ActivityResultSender(this)
-        val actions = object : PlatformActions {
-            override fun setReminders(enabled: Boolean) {
-                if (enabled && android.os.Build.VERSION.SDK_INT >= 33 && !com.edgeore.app.notifications.OreReminders.permitted(this@MainActivity)) {
-                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                } else vm.setReminders(enabled)
-            }
-            override fun connectWallet() { vm.connectWallet(sender) }
-            override fun disconnectWallet() { vm.disconnectWallet(sender) }
-            // Hardening 15: user presence (biometric or device credential) before the wallet is opened to sign.
-            override fun signReviewed() {
-                com.edgeore.app.wallet.UserPresenceGate.require(this@MainActivity) { r ->
-                    when (r) {
-                        com.edgeore.app.wallet.UserPresenceGate.Result.Passed -> vm.approveAndSign(sender)
-                        is com.edgeore.app.wallet.UserPresenceGate.Result.Refused -> Toast.makeText(this@MainActivity, r.reason, Toast.LENGTH_LONG).show()
+        val actions =
+            object : PlatformActions {
+                override fun setReminders(enabled: Boolean) {
+                    if (enabled &&
+                        android.os.Build.VERSION.SDK_INT >= 33 &&
+                        !com.edgeore.app.notifications.OreReminders
+                            .permitted(this@MainActivity)
+                    ) {
+                        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        vm.setReminders(enabled)
                     }
                 }
+
+                override fun connectWallet() {
+                    vm.connectWallet(sender)
+                }
+
+                override fun disconnectWallet() {
+                    vm.disconnectWallet(sender)
+                }
+
+                // Hardening 15: user presence (biometric or device credential) before the wallet is opened to sign.
+                override fun signReviewed() {
+                    com.edgeore.app.wallet.UserPresenceGate.require(this@MainActivity) { r ->
+                        when (r) {
+                            com.edgeore.app.wallet.UserPresenceGate.Result.Passed -> vm.approveAndSign(sender)
+                            is com.edgeore.app.wallet.UserPresenceGate.Result.Refused ->
+                                Toast
+                                    .makeText(
+                                        this@MainActivity,
+                                        r.reason,
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                        }
+                    }
+                }
+
+                override fun export(
+                    receipt: StoredReceipt?,
+                    hideDeviceKey: Boolean,
+                ) {
+                    exportReceipts(receipt, hideDeviceKey)
+                }
+
+                override fun scanAddressQr() {
+                    if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.CAMERA) ==
+                        PackageManager.PERMISSION_GRANTED
+                    ) {
+                        scanResult.launch(Intent(this@MainActivity, QrScanActivity::class.java))
+                    } else {
+                        cameraPermission.launch(Manifest.permission.CAMERA)
+                    }
+                }
+
+                override fun pickQrImage() {
+                    pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
             }
-            override fun export(receipt: StoredReceipt?, hideDeviceKey: Boolean) { exportReceipts(receipt, hideDeviceKey) }
-            override fun scanAddressQr() {
-                if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    scanResult.launch(Intent(this@MainActivity, QrScanActivity::class.java))
-                } else cameraPermission.launch(Manifest.permission.CAMERA)
-            }
-            override fun pickQrImage() {
-                pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }
-        }
-        com.edgeore.app.ui.theme.ThemeState.mode = com.edgeore.app.ui.theme.ThemePrefs.read(this)
+        com.edgeore.app.ui.theme.ThemeState.mode =
+            com.edgeore.app.ui.theme.ThemePrefs
+                .read(this)
         setContent { EdgeOreTheme { EdgeOreApp(vm, actions) } }
     }
 
@@ -108,21 +152,41 @@ class MainActivity : androidx.fragment.app.FragmentActivity() {
         contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
         var sample = 1
         while (bounds.outWidth / (sample * 2) >= 1600 || bounds.outHeight / (sample * 2) >= 1600) sample *= 2
-        val bmp = contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample }) } ?: return null
+        val bmp =
+            contentResolver.openInputStream(uri)?.use {
+                BitmapFactory.decodeStream(
+                    it,
+                    null,
+                    BitmapFactory.Options().apply {
+                        inSampleSize =
+                            sample
+                    },
+                )
+            }
+                ?: return null
         return try {
             val px = IntArray(bmp.width * bmp.height)
             bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
             QrDecoder.decodeArgb(px, bmp.width, bmp.height)
-        } finally { bmp.recycle() }
+        } finally {
+            bmp.recycle()
+        }
     }
 
-    private fun exportReceipts(only: StoredReceipt?, hideDeviceKey: Boolean) {
+    private fun exportReceipts(
+        only: StoredReceipt?,
+        hideDeviceKey: Boolean,
+    ) {
         lifecycleScope.launch {
             try {
                 val file = vm.exportReceipts(only, hideDeviceKey)
                 val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.files", file)
-                val send = Intent(Intent.ACTION_SEND).setType("application/json").putExtra(Intent.EXTRA_STREAM, uri)
-                    .putExtra(Intent.EXTRA_SUBJECT, file.name).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                val send =
+                    Intent(Intent.ACTION_SEND)
+                        .setType("application/json")
+                        .putExtra(Intent.EXTRA_STREAM, uri)
+                        .putExtra(Intent.EXTRA_SUBJECT, file.name)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 startActivity(Intent.createChooser(send, "Export EdgeORE receipts"))
             } catch (e: Exception) {
                 Toast.makeText(this@MainActivity, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()

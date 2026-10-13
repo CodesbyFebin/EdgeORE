@@ -1,15 +1,16 @@
 package com.edgeore.app.ui.screens
 
-import androidx.compose.ui.platform.testTag
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -17,8 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -46,8 +46,15 @@ import com.edgeore.app.ui.theme.EdgeColors
 
 /** Dedicated review route: the only path to a wallet signature. */
 @Composable
-fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit, onScanQr: () -> Unit = {}, onPickQrImage: () -> Unit = {}) {
-    com.edgeore.app.ui.components.SecureWindow()
+fun ReviewScreen(
+    vm: EdgeOreViewModel,
+    onSign: () -> Unit,
+    onConnect: () -> Unit,
+    onScanQr: () -> Unit = {},
+    onPickQrImage: () -> Unit = {},
+) {
+    com.edgeore.app.ui.components
+        .SecureWindow()
     val st by vm.review.collectAsStateWithLifecycle()
     val wallet by vm.walletState.collectAsStateWithLifecycle()
     val settings by vm.settings.collectAsStateWithLifecycle()
@@ -60,52 +67,113 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         KeyValue("Account", wallet.address ?: "Not connected", mono = true)
         KeyValue("Daily budget", "${Format.sol(settings.dailyLimitLamports)} · spent today ${Format.sol(vm.spentTodayLamports())}")
         if (wallet.address == null) SecondaryAction("Connect wallet", onClick = onConnect)
-        Text("Each operation counts once from review until it is refused, abandoned, failed, or expired without ever being sent. Anything that may have been sent stays counted until the chain reports it.",
-            style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+        Text(
+            "Each operation counts once from review until it is refused, abandoned, failed, or expired without ever being sent. Anything that may have been sent stays counted until the chain reports it.",
+            style = MaterialTheme.typography.labelSmall,
+            color = EdgeColors.textMuted,
+        )
     }
     // Read on every recomposition: a failed store write latches this and the Review state update recomposes the screen.
     vm.operationsUnavailable?.let { Notice(it, error = true) }
 
     // Operations that may have left this phone and still need an observed outcome (survives restarts).
     val open = ops.filter { (it.state.needsObservation || it.state == OpState.SIGNED) && it.id != st.operationId }
-    if (open.isNotEmpty()) EdgeCard {
-        Text("Operations awaiting an outcome", style = MaterialTheme.typography.titleMedium)
-        open.forEach { op ->
-            KeyValue(op.state.name.replace('_', ' '), "${Format.sol(op.lamports)} → ${op.recipient.take(6)}…${op.recipient.takeLast(4)}")
-            op.signature?.let { KeyValue("Signature", it, mono = true) }
-            op.lastObservation?.let { KeyValue("Last observation", it + (op.lastObservedAt?.let { t -> " · $t" } ?: "")) }
-            op.reason?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted) }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecondaryAction("Observe status (read-only)", Modifier.weight(1f)) { vm.observeOperation(op.id) }
-                if (op.state == OpState.SIGNED) SecondaryAction("Discard unsent bytes", Modifier.weight(1f), danger = true) { vm.discardSigned(op.id) }
+    if (open.isNotEmpty()) {
+        EdgeCard {
+            Text("Operations awaiting an outcome", style = MaterialTheme.typography.titleMedium)
+            open.forEach { op ->
+                KeyValue(
+                    op.state.name.replace('_', ' '),
+                    "${Format.sol(op.lamports)} → ${op.recipient.take(6)}…${op.recipient.takeLast(4)}",
+                )
+                op.signature?.let { KeyValue("Signature", it, mono = true) }
+                op.lastObservation?.let { KeyValue("Last observation", it + (op.lastObservedAt?.let { t -> " · $t" } ?: "")) }
+                op.reason?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted) }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SecondaryAction("Observe status (read-only)", Modifier.weight(1f)) { vm.observeOperation(op.id) }
+                    if (op.state ==
+                        OpState.SIGNED
+                    ) {
+                        SecondaryAction("Discard unsent bytes", Modifier.weight(1f), danger = true) { vm.discardSigned(op.id) }
+                    }
+                }
             }
+            Text(
+                "Observation never re-sends. Only never-sent bytes expire; a sent transfer that is not found stays uncertain and counted.",
+                style = MaterialTheme.typography.labelSmall,
+                color = EdgeColors.textMuted,
+            )
         }
-        Text("Observation never re-sends. Only never-sent bytes expire; a sent transfer that is not found stays uncertain and counted.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
     }
 
-    if (editing) EdgeCard {
-        val shape = RoundedCornerShape(24.dp)
-        val destCheck = ReviewInput.destination(st.destination)
-        val amountCheck = ReviewInput.amount(st.amount)
-        OutlinedTextField(st.destination, { vm.editReview(destination = it) }, label = { Text("Destination address") }, singleLine = true, shape = shape,
-            isError = destCheck.error, supportingText = { Text(destCheck.text) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii, autoCorrectEnabled = false),
-            modifier = Modifier.fillMaxWidth())
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SecondaryAction("Scan QR", Modifier.weight(1f), onClick = onScanQr)
-            SecondaryAction("QR from image", Modifier.weight(1f), onClick = onPickQrImage)
+    if (editing) {
+        EdgeCard {
+            val shape = RoundedCornerShape(24.dp)
+            val destCheck = ReviewInput.destination(st.destination)
+            val amountCheck = ReviewInput.amount(st.amount)
+            OutlinedTextField(
+                st.destination,
+                { vm.editReview(destination = it) },
+                label = { Text("Destination address") },
+                singleLine = true,
+                shape = shape,
+                isError = destCheck.error,
+                supportingText = { Text(destCheck.text) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii, autoCorrectEnabled = false),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SecondaryAction("Scan QR", Modifier.weight(1f), onClick = onScanQr)
+                SecondaryAction("QR from image", Modifier.weight(1f), onClick = onPickQrImage)
+            }
+            Text(
+                "The camera is asked for only when you tap Scan QR. Frames are decoded on this phone and never saved or sent.",
+                style = MaterialTheme.typography.labelSmall,
+                color = EdgeColors.textMuted,
+            )
+            if (wallet.address != null &&
+                st.destination.isBlank()
+            ) {
+                SecondaryAction(
+                    "Use my own address (self-transfer)",
+                    Modifier.fillMaxWidth(),
+                ) { vm.editReview(destination = wallet.address) }
+            }
+            OutlinedTextField(
+                st.amount,
+                { vm.editReview(amount = it) },
+                label = { Text("Amount (SOL, ≤ 9 decimals)") },
+                singleLine = true,
+                shape = shape,
+                isError = amountCheck.error,
+                supportingText = { Text(amountCheck.text) },
+                placeholder = { Text("e.g. 0.01") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            st.info?.let { Notice(it) }
+            if (wallet.address == null) Notice("Connect a wallet to prepare the review. The form can be filled first.")
+            PrimaryAction(
+                "Prepare exact-message review",
+                icon = EdgeIcons.Shield,
+                enabled =
+                    wallet.address != null && destCheck.ok && amountCheck.ok,
+                loading = st.phase == ReviewPhase.PREPARING,
+            ) { vm.prepareReview() }
+            // Shown right under the button so a refused or failed prepare is never silent (it used to render far below).
+            if (st.draft ==
+                null
+            ) {
+                st.message?.let {
+                    Text(
+                        it,
+                        color = EdgeColors.copper,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.testTag("prepare-error"),
+                    )
+                }
+            }
         }
-        Text("The camera is asked for only when you tap Scan QR. Frames are decoded on this phone and never saved or sent.",
-            style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
-        if (wallet.address != null && st.destination.isBlank()) SecondaryAction("Use my own address (self-transfer)", Modifier.fillMaxWidth()) { vm.editReview(destination = wallet.address) }
-        OutlinedTextField(st.amount, { vm.editReview(amount = it) }, label = { Text("Amount (SOL, ≤ 9 decimals)") }, singleLine = true, shape = shape,
-            isError = amountCheck.error, supportingText = { Text(amountCheck.text) }, placeholder = { Text("e.g. 0.01") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
-        st.info?.let { Notice(it) }
-        if (wallet.address == null) Notice("Connect a wallet to prepare the review. The form can be filled first.")
-        PrimaryAction("Prepare exact-message review", icon = EdgeIcons.Shield, enabled = wallet.address != null && destCheck.ok && amountCheck.ok, loading = st.phase == ReviewPhase.PREPARING) { vm.prepareReview() }
-        // Shown right under the button so a refused or failed prepare is never silent (it used to render far below).
-        if (st.draft == null) st.message?.let { Text(it, color = EdgeColors.copper, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag("prepare-error")) }
     }
 
     st.draft?.let { d ->
@@ -114,7 +182,10 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
         EdgeCard {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Decoded from the exact bytes", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                CapabilityBadge(if (d.approvable) Capability.AVAILABLE else Capability.UNAVAILABLE, if (d.approvable) "Supported" else "Approval disabled")
+                CapabilityBadge(
+                    if (d.approvable) Capability.AVAILABLE else Capability.UNAVAILABLE,
+                    if (d.approvable) "Supported" else "Approval disabled",
+                )
             }
             when (val dec = d.decoded) {
                 is SolanaMessage.Decoded.SupportedTransfer -> {
@@ -123,19 +194,39 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                     KeyValue("From (fee payer)", d.fromAddress, mono = true)
                     KeyValue("To", d.toAddress + if (d.fromAddress == d.toAddress) "  (self-transfer)" else "", mono = true)
                     KeyValue("Amount", "${Format.sol(dec.transfer.lamports)} (${dec.transfer.lamports} lamports)")
-                    KeyValue("Network fee", if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message")
+                    KeyValue(
+                        "Network fee",
+                        if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message",
+                    )
                     KeyValue("Recent blockhash", d.blockhash, mono = true)
                 }
                 is SolanaMessage.Decoded.OreDeploy -> {
                     if (st.operation?.cluster == com.edgeore.app.solana.SolanaRpc.MAINNET_CLUSTER) {
-                        Column(Modifier.fillMaxWidth().border(2.dp, EdgeColors.mainnetWarning, RoundedCornerShape(12.dp)).padding(12.dp).testTag("review-mainnet-warning"),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    2.dp,
+                                    EdgeColors.mainnetWarning,
+                                    RoundedCornerShape(12.dp),
+                                ).padding(12.dp)
+                                .testTag("review-mainnet-warning"),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
                             Text("MAINNET · REAL SOL", color = EdgeColors.mainnetWarning, fontWeight = FontWeight.Bold)
-                            Text("Deploy ${Format.sol(dec.deploy.totalLamports)} SOL on Solana mainnet-beta · round ${dec.deploy.roundId} · squares " +
-                                (0 until 25).filter { dec.deploy.mask and (1 shl it) != 0 }.joinToString(", ") { "${it + 1}" },
-                                color = EdgeColors.mainnetWarning, style = MaterialTheme.typography.bodyMedium)
-                            Text("Deploying risks this SOL: it may be lost entirely. Capped at 0.01 SOL per deploy. Nothing is sent until you approve, sign in your wallet, and then tap Submit.",
-                                color = EdgeColors.mainnetWarning, style = MaterialTheme.typography.labelSmall)
+                            Text(
+                                "Deploy ${Format.sol(
+                                    dec.deploy.totalLamports,
+                                )} SOL on Solana mainnet-beta · round ${dec.deploy.roundId} · squares " +
+                                    (0 until 25).filter { dec.deploy.mask and (1 shl it) != 0 }.joinToString(", ") { "${it + 1}" },
+                                color = EdgeColors.mainnetWarning,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                "Deploying risks this SOL: it may be lost entirely. Capped at 0.01 SOL per deploy. Nothing is sent until you approve, sign in your wallet, and then tap Submit.",
+                                color = EdgeColors.mainnetWarning,
+                                style = MaterialTheme.typography.labelSmall,
+                            )
                         }
                     }
                     KeyValue("Action", "ORE v3 · Deploy (instruction 6)")
@@ -143,9 +234,15 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                     KeyValue("Signer and authority", d.fromAddress, mono = true)
                     KeyValue("Round", dec.deploy.roundId.toString())
                     KeyValue("Squares", "${dec.deploy.squareCount} (mask 0x${Integer.toHexString(dec.deploy.mask)})")
-                    KeyValue("Per square", "${Format.sol(dec.deploy.amountPerSquareLamports)} (${dec.deploy.amountPerSquareLamports} lamports)")
+                    KeyValue(
+                        "Per square",
+                        "${Format.sol(dec.deploy.amountPerSquareLamports)} (${dec.deploy.amountPerSquareLamports} lamports)",
+                    )
                     KeyValue("Total deployed", "${Format.sol(dec.deploy.totalLamports)} (${dec.deploy.totalLamports} lamports)")
-                    KeyValue("Network fee", if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message")
+                    KeyValue(
+                        "Network fee",
+                        if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message",
+                    )
                     KeyValue("Recent blockhash", d.blockhash, mono = true)
                     Notice("Not financial advice. Deployed SOL may be lost; EdgeORE claims no income.")
                 }
@@ -153,8 +250,11 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
             }
             if (d.message.isNotEmpty()) {
                 KeyValue("Message SHA-256 (${d.message.size} bytes)", d.messageSha256, mono = true)
-                Text("Binding: the wallet must return these exact bytes, signed by the account above, or the result is refused. A new blockhash needs a new review.",
-                    style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+                Text(
+                    "Binding: the wallet must return these exact bytes, signed by the account above, or the result is refused. A new blockhash needs a new review.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = EdgeColors.textMuted,
+                )
             }
         }
     }
@@ -163,7 +263,14 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
 
     when (st.phase) {
         ReviewPhase.READY, ReviewPhase.SIGNING -> {
-            PrimaryAction("Approve & sign in wallet", icon = EdgeIcons.Wallet, enabled = st.draft?.approvable == true, loading = st.phase == ReviewPhase.SIGNING, onClick = onSign)
+            PrimaryAction(
+                "Approve & sign in wallet",
+                icon = EdgeIcons.Wallet,
+                enabled = st.draft?.approvable == true,
+                loading =
+                    st.phase == ReviewPhase.SIGNING,
+                onClick = onSign,
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SecondaryAction("Refuse", Modifier.weight(1f), danger = true) { vm.refuseReview() }
                 SecondaryAction("New review", Modifier.weight(1f)) { vm.resetReview() }
@@ -173,9 +280,19 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
             EdgeCard {
                 CapabilityBadge(Capability.IMPLEMENTED, "Signature verified over reviewed bytes")
                 KeyValue("Signature", st.verified?.signature ?: st.operation?.signature ?: "", mono = true)
-                Text("Signed but not broadcast. Submitting spends devnet SOL only.", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+                Text(
+                    "Signed but not broadcast. Submitting spends devnet SOL only.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = EdgeColors.textMuted,
+                )
             }
-            PrimaryAction("Submit to devnet", icon = EdgeIcons.Send, enabled = st.phase == ReviewPhase.SIGNED, loading = st.phase == ReviewPhase.SUBMITTING) { vm.submitSigned() }
+            PrimaryAction(
+                "Submit to devnet",
+                icon = EdgeIcons.Send,
+                enabled = st.phase == ReviewPhase.SIGNED,
+                loading =
+                    st.phase == ReviewPhase.SUBMITTING,
+            ) { vm.submitSigned() }
             SecondaryAction("Keep unsent · new review", Modifier.fillMaxWidth()) { vm.resetReview() }
         }
         ReviewPhase.SUBMITTED -> {
@@ -191,8 +308,11 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
                 CapabilityBadge(Capability.UNAVAILABLE, "Outcome unknown")
                 KeyValue("Known signature", st.operation?.signature ?: "", mono = true)
                 KeyValue("Last observation", st.confirmation ?: "Not observed yet")
-                Text("The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until devnet reports it confirmed or failed. Not being found, even after the blockhash expires, does not prove it never landed, so the amount stays counted in today's budget.",
-                    style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted)
+                Text(
+                    "The bytes may have reached devnet. EdgeORE will not resend them; observe the signature until devnet reports it confirmed or failed. Not being found, even after the blockhash expires, does not prove it never landed, so the amount stays counted in today's budget.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = EdgeColors.textMuted,
+                )
             }
             PrimaryAction("Observe status (read-only)", icon = EdgeIcons.Pulse) { vm.checkConfirmation() }
             SecondaryAction("New review", Modifier.fillMaxWidth()) { vm.resetReview() }
@@ -208,19 +328,39 @@ fun ReviewScreen(vm: EdgeOreViewModel, onSign: () -> Unit, onConnect: () -> Unit
 fun PlainLanguageCard(plain: PlainLanguage.Explanation) {
     EdgeCard(inset = true) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(if (plain.supported) EdgeIcons.Info else EdgeIcons.Cross, contentDescription = null, tint = if (plain.supported) EdgeColors.mint else EdgeColors.danger, modifier = Modifier.size(20.dp))
-            Text("In plain words", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary, modifier = Modifier.weight(1f).semantics { heading() })
+            Icon(
+                if (plain.supported) EdgeIcons.Info else EdgeIcons.Cross,
+                contentDescription = null,
+                tint = if (plain.supported) EdgeColors.mint else EdgeColors.danger,
+                modifier = Modifier.size(20.dp),
+            )
+            Text(
+                "In plain words",
+                style = MaterialTheme.typography.titleMedium,
+                color = EdgeColors.textPrimary,
+                modifier =
+                    Modifier
+                        .weight(
+                            1f,
+                        ).semantics {
+                            heading()
+                        },
+            )
         }
         Text(plain.headline, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = EdgeColors.textPrimary)
         plain.points.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textPrimary) }
-        Text("Read from the decoded message bytes, not from what you typed. The exact fields below are what the wallet signs.",
-            style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+        Text(
+            "Read from the decoded message bytes, not from what you typed. The exact fields below are what the wallet signs.",
+            style = MaterialTheme.typography.labelSmall,
+            color = EdgeColors.textMuted,
+        )
     }
 }
 
 @Composable
 fun ConceptPreviewScreen() {
-    com.edgeore.app.ui.components.ConceptBadge()
+    com.edgeore.app.ui.components
+        .ConceptBadge()
     SectionTitle("Preview session", "Illustrative only. Nothing here is measured or earned.")
     EdgeCard(inset = true) {
         Text("Illustrative workload · last 60 minutes", style = MaterialTheme.typography.titleMedium)
@@ -231,7 +371,11 @@ fun ConceptPreviewScreen() {
             ),
             Modifier.fillMaxWidth().height(140.dp),
         )
-        Text("Copper: AI inference (sample) · Mint: model processing (sample). No NPU path is measured.", style = MaterialTheme.typography.labelSmall, color = EdgeColors.textMuted)
+        Text(
+            "Copper: AI inference (sample) · Mint: model processing (sample). No NPU path is measured.",
+            style = MaterialTheme.typography.labelSmall,
+            color = EdgeColors.textMuted,
+        )
     }
     EdgeCard {
         Text("What a real session would require", style = MaterialTheme.typography.titleMedium)
@@ -243,4 +387,3 @@ fun ConceptPreviewScreen() {
         ).forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium) }
     }
 }
-

@@ -27,12 +27,18 @@ import com.edgeore.app.ui.theme.EdgeColors
  */
 
 /** A value range with lo < hi guaranteed. */
-data class Domain(val lo: Double, val hi: Double) {
+data class Domain(
+    val lo: Double,
+    val hi: Double,
+) {
     val span: Double get() = hi - lo
 
     companion object {
         /** min/max padded by pad × range, or ±1 around a flat series. */
-        fun padded(values: List<Double>, pad: Double): Domain {
+        fun padded(
+            values: List<Double>,
+            pad: Double,
+        ): Domain {
             val lo = values.minOrNull()
             val hi = values.maxOrNull()
             if (lo == null || hi == null || lo >= hi) {
@@ -49,7 +55,11 @@ data class Domain(val lo: Double, val hi: Double) {
 }
 
 /** Evenly spaced x, value → y inside rect against domain. */
-fun plotPoints(values: List<Double>, rect: Rect, domain: Domain): List<Offset> {
+fun plotPoints(
+    values: List<Double>,
+    rect: Rect,
+    domain: Domain,
+): List<Offset> {
     if (values.isEmpty()) return emptyList()
     val step = if (values.size > 1) rect.width / (values.size - 1) else 0f
     return values.mapIndexed { i, v ->
@@ -69,7 +79,11 @@ fun monotoneTangents(points: List<Offset>): FloatArray {
     tangent[n - 1] = slope[n - 2]
     for (i in 1 until n - 1) tangent[i] = if (slope[i - 1] * slope[i] <= 0f) 0f else (slope[i - 1] + slope[i]) / 2f
     for (i in 0 until n - 1) {
-        if (slope[i] == 0f) { tangent[i] = 0f; tangent[i + 1] = 0f; continue }
+        if (slope[i] == 0f) {
+            tangent[i] = 0f
+            tangent[i + 1] = 0f
+            continue
+        }
         val a = tangent[i] / slope[i]
         val b = tangent[i + 1] / slope[i]
         val h = a * a + b * b
@@ -83,11 +97,17 @@ fun monotoneTangents(points: List<Offset>): FloatArray {
 }
 
 /** A monotone cubic through points: smooth, and never overshoots past a local min/max. */
-fun monotonePath(points: List<Offset>, path: Path = Path()): Path {
+fun monotonePath(
+    points: List<Offset>,
+    path: Path = Path(),
+): Path {
     if (points.isEmpty()) return path
     path.moveTo(points[0].x, points[0].y)
     if (points.size == 1) return path
-    if (points.size == 2) { path.lineTo(points[1].x, points[1].y); return path }
+    if (points.size == 2) {
+        path.lineTo(points[1].x, points[1].y)
+        return path
+    }
     val tangent = monotoneTangents(points)
     for (i in 0 until points.size - 1) {
         val p0 = points[i]
@@ -99,18 +119,28 @@ fun monotonePath(points: List<Offset>, path: Path = Path()): Path {
 }
 
 /** Closes a line path down to floorY, for an area fill under it. */
-fun areaPath(line: Path, points: List<Offset>, floorY: Float): Path = Path().apply {
-    addPath(line)
-    lineTo(points.last().x, floorY)
-    lineTo(points.first().x, floorY)
-    close()
-}
+fun areaPath(
+    line: Path,
+    points: List<Offset>,
+    floorY: Float,
+): Path =
+    Path().apply {
+        addPath(line)
+        lineTo(points.last().x, floorY)
+        lineTo(points.first().x, floorY)
+        close()
+    }
 
 /**
  * Area + monotone line for a series of counts. [summary] is read by screen readers instead of the drawing.
  */
 @Composable
-fun CountAreaChart(values: List<Double>, summary: String, modifier: Modifier = Modifier, color: Color = EdgeColors.mint) {
+fun CountAreaChart(
+    values: List<Double>,
+    summary: String,
+    modifier: Modifier = Modifier,
+    color: Color = EdgeColors.mint,
+) {
     Canvas(modifier.semantics { contentDescription = summary }) {
         if (values.size < 2) return@Canvas
         val inset = 2.dp.toPx()

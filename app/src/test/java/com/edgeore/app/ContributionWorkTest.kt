@@ -50,10 +50,13 @@ class ContributionWorkTest {
 
     private fun charging(percent: Int) {
         @Suppress("DEPRECATION")
-        context.sendStickyBroadcast(Intent(Intent.ACTION_BATTERY_CHANGED)
-            .putExtra(BatteryManager.EXTRA_LEVEL, percent).putExtra(BatteryManager.EXTRA_SCALE, 100)
-            .putExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_CHARGING)
-            .putExtra(BatteryManager.EXTRA_BATTERY_LOW, false))
+        context.sendStickyBroadcast(
+            Intent(Intent.ACTION_BATTERY_CHANGED)
+                .putExtra(BatteryManager.EXTRA_LEVEL, percent)
+                .putExtra(BatteryManager.EXTRA_SCALE, 100)
+                .putExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_CHARGING)
+                .putExtra(BatteryManager.EXTRA_BATTERY_LOW, false),
+        )
     }
 
     private fun runWorker(): RunOutcome {

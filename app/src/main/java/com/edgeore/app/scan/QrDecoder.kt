@@ -15,18 +15,26 @@ import com.google.zxing.qrcode.QRCodeReader
  * The same code path decodes camera frames (luminance plane) and picked images (ARGB pixels).
  */
 object QrDecoder {
-    private val hints = mapOf(
-        DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE),
-        DecodeHintType.TRY_HARDER to true,
-        DecodeHintType.CHARACTER_SET to "UTF-8",
-    )
+    private val hints =
+        mapOf(
+            DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE),
+            DecodeHintType.TRY_HARDER to true,
+            DecodeHintType.CHARACTER_SET to "UTF-8",
+        )
 
-    fun decodeArgb(pixels: IntArray, width: Int, height: Int): String? =
-        decode(RGBLuminanceSource(width, height, pixels))
+    fun decodeArgb(
+        pixels: IntArray,
+        width: Int,
+        height: Int,
+    ): String? = decode(RGBLuminanceSource(width, height, pixels))
 
     /** [data] is a Y (luminance) plane with [rowStride] bytes per row, as delivered by an ImageReader YUV_420_888 frame. */
-    fun decodeLuminance(data: ByteArray, rowStride: Int, width: Int, height: Int): String? =
-        decode(PlanarYUVLuminanceSource(data, rowStride, height, 0, 0, width, height, false))
+    fun decodeLuminance(
+        data: ByteArray,
+        rowStride: Int,
+        width: Int,
+        height: Int,
+    ): String? = decode(PlanarYUVLuminanceSource(data, rowStride, height, 0, 0, width, height, false))
 
     private fun decode(source: LuminanceSource): String? {
         val reader = QRCodeReader()

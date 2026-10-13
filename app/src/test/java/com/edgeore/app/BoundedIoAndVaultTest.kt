@@ -29,12 +29,33 @@ class BoundedIoAndVaultTest {
     /** An endless provider stream that counts what was pulled from it. */
     private class Endless : InputStream() {
         var pulled = 0L
-        override fun read(): Int { pulled++; return 1 }
-        override fun read(b: ByteArray, off: Int, len: Int): Int { java.util.Arrays.fill(b, off, off + len, 1); pulled += len; return len }
+
+        override fun read(): Int {
+            pulled++
+            return 1
+        }
+
+        override fun read(
+            b: ByteArray,
+            off: Int,
+            len: Int,
+        ): Int {
+            java.util.Arrays.fill(b, off, off + len, 1)
+            pulled += len
+            return len
+        }
     }
 
     private val key: SecretKey = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
-    private fun vault(dir: File = File(tmp.root, "vault"), k: () -> SecretKey = { key }, free: Long = Long.MAX_VALUE) = LocalVault(dir, k, freeSpace = { free })
+
+    private fun vault(
+        dir: File = File(tmp.root, "vault"),
+        k: () -> SecretKey = {
+            key
+        },
+        free: Long = Long.MAX_VALUE,
+    ) = LocalVault(dir, k, freeSpace = { free })
+
     private fun onlyObject(v: File) = v.listFiles { f -> f.name.endsWith(LocalVault.SUFFIX) }!!.single()
 
     @Test fun oversizeRejectedBeforeUnboundedAllocation() {
@@ -46,7 +67,14 @@ class BoundedIoAndVaultTest {
 
     @Test fun exactLimitAcceptedOneMoreRejected() {
         assertEquals(1000, BoundedInput.readAtMost(ByteArrayInputStream(ByteArray(1000)), 1000).size)
-        assertTrue(runCatching { BoundedInput.readAtMost(ByteArrayInputStream(ByteArray(1001)), 1000) }.exceptionOrNull() is InputTooLargeException)
+        assertTrue(
+            runCatching {
+                BoundedInput.readAtMost(
+                    ByteArrayInputStream(ByteArray(1001)),
+                    1000,
+                )
+            }.exceptionOrNull() is InputTooLargeException,
+        )
         assertEquals(0, BoundedInput.readAtMost(ByteArrayInputStream(ByteArray(0)), 0).size)
     }
 
@@ -67,7 +95,13 @@ class BoundedIoAndVaultTest {
     @Test fun atomicWriteFailureKeepsOldContentAndNoTemp() {
         val f = File(tmp.root, "x/state.json")
         AtomicFiles.write(f, "old".toByteArray())
-        val e = runCatching { AtomicFiles.write(f) { out -> out.write("partial".toByteArray()); throw java.io.IOException("disk full") } }.exceptionOrNull()
+        val e =
+            runCatching {
+                AtomicFiles.write(f) { out ->
+                    out.write("partial".toByteArray())
+                    throw java.io.IOException("disk full")
+                }
+            }.exceptionOrNull()
         assertTrue(e is java.io.IOException)
         assertEquals("old", f.readText())
         assertTrue(AtomicFiles.abandonedTemps(f.parentFile!!).isEmpty())
@@ -100,7 +134,9 @@ class BoundedIoAndVaultTest {
     @Test fun oversizeAllowanceAndDiskFullAreSpecificAndLeaveNothing() {
         val dir = File(tmp.root, "vault")
         assertTrue(runCatching { vault(dir).put("big", ByteArray(8_000_001)) }.exceptionOrNull() is VaultException.TooLarge)
-        assertTrue(runCatching { vault(dir).put("a", ByteArray(2000), allowanceBytes = 1000) }.exceptionOrNull() is VaultException.OverAllowance)
+        assertTrue(
+            runCatching { vault(dir).put("a", ByteArray(2000), allowanceBytes = 1000) }.exceptionOrNull() is VaultException.OverAllowance,
+        )
         assertTrue(runCatching { vault(dir, free = 10).put("a", ByteArray(2000)) }.exceptionOrNull() is VaultException.NoSpace)
         assertTrue(vault(dir).entries().isEmpty())
         assertTrue(dir.listFiles()!!.isEmpty())
@@ -110,7 +146,17 @@ class BoundedIoAndVaultTest {
         assertEquals(1, v.entries().size)
     }
 
-    private fun flipByte(f: File, pos: Long) = RandomAccessFile(f, "rw").use { it.seek(pos); val b = it.read(); it.seek(pos); it.write(b xor 0x01) }
+    private fun flipByte(
+        f: File,
+        pos: Long,
+    ) = RandomAccessFile(f, "rw").use {
+        it.seek(pos)
+        val b = it.read()
+        it.seek(pos)
+        it.write(
+            b xor 0x01,
+        )
+    }
 
     @Test fun tamperedIvCiphertextAndMetadataFailAuthentication() {
         val dir = File(tmp.root, "vault")
@@ -148,14 +194,19 @@ class BoundedIoAndVaultTest {
         val e = vault(dir).put("k.txt", "data".toByteArray())
         val otherKey = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
         assertTrue(runCatching { vault(dir, { otherKey }).read(e.id) }.exceptionOrNull() is VaultException.Tampered)
-        assertTrue(runCatching { vault(dir, { throw java.security.KeyStoreException("gone") }).read(e.id) }.exceptionOrNull() is VaultException.KeyUnavailable)
+        assertTrue(
+            runCatching {
+                vault(dir, { throw java.security.KeyStoreException("gone") }).read(e.id)
+            }.exceptionOrNull() is VaultException.KeyUnavailable,
+        )
         assertEquals(1, vault(dir).entries().size)
     }
 
     @Test fun pathsAreValidatedAtTheBoundary() {
         val v = vault()
-        for (bad in listOf("../x", "/etc/passwd", "a/b.vault", "", "ABCDEF0123456789ABCDEF0123456789", "x.vault/../../y.vault"))
+        for (bad in listOf("../x", "/etc/passwd", "a/b.vault", "", "ABCDEF0123456789ABCDEF0123456789", "x.vault/../../y.vault")) {
             assertTrue(bad, runCatching { v.read(bad) }.exceptionOrNull() is VaultException.InvalidId)
+        }
         assertFalse(v.delete("../../outside"))
     }
 
@@ -173,7 +224,8 @@ class BoundedIoAndVaultTest {
 
     @Test fun deleteRemovesOnlyThatObject() {
         val v = vault()
-        val a = v.put("a", "1".toByteArray()); val b = v.put("b", "2".toByteArray())
+        val a = v.put("a", "1".toByteArray())
+        val b = v.put("b", "2".toByteArray())
         assertTrue(v.delete(a.id))
         assertEquals(listOf(b.id), v.entries().map { it.id })
         assertTrue(runCatching { v.read(a.id) }.exceptionOrNull() is VaultException.NotFound)

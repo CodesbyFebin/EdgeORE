@@ -7,9 +7,22 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /** Bounded JSON-RPC over HTTPS POST (no redirects). Shared by the wallet RPC client and [ReadOnlyAccountRpc]; it only moves JSON. */
-internal class JsonRpcHttp(private val endpoint: String, private val timeoutMs: Int, private val maxResponse: Int) {
-    fun call(method: String, params: JSONArray): JSONObject {
-        val body = JSONObject().put("jsonrpc", "2.0").put("id", 1).put("method", method).put("params", params).toString()
+internal class JsonRpcHttp(
+    private val endpoint: String,
+    private val timeoutMs: Int,
+    private val maxResponse: Int,
+) {
+    fun call(
+        method: String,
+        params: JSONArray,
+    ): JSONObject {
+        val body =
+            JSONObject()
+                .put("jsonrpc", "2.0")
+                .put("id", 1)
+                .put("method", method)
+                .put("params", params)
+                .toString()
         val conn = URL(endpoint).openConnection() as HttpURLConnection
         try {
             conn.requestMethod = "POST"
@@ -42,4 +55,3 @@ internal class JsonRpcHttp(private val endpoint: String, private val timeoutMs: 
         return out.toByteArray()
     }
 }
-

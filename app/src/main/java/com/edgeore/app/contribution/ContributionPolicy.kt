@@ -21,15 +21,20 @@ data class ConstraintObservation(
 ) {
     companion object {
         val NOT_OBSERVED = ConstraintObservation(null, null, null)
-        fun of(snapshot: DeviceSnapshot?, unmetered: Boolean?) =
-            ConstraintObservation(unmetered, snapshot?.charging, snapshot?.batteryLow)
+
+        fun of(
+            snapshot: DeviceSnapshot?,
+            unmetered: Boolean?,
+        ) = ConstraintObservation(unmetered, snapshot?.charging, snapshot?.batteryLow)
     }
 }
 
 /** WorkManager's state for the unique job, as far as EdgeORE could read it. */
 enum class JobState { NONE, ENQUEUED, RUNNING, BLOCKED, CANCELLED, FINISHED, UNAVAILABLE }
 
-enum class SchedulerStatus(val label: String) {
+enum class SchedulerStatus(
+    val label: String,
+) {
     NOT_SCHEDULED("Not scheduled"),
     PAUSED_BY_YOU("Paused by you"),
     SCHEDULER_UNAVAILABLE("Scheduler unavailable"),
@@ -41,16 +46,25 @@ enum class SchedulerStatus(val label: String) {
     CHECKING("Checking"),
 }
 
-data class SchedulerView(val status: SchedulerStatus, val detail: String)
+data class SchedulerView(
+    val status: SchedulerStatus,
+    val detail: String,
+)
 
 /** Outcome recorded by one run of the scheduled job. None of these means work was done. */
-enum class RunOutcome(val code: String, val label: String) {
+enum class RunOutcome(
+    val code: String,
+    val label: String,
+) {
     SKIPPED_NOT_OPTED_IN("not_opted_in", "Skipped: scheduler is off"),
     SKIPPED_PAUSED_BY_YOU("paused_by_you", "Skipped: paused by you"),
     SKIPPED_BY_POLICY("policy", "Skipped: blocked by a safety control"),
     NO_QUALIFIED_WORKLOAD("no_qualified_workload", "No qualified workload. Nothing ran."),
     ;
-    companion object { fun fromCode(c: String?): RunOutcome? = entries.firstOrNull { it.code == c } }
+
+    companion object {
+        fun fromCode(c: String?): RunOutcome? = entries.firstOrNull { it.code == c }
+    }
 }
 
 object ContributionPolicy {
@@ -68,11 +82,22 @@ object ContributionPolicy {
         job: JobState,
         qualifiedWorkload: Boolean = EdgePolicy.QUALIFIED_WORKLOAD_AVAILABLE && REGISTERED_WORKLOADS > 0,
     ): SchedulerView {
-        if (!s.contributionOptIn) return SchedulerView(SchedulerStatus.NOT_SCHEDULED, "Off by default. Opt in to let Android schedule a contribution check.")
+        if (!s.contributionOptIn) {
+            return SchedulerView(
+                SchedulerStatus.NOT_SCHEDULED,
+                "Off by default. Opt in to let Android schedule a contribution check.",
+            )
+        }
         if (!s.edgeModeResumed) return SchedulerView(SchedulerStatus.PAUSED_BY_YOU, "Edge Mode is paused, so no job is scheduled.")
         when (job) {
-            JobState.UNAVAILABLE -> return SchedulerView(SchedulerStatus.SCHEDULER_UNAVAILABLE, "Android's job scheduler could not be read. Nothing is scheduled as far as EdgeORE can tell.")
-            JobState.NONE, JobState.CANCELLED, JobState.FINISHED -> return SchedulerView(SchedulerStatus.NOT_SCHEDULED, "Opted in, but no scheduled job was found.")
+            JobState.UNAVAILABLE -> return SchedulerView(
+                SchedulerStatus.SCHEDULER_UNAVAILABLE,
+                "Android's job scheduler could not be read. Nothing is scheduled as far as EdgeORE can tell.",
+            )
+            JobState.NONE, JobState.CANCELLED, JobState.FINISHED -> return SchedulerView(
+                SchedulerStatus.NOT_SCHEDULED,
+                "Opted in, but no scheduled job was found.",
+            )
             else -> Unit
         }
         when (observed.unmetered) {
@@ -87,23 +112,52 @@ object ContributionPolicy {
         }
         if (observed.batteryLow == true) return SchedulerView(SchedulerStatus.WAITING_FOR_BATTERY, "Android reports battery low.")
         val eval = EdgePolicy.evaluate(s, snapshot)
-        eval.gates.firstOrNull { !it.allowed }?.let { return SchedulerView(SchedulerStatus.PAUSED_BY_POLICY, "${it.name}: ${it.explanation}") }
-        if (!qualifiedWorkload) return SchedulerView(SchedulerStatus.NO_QUALIFIED_WORKLOAD, "Protocol qualification required. A scheduled check runs nothing in this build.")
-        return SchedulerView(SchedulerStatus.CHECKING, if (job == JobState.RUNNING) "Job running." else "Waiting for Android to start the job.")
+        eval.gates.firstOrNull { !it.allowed }?.let {
+            return SchedulerView(
+                SchedulerStatus.PAUSED_BY_POLICY,
+                "${it.name}: ${it.explanation}",
+            )
+        }
+        if (!qualifiedWorkload) {
+            return SchedulerView(
+                SchedulerStatus.NO_QUALIFIED_WORKLOAD,
+                "Protocol qualification required. A scheduled check runs nothing in this build.",
+            )
+        }
+        return SchedulerView(
+            SchedulerStatus.CHECKING,
+            if (job ==
+                JobState.RUNNING
+            ) {
+                "Job running."
+            } else {
+                "Waiting for Android to start the job."
+            },
+        )
     }
 
     /** What the job does when Android starts it. It re-checks the user's choices and EdgeORE's gates; it never runs a workload that does not exist. */
     fun decide(
         s: ResourceSettings,
         snapshot: DeviceSnapshot?,
-    ): RunOutcome = when {
-        !s.contributionOptIn -> RunOutcome.SKIPPED_NOT_OPTED_IN
-        !s.edgeModeResumed -> RunOutcome.SKIPPED_PAUSED_BY_YOU
-        !EdgePolicy.evaluate(s, snapshot).gatesPass -> RunOutcome.SKIPPED_BY_POLICY
-        // This build has no workload adapter (REGISTERED_WORKLOADS == 0, QUALIFIED_WORKLOAD_AVAILABLE == false).
-        // Adding one needs a new outcome with its own tests; until then the job reports this and exits.
-        else -> RunOutcome.NO_QUALIFIED_WORKLOAD
-    }
+    ): RunOutcome =
+        when {
+            !s.contributionOptIn -> RunOutcome.SKIPPED_NOT_OPTED_IN
+            !s.edgeModeResumed -> RunOutcome.SKIPPED_PAUSED_BY_YOU
+            !EdgePolicy.evaluate(s, snapshot).gatesPass -> RunOutcome.SKIPPED_BY_POLICY
+            // This build has no workload adapter (REGISTERED_WORKLOADS == 0, QUALIFIED_WORKLOAD_AVAILABLE == false).
+            // Adding one needs a new outcome with its own tests; until then the job reports this and exits.
+            else -> RunOutcome.NO_QUALIFIED_WORKLOAD
+        }
 
-    fun constraintLine(name: String, met: Boolean?): String = name + ": " + when (met) { true -> "met"; false -> "not met"; null -> "not observed" }
+    fun constraintLine(
+        name: String,
+        met: Boolean?,
+    ): String =
+        name + ": " +
+            when (met) {
+                true -> "met"
+                false -> "not met"
+                null -> "not observed"
+            }
 }

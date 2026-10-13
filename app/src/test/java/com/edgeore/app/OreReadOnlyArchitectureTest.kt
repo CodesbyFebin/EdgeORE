@@ -14,16 +14,28 @@ import java.io.File
  * only the reviewed signing path (OreDeployReview -> EdgeOreViewModel review -> MWA -> TransferReview check -> submit) uses it.
  */
 class OreReadOnlyArchitectureTest {
-    private val sources = File("src/main/java/com/edgeore/app/ore").listFiles()!!.toList() +
-        File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt") + File("src/main/java/com/edgeore/app/ui/screens/OreHomeStrip.kt") + File("src/main/java/com/edgeore/app/solana/AccountReader.kt") + File("src/main/java/com/edgeore/app/solana/JsonRpcHttp.kt")
+    private val sources =
+        File("src/main/java/com/edgeore/app/ore").listFiles()!!.toList() +
+            File(
+                "src/main/java/com/edgeore/app/ui/screens/OreScreen.kt",
+            ) + File("src/main/java/com/edgeore/app/ui/screens/OreHomeStrip.kt") +
+            File("src/main/java/com/edgeore/app/solana/AccountReader.kt") +
+            File("src/main/java/com/edgeore/app/solana/JsonRpcHttp.kt")
 
     @Test fun noSigningTransactionOrWalletApisInTheOrePath() {
         assertTrue(sources.size >= 6 && sources.all { it.isFile })
-        val banned = listOf(
-            Regex("""\bSolanaRpc\b"""), Regex("""sendTransaction|signTransaction|signAndSend|signMessages?\b"""), Regex("""\bTransaction[A-Z]?\w*\("""),
-            Regex("""\bChainGateway\b"""), Regex("""TransferCoordinator|TransferReview|SolanaMessage"""), Regex("""walletadapter|MobileWalletAdapter|WalletConnection""", RegexOption.IGNORE_CASE),
-            Regex("""\bEd25519\b|KeyPair|Signer\b"""), Regex("""latestBlockhash|getLatestBlockhash|feeForMessage"""), Regex("""Instruction\(|AccountMeta"""),
-        )
+        val banned =
+            listOf(
+                Regex("""\bSolanaRpc\b"""),
+                Regex("""sendTransaction|signTransaction|signAndSend|signMessages?\b"""),
+                Regex("""\bTransaction[A-Z]?\w*\("""),
+                Regex("""\bChainGateway\b"""),
+                Regex("""TransferCoordinator|TransferReview|SolanaMessage"""),
+                Regex("""walletadapter|MobileWalletAdapter|WalletConnection""", RegexOption.IGNORE_CASE),
+                Regex("""\bEd25519\b|KeyPair|Signer\b"""),
+                Regex("""latestBlockhash|getLatestBlockhash|feeForMessage"""),
+                Regex("""Instruction\(|AccountMeta"""),
+            )
         for (f in sources) {
             val text = f.readText()
             for (b in banned) assertFalse("${f.name} matches ${b.pattern}", b.containsMatchIn(text))
@@ -32,8 +44,21 @@ class OreReadOnlyArchitectureTest {
 
     @Test fun theReaderTypesExposeOnlyReads() {
         val allowed = setOf("accounts", "slotRate", "getEndpoint")
-        assertEquals(allowed, AccountReader::class.java.declaredMethods.filter { !it.isSynthetic }.map { it.name }.toSet())
-        val public = ReadOnlyAccountRpc::class.java.declaredMethods.filter { java.lang.reflect.Modifier.isPublic(it.modifiers) && !it.isSynthetic }.map { it.name }.toSet()
+        assertEquals(
+            allowed,
+            AccountReader::class.java.declaredMethods
+                .filter { !it.isSynthetic }
+                .map { it.name }
+                .toSet(),
+        )
+        val public =
+            ReadOnlyAccountRpc::class.java.declaredMethods
+                .filter {
+                    java.lang.reflect.Modifier
+                        .isPublic(it.modifiers) &&
+                        !it.isSynthetic
+                }.map { it.name }
+                .toSet()
         assertEquals(allowed, public)
         for (m in public) assertFalse(m, Regex("send|sign|transfer|deploy|stake|trade", RegexOption.IGNORE_CASE).containsMatchIn(m))
     }
@@ -42,28 +67,55 @@ class OreReadOnlyArchitectureTest {
         val ui = File("src/main/java/com/edgeore/app/ui/screens/OreScreen.kt").readText()
         for (chip in listOf("\"+0.01\"", "\"+0.1\"", "\"+1\"", "\"MAX\"", "\"ALL\"")) assertFalse(chip, ui.contains(chip))
         assertTrue(ui.contains("Deploy unavailable in this release (read-only)"))
-        assertTrue(ui.contains("Text(ORE_DEPLOY_UNAVAILABLE"))
+        assertTrue(Regex("""Text\(\s*ORE_DEPLOY_UNAVAILABLE""").containsMatchIn(ui))
         assertFalse(ui.contains("PrimaryAction("))
         assertTrue(ui.contains("Read-only · mainnet observation"))
     }
 
     @Test fun theMineHomeStripOffersNoActingControlsOrHardcodedPrices() {
         val ui = File("src/main/java/com/edgeore/app/ui/screens/OreHomeStrip.kt").readText()
-        for (chip in listOf("\"+0.01\"", "\"+0.1\"", "\"+1\"", "\"MAX\"", "\"ALL\"", "Deploy\"", "per round", "Rounds\"")) assertFalse(chip, ui.contains(chip))
+        for (chip in listOf(
+            "\"+0.01\"",
+            "\"+0.1\"",
+            "\"+1\"",
+            "\"MAX\"",
+            "\"ALL\"",
+            "Deploy\"",
+            "per round",
+            "Rounds\"",
+        )) {
+            assertFalse(chip, ui.contains(chip))
+        }
         assertFalse("no hardcoded dollar amounts", Regex(""""\$\d""").containsMatchIn(ui))
         val mine = File("src/main/java/com/edgeore/app/ui/screens/MineScreen.kt").readText()
         assertFalse(mine.contains("PriceQuote("))
     }
 
     private val main = File("src/main/java/com/edgeore/app")
+
     private fun rel(f: File) = f.relativeTo(main).path
+
     private val all = main.walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
 
     @Test fun onlyTheAllowlistedFileBuildsAnOreInstruction() {
-        val builders = all.filter { Regex("""DEPLOY_DISCRIMINATOR|ProgramDerivedAddress|"automation"\.toByteArray|"miner"\.toByteArray""").containsMatchIn(it.readText()) }.map(::rel).toSet()
+        val builders =
+            all
+                .filter {
+                    Regex(
+                        """DEPLOY_DISCRIMINATOR|ProgramDerivedAddress|"automation"\.toByteArray|"miner"\.toByteArray""",
+                    ).containsMatchIn(it.readText())
+                }.map(::rel)
+                .toSet()
         assertEquals(setOf("solana/OreDeployMessage.kt", "ore/OreV3.kt"), builders) // OreV3.kt: the PDA helper used for read-only round addresses
         assertFalse(File(main, "ore/OreV3.kt").readText().contains("DEPLOY_DISCRIMINATOR"))
-        val usesBuilder = all.filter { Regex("""OreDeployMessage\.(build|data|keys)\(""").containsMatchIn(it.readText()) }.map(::rel).toSet()
+        val usesBuilder =
+            all
+                .filter {
+                    Regex(
+                        """OreDeployMessage\.(build|data|keys)\(""",
+                    ).containsMatchIn(it.readText())
+                }.map(::rel)
+                .toSet()
         assertEquals(setOf("solana/OreDeployReview.kt"), usesBuilder)
         val usesReview = all.filter { it.readText().contains("OreDeployReview.prepare(") }.map(::rel).toSet()
         assertEquals(setOf("EdgeOreViewModel.kt"), usesReview)
@@ -72,14 +124,35 @@ class OreReadOnlyArchitectureTest {
     @Test fun theBuilderEncodesOnlyDeploy() {
         val src = File(main, "solana/OreDeployMessage.kt").readText()
         assertTrue(src.contains("const val DEPLOY_DISCRIMINATOR = 6"))
-        for (other in listOf("Automate", "Checkpoint", "ClaimSOL", "ClaimORE", "Close", "Buyback", "Bury", "Wrap", "UpdateProtocolConfig", "Liq"))
+        for (other in listOf(
+            "Automate",
+            "Checkpoint",
+            "ClaimSOL",
+            "ClaimORE",
+            "Close",
+            "Buyback",
+            "Bury",
+            "Wrap",
+            "UpdateProtocolConfig",
+            "Liq",
+        )) {
             assertFalse(other, Regex("""\b$other\b""").containsMatchIn(src))
+        }
         for (b in listOf("sendTransaction", "signTransaction", "MobileWalletAdapter")) assertFalse(b, src.contains(b))
     }
 
     @Test fun theMineDeployCardOnlyHandsOffToTheReview() {
         val ui = File(main, "ui/screens/MineDeploy.kt").readText()
-        for (b in listOf("sendTransaction", "signTransaction", "OreDeployMessage", "SolanaRpc(", "TransferCoordinator", "wallet.sign")) assertFalse(b, ui.contains(b))
+        for (b in listOf(
+            "sendTransaction",
+            "signTransaction",
+            "OreDeployMessage",
+            "SolanaRpc(",
+            "TransferCoordinator",
+            "wallet.sign",
+        )) {
+            assertFalse(b, ui.contains(b))
+        }
         assertTrue(ui.contains("Not financial advice"))
         val vm = File(main, "EdgeOreViewModel.kt").readText()
         val fn = vm.substring(vm.indexOf("fun prepareOreDeploy()"), vm.indexOf("/** Which AI path the advisor would use"))
@@ -93,8 +166,17 @@ class OreReadOnlyArchitectureTest {
         assertTrue(com.edgeore.app.solana.OreDeployNetwork.MAINNET_ENABLED)
         assertEquals(10_000_000L, com.edgeore.app.solana.OreDeployLimits.MAINNET_CAP_LAMPORTS)
         assertEquals("https://api.devnet.solana.com", com.edgeore.app.solana.OreDeployNetwork.RPC)
-        assertEquals("devnet", com.edgeore.app.solana.OreDeployNetwork.cluster(false))
-        assertFalse("devnet is the default", com.edgeore.app.OreDeployUi().mainnet)
+        assertEquals(
+            "devnet",
+            com.edgeore.app.solana.OreDeployNetwork
+                .cluster(false),
+        )
+        assertFalse(
+            "devnet is the default",
+            com.edgeore.app
+                .OreDeployUi()
+                .mainnet,
+        )
         val vm = File(main, "EdgeOreViewModel.kt").readText()
         // Transfers stay devnet: the transfer path never names the mainnet cluster.
         val transfer = vm.substring(vm.indexOf("fun prepareReview("), vm.indexOf("fun refuseReview("))

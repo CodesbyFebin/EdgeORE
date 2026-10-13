@@ -26,12 +26,16 @@ class UxFromClearanceTest {
 
     @Test fun plainAddressFillsDestinationOnly() {
         val r = AddressQr.parse("  $dest \n") as AddressQr.Result.Filled
-        assertEquals(dest, r.destination); assertNull(r.amountSol); assertEquals(AddressQr.Source.PLAIN_ADDRESS, r.source)
+        assertEquals(dest, r.destination)
+        assertNull(r.amountSol)
+        assertEquals(AddressQr.Source.PLAIN_ADDRESS, r.source)
     }
 
     @Test fun solanaPayTransferFillsDestinationAndAmount() {
         val r = AddressQr.parse("solana:$dest?amount=0.01&label=Coffee%20stand&message=Thanks") as AddressQr.Result.Filled
-        assertEquals(dest, r.destination); assertEquals("0.01", r.amountSol); assertEquals("Coffee stand", r.label)
+        assertEquals(dest, r.destination)
+        assertEquals("0.01", r.amountSol)
+        assertEquals("Coffee stand", r.label)
         assertEquals(AddressQr.Source.SOLANA_PAY, r.source)
     }
 
@@ -66,17 +70,22 @@ class UxFromClearanceTest {
     }
 
     @Test fun inlineChecksGatePrepareButNeverReplaceTheByteCheck() {
-        assertFalse(ReviewInput.destination("").ok); assertFalse(ReviewInput.destination("").error)
+        assertFalse(ReviewInput.destination("").ok)
+        assertFalse(ReviewInput.destination("").error)
         assertTrue(ReviewInput.destination("0OIl").error)
         assertTrue(ReviewInput.destination(dest).ok)
-        assertFalse(ReviewInput.amount("").ok); assertFalse(ReviewInput.amount("").error)
-        assertTrue(ReviewInput.amount("abc").error); assertTrue(ReviewInput.amount("0").error); assertTrue(ReviewInput.amount("1.0000000001").error)
+        assertFalse(ReviewInput.amount("").ok)
+        assertFalse(ReviewInput.amount("").error)
+        assertTrue(ReviewInput.amount("abc").error)
+        assertTrue(ReviewInput.amount("0").error)
+        assertTrue(ReviewInput.amount("1.0000000001").error)
         assertEquals("10000000 lamports.", ReviewInput.amount("0.01").text)
     }
 
     @Test fun reviewDefaultsAreEmpty() {
         val s = ReviewState()
-        assertEquals("", s.destination); assertEquals("", s.amount)
+        assertEquals("", s.destination)
+        assertEquals("", s.amount)
     }
 
     @Test fun plainLanguageComesFromDecodedBytesNotInputs() {
@@ -91,14 +100,16 @@ class UxFromClearanceTest {
         val other = ByteArray(32) { 3 }
         val forged = d.copy(decoded = SolanaMessage.Decoded.SupportedTransfer(dec.transfer.copy(to = other, lamports = 42)))
         val e2 = PlainLanguage.explain(forged, feeKnown = false, feeLamports = null)
-        assertTrue(e2.headline.contains("0.000000042 SOL")); assertTrue(e2.headline.contains(Base58.encode(other).take(4)))
+        assertTrue(e2.headline.contains("0.000000042 SOL"))
+        assertTrue(e2.headline.contains(Base58.encode(other).take(4)))
         assertTrue(e2.points.any { it.contains("fee is unknown") })
     }
 
     @Test fun plainLanguageRefusesToExplainUnsupportedBytes() {
         val d = TransferReview.prepare(payer.publicKey, "not-an-address", "0.01", blockhash, 0, 50_000_000)
         val e = PlainLanguage.explain(d, false, null)
-        assertFalse(e.supported); assertTrue(e.headline.contains("approval stays off"))
+        assertFalse(e.supported)
+        assertTrue(e.headline.contains("approval stays off"))
         val selfD = TransferReview.prepare(payer.publicKey, Base58.encode(payer.publicKey), "0.5", blockhash, 0, 1_000_000_000)
         assertTrue(PlainLanguage.explain(selfD, false, null).headline.startsWith("Self-transfer"))
     }

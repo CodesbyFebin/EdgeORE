@@ -33,14 +33,20 @@ internal object SecureWindowCount {
 
     @Synchronized fun release(a: Activity) {
         val n = ((counts[a] ?: 1) - 1).coerceAtLeast(0)
-        if (n == 0) { counts.remove(a); a.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE) } else counts[a] = n
+        if (n == 0) {
+            counts.remove(a)
+            a.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+            counts[a] = n
+        }
     }
 
     @Synchronized fun count(a: Activity): Int = counts[a] ?: 0
 }
 
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
+private tailrec fun Context.findActivity(): Activity? =
+    when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
+    }

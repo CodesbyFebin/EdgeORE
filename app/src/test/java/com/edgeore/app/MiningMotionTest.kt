@@ -21,7 +21,14 @@ class MiningMotionTest {
 
     @Test fun idleStartingStoppingAndFailedRest() {
         // The owner exception (swinging while Edge Mode was merely on) is gone: no session, no swing.
-        for (p in listOf(SessionPhase.IDLE, SessionPhase.STARTING, SessionPhase.STOPPING, SessionPhase.FAILED)) assertEquals(MiningPose.RESTING, MiningMotion.pose(p, false))
+        for (p in listOf(
+            SessionPhase.IDLE,
+            SessionPhase.STARTING,
+            SessionPhase.STOPPING,
+            SessionPhase.FAILED,
+        )) {
+            assertEquals(MiningPose.RESTING, MiningMotion.pose(p, false))
+        }
     }
 
     @Test fun swingIsContinuousAndStrikesAtImpact() {
@@ -34,7 +41,8 @@ class MiningMotionTest {
             val a = MiningMotion.swingDegrees(i / 1000f)
             assertTrue("jump at $i", kotlin.math.abs(a - prev) < 6f)
             assertTrue(a >= 0f && a <= MiningMotion.WIND_UP_DEG)
-            prev = a; i++
+            prev = a
+            i++
         }
         // The strike (wind-up peak to contact) is faster than the wind-up.
         assertTrue((MiningMotion.IMPACT - 0.45f) < 0.45f / 2)

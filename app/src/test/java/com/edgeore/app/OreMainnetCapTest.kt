@@ -1,6 +1,7 @@
 package com.edgeore.app
 
 import com.edgeore.app.crypto.Base58
+import com.edgeore.app.ore.OreDeployAvailability
 import com.edgeore.app.ore.OreV3
 import com.edgeore.app.solana.OpState
 import com.edgeore.app.solana.OperationStore
@@ -14,7 +15,6 @@ import com.edgeore.app.solana.TransferCoordinator
 import com.edgeore.app.ui.screens.MAINNET_ACK_REQUIRED
 import com.edgeore.app.ui.screens.addChip
 import com.edgeore.app.ui.screens.deployBlocker
-import com.edgeore.app.ore.OreDeployAvailability
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -44,7 +44,11 @@ class OreMainnetCapTest {
     @Test fun overCapIsRefusedBeforeAnyMessageExists() {
         for (total in listOf(10_000_001L, 25_000_000L, 100_000_000L, Long.MAX_VALUE)) {
             assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", OreDeployLimits.refusal(total, 25, rich, mainnet))
-            assertEquals("cap first, even with no balance", "Above the mainnet per-deploy cap of 0.01 SOL", OreDeployLimits.refusal(total, 1, null, mainnet))
+            assertEquals(
+                "cap first, even with no balance",
+                "Above the mainnet per-deploy cap of 0.01 SOL",
+                OreDeployLimits.refusal(total, 1, null, mainnet),
+            )
             val d = OreDeployReview.prepare(signer, 1, total, all, bh, rich, 0, 1_000_000_000, mainnet)
             assertFalse(d.approvable)
             assertEquals("no bytes means nothing can reach a wallet", 0, d.message.size)
@@ -56,7 +60,8 @@ class OreMainnetCapTest {
         val d = OreDeployReview.prepare(signer, 437127, 10_000_000, all, bh, rich, 0, 1_000_000_000, mainnet)
         assertTrue(d.refusal, d.approvable)
         val dec = (d.decoded as SolanaMessage.Decoded.OreDeploy).deploy
-        assertEquals(400_000L, dec.amountPerSquareLamports); assertEquals(25, dec.squareCount)
+        assertEquals(400_000L, dec.amountPerSquareLamports)
+        assertEquals(25, dec.squareCount)
         assertTrue(dec.totalLamports <= OreDeployLimits.MAINNET_CAP_LAMPORTS)
         assertEquals(OreV3.PROGRAM_ID, d.toAddress)
         // Three squares: 10_000_000 / 3 rounds down, so the encoded total stays under the cap.
@@ -75,32 +80,55 @@ class OreMainnetCapTest {
         val ui = OreDeployUi(availability = available(), mainnet = true, totalLamports = 5_000_000, mainnetBalanceLamports = rich)
         assertEquals(MAINNET_ACK_REQUIRED, deployBlocker(ui, true, null))
         assertNull(deployBlocker(ui.copy(riskAcknowledged = true), true, null))
-        assertEquals("Above the mainnet per-deploy cap of 0.01 SOL", deployBlocker(ui.copy(riskAcknowledged = true, totalLamports = 10_000_001), true, rich))
+        assertEquals(
+            "Above the mainnet per-deploy cap of 0.01 SOL",
+            deployBlocker(ui.copy(riskAcknowledged = true, totalLamports = 10_000_001), true, rich),
+        )
         assertEquals(10_000_000L, addChip(ui.copy(totalLamports = 0), 1_000_000_000, rich).totalLamports)
         // The devnet balance never stands in for the mainnet one.
-        assertEquals("SOL balance not read, so the deploy limit is unknown",
-            deployBlocker(ui.copy(riskAcknowledged = true, mainnetBalanceLamports = null), true, rich))
+        assertEquals(
+            "SOL balance not read, so the deploy limit is unknown",
+            deployBlocker(ui.copy(riskAcknowledged = true, mainnetBalanceLamports = null), true, rich),
+        )
         assertFalse(OreDeployUi().mainnet)
     }
 
-    @Test fun mainnetOperationsAreSentAndObservedOnlyThroughTheMainnetGateway() = runBlocking {
-        val fx = SignedFixture()
-        val store = OperationStore(File(tmp.root, "ops.json"))
-        val devnet = FakeGateway(); val main = FakeGateway()
-        val c = TransferCoordinator(store, { cl: String -> if (cl == SolanaRpc.MAINNET_CLUSTER) main else devnet })
-        val op = (store.reserve(SolanaRpc.MAINNET_CLUSTER, fx.signer, fx.recipient, fx.lamports, fx.message, fx.messageSha256, "bh", 200, 50_000_000)
-            as OperationStore.ReserveResult.Reserved).op
-        assertTrue(c.beginSigningChecked(op.id) is TransferCoordinator.Outcome.Done)
-        c.recordSigned(op.id, fx.signature, fx.signedTx)
-        c.submit(op.id); c.observe(op.id)
-        assertEquals(1, main.sendCount); assertEquals(0, devnet.sendCount)
-        assertTrue(devnet.calls.isEmpty())
-        assertEquals(SolanaRpc.MAINNET_CLUSTER, store.get(op.id)!!.cluster)
-        assertTrue(store.get(op.id)!!.state in setOf(OpState.SUBMITTED, OpState.OUTCOME_UNKNOWN))
-        // No retry path: a second submit of the same operation sends nothing.
-        c.submit(op.id); assertEquals(1, main.sendCount)
-        assertEquals(Base58.encode(fx.signatureBytes), store.get(op.id)!!.signature)
-    }
+    @Test fun mainnetOperationsAreSentAndObservedOnlyThroughTheMainnetGateway() =
+        runBlocking {
+            val fx = SignedFixture()
+            val store = OperationStore(File(tmp.root, "ops.json"))
+            val devnet = FakeGateway()
+            val main = FakeGateway()
+            val c = TransferCoordinator(store, { cl: String -> if (cl == SolanaRpc.MAINNET_CLUSTER) main else devnet })
+            val op =
+                (
+                    store.reserve(
+                        SolanaRpc.MAINNET_CLUSTER,
+                        fx.signer,
+                        fx.recipient,
+                        fx.lamports,
+                        fx.message,
+                        fx.messageSha256,
+                        "bh",
+                        200,
+                        50_000_000,
+                    )
+                        as OperationStore.ReserveResult.Reserved
+                ).op
+            assertTrue(c.beginSigningChecked(op.id) is TransferCoordinator.Outcome.Done)
+            c.recordSigned(op.id, fx.signature, fx.signedTx)
+            c.submit(op.id)
+            c.observe(op.id)
+            assertEquals(1, main.sendCount)
+            assertEquals(0, devnet.sendCount)
+            assertTrue(devnet.calls.isEmpty())
+            assertEquals(SolanaRpc.MAINNET_CLUSTER, store.get(op.id)!!.cluster)
+            assertTrue(store.get(op.id)!!.state in setOf(OpState.SUBMITTED, OpState.OUTCOME_UNKNOWN))
+            // No retry path: a second submit of the same operation sends nothing.
+            c.submit(op.id)
+            assertEquals(1, main.sendCount)
+            assertEquals(Base58.encode(fx.signatureBytes), store.get(op.id)!!.signature)
+        }
 
     @Test fun entropyVarMatchesTheSourceConstant() {
         // regolith-labs/ore @48c203bd api/src/consts.rs VAR_ADDRESS; deploy.rs checks var_info.has_address(&VAR_ADDRESS).
@@ -117,8 +145,14 @@ class OreMainnetCapTest {
         val roundId = org.json.JSONObject(snap.readText()).getLong("roundId")
         val d = OreDeployReview.prepare(signer, roundId, OreDeployLimits.MAINNET_CAP_LAMPORTS, all, bh, rich, 0, 1_000_000_000, mainnet)
         assertTrue(d.refusal, d.approvable)
-        File(snap.parentFile, "kotlin-deploy.json").writeText(org.json.JSONObject()
-            .put("roundId", roundId).put("signer", Base58.encode(signer)).put("totalLamports", d.lamports)
-            .put("messageHex", d.message.joinToString("") { "%02x".format(it) }).toString())
+        File(snap.parentFile, "kotlin-deploy.json").writeText(
+            org.json
+                .JSONObject()
+                .put("roundId", roundId)
+                .put("signer", Base58.encode(signer))
+                .put("totalLamports", d.lamports)
+                .put("messageHex", d.message.joinToString("") { "%02x".format(it) })
+                .toString(),
+        )
     }
 }

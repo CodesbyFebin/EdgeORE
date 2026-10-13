@@ -50,35 +50,57 @@ private val out: String = System.getProperty("screens.out") ?: "build/screenshot
 @Config(sdk = [28], qualifiers = "w411dp-h2000dp-normal-long-notround-any-420dpi-keyshidden-nonav")
 class StorageRenderTest {
     @get:Rule val rule = createComposeRule()
+
     @get:Rule val tmp = TemporaryFolder()
 
-    private fun state(withFiles: Boolean): StorageState = runBlocking {
-        val key = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
-        val vault = LocalVault(tmp.newFolder("vault"), { key }, freeSpace = { Long.MAX_VALUE })
-        val c = StorageController(vault, BackupJobStore(tmp.root.resolve("jobs.json")), NotConfiguredBackupProvider)
-        if (withFiles) {
-            c.import("field-notes.txt", 0) { ByteArrayInputStream(ByteArray(18_432) { (it % 26 + 97).toByte() }) }
-            c.import("site-photo.jpg", 0) { ByteArrayInputStream(ByteArray(1_250_000) { it.toByte() }) }
+    private fun state(withFiles: Boolean): StorageState =
+        runBlocking {
+            val key = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
+            val vault = LocalVault(tmp.newFolder("vault"), { key }, freeSpace = { Long.MAX_VALUE })
+            val c = StorageController(vault, BackupJobStore(tmp.root.resolve("jobs.json")), NotConfiguredBackupProvider)
+            if (withFiles) {
+                c.import("field-notes.txt", 0) { ByteArrayInputStream(ByteArray(18_432) { (it % 26 + 97).toByte() }) }
+                c.import("site-photo.jpg", 0) { ByteArrayInputStream(ByteArray(1_250_000) { it.toByte() }) }
+            }
+            c.refresh()
+            val v = c.view.value
+            StorageState(
+                files = v.files.map { it.entry },
+                views = v.files,
+                usedBytes = v.usedBytes,
+                backup = v.backup,
+                allocationMb = if (withFiles) 64 else 0,
+                note = v.message ?: "Vault is empty until you encrypt a file.",
+            )
         }
-        c.refresh()
-        val v = c.view.value
-        StorageState(files = v.files.map { it.entry }, views = v.files, usedBytes = v.usedBytes, backup = v.backup, allocationMb = if (withFiles) 64 else 0,
-            note = v.message ?: "Vault is empty until you encrypt a file.")
-    }
 
-    private fun render(st: StorageState) = rule.setContent {
-        EdgeOreTheme {
-            Column(Modifier.fillMaxSize().background(EdgeColors.background).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                StorageVaultSection(st, onImport = {}, onExport = { _, _ -> }, onDelete = {}, onAllowance = {})
+    private fun render(st: StorageState) =
+        rule.setContent {
+            EdgeOreTheme {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(EdgeColors.background)
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    StorageVaultSection(st, onImport = {}, onExport = { _, _ -> }, onDelete = {}, onAllowance = {})
+                }
             }
         }
-    }
 
     private val options = RoborazziOptions()
 
-    @Test fun empty() { render(state(false)); rule.onRoot().captureRoboImage("$out/storage/jvm-render-storage-empty.png", roborazziOptions = options) }
+    @Test fun empty() {
+        render(state(false))
+        rule.onRoot().captureRoboImage("$out/storage/jvm-render-storage-empty.png", roborazziOptions = options)
+    }
 
-    @Test fun withFiles() { render(state(true)); rule.onRoot().captureRoboImage("$out/storage/jvm-render-storage-files.png", roborazziOptions = options) }
+    @Test fun withFiles() {
+        render(state(true))
+        rule.onRoot().captureRoboImage("$out/storage/jvm-render-storage-files.png", roborazziOptions = options)
+    }
 
     @Test fun exportWarning() {
         render(state(true))

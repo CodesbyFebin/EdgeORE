@@ -35,7 +35,14 @@ class NodeAgentProtocolTest {
         val p = NodeAgentProtocol.commandPayload("sess", "0123456789abcdef0123", Instant.parse("2026-10-08T00:00:30Z"), "observe")
         val o = JSONObject(p)
         assertEquals("node-policy-v1", o.getString("policy"))
-        assertEquals(listOf("sessionId", "operationId", "deadline", "policy", "action", "params"), Regex("\"(\\w+)\":").findAll(p).map { it.groupValues[1] }.toList())
+        assertEquals(
+            listOf("sessionId", "operationId", "deadline", "policy", "action", "params"),
+            Regex("\"(\\w+)\":")
+                .findAll(p)
+                .map {
+                    it.groupValues[1]
+                }.toList(),
+        )
     }
 
     @Test fun goStyleEscaping() = assertEquals("\"\\u003ca\\u0026b\\u003e\"", NodeAgentProtocol.q("<a&b>"))

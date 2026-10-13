@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,11 +49,30 @@ private fun ModelAvatar() {
 
 /** A model reply. [source] names where it ran ("On-device model", "Owned host · <model>"). */
 @Composable
-fun ModelBubble(text: String, source: String) {
-    Row(Modifier.fillMaxWidth().semantics(mergeDescendants = true) { contentDescription = "$source said: $text" }, horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm)) {
+fun ModelBubble(
+    text: String,
+    source: String,
+) {
+    Row(
+        Modifier.fillMaxWidth().semantics(mergeDescendants = true) {
+            contentDescription = "$source said: $text"
+        },
+        horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm),
+    ) {
         ModelAvatar()
         Column(
-            Modifier.weight(1f, fill = false).background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.card)).border(1.dp, EdgeColors.mint.copy(alpha = 0.25f), RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
+            Modifier
+                .weight(
+                    1f,
+                    fill = false,
+                ).background(
+                    EdgeColors.surfaceInset,
+                    RoundedCornerShape(EdgeRadius.card),
+                ).border(
+                    1.dp,
+                    EdgeColors.mint.copy(alpha = 0.25f),
+                    RoundedCornerShape(EdgeRadius.card),
+                ).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(source, style = MaterialTheme.typography.labelSmall, color = EdgeColors.mint)
@@ -68,7 +87,11 @@ fun UserBubble(text: String) {
     Row(Modifier.fillMaxWidth().semantics(mergeDescendants = true) { contentDescription = "You said: $text" }) {
         Spacer(Modifier.weight(1f).widthIn(min = 48.dp))
         Column(
-            Modifier.background(EdgeColors.surfacePressed, RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
+            Modifier
+                .background(
+                    EdgeColors.surfacePressed,
+                    RoundedCornerShape(EdgeRadius.card),
+                ).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text("You", style = MaterialTheme.typography.labelSmall, color = EdgeColors.mintSoft)
@@ -82,11 +105,25 @@ fun UserBubble(text: String) {
 fun WorkingRow(text: String) {
     Row(
         Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-        horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm), verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ModelAvatar()
-        Text(text, style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textMuted,
-            modifier = Modifier.background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.card)).border(1.dp, EdgeColors.mint.copy(alpha = 0.25f), RoundedCornerShape(EdgeRadius.card)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp))
+        Text(
+            text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = EdgeColors.textMuted,
+            modifier =
+                Modifier
+                    .background(
+                        EdgeColors.surfaceInset,
+                        RoundedCornerShape(EdgeRadius.card),
+                    ).border(
+                        1.dp,
+                        EdgeColors.mint.copy(alpha = 0.25f),
+                        RoundedCornerShape(EdgeRadius.card),
+                    ).padding(horizontal = EdgeSpacing.md, vertical = 10.dp),
+        )
     }
 }
 

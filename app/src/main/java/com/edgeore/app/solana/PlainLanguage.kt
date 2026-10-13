@@ -9,9 +9,18 @@ import java.math.BigDecimal
  * decode as the one supported transfer, it says so and explains nothing else.
  */
 object PlainLanguage {
-    data class Explanation(val headline: String, val points: List<String>, val supported: Boolean)
+    data class Explanation(
+        val headline: String,
+        val points: List<String>,
+        val supported: Boolean,
+    )
 
-    fun explain(draft: TransferReview.Draft, feeKnown: Boolean, feeLamports: Long?, cluster: String = SolanaRpc.CLUSTER): Explanation {
+    fun explain(
+        draft: TransferReview.Draft,
+        feeKnown: Boolean,
+        feeLamports: Long?,
+        cluster: String = SolanaRpc.CLUSTER,
+    ): Explanation {
         val dec = draft.decoded
         if (dec is SolanaMessage.Decoded.OreDeploy) return oreDeploy(dec.deploy, feeKnown, feeLamports, cluster)
         if (dec !is SolanaMessage.Decoded.SupportedTransfer) {
@@ -30,35 +39,73 @@ object PlainLanguage {
         val to = Base58.encode(t.to)
         val self = t.from.contentEquals(t.to)
         val amount = sol(t.lamports)
-        val points = buildList {
-            add(if (self) "Moves $amount from your account back to itself (a self-transfer). Only the network fee leaves it."
-                else "Sends $amount from your account ${short(from)} to ${short(to)}.")
-            add("Runs on Solana $cluster. Devnet SOL is test currency with no market value.")
-            add(if (feeKnown && feeLamports != null) "Your wallet also pays a network fee of ${sol(feeLamports)} ($feeLamports lamports), as priced by the RPC for these exact bytes."
-                else "The network fee is unknown because the RPC could not price these bytes. Your wallet shows the fee it will charge.")
-            add("It is one System Program transfer and nothing else. It grants no token approval, no delegate and no authority change.")
-            add("It is valid only until its recent blockhash expires (usually one to two minutes). After that EdgeORE asks for a new review.")
-            add("Once devnet accepts it, it cannot be reversed.")
-        }
+        val points =
+            buildList {
+                add(
+                    if (self) {
+                        "Moves $amount from your account back to itself (a self-transfer). Only the network fee leaves it."
+                    } else {
+                        "Sends $amount from your account ${short(from)} to ${short(to)}."
+                    },
+                )
+                add("Runs on Solana $cluster. Devnet SOL is test currency with no market value.")
+                add(
+                    if (feeKnown &&
+                        feeLamports != null
+                    ) {
+                        "Your wallet also pays a network fee of ${sol(
+                            feeLamports,
+                        )} ($feeLamports lamports), as priced by the RPC for these exact bytes."
+                    } else {
+                        "The network fee is unknown because the RPC could not price these bytes. Your wallet shows the fee it will charge."
+                    },
+                )
+                add("It is one System Program transfer and nothing else. It grants no token approval, no delegate and no authority change.")
+                add(
+                    "It is valid only until its recent blockhash expires (usually one to two minutes). After that EdgeORE asks for a new review.",
+                )
+                add("Once devnet accepts it, it cannot be reversed.")
+            }
         return Explanation(if (self) "Self-transfer of $amount" else "Send $amount to ${short(to)}", points, supported = true)
     }
 
-    private fun oreDeploy(d: OreDeployMessage.Deploy, feeKnown: Boolean, feeLamports: Long?, cluster: String): Explanation {
+    private fun oreDeploy(
+        d: OreDeployMessage.Deploy,
+        feeKnown: Boolean,
+        feeLamports: Long?,
+        cluster: String,
+    ): Explanation {
         val total = sol(d.totalLamports)
-        return Explanation("ORE v3 Deploy of $total on round ${d.roundId}", listOf(
-            "Deploys $total into ORE v3 round ${d.roundId}: ${sol(d.amountPerSquareLamports)} on each of ${d.squareCount} square${if (d.squareCount == 1) "" else "s"}.",
-            "Program ${OreV3Ids.PROGRAM}. Runs on Solana $cluster only; devnet SOL is test currency with no market value.",
-            "The deployed SOL goes into the ORE round. It may be lost entirely; the ORE program, not EdgeORE, decides any outcome. EdgeORE claims no income. Not financial advice.",
-            if (feeKnown && feeLamports != null) "Your wallet also pays a network fee of ${sol(feeLamports)} ($feeLamports lamports), as priced by the RPC for these exact bytes."
-            else "The network fee is unknown because the RPC could not price these bytes. Your wallet shows the fee it will charge.",
-            "A first deploy may create your ORE miner account, which costs rent from your balance.",
-            "It is one ORE Deploy instruction and nothing else: no token approval, no delegate, no automation.",
-            "It is valid only until its recent blockhash expires. Once the cluster accepts it, it cannot be reversed. EdgeORE never resends it.",
-        ), supported = true)
+        return Explanation(
+            "ORE v3 Deploy of $total on round ${d.roundId}",
+            listOf(
+                "Deploys $total into ORE v3 round ${d.roundId}: ${sol(
+                    d.amountPerSquareLamports,
+                )} on each of ${d.squareCount} square${if (d.squareCount == 1) "" else "s"}.",
+                "Program ${OreV3Ids.PROGRAM}. Runs on Solana $cluster only; devnet SOL is test currency with no market value.",
+                "The deployed SOL goes into the ORE round. It may be lost entirely; the ORE program, not EdgeORE, decides any outcome. EdgeORE claims no income. Not financial advice.",
+                if (feeKnown &&
+                    feeLamports != null
+                ) {
+                    "Your wallet also pays a network fee of ${sol(
+                        feeLamports,
+                    )} ($feeLamports lamports), as priced by the RPC for these exact bytes."
+                } else {
+                    "The network fee is unknown because the RPC could not price these bytes. Your wallet shows the fee it will charge."
+                },
+                "A first deploy may create your ORE miner account, which costs rent from your balance.",
+                "It is one ORE Deploy instruction and nothing else: no token approval, no delegate, no automation.",
+                "It is valid only until its recent blockhash expires. Once the cluster accepts it, it cannot be reversed. EdgeORE never resends it.",
+            ),
+            supported = true,
+        )
     }
 
-    private object OreV3Ids { const val PROGRAM = com.edgeore.app.ore.OreV3.PROGRAM_ID }
+    private object OreV3Ids {
+        const val PROGRAM = com.edgeore.app.ore.OreV3.PROGRAM_ID
+    }
 
     private fun sol(lamports: Long): String = BigDecimal(lamports).movePointLeft(9).stripTrailingZeros().toPlainString() + " SOL"
+
     private fun short(s: String): String = if (s.length <= 9) s else s.take(4) + "…" + s.takeLast(4)
 }

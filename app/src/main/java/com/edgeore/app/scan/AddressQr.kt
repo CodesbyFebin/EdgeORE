@@ -13,9 +13,18 @@ import java.net.URLDecoder
  */
 object AddressQr {
     sealed interface Result {
-        data class Filled(val destination: String, val amountSol: String?, val label: String?, val source: Source) : Result
-        data class Refused(val reason: String) : Result
+        data class Filled(
+            val destination: String,
+            val amountSol: String?,
+            val label: String?,
+            val source: Source,
+        ) : Result
+
+        data class Refused(
+            val reason: String,
+        ) : Result
     }
+
     enum class Source { PLAIN_ADDRESS, SOLANA_PAY }
 
     /** Length cap: a Solana Pay transfer link with every optional field is far shorter than this. */
@@ -36,22 +45,42 @@ object AddressQr {
         val query = if ('?' in body) body.substringAfter('?') else ""
         val recipient = decode(pathPart)
         if (recipient.startsWith("http", ignoreCase = true)) {
-            return Result.Refused("This is a Solana Pay transaction request (a server builds the transaction). EdgeORE only builds and reviews its own devnet SOL transfer.")
+            return Result.Refused(
+                "This is a Solana Pay transaction request (a server builds the transaction). EdgeORE only builds and reviews its own devnet SOL transfer.",
+            )
         }
         if (!isAddress(recipient)) return Result.Refused("The link's recipient is not a valid Solana address.")
         val params = LinkedHashMap<String, String>()
-        if (query.isNotEmpty()) for (pair in query.split('&')) {
-            if (pair.isEmpty()) continue
-            val k = decode(pair.substringBefore('=')).lowercase()
-            val v = decode(pair.substringAfter('=', ""))
-            if (params.containsKey(k)) return Result.Refused("The link repeats \"$k\", so it is ambiguous.")
-            params[k] = v
+        if (query.isNotEmpty()) {
+            for (pair in query.split('&')) {
+                if (pair.isEmpty()) continue
+                val k = decode(pair.substringBefore('=')).lowercase()
+                val v = decode(pair.substringAfter('=', ""))
+                if (params.containsKey(k)) return Result.Refused("The link repeats \"$k\", so it is ambiguous.")
+                params[k] = v
+            }
         }
-        params["spl-token"]?.let { return Result.Refused("The link asks for an SPL token transfer. EdgeORE only supports a devnet SOL transfer.") }
-        params["reference"]?.let { return Result.Refused("The link needs a reference account added to the transaction. EdgeORE cannot build that, so it will not pretend to.") }
-        params["memo"]?.let { return Result.Refused("The link needs a memo instruction. EdgeORE cannot build that, so it will not pretend to.") }
+        params["spl-token"]?.let {
+            return Result.Refused(
+                "The link asks for an SPL token transfer. EdgeORE only supports a devnet SOL transfer.",
+            )
+        }
+        params["reference"]?.let {
+            return Result.Refused(
+                "The link needs a reference account added to the transaction. EdgeORE cannot build that, so it will not pretend to.",
+            )
+        }
+        params["memo"]?.let {
+            return Result.Refused(
+                "The link needs a memo instruction. EdgeORE cannot build that, so it will not pretend to.",
+            )
+        }
         val unknown = params.keys - setOf("amount", "label", "message")
-        if (unknown.isNotEmpty()) return Result.Refused("The link has fields EdgeORE does not understand: ${unknown.sorted().joinToString()}.")
+        if (unknown.isNotEmpty()) {
+            return Result.Refused(
+                "The link has fields EdgeORE does not understand: ${unknown.sorted().joinToString()}.",
+            )
+        }
         val amount = params["amount"]?.takeIf { it.isNotEmpty() }
         if (amount != null) {
             val ok = runCatching { EdgeOreCore.lamports(amount) > 0 }.getOrDefault(false)

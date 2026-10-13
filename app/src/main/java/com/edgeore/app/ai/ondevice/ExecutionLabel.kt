@@ -6,9 +6,13 @@ package com.edgeore.app.ai.ondevice
  * Neither title claims that a generation has run.
  */
 object ExecutionLabel {
-    fun title(downloaded: Set<String>, loadedId: String?): String = when {
-        loadedId != null -> "On-device model loaded"
-        downloaded.isNotEmpty() -> "On-device model downloaded, not loaded"
-        else -> "Owned-host AI · on-device not set up"
-    }
+    fun title(
+        downloaded: Set<String>,
+        loadedId: String?,
+    ): String =
+        when {
+            loadedId != null -> "On-device model loaded"
+            downloaded.isNotEmpty() -> "On-device model downloaded, not loaded"
+            else -> "Owned-host AI · on-device not set up"
+        }
 }

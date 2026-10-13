@@ -48,9 +48,14 @@ private const val DEST = "73Cc84sjGtk3RNSVoEres4PLMcZZtg4n46kQUzJnR93n"
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = RobolectricDeviceQualifiers.Pixel7)
 class OnboardingScreenshotTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val fresh = OnboardingSeen(false)
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
+
+    @get:Rule(order = 1)
+    val fresh = OnboardingSeen(false)
+
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
 
     @Test fun onboardingThenTabs() {
         rule.onRoot().captureRoboImage("$out/07-onboarding.png", roborazziOptions = options)
@@ -67,9 +72,15 @@ class OnboardingScreenshotTest {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = "w411dp-h2600dp-normal-long-notround-any-420dpi-keyshidden-nonav")
 class OnboardingFullScreenshotTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val fresh = OnboardingSeen(false)
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
+
+    @get:Rule(order = 1)
+    val fresh = OnboardingSeen(false)
+
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
+
     @Test fun onboardingFull() = rule.onRoot().captureRoboImage("$out/full/07-onboarding-full.png", roborazziOptions = options)
 }
 
@@ -78,9 +89,14 @@ class OnboardingFullScreenshotTest {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = "w411dp-h2600dp-normal-long-notround-any-420dpi-keyshidden-nonav")
 class ReviewFilledScreenshotTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val onboarded = OnboardingSeen()
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
+
+    @get:Rule(order = 1)
+    val onboarded = OnboardingSeen()
+
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
 
     @Test fun reviewFilled() {
         rule.onNode(hasText("Send SOL (devnet transfer review)") and hasClickAction()).performScrollTo().performClick()
@@ -115,7 +131,8 @@ class PlainLanguageRenderTest {
             EdgeOreTheme {
                 Column(Modifier.fillMaxWidth().background(EdgeColors.background).padding(16.dp)) {
                     PlainLanguageCard(PlainLanguage.explain(draft, feeKnown = false, feeLamports = null))
-                    androidx.compose.foundation.layout.Spacer(Modifier.padding(8.dp))
+                    androidx.compose.foundation.layout
+                        .Spacer(Modifier.padding(8.dp))
                     PlainLanguageCard(PlainLanguage.explain(unsupported, feeKnown = false, feeLamports = null))
                 }
             }
@@ -129,8 +146,18 @@ class PlainLanguageRenderTest {
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [28], qualifiers = "w411dp-h3400dp-normal-long-notround-any-420dpi-keyshidden-nonav", fontScale = 1.5f)
 class OnboardingLargeFontScreenshotTest {
-    @get:Rule(order = 0) val readings = FixedDeviceReadings()
-    @get:Rule(order = 1) val fresh = OnboardingSeen(false)
-    @get:Rule(order = 2) val rule = createAndroidComposeRule<MainActivity>()
-    @Test fun onboardingLargeFont() = rule.onRoot().captureRoboImage("$out/full/07-onboarding-fontscale-1.5.png", roborazziOptions = options)
+    @get:Rule(order = 0)
+    val readings = FixedDeviceReadings()
+
+    @get:Rule(order = 1)
+    val fresh = OnboardingSeen(false)
+
+    @get:Rule(order = 2)
+    val rule = createAndroidComposeRule<MainActivity>()
+
+    @Test fun onboardingLargeFont() =
+        rule.onRoot().captureRoboImage(
+            "$out/full/07-onboarding-fontscale-1.5.png",
+            roborazziOptions = options,
+        )
 }

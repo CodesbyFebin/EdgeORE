@@ -26,14 +26,30 @@ import kotlin.math.sin
  * not anything runs, and hides nothing from accessibility (the content inside carries the semantics).
  */
 @Composable
-fun HoloRing(size: Dp, modifier: Modifier = Modifier, bright: Boolean = false, content: @Composable BoxScope.() -> Unit) {
+fun HoloRing(
+    size: Dp,
+    modifier: Modifier = Modifier,
+    bright: Boolean = false,
+    content: @Composable BoxScope.() -> Unit,
+) {
     Box(modifier.size(size), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val r = this.size.minDimension / 2f
             val c = center
-            drawCircle(Brush.radialGradient(listOf(EdgeColors.holoGlow.copy(alpha = if (bright) 0.28f else 0.16f), Color.Transparent), c, r), r, c)
-            drawCircle(Brush.sweepGradient(listOf(EdgeColors.mint, EdgeColors.mintSoft.copy(alpha = 0.4f), EdgeColors.mint.copy(alpha = 0.25f), EdgeColors.mint), c),
-                r * 0.94f, c, style = Stroke(2.dp.toPx()))
+            drawCircle(
+                Brush.radialGradient(listOf(EdgeColors.holoGlow.copy(alpha = if (bright) 0.28f else 0.16f), Color.Transparent), c, r),
+                r,
+                c,
+            )
+            drawCircle(
+                Brush.sweepGradient(
+                    listOf(EdgeColors.mint, EdgeColors.mintSoft.copy(alpha = 0.4f), EdgeColors.mint.copy(alpha = 0.25f), EdgeColors.mint),
+                    c,
+                ),
+                r * 0.94f,
+                c,
+                style = Stroke(2.dp.toPx()),
+            )
             drawCircle(EdgeColors.holoBorder, r * 0.84f, c, style = Stroke(1.dp.toPx()))
             for (deg in listOf(-90f, 25f, 160f, 205f)) {
                 val a = Math.toRadians(deg.toDouble())

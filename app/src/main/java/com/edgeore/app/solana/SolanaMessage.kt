@@ -18,13 +18,26 @@ object SolanaMessage {
 
     /** Result of decoding bytes for review. Unknown instructions are never "approximately" shown as transfers. */
     sealed interface Decoded {
-        data class SupportedTransfer(val transfer: Transfer) : Decoded
-        data class Unsupported(val reason: String) : Decoded
+        data class SupportedTransfer(
+            val transfer: Transfer,
+        ) : Decoded
+
+        data class Unsupported(
+            val reason: String,
+        ) : Decoded
+
         /** Only produced by [OreDeployReview] after [OreDeployMessage.decode] re-derived and rebuilt the exact bytes. */
-        data class OreDeploy(val deploy: OreDeployMessage.Deploy) : Decoded
+        data class OreDeploy(
+            val deploy: OreDeployMessage.Deploy,
+        ) : Decoded
     }
 
-    fun buildTransfer(from: ByteArray, to: ByteArray, lamports: Long, recentBlockhash: ByteArray): ByteArray {
+    fun buildTransfer(
+        from: ByteArray,
+        to: ByteArray,
+        lamports: Long,
+        recentBlockhash: ByteArray,
+    ): ByteArray {
         require(from.size == 32 && to.size == 32 && recentBlockhash.size == 32) { "INVALID_KEY_LENGTH" }
         require(lamports > 0) { "INVALID_AMOUNT" }
         val self = from.contentEquals(to)
@@ -58,7 +71,10 @@ object SolanaMessage {
         return out.toByteArray()
     }
 
-    data class SignedTransaction(val signatures: List<ByteArray>, val message: ByteArray)
+    data class SignedTransaction(
+        val signatures: List<ByteArray>,
+        val message: ByteArray,
+    )
 
     fun splitTransaction(tx: ByteArray): SignedTransaction {
         val r = Reader(tx)
@@ -70,11 +86,12 @@ object SolanaMessage {
         return SignedTransaction(sigs, message)
     }
 
-    fun decode(message: ByteArray): Decoded = try {
-        decodeUnchecked(message)
-    } catch (e: Exception) {
-        Decoded.Unsupported("Malformed message")
-    }
+    fun decode(message: ByteArray): Decoded =
+        try {
+            decodeUnchecked(message)
+        } catch (e: Exception) {
+            Decoded.Unsupported("Malformed message")
+        }
 
     private fun decodeUnchecked(message: ByteArray): Decoded {
         val r = Reader(message)
@@ -99,7 +116,11 @@ object SolanaMessage {
         if (programIdx >= keys.size || !keys[programIdx].contentEquals(SYSTEM_PROGRAM)) return Decoded.Unsupported("Unknown program")
         if (roUnsigned != 1 || programIdx != keys.size - 1) return Decoded.Unsupported("Unexpected account layout")
         if (accCount != 2 || accs.any { it >= keys.size - 1 }) return Decoded.Unsupported("Unexpected transfer accounts")
-        if (dataLen != 12 || getU32LE(data, 0) != TRANSFER_INSTRUCTION.toLong()) return Decoded.Unsupported("Unknown System Program instruction")
+        if (dataLen != 12 ||
+            getU32LE(data, 0) != TRANSFER_INSTRUCTION.toLong()
+        ) {
+            return Decoded.Unsupported("Unknown System Program instruction")
+        }
         if (accs[0] != 0) return Decoded.Unsupported("Transfer source is not the fee payer")
         val lamports = getU64LE(data, 4)
         if (lamports <= 0) return Decoded.Unsupported("Non-positive amount")
@@ -108,27 +129,82 @@ object SolanaMessage {
 
     fun signatureBase58(signature: ByteArray): String = Base58.encode(signature)
 
-    private fun writeCompactU16(out: ByteArrayOutputStream, value: Int) {
+    private fun writeCompactU16(
+        out: ByteArrayOutputStream,
+        value: Int,
+    ) {
         require(value in 0..0xffff)
         var v = value
         while (true) {
             val b = v and 0x7f
             v = v ushr 7
-            if (v == 0) { out.write(b); return }
+            if (v == 0) {
+                out.write(b)
+                return
+            }
             out.write(b or 0x80)
         }
     }
-    private fun putU32LE(a: ByteArray, off: Int, v: Long) { for (i in 0 until 4) a[off + i] = ((v ushr (8 * i)) and 0xff).toByte() }
-    private fun putU64LE(a: ByteArray, off: Int, v: Long) { for (i in 0 until 8) a[off + i] = ((v ushr (8 * i)) and 0xff).toByte() }
-    private fun getU32LE(a: ByteArray, off: Int): Long { var v = 0L; for (i in 0 until 4) v = v or ((a[off + i].toLong() and 0xff) shl (8 * i)); return v }
-    private fun getU64LE(a: ByteArray, off: Int): Long { var v = 0L; for (i in 0 until 8) v = v or ((a[off + i].toLong() and 0xff) shl (8 * i)); return v }
 
-    private class Reader(private val b: ByteArray) {
+    private fun putU32LE(
+        a: ByteArray,
+        off: Int,
+        v: Long,
+    ) {
+        for (i in 0 until 4) a[off + i] = ((v ushr (8 * i)) and 0xff).toByte()
+    }
+
+    private fun putU64LE(
+        a: ByteArray,
+        off: Int,
+        v: Long,
+    ) {
+        for (i in 0 until 8) a[off + i] = ((v ushr (8 * i)) and 0xff).toByte()
+    }
+
+    private fun getU32LE(
+        a: ByteArray,
+        off: Int,
+    ): Long {
+        var v = 0L
+        for (i in 0 until 4) {
+            v =
+                v or ((a[off + i].toLong() and 0xff) shl (8 * i))
+        }
+        return v
+    }
+
+    private fun getU64LE(
+        a: ByteArray,
+        off: Int,
+    ): Long {
+        var v = 0L
+        for (i in 0 until 8) {
+            v =
+                v or ((a[off + i].toLong() and 0xff) shl (8 * i))
+        }
+        return v
+    }
+
+    private class Reader(
+        private val b: ByteArray,
+    ) {
         private var p = 0
-        fun u8(): Int { require(p < b.size) { "EOF" }; return b[p++].toInt() and 0xff }
-        fun bytes(n: Int): ByteArray { require(n >= 0 && p + n <= b.size) { "EOF" }; return b.copyOfRange(p, p + n).also { p += n } }
+
+        fun u8(): Int {
+            require(p < b.size) { "EOF" }
+            return b[p++].toInt() and 0xff
+        }
+
+        fun bytes(n: Int): ByteArray {
+            require(n >= 0 && p + n <= b.size) { "EOF" }
+            return b.copyOfRange(p, p + n).also { p += n }
+        }
+
         fun rest(): ByteArray = b.copyOfRange(p, b.size).also { p = b.size }
+
         fun remaining() = b.size - p
+
         fun compactU16(): Int {
             var result = 0
             var shift = 0

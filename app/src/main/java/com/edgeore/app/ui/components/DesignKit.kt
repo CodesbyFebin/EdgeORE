@@ -43,7 +43,10 @@ import com.edgeore.app.ui.theme.EdgeType
  * colour alone, and the content is whatever real state the caller passes; nothing here has sample values.
  */
 
-enum class PillTone(internal val fg: Color, internal val bg: Color) {
+enum class PillTone(
+    internal val fg: Color,
+    internal val bg: Color,
+) {
     NEUTRAL(EdgeColors.textMuted, EdgeColors.surfaceInset),
     MINT(EdgeColors.mint, EdgeColors.mint.copy(alpha = 0.12f)),
     COPPER(EdgeColors.copper, EdgeColors.copper.copy(alpha = 0.12f)),
@@ -52,31 +55,81 @@ enum class PillTone(internal val fg: Color, internal val bg: Color) {
 
 /** A rounded status label. Always text; the tone only reinforces it. */
 @Composable
-fun StatusPill(text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null) {
+fun StatusPill(
+    text: String,
+    modifier: Modifier = Modifier,
+    tone: PillTone = PillTone.NEUTRAL,
+    icon: ImageVector? = null,
+) {
     Row(
-        modifier.background(tone.bg, RoundedCornerShape(EdgeRadius.pill)).border(1.dp, tone.fg.copy(alpha = 0.35f), RoundedCornerShape(EdgeRadius.pill))
+        modifier
+            .background(
+                tone.bg,
+                RoundedCornerShape(EdgeRadius.pill),
+            ).border(1.dp, tone.fg.copy(alpha = 0.35f), RoundedCornerShape(EdgeRadius.pill))
             .padding(horizontal = 10.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (icon != null) Icon(icon, contentDescription = null, tint = tone.fg, modifier = Modifier.size(14.dp))
-        Text(text, color = tone.fg, style = EdgeType.caption, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(
+            text,
+            color = tone.fg,
+            style = EdgeType.caption,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
 /** A small count for a tab or filter. Hidden by the caller when the count is zero. */
 @Composable
-fun CountBadge(count: Int, modifier: Modifier = Modifier, tone: PillTone = PillTone.COPPER) {
+fun CountBadge(
+    count: Int,
+    modifier: Modifier = Modifier,
+    tone: PillTone = PillTone.COPPER,
+) {
     Box(
-        modifier.defaultMinSize(minWidth = 20.dp, minHeight = 20.dp).background(tone.fg, RoundedCornerShape(EdgeRadius.pill)).padding(horizontal = 6.dp),
+        modifier
+            .defaultMinSize(
+                minWidth = 20.dp,
+                minHeight = 20.dp,
+            ).background(tone.fg, RoundedCornerShape(EdgeRadius.pill))
+            .padding(horizontal = 6.dp),
         contentAlignment = Alignment.Center,
-    ) { Text(if (count > 99) "99+" else "$count", color = EdgeColors.onAction, fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold) }
+    ) {
+        Text(
+            if (count >
+                99
+            ) {
+                "99+"
+            } else {
+                "$count"
+            },
+            color = EdgeColors.onAction,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            fontWeight = FontWeight.Bold,
+        )
+    }
 }
 
 /** Icon inside an inset tile, used as the leading element of card headers and rows. */
 @Composable
-fun IconTile(icon: ImageVector, modifier: Modifier = Modifier, tint: Color = EdgeColors.mint) {
+fun IconTile(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    tint: Color = EdgeColors.mint,
+) {
     Box(
-        modifier.size(40.dp).background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.tile)).border(1.dp, EdgeColors.border, RoundedCornerShape(EdgeRadius.tile)),
+        modifier
+            .size(
+                40.dp,
+            ).background(
+                EdgeColors.surfaceInset,
+                RoundedCornerShape(EdgeRadius.tile),
+            ).border(1.dp, EdgeColors.border, RoundedCornerShape(EdgeRadius.tile)),
         contentAlignment = Alignment.Center,
     ) { Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp)) }
 }
@@ -90,9 +143,19 @@ fun EdgeDivider(modifier: Modifier = Modifier) {
  * Label over value. A missing value is passed as null and shown as [missing] in copper, never as zero.
  */
 @Composable
-fun StatCell(label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false) {
+fun StatCell(
+    label: String,
+    value: String?,
+    modifier: Modifier = Modifier,
+    missing: String = "Not observed",
+    mono: Boolean = false,
+) {
     Column(
-        modifier.background(EdgeColors.surfaceInset, RoundedCornerShape(EdgeRadius.tile)).padding(horizontal = EdgeSpacing.md, vertical = 10.dp)
+        modifier
+            .background(
+                EdgeColors.surfaceInset,
+                RoundedCornerShape(EdgeRadius.tile),
+            ).padding(horizontal = EdgeSpacing.md, vertical = 10.dp)
             .semantics(mergeDescendants = true) { contentDescription = "$label: ${value ?: missing}" },
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
@@ -100,7 +163,8 @@ fun StatCell(label: String, value: String?, modifier: Modifier = Modifier, missi
         Text(
             value ?: missing,
             style = if (mono && value != null) EdgeType.mono(14, FontWeight.SemiBold) else MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold, color = if (value == null) EdgeColors.copper else EdgeColors.textPrimary,
+            fontWeight = FontWeight.SemiBold,
+            color = if (value == null) EdgeColors.copper else EdgeColors.textPrimary,
         )
     }
 }
@@ -138,7 +202,11 @@ fun FactCard(
 /** The compact environment line under the header (design.md §3): no global "secure" seal. */
 @Composable
 fun EnvironmentStrip(mainnet: Boolean = false) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(EdgeSpacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         if (mainnet) {
             StatusPill("Mainnet", tone = PillTone.COPPER, icon = EdgeIcons.Globe)
             StatusPill("Real SOL · capped 0.01", tone = PillTone.COPPER)

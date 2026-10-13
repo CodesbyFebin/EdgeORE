@@ -34,13 +34,24 @@ class GatewayProxyIntegrationTest {
         val req = UploadRequest("it-job-1", body, Sha256.hex(body), body.size.toLong())
 
         // No pin and a wrong pin: refused in the TLS handshake.
-        for (pins in listOf(emptyList(), listOf("sha256/" + java.util.Base64.getEncoder().encodeToString(ByteArray(32))))) {
+        for (pins in listOf(
+            emptyList(),
+            listOf(
+                "sha256/" +
+                    java.util.Base64
+                        .getEncoder()
+                        .encodeToString(ByteArray(32)),
+            ),
+        )) {
             val e = runCatching { runBlocking { OwnedGatewayBackupProvider(endpoint, { token }, pins).upload(req) } }.exceptionOrNull()
             assertTrue("pins=$pins: expected SSLException, got $e", e is javax.net.ssl.SSLException)
         }
 
         // Wrong token: the proxy forwards, the gateway refuses with 401.
-        val badAuth = runCatching { runBlocking { OwnedGatewayBackupProvider(endpoint, { "w".repeat(40) }, listOf(pin)).status("it-job-1") } }.exceptionOrNull()
+        val badAuth =
+            runCatching {
+                runBlocking { OwnedGatewayBackupProvider(endpoint, { "w".repeat(40) }, listOf(pin)).status("it-job-1") }
+            }.exceptionOrNull()
         assertTrue("$badAuth", badAuth is BackupUnavailableException && badAuth.message!!.contains("401"))
 
         val p = OwnedGatewayBackupProvider(endpoint, { token }, listOf(pin))
