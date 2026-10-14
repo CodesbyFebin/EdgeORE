@@ -1,7 +1,7 @@
 # EdgeORE — Handover (2026-10-12)
 
 <!-- commit-stamp:begin -->
-Canonical source commit: `d13b02087363dcfbf67df15e94dad0bd5fa548fb` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
+Canonical source commit: `e54e286a159370236643527e3bad9113cad7b0e7` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
 <!-- commit-stamp:end -->
 
 Scope: everything that was built and checked on the build machine, everything that was not, and what the owner still has to do.
