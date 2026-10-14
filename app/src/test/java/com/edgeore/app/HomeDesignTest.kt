@@ -16,6 +16,7 @@ import com.edgeore.app.ore.OreDeployAvailability
 import com.edgeore.app.solana.Cluster
 import com.edgeore.app.ui.screens.BalanceRow
 import com.edgeore.app.ui.screens.ContributionToggles
+import com.edgeore.app.ui.screens.DEPLOY_WALLET_TIP
 import com.edgeore.app.ui.screens.EdgeNodeCard
 import com.edgeore.app.ui.screens.NetworkSelector
 import com.edgeore.app.ui.screens.OreMiningCard
@@ -94,6 +95,7 @@ class HomeDesignTest {
         rule.onNodeWithText("Network: Mainnet (from the selector at the top)").assertExists()
         rule.onNodeWithTag("network-dropdown").assertExists()
         rule.onNodeWithTag("ore-mainnet-ack").assertExists() // the risk tick stays
+        rule.onNodeWithText(DEPLOY_WALLET_TIP).assertExists() // key-safety tip, see README "Key safety"
         rule.onNodeWithText("Review deployment").assertExists()
         rule.onNodeWithTag("ore-deploy").assertIsNotEnabled()
         rule.onNodeWithText("Design concept", substring = true).assertDoesNotExist()
@@ -102,6 +104,7 @@ class HomeDesignTest {
         if (!dir.isNullOrBlank()) {
             rule.waitForIdle()
             rule.onRoot().captureRoboImage("$dir/home.png")
+            rule.onNodeWithTag("ore-deploy-wallet-tip").captureRoboImage("$dir/deploy-wallet-tip.png")
         }
     }
 

@@ -227,6 +227,11 @@ fun ReviewScreen(
                                 color = EdgeColors.mainnetWarning,
                                 style = MaterialTheme.typography.labelSmall,
                             )
+                            Text(
+                                DEPLOY_WALLET_TIP,
+                                Modifier.testTag("deploy-wallet-tip"),
+                                style = MaterialTheme.typography.labelSmall,
+                            )
                         }
                     }
                     KeyValue("Action", "ORE v3 · Deploy (instruction 6)")

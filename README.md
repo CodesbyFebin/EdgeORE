@@ -99,6 +99,17 @@ Tested against the live mainnet ORE v3 program in a local fork (LiteSVM, `tools/
 - No analytics, ads or crash-reporting SDKs. No EdgeORE backend.
 - Report vulnerabilities privately: [SECURITY.md](SECURITY.md).
 
+## Key safety
+
+- **A Solana address is an ed25519 public key.** On Ethereum or Bitcoin, an address that has never signed can keep its public key hidden ("bunker mode"). That doesn't apply on Solana, because every address already exposes its public key.
+- **Use a small, dedicated deploy wallet** for ORE deploys, and keep the rest of your SOL in a different wallet. The app shows this as a one-line tip on the ORE card and on the mainnet review.
+- **The 0.01 SOL mainnet cap limits exposure** per deploy, together with the risk tick and Rounds = 1. The deploy is always signed by you in your wallet.
+- **EdgeORE never holds wallet keys.** Signing happens in your wallet through Mobile Wallet Adapter. The app's own Keystore key signs only local receipts and crew plans; it never signs transactions.
+- **Nothing in EdgeORE is quantum-safe today.** Ed25519 and the receipt signatures are not post-quantum.
+- **Future option, not a claim:** a hash-based backup signature for receipts and Round Proofs, only if and when Solana supports one. It is not implemented.
+
+What EdgeORE does now, and what it doesn't do yet, is in [docs/PRINCIPLES.md](docs/PRINCIPLES.md).
+
 ## Receipt Chain
 
 Each reviewed action is written to the on-device operation ledger and signed with the install's Android Keystore key. The JVM receipt checker compiles the app's own Kotlin verifier and verifies the integrity of signed receipt contents.

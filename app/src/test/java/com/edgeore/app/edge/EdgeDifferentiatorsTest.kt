@@ -317,4 +317,11 @@ class ProtocolGuardTest {
         assertTrue(ProtocolGuard.check(b("program"), b("programdataHead"), cfg) is ProtocolGuard.Result.Changed)
         assertTrue(ProtocolGuard.check(null, null, null) is ProtocolGuard.Result.Unknown)
     }
+
+    @Test fun deployWalletTipIsOneLineAndMakesNoSafetyClaim() {
+        val tip = com.edgeore.app.ui.screens.DEPLOY_WALLET_TIP
+        assertTrue(tip.contains("small deploy wallet"))
+        assertFalse(tip.contains("\n"))
+        listOf("quantum", "safe", "guarantee", "SKR").forEach { assertFalse(tip.contains(it, ignoreCase = true)) }
+    }
 }

@@ -317,16 +317,16 @@
         <error line="243" column="141" source="standard:max-line-length" />
         <error line="254" column="141" source="standard:max-line-length" />
         <error line="317" column="5" source="standard:function-naming" />
-        <error line="519" column="13" source="standard:function-naming" />
-        <error line="533" column="13" source="standard:function-naming" />
-        <error line="563" column="13" source="standard:function-naming" />
-        <error line="599" column="13" source="standard:function-naming" />
-        <error line="620" column="22" source="standard:function-naming" />
-        <error line="647" column="13" source="standard:function-naming" />
-        <error line="662" column="13" source="standard:function-naming" />
-        <error line="695" column="5" source="standard:function-naming" />
-        <error line="726" column="13" source="standard:function-naming" />
-        <error line="750" column="5" source="standard:function-naming" />
+        <error line="526" column="13" source="standard:function-naming" />
+        <error line="540" column="13" source="standard:function-naming" />
+        <error line="570" column="13" source="standard:function-naming" />
+        <error line="606" column="13" source="standard:function-naming" />
+        <error line="627" column="22" source="standard:function-naming" />
+        <error line="654" column="13" source="standard:function-naming" />
+        <error line="669" column="13" source="standard:function-naming" />
+        <error line="702" column="5" source="standard:function-naming" />
+        <error line="733" column="13" source="standard:function-naming" />
+        <error line="757" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/MineHolo.kt">
         <error line="75" column="5" source="standard:function-naming" />
@@ -382,9 +382,9 @@
     <file name="app/src/main/java/com/edgeore/app/ui/screens/ReviewScreen.kt">
         <error line="49" column="5" source="standard:function-naming" />
         <error line="199" column="141" source="standard:max-line-length" />
-        <error line="244" column="141" source="standard:max-line-length" />
-        <error line="366" column="5" source="standard:function-naming" />
-        <error line="399" column="5" source="standard:function-naming" />
+        <error line="249" column="141" source="standard:max-line-length" />
+        <error line="371" column="5" source="standard:function-naming" />
+        <error line="404" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/StorageScreen.kt">
         <error line="64" column="5" source="standard:function-naming" />
