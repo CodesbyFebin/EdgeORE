@@ -180,7 +180,7 @@ fun ExplainerCard(
             ) {
                 RoundExplainer.NOT_CONFIGURED
             } else {
-                "AI model: $backend. The explanation below is the built-in rule-based one."
+                "AI model: $backend. Answers are labelled; without one, the rule-based text is shown."
             },
             color = EdgeColors.textMuted,
             fontSize = 12.sp,
@@ -272,6 +272,8 @@ fun HistoryView(rows: List<History.Row>) {
 fun RoundProofView(
     proofs: List<StoredProof>,
     onExport: (StoredProof) -> Unit,
+    onExplain: ((StoredProof) -> Unit)? = null,
+    explanation: String? = null,
 ) {
     Column(Modifier.testTag("round-proofs"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SectionTitle("Round Proof", "Settled rounds re-derived from the Round account, attached to your signed receipts.")
@@ -295,8 +297,12 @@ fun RoundProofView(
                     fontSize = 11.sp,
                 )
                 PrimaryAction("Export .oreproof", Modifier.fillMaxWidth()) { onExport(p) }
+                if (onExplain != null) {
+                    AdvisorExplainButton(Modifier.testTag("proof-explain-${p.roundId}")) { onExplain(p) }
+                }
             }
         }
+        explanation?.let { AdvisorAnswer(it) }
     }
 }
 
@@ -690,3 +696,30 @@ fun CrewReassignCard(
 }
 
 private fun short(w: String) = "${w.take(4)}…${w.takeLast(4)}"
+
+/** Read-only "explain" button. It calls the explainer only; it cannot sign, send or edit a review. */
+@Composable
+fun AdvisorExplainButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    SecondaryAction("Explain (read-only)", modifier.fillMaxWidth(), onClick = onClick)
+}
+
+/** Shows an explainer answer; AI answers already start with [com.edgeore.app.edge.AdvisorExplainer.LABEL]. */
+@Composable
+fun AdvisorAnswer(text: String) {
+    Text(text, color = EdgeColors.textPrimary, fontSize = 13.sp, modifier = Modifier.testTag("advisor-answer"))
+}
+
+/** On the review screen: explains the decoded message only. It never edits the review, amounts or squares. */
+@Composable
+fun ReviewExplainSection(vm: EdgeOreViewModel) {
+    val edge by vm.edge.collectAsStateWithLifecycle()
+    var asked by remember { mutableStateOf(false) }
+    AdvisorExplainButton(Modifier.testTag("review-explain")) {
+        asked = true
+        vm.explainReview()
+    }
+    if (asked) edge.explanation?.let { AdvisorAnswer(it) }
+}

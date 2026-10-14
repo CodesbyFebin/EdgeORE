@@ -2,6 +2,10 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorAnswer(text: String)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorExplainButton( modifier: Modifier = Modifier, onClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun ReviewExplainSection(vm: EdgeOreViewModel)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundProofView( proofs: List&lt;StoredProof&gt;, onExport: (StoredProof) -&gt; Unit, onExplain: ((StoredProof) -&gt; Unit)? = null, explanation: String? = null, )</ID>
     <ID>ComplexCondition:CpuBudget.kt$CpuBudget$first == null || second == null || elapsedMillis &lt;= 0 || second &lt; first</ID>
     <ID>ComplexCondition:OreDeployReview.kt$OreDeployReview$decoded == null || !decoded.signer.contentEquals(signer) || decoded.amountPerSquareLamports != per || decoded.mask != mask</ID>
     <ID>ComplexCondition:OwnedHostModel.kt$EndpointPolicy$!uri.rawPath.isNullOrEmpty() || uri.rawQuery != null || uri.userInfo != null || uri.rawFragment != null</ID>
@@ -104,7 +108,6 @@
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun PlanningCalculatorCard(initial: com.edgeore.app.edge.PlanningCalculator.Inputs? = null)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun ProtocolBanner(r: com.edgeore.app.edge.ProtocolGuard.Result?)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundAlertsCard( on: Boolean, message: String?, onToggle: (Boolean) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundProofView( proofs: List&lt;StoredProof&gt;, onExport: (StoredProof) -&gt; Unit, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun TileInsightPanel( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun CopperButton( text: String, icon: ImageVector?, tag: String, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun Hero( art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String, )</ID>

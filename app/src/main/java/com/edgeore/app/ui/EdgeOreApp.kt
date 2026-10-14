@@ -311,7 +311,12 @@ fun EdgeOreApp(
                     r == "history" -> com.edgeore.app.ui.screens.HistoryView(vm.historyRows())
                     r == "proofs" -> {
                         val edgeState by vm.edge.collectAsStateWithLifecycle()
-                        com.edgeore.app.ui.screens.RoundProofView(edgeState.proofs, actions::exportRoundProof)
+                        com.edgeore.app.ui.screens.RoundProofView(
+                            edgeState.proofs,
+                            actions::exportRoundProof,
+                            { vm.explainProof(it.sha256) },
+                            edgeState.explanation,
+                        )
                     }
                     r == "preview" -> ConceptPreviewScreen()
                     r == "browser" -> BrowserScreen()
