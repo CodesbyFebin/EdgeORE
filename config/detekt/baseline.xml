@@ -2,6 +2,10 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable fun StrategiesSection( vm: EdgeOreViewModel, snap: OreSnapshot?, onOpenReview: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable fun StrategyCards( snap: OreSnapshot?, thresholdOre: String, onThreshold: (String) -&gt; Unit, context: StrategyPlaybook.Inputs, onApply: (Strategy) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable private fun LateLookBanner( snap: OreSnapshot?, now: Long, onStop: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable private fun StrategyCard( s: Strategy, plan: StrategyPlan, thresholdOre: String, onThreshold: (String) -&gt; Unit, onApply: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorAnswer(text: String)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorExplainButton( modifier: Modifier = Modifier, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun ReviewExplainSection(vm: EdgeOreViewModel)</ID>

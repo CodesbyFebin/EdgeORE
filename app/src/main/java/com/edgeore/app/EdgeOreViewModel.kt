@@ -977,6 +977,7 @@ class EdgeOreViewModel(
     fun prepareOreDeploy() =
         viewModelScope.launch {
             val ui = _oreDeploy.value
+            if (motherlodeSitOut()) return@launch
             val cluster =
                 com.edgeore.app.solana.OreDeployNetwork
                     .cluster(ui.mainnet)
@@ -2717,6 +2718,57 @@ class EdgeOreViewModel(
         _crew.value = reassignedCrewState(_crew.value, active, _wallet.value.address, signer)
     }
 
+    // Strategies pre-fill the review only. Review, MWA signature, cap, risk tick and Rounds=1 are unchanged.
+    private var motherlodeWatch: Long? = null
+
+    /** Masks of a verified crew plan, or null. */
+    fun crewMasks(): List<Int>? {
+        val c = _crew.value
+        val ok = c.check == CrewCheck.VALID_KEYSTORE || c.check == CrewCheck.VALID_WALLET
+        return if (ok) c.signed?.let { s -> s.plan.members.map { it.mask } } else null
+    }
+
+    /**
+     * Applies a strategy from the real board read. Returns true when the review should open (Crew Blanket only;
+     * it opens this wallet's own share). Never deploys or signs.
+     */
+    fun applyStrategy(
+        s: StrategyKind,
+        motherlodeThresholdGrams: Long = 0,
+    ): Boolean {
+        val cap = com.edgeore.app.solana.OreDeployLimits.MAINNET_CAP_LAMPORTS
+        val inputs = StrategyInputsData(cap, motherlodeThresholdGrams, crewMasks())
+        val plan = StrategyBook.plan(s, _ore.value.snapshot, inputs)
+        motherlodeWatch = motherlodeThresholdGrams.takeIf { s == StrategyKind.MOTHERLODE_WATCH }
+        val fill = plan as? com.edgeore.app.edge.StrategyPlan.Fill
+        return when {
+            fill != null && s == StrategyKind.CREW_BLANKET -> reviewMyCrewShare()
+            fill != null -> {
+                editOreDeploy { u ->
+                    u.copy(pro = true, proMask = fill.mask, totalLamports = fill.totalLamports ?: u.totalLamports)
+                }
+                false
+            }
+            else -> {
+                _oreDeploy.update { it.copy(message = "${s.title}: " + StrategyBook.text(plan)) }
+                false
+            }
+        }
+    }
+
+    /** Motherlode Watch: the review stays closed (sit out) while the live pool is below the threshold. */
+    private fun motherlodeSitOut(): Boolean {
+        val t = motherlodeWatch ?: return false
+        val closed = !StrategyBook.gateOpen(_ore.value.snapshot, t)
+        if (closed) _oreDeploy.update { it.copy(message = SIT_OUT) }
+        return closed
+    }
+
+    /** Turns Motherlode Watch off so the review opens normally again. */
+    fun clearStrategyGate() {
+        motherlodeWatch = null
+    }
+
     /** Selected downloaded on-device model, or null (not downloaded, unsupported, busy). Text in, text out. */
     private fun onDeviceAdvisorModel(): (suspend (String, String) -> String?)? =
         onDeviceAi.state.value
@@ -2765,3 +2817,9 @@ class EdgeOreViewModel(
 
 private typealias AdvisorSubject = com.edgeore.app.edge.AdvisorExplainer.Subject
 private typealias AdvisorExplainer = com.edgeore.app.edge.AdvisorExplainer
+
+private const val SIT_OUT = "Motherlode Watch: sit out. The pool is below your threshold."
+private typealias StrategyKind = com.edgeore.app.edge.Strategy
+private typealias StrategyBook = com.edgeore.app.edge.StrategyPlaybook
+private typealias StrategyInputsData = com.edgeore.app.edge.StrategyPlaybook.Inputs
+private typealias CrewCheck = com.edgeore.app.edge.Crew.Check

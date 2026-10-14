@@ -355,6 +355,7 @@ fun EdgeInsightsSection(
         SecondaryAction("Round Proof", Modifier.weight(1f).testTag("open-proofs"), onClick = onProofs)
     }
     SecondaryAction("Crew Pool", Modifier.fillMaxWidth().testTag("open-crew"), onClick = onCrew)
+    StrategiesSection(vm, ore.snapshot, onOpenReview)
     if (snap == null) {
         Text(
             "Tile insight uses the mainnet board. Switch the network selector to Mainnet to read it.",

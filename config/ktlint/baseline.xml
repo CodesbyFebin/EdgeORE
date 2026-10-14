@@ -117,10 +117,10 @@
         <error line="919" column="42" source="standard:chain-method-continuation" />
         <error line="920" column="61" source="standard:chain-method-continuation" />
         <error line="920" column="98" source="standard:chain-method-continuation" />
-        <error line="2297" column="141" source="standard:max-line-length" />
-        <error line="2471" column="141" source="standard:max-line-length" />
-        <error line="2642" column="141" source="standard:max-line-length" />
-        <error line="2663" column="141" source="standard:max-line-length" />
+        <error line="2298" column="141" source="standard:max-line-length" />
+        <error line="2472" column="141" source="standard:max-line-length" />
+        <error line="2643" column="141" source="standard:max-line-length" />
+        <error line="2664" column="141" source="standard:max-line-length" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/MainActivity.kt">
         <error line="80" column="15" source="standard:chain-method-continuation" />
@@ -292,14 +292,14 @@
         <error line="221" column="5" source="standard:function-naming" />
         <error line="272" column="5" source="standard:function-naming" />
         <error line="311" column="5" source="standard:function-naming" />
-        <error line="368" column="5" source="standard:function-naming" />
-        <error line="468" column="5" source="standard:function-naming" />
-        <error line="484" column="5" source="standard:function-naming" />
-        <error line="634" column="5" source="standard:function-naming" />
-        <error line="663" column="5" source="standard:function-naming" />
-        <error line="702" column="5" source="standard:function-naming" />
-        <error line="711" column="5" source="standard:function-naming" />
-        <error line="717" column="5" source="standard:function-naming" />
+        <error line="369" column="5" source="standard:function-naming" />
+        <error line="469" column="5" source="standard:function-naming" />
+        <error line="485" column="5" source="standard:function-naming" />
+        <error line="635" column="5" source="standard:function-naming" />
+        <error line="664" column="5" source="standard:function-naming" />
+        <error line="703" column="5" source="standard:function-naming" />
+        <error line="712" column="5" source="standard:function-naming" />
+        <error line="718" column="5" source="standard:function-naming" />
     </file>
     <file name="app/src/main/java/com/edgeore/app/ui/screens/FourScreens.kt">
         <error line="51" column="5" source="standard:function-naming" />
@@ -612,5 +612,11 @@
         <error line="390" column="167" source="standard:argument-list-wrapping" />
         <error line="390" column="168" source="standard:argument-list-wrapping" />
         <error line="410" column="52" source="standard:chain-method-continuation" />
+    </file>
+    <file name="app/src/main/java/com/edgeore/app/ui/screens/StrategyPanels.kt">
+        <error line="36" column="5" source="standard:function-naming" />
+        <error line="68" column="13" source="standard:function-naming" />
+        <error line="111" column="5" source="standard:function-naming" />
+        <error line="136" column="13" source="standard:function-naming" />
     </file>
 </baseline>
