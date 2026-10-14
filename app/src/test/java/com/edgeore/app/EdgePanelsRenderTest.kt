@@ -210,4 +210,38 @@ class EdgePanelsRenderTest {
         assertTrue(asked == 1)
         shot("ondevice-ai")
     }
+
+    @Test fun strategyCardsShowTradeOffsDisclaimerAndRealBoardStatus() {
+        val f = OreV3Test.Fixture("mainnet-round-437127.json")
+        val snap =
+            com.edgeore.app.ore.OreSnapshot(
+                "https://api.mainnet-beta.solana.com",
+                com.edgeore.app.ore.OreV3
+                    .decodeBoard(f.board.owner, f.board.data),
+                f.slot("board"),
+                com.edgeore.app.ore.OreV3
+                    .decodeTreasury(f.treasury.owner, f.treasury.data),
+                com.edgeore.app.ore.OreV3
+                    .decodeRound(f.round.owner, f.round.data),
+                f.slot("round"),
+                0L,
+                null,
+            )
+        val applied = mutableListOf<com.edgeore.app.edge.Strategy>()
+        host {
+            val ctx =
+                com.edgeore.app.edge.StrategyPlaybook
+                    .Inputs(10_000_000L, 0, null, 0L)
+            com.edgeore.app.ui.screens
+                .StrategyCards(snap, "100", {}, ctx) { applied += it }
+        }
+        com.edgeore.app.edge.Strategy.entries
+            .forEach { rule.onNodeWithTag("strategy-${it.name}").assertExists() }
+        rule.onNodeWithText("Would pre-fill 10 square(s).").assertExists()
+        rule.onNodeWithText("Would pre-fill 15 square(s) · 0.009 SOL total.", substring = true).assertExists()
+        rule.onNodeWithText("Open or create a verified crew plan first.").assertExists()
+        rule.onNodeWithTag("strategy-apply-SOLO_HUNTER").performClick()
+        assertEquals(listOf(com.edgeore.app.edge.Strategy.SOLO_HUNTER), applied)
+        shot("strategies")
+    }
 }
