@@ -1,10 +1,11 @@
 # EdgeORE
+<img width="1902" height="827" alt="EdgeORE mobile ORE ecosystem hero" src="https://github.com/user-attachments/assets/16b3be99-77af-4b02-a781-b6951a372765" />
 
 <!-- commit-stamp:begin -->
 Canonical source commit: `8335a0d946edc1ed35ec403c9425422c64958ed4` (stamped by `scripts/commit-stamp.sh`; the same value is in `evidence/COMMIT-STAMP.json` and the APK as `BuildConfig.SOURCE_STAMP`).
 <!-- commit-stamp:end -->
 
-![EdgeORE banner](docs/assets/banner.webp)
+!<img width="1774" height="887" alt="EdgeORE wallet listing preview" src="https://github.com/user-attachments/assets/ab954d59-426d-4d3e-b339-0af5e1fe8449" />
 
 **An Android ORE v3 client for Solana Mobile. Every deploy is reviewed as exact bytes, capped, signed in your own wallet, submitted once, and receipted.**
 
@@ -129,6 +130,7 @@ These are plans, not progress. No timelines, no partnerships.
 - No reward, income or earnings claims. Deployed SOL may be lost entirely.
 - The AI advisor never signs or deploys.
 - Pinned toolchain (Kotlin 2.0.21, AGP 8.7.3, MWA clientlib-ktx 2.0.3); no bumps without re-testing.
+<img width="1983" height="793" alt="EdgeORE Mint Ore README Footer Banner" src="https://github.com/user-attachments/assets/010e7a38-2f86-4b10-87c1-0997a852afc1" />
 
 ## Build & Run
 
