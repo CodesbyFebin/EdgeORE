@@ -107,7 +107,7 @@ class EdgePanelsRenderTest {
         val check = RoundProof.check(proof, listOf(RoundProof.digest(proof)), com.edgeore.app.ore.OreV3::roundAddress)
         assertTrue(check.failures.toString(), check.accepted)
         host {
-            RoundProofView(listOf(StoredProof(RoundProof.digest(proof), round.id, "r1", proof, check))) {}
+            RoundProofView(listOf(StoredProof(RoundProof.digest(proof), round.id, "r1", proof, check)), {})
             HistoryView(
                 listOf(
                     History.Row(
@@ -181,5 +181,33 @@ class EdgePanelsRenderTest {
         rule.onNodeWithText("spread evenly over 1 member", substring = true).assertExists()
         rule.onNodeWithText("· 25 squares · 0.003 SOL", substring = true).assertExists()
         shot("crew")
+    }
+
+    @Test fun onDeviceAdvisorAnswerIsLabelledAndReadOnly() {
+        var asked = 0
+        host {
+            com.edgeore.app.ui.screens.ExplainerCard(
+                com.edgeore.app.edge.AdvisorExplainer.LABEL +
+                    "\nRound #439116 has SOL on all 25 squares. One square wins when the round ends; " +
+                    "SOL on the other squares is mostly returned minus fees. " +
+                    "Check the review screen before signing anything.",
+                "Qwen2.5-1.5B-Instruct (q8) on this phone (offline)",
+                {},
+                null,
+            )
+            com.edgeore.app.ui.screens.ExplainerCard(
+                "Rule-based: round #439116, 25 squares.\n" + com.edgeore.app.edge.RoundExplainer.NOT_CONFIGURED,
+                null,
+                {},
+                null,
+            )
+            com.edgeore.app.ui.screens
+                .AdvisorExplainButton { asked++ }
+        }
+        rule.onNodeWithText("AI explanation, may be wrong; check the review.", substring = true).assertExists()
+        rule.onNodeWithText("on this phone (offline)", substring = true).assertExists()
+        rule.onNodeWithText("Explain (read-only)").performClick()
+        assertTrue(asked == 1)
+        shot("ondevice-ai")
     }
 }

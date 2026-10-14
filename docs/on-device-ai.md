@@ -91,3 +91,24 @@ only network use is the weights download the user confirmed.
 - Build gate for `f4651f83532f`: [`evidence/build-f4651f83532f/summary.md`](../evidence/build-f4651f83532f/summary.md) — 175 tests, 174 passed, 1 skipped (the live node-agent test), lint clean.
 - Screenshot baselines (`docs/screenshots/`) were not re-recorded; the Private AI screen changed.
 - Nothing here is a production-readiness claim, and AI use earns nothing (no ORE, no income).
+
+## ORE advisor on device (branch `feature/ondevice-advisor`)
+
+The "Explain this round" card, the Round Proof screen and the mainnet review now use the selected **downloaded** on-device model. Code: [`AdvisorExplainer.kt`](../app/src/main/java/com/edgeore/app/edge/AdvisorExplainer.kt).
+
+- **Input:** only facts EdgeORE already computed: the round/tile rule-based text, the Round Proof check (verified / failed / unverified), and the decoded review message (round, squares, lamports, network). The explainer gets text in and gives text out. It has no access to the wallet, MWA, the receipt signer or keys. It never edits the review, the amounts or the presets. `AdvisorExplainerTest` checks this structurally.
+- **Output:** every answer starts with "AI explanation, may be wrong; check the review." If an answer mentions APR, APY, yield, profit, earnings, guarantees and similar, it is dropped and the rule-based text is shown instead.
+- **Fallback:** the rule-based text is shown, with a note, when no model is downloaded ("Not configured"), when the runtime fails (for example a native-library error on an unsupported phone), or when the model returns nothing.
+- **Offline:** once the model file is downloaded and its SHA-256 is verified, generation runs locally with no network.
+- **Model:** the existing allowlisted, ungated `qwen2.5-1.5b-instruct-q8` (1,597,931,520 bytes, Apache-2.0, SHA-256 pinned). It is downloaded only after you opt in; it is not bundled in the APK.
+
+### Options considered (Oct 2026)
+
+| Option | Fit |
+|---|---|
+| LiteRT-LM 0.8.0 (Google AI Edge, already here) | Works with the pinned Kotlin 2.0.21 and coroutines 1.9.0 through the Java bridge; model downloaded on opt-in with a SHA-256 check. **Chosen.** |
+| ML Kit GenAI Prompt API (Gemini Nano via AICore) | Beta (`genai-prompt` 1.0.0-beta*), and only on a listed set of recent flagship phones. It would add a new dependency to the pinned set. Not adopted. |
+| Newer `litert-community` models (e.g. Qwen3-0.6B, 614 MB) | Smaller, but the current files were updated for LiteRT-LM 0.18, which would lift the pinned Kotlin and coroutines versions. Not adopted. |
+| llama.cpp Android | Needs NDK/JNI native code and GGUF handling; more native surface than the existing bridge. Not adopted. |
+
+**Not verified:** generation has not been run on a physical phone with this model and runtime (see the status at the top of this page).

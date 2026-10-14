@@ -675,7 +675,7 @@ class EdgeOreViewModel(
                         )[square],
                     )
             }
-        _edge.update { it.copy(explanation = text, explainerBackend = backend) }
+        runExplainer(if (square == null) AdvisorSubject.ROUND else AdvisorSubject.TILE, text, backend, snap != null)
     }
 
     fun setRoundAlerts(on: Boolean) {
@@ -2716,4 +2716,52 @@ class EdgeOreViewModel(
     fun applyCrewReassign(active: Set<String>) {
         _crew.value = reassignedCrewState(_crew.value, active, _wallet.value.address, signer)
     }
+
+    /** Selected downloaded on-device model, or null (not downloaded, unsupported, busy). Text in, text out. */
+    private fun onDeviceAdvisorModel(): (suspend (String, String) -> String?)? =
+        onDeviceAi.state.value
+            .takeIf { it.selectedDownloaded }
+            ?.let { { system, prompt -> onDeviceAi.generateOnce(system, prompt) } }
+
+    private fun runExplainer(
+        subject: AdvisorSubject,
+        facts: String,
+        backend: String?,
+        useModel: Boolean,
+    ) {
+        val label = onDeviceAdvisorLabel()
+        val shown = label ?: backend?.let { "$it (not used by the explainer)" }
+        _edge.update { it.copy(explanation = facts, explainerBackend = shown) }
+        val model = if (useModel) onDeviceAdvisorModel() else null
+        if (model == null) return
+        viewModelScope.launch {
+            val r = AdvisorExplainer.explain(subject, facts, facts, model)
+            val text = r.text + (r.note?.let { n -> "\n$n" } ?: "")
+            _edge.update { it.copy(explanation = text, explainerBackend = label) }
+        }
+    }
+
+    private fun onDeviceAdvisorLabel(): String? =
+        onDeviceAi.state.value
+            .takeIf { it.selectedDownloaded }
+            ?.let { "${it.selected?.name} on this phone (offline)" }
+
+    /** Explain a stored Round Proof result in plain words. Read-only. */
+    fun explainProof(sha256: String) {
+        val p = _edge.value.proofs.firstOrNull { it.sha256 == sha256 } ?: return
+        runExplainer(AdvisorSubject.ROUND_PROOF, AdvisorExplainer.proofFacts(p.check), advisorBackend(), true)
+    }
+
+    /** Explain the exact decoded review message. Read-only; it never edits the review or its amounts. */
+    fun explainReview() {
+        val st = _review.value
+        val dec = st.draft?.decoded as? com.edgeore.app.solana.SolanaMessage.Decoded.OreDeploy ?: return
+        val mainnet = st.operation?.cluster == com.edgeore.app.solana.SolanaRpc.MAINNET_CLUSTER
+        val d = dec.deploy
+        val facts = AdvisorExplainer.reviewFacts(d.roundId, d.mask, d.amountPerSquareLamports, d.totalLamports, mainnet)
+        runExplainer(AdvisorSubject.REVIEW_MESSAGE, facts, advisorBackend(), true)
+    }
 }
+
+private typealias AdvisorSubject = com.edgeore.app.edge.AdvisorExplainer.Subject
+private typealias AdvisorExplainer = com.edgeore.app.edge.AdvisorExplainer

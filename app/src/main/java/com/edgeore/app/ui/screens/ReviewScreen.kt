@@ -235,6 +235,7 @@ fun ReviewScreen(
                         }
                     }
                     KeyValue("Action", "ORE v3 · Deploy (instruction 6)")
+                    ReviewExplainSection(vm)
                     KeyValue("Program", com.edgeore.app.ore.OreV3.PROGRAM_ID, mono = true)
                     KeyValue("Signer and authority", d.fromAddress, mono = true)
                     KeyValue("Round", dec.deploy.roundId.toString())
