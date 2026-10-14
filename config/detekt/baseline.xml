@@ -21,13 +21,15 @@
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$fun refreshBalances()</ID>
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun nodeCommand(action: String)</ID>
     <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
+    <ID>CyclomaticComplexMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private suspend fun edgeAfterRead(snap: com.edgeore.app.ore.OreSnapshot)</ID>
+    <ID>CyclomaticComplexMethod:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, onReassign: (Set&lt;String&gt;) -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:EdgePolicy.kt$EdgePolicy$fun evaluate( s: ResourceSettings, d: DeviceSnapshot?, ): EdgeEvaluation</ID>
     <ID>CyclomaticComplexMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>CyclomaticComplexMethod:Markdown.kt$fun markdown(text: String): AnnotatedString</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
     <ID>CyclomaticComplexMethod:MineDeploy.kt$@Composable fun RoundBlocks( ui: OreDeployUi, snapshot: com.edgeore.app.ore.OreSnapshot?, synced: Boolean = snapshot != null, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MineHolo.kt$@Composable fun OreGridCard( cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit, )</ID>
-    <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
+    <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:MiningAnimation.kt$@Composable fun MiningAnimation( phase: SessionPhase, modifier: Modifier = Modifier, reducedMotion: Boolean = rememberReducedMotion(), )</ID>
     <ID>CyclomaticComplexMethod:NodeAgentClient.kt$NodeAgentClient$private fun post( path: String, body: String, ): HttpOutcome</ID>
@@ -36,9 +38,13 @@
     <ID>CyclomaticComplexMethod:OnDeviceModels.kt$OnDeviceCatalog$fun parse(json: String): List&lt;OnDeviceModel&gt;</ID>
     <ID>CyclomaticComplexMethod:Operations.kt$OperationStore$fun reserve( cluster: String, signer: String, recipient: String, lamports: Long, message: ByteArray, messageSha256: String, blockhash: String, lastValidBlockHeight: Long, dailyLimit: Long, externalLamports: Long = 0, ): ReserveResult</ID>
     <ID>CyclomaticComplexMethod:OreDeployReview.kt$OreDeployReview$fun prepare( signer: ByteArray, roundId: Long, totalLamports: Long, mask: Int, recentBlockhash: ByteArray, balanceLamports: Long?, spentTodayLamports: Long, dailyLimitLamports: Long, cluster: String = OreDeployNetwork.CLUSTER, ): TransferReview.Draft</ID>
+    <ID>CyclomaticComplexMethod:OreProofV0.kt$OreProofV0$fun build( deployReceiptId: String, deployReceiptBody: String, receiptExportJson: String, roundProofJson: String, attestation: Map&lt;String, Any?&gt;? = null, ): String</ID>
+    <ID>CyclomaticComplexMethod:OreProofV0.kt$OreProofV0$fun check( text: String, exportAccepted: Boolean, walletSigsVerified: Int, verifiedBodies: Map&lt;String, JSONObject&gt;, roundAddressFor: (Long) -&gt; String, ): List&lt;Claim&gt;</ID>
     <ID>CyclomaticComplexMethod:OreScreen.kt$@Composable fun OreContent( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>CyclomaticComplexMethod:OwnedHostModel.kt$OwnedHostModelClient$private fun request( method: String, path: String, body: String?, ): String</ID>
+    <ID>CyclomaticComplexMethod:ProtocolGuard.kt$ProtocolGuard$fun check( program: ByteArray?, programDataHead: ByteArray?, config: ByteArray?, ): Result</ID>
     <ID>CyclomaticComplexMethod:ReceiptChecker.kt$fun checkReceipt( args: Array&lt;String&gt;, out: PrintStream = System.out, err: PrintStream = System.err, ): Int</ID>
+    <ID>CyclomaticComplexMethod:ReceiptChecker.kt$fun checkRoundProof( path: String, out: PrintStream, err: PrintStream, ): Int</ID>
     <ID>CyclomaticComplexMethod:Receipts.kt$ReceiptLog$@Synchronized fun append(d: ReceiptDraft): StoredReceipt</ID>
     <ID>CyclomaticComplexMethod:Receipts.kt$ReceiptLog$fun export( subset: List&lt;StoredReceipt&gt;? = null, hideDeviceKey: Boolean = false, ): String</ID>
     <ID>CyclomaticComplexMethod:Receipts.kt$ReceiptVerifier$fun verify( exportJson: String, trustedKeys: Collection&lt;ByteArray&gt;?, local: List&lt;StoredReceipt&gt;, ): Report</ID>
@@ -48,6 +54,7 @@
     <ID>CyclomaticComplexMethod:ReceiptsScreen.kt$@Composable fun ReceiptDetailScreen( r: StoredReceipt, onExport: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:ReceiptsScreen.kt$@Composable fun ReceiptsScreen( vm: EdgeOreViewModel, onOpen: (StoredReceipt) -&gt; Unit, onExport: (StoredReceipt?, Boolean) -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:ReviewScreen.kt$@Composable fun ReviewScreen( vm: EdgeOreViewModel, onSign: () -&gt; Unit, onConnect: () -&gt; Unit, onScanQr: () -&gt; Unit = {}, onPickQrImage: () -&gt; Unit = {}, )</ID>
+    <ID>CyclomaticComplexMethod:RoundProof.kt$RoundProof$fun check( proofJson: String, signedDigests: Collection&lt;String&gt;, roundAddressFor: (Long) -&gt; String, ): Check</ID>
     <ID>CyclomaticComplexMethod:SolanaMessage.kt$SolanaMessage$private fun decodeUnchecked(message: ByteArray): Decoded</ID>
     <ID>CyclomaticComplexMethod:StorageController.kt$StorageController$suspend fun import( displayName: String?, allowanceBytes: Long, open: () -&gt; InputStream?, ): ImportOutcome</ID>
     <ID>CyclomaticComplexMethod:StorageController.kt$StorageLabels$fun remoteState( job: BackupJob?, availability: ProviderAvailability, ): RemoteState</ID>
@@ -88,6 +95,17 @@
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatCell( label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false, )</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatusPill( text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null, )</ID>
     <ID>FunctionNaming:EdgeOreApp.kt$@Composable fun EdgeOreApp( vm: EdgeOreViewModel, actions: PlatformActions, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewScreen( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewReassignCard( plan: com.edgeore.app.edge.Crew.Plan, onReassign: (Set&lt;String&gt;) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, onReassign: (Set&lt;String&gt;) -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun EdgeInsightsSection( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, onHistory: () -&gt; Unit, onProofs: () -&gt; Unit, onAlerts: (Boolean) -&gt; Unit, onCrew: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun ExplainerCard( text: String?, backend: String?, onRound: () -&gt; Unit, onTile: (() -&gt; Unit)?, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun HistoryView(rows: List&lt;History.Row&gt;)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun PlanningCalculatorCard(initial: com.edgeore.app.edge.PlanningCalculator.Inputs? = null)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun ProtocolBanner(r: com.edgeore.app.edge.ProtocolGuard.Result?)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundAlertsCard( on: Boolean, message: String?, onToggle: (Boolean) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundProofView( proofs: List&lt;StoredProof&gt;, onExport: (StoredProof) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun TileInsightPanel( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun CopperButton( text: String, icon: ImageVector?, tag: String, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun Hero( art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
@@ -125,7 +143,7 @@
     <ID>FunctionNaming:MineHolo.kt$@Composable fun WalletConnectRow( address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable private fun Pill( text: String, modifier: Modifier, primary: Boolean = false, danger: Boolean = false, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineHolo.kt$@Composable private fun RowScope.Res( icon: ImageVector, label: String, value: String, source: String, tag: String, dot: NetActivity? = null, reducedMotion: Boolean = true, )</ID>
-    <ID>FunctionNaming:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable fun OreEntry(onOpen: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable private fun LabeledSlider( icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange&lt;Float&gt;, onChange: (Int) -&gt; Unit, )</ID>
@@ -183,6 +201,10 @@
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$fun sendPrompt(prompt: String)</ID>
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun nodeCommand(action: String)</ID>
     <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private fun receiptFor(op: PendingOperation): ReceiptDraft?</ID>
+    <ID>LongMethod:EdgeOreViewModel.kt$EdgeOreViewModel$private suspend fun edgeAfterRead(snap: com.edgeore.app.ore.OreSnapshot)</ID>
+    <ID>LongMethod:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, onReassign: (Set&lt;String&gt;) -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:EdgePanels.kt$@Composable fun PlanningCalculatorCard(initial: com.edgeore.app.edge.PlanningCalculator.Inputs? = null)</ID>
+    <ID>LongMethod:EdgePanels.kt$@Composable fun TileInsightPanel( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
     <ID>LongMethod:FourScreens.kt$@Composable fun JavAiTop(vm: EdgeOreViewModel)</ID>
     <ID>LongMethod:FourScreens.kt$@Composable fun SettingsScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit, )</ID>
     <ID>LongMethod:MineDeploy.kt$@Composable fun OreMiningCard( ui: OreDeployUi, walletConnected: Boolean, balanceLamports: Long?, onEdit: ((OreDeployUi) -&gt; OreDeployUi) -&gt; Unit, onCheck: () -&gt; Unit, onDeploy: () -&gt; Unit, onNetwork: (mainnet: Boolean) -&gt; Unit = {}, snapshot: com.edgeore.app.ore.OreSnapshot? = null, nowMs: Long = System.currentTimeMillis(), syncError: String? = null, )</ID>
@@ -192,7 +214,7 @@
     <ID>LongMethod:MineHolo.kt$@Composable fun NetworkSelector( selected: Cluster, onSelect: (Cluster) -&gt; Unit, onSettings: () -&gt; Unit = {}, )</ID>
     <ID>LongMethod:MineHolo.kt$@Composable fun OreGridCard( cluster: Cluster, ore: OreState, deploy: OreDeployUi, onToggle: (Int) -&gt; Unit, )</ID>
     <ID>LongMethod:MineHolo.kt$@Composable fun WalletConnectRow( address: String?, busy: Boolean, cluster: Cluster, onConnect: () -&gt; Unit, onCopy: () -&gt; Unit, onSwitch: () -&gt; Unit, onDisconnect: () -&gt; Unit, )</ID>
-    <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:MineScreen.kt$@Composable fun MineScreen( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>LongMethod:MineScreen.kt$@Composable fun MiningSessionPanel( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
     <ID>LongMethod:MiningAnimation.kt$@Composable fun MiningAnimation( phase: SessionPhase, modifier: Modifier = Modifier, reducedMotion: Boolean = rememberReducedMotion(), )</ID>
     <ID>LongMethod:MiningAnimationComposeTest.kt$MiningAnimationComposeTest$@Config(sdk = [28], qualifiers = "w360dp-h1000dp-hdpi") @Test fun frames()</ID>
@@ -203,12 +225,15 @@
     <ID>LongMethod:Operations.kt$OperationStore$fun reserve( cluster: String, signer: String, recipient: String, lamports: Long, message: ByteArray, messageSha256: String, blockhash: String, lastValidBlockHeight: Long, dailyLimit: Long, externalLamports: Long = 0, ): ReserveResult</ID>
     <ID>LongMethod:OreHomeStrip.kt$@Composable fun OreHomeStrip( ore: OreState, nowMs: Long, onOpen: (pro: Boolean) -&gt; Unit, prices: List&lt;PriceQuote&gt; = emptyList(), )</ID>
     <ID>LongMethod:OreHomeStripTest.kt$OreHomeStripTest$@org.robolectric.annotation.GraphicsMode(org.robolectric.annotation.GraphicsMode.Mode.NATIVE) @Config(sdk = [28], qualifiers = "w360dp-h1200dp-hdpi") @Test fun homePreview()</ID>
+    <ID>LongMethod:OreProofV0.kt$OreProofV0$fun build( deployReceiptId: String, deployReceiptBody: String, receiptExportJson: String, roundProofJson: String, attestation: Map&lt;String, Any?&gt;? = null, ): String</ID>
+    <ID>LongMethod:OreProofV0.kt$OreProofV0$fun check( text: String, exportAccepted: Boolean, walletSigsVerified: Int, verifiedBodies: Map&lt;String, JSONObject&gt;, roundAddressFor: (Long) -&gt; String, ): List&lt;Claim&gt;</ID>
     <ID>LongMethod:OreScreen.kt$@Composable fun OreContent( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>LongMethod:Receipts.kt$ReceiptLog$fun export( subset: List&lt;StoredReceipt&gt;? = null, hideDeviceKey: Boolean = false, ): String</ID>
     <ID>LongMethod:Receipts.kt$ReceiptVerifier$fun verify( exportJson: String, trustedKeys: Collection&lt;ByteArray&gt;?, local: List&lt;StoredReceipt&gt;, ): Report</ID>
     <ID>LongMethod:ReceiptsScreen.kt$@Composable fun ReceiptDetailScreen( r: StoredReceipt, onExport: () -&gt; Unit, )</ID>
     <ID>LongMethod:ReceiptsScreen.kt$@Composable fun ReceiptsScreen( vm: EdgeOreViewModel, onOpen: (StoredReceipt) -&gt; Unit, onExport: (StoredReceipt?, Boolean) -&gt; Unit, )</ID>
     <ID>LongMethod:ReviewScreen.kt$@Composable fun ReviewScreen( vm: EdgeOreViewModel, onSign: () -&gt; Unit, onConnect: () -&gt; Unit, onScanQr: () -&gt; Unit = {}, onPickQrImage: () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:RoundProof.kt$RoundProof$fun check( proofJson: String, signedDigests: Collection&lt;String&gt;, roundAddressFor: (Long) -&gt; String, ): Check</ID>
     <ID>LongMethod:SessionParts.kt$GatewayRoundTripPart$override suspend fun runRound( sessionId: String, round: Int, report: (Measurement) -&gt; Unit, ): String</ID>
     <ID>LongMethod:StorageController.kt$StorageController$suspend fun import( displayName: String?, allowanceBytes: Long, open: () -&gt; InputStream?, ): ImportOutcome</ID>
     <ID>LongMethod:StorageScreen.kt$@Composable fun StorageScreen( vm: EdgeOreViewModel, onBrowser: () -&gt; Unit, )</ID>
@@ -222,6 +247,10 @@
     <ID>LongParameterList:ContributionSession.kt$ContributionSession$( private val scope: CoroutineScope, private val parts: () -&gt; List&lt;SessionPart&gt;, private val blockedBy: () -&gt; String?, private val record: suspend (ReceiptDraft) -&gt; Unit, private val watchMs: Long = 2_000, val maxRounds: Int = MAX_ROUNDS, val maxDurationMs: Long = MAX_DURATION_MS, private val nowMs: () -&gt; Long = { System.nanoTime() / 1_000_000 }, private val newId: () -&gt; String = { UUID.randomUUID().toString().replace("-", "") }, )</ID>
     <ID>LongParameterList:DesignKit.kt$( icon: ImageVector, title: String, subtitle: String?, modifier: Modifier = Modifier, iconTint: Color = EdgeColors.mint, status: (@Composable () -&gt; Unit)? = null, footer: String? = null, onClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:DurableSpendTest.kt$DurableSpendTest$( s: OperationStore, signer: String, lamports: Long, limit: Long = 100, cluster: String = "devnet", external: Long = 0, )</ID>
+    <ID>LongParameterList:EdgeDifferentiatorsTest.kt$RoundBytes$( id: Long, deployed: List&lt;Long&gt;, slotHash: ByteArray, motherlode: Long = 0, reward: Long = OreV3.GRAMS_PER_ORE, topMiner: ByteArray? = null, )</ID>
+    <ID>LongParameterList:EdgePanels.kt$( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, onReassign: (Set&lt;String&gt;) -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:EdgePanels.kt$( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
+    <ID>LongParameterList:EdgePanels.kt$( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, onHistory: () -&gt; Unit, onProofs: () -&gt; Unit, onAlerts: (Boolean) -&gt; Unit, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:FourScreens.kt$( art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String, )</ID>
     <ID>LongParameterList:FourScreens.kt$( icon: ImageVector, label: String, value: String, tag: String, sub: String? = null, onClick: () -&gt; Unit, )</ID>
     <ID>LongParameterList:FourScreens.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onOpen: (String) -&gt; Unit, onAbout: () -&gt; Unit, onAi: () -&gt; Unit, )</ID>
@@ -236,7 +265,7 @@
     <ID>LongParameterList:MineHolo.kt$( text: String, modifier: Modifier, primary: Boolean = false, danger: Boolean = false, enabled: Boolean = true, icon: ImageVector? = null, onClick: () -&gt; Unit, )</ID>
     <ID>LongParameterList:MineScreen.kt$( icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, explanation: String, enforcement: String, value: Int, range: ClosedFloatingPointRange&lt;Float&gt;, onChange: (Int) -&gt; Unit, )</ID>
     <ID>LongParameterList:MineScreen.kt$( view: SessionView, edgeModeResumed: Boolean, headline: String, onStart: () -&gt; Unit, onStop: () -&gt; Unit, onToggleEdgeMode: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:MineScreen.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:MineScreen.kt$( vm: EdgeOreViewModel, onConnect: () -&gt; Unit, onDisconnect: () -&gt; Unit, onReview: () -&gt; Unit, onPreview: () -&gt; Unit, onOpenReview: () -&gt; Unit = onReview, onOpenTab: (com.edgeore.app.ui.Destination) -&gt; Unit = {}, onOre: () -&gt; Unit = {}, onOreMode: (pro: Boolean) -&gt; Unit = { onOre() }, onSettings: () -&gt; Unit = {}, onHistory: () -&gt; Unit = {}, onProofs: () -&gt; Unit = {}, onAlerts: (Boolean) -&gt; Unit = vm::setRoundAlerts, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>LongParameterList:ModelDownloader.kt$ModelDownloader.Companion$( input: InputStream, expectedSize: Long, expectedSha256: String, part: File, dest: File, progress: (Long, Long) -&gt; Unit, cancelled: () -&gt; Boolean, )</ID>
     <ID>LongParameterList:OnDeviceAiController.kt$OnDeviceAiController$( private val store: ModelStore, catalog: () -&gt; List&lt;OnDeviceModel&gt;, private val scope: CoroutineScope, private val runtimeLoader: RuntimeLoader, private val networkUp: () -&gt; Boolean, private val metered: () -&gt; Boolean = { false }, private val ramBytes: () -&gt; Long = { 0L }, private val downloader: ModelDownloader = ModelDownloader(), private val io: CoroutineDispatcher = Dispatchers.IO, private val onCompleted: suspend ( model: OnDeviceModel, prompt: String, answer: String, location: ExecutionLocation, ) -&gt; Unit = { _, _, _, _ -&gt; }, )</ID>
     <ID>LongParameterList:OnDeviceAiTest.kt$OnDeviceAiTest$( m: OnDeviceModel, store: ModelStore, runtime: FakeRuntime, net: Boolean, conn: (URL) -&gt; HttpURLConnection, loads: MutableList&lt;String&gt;, done: MutableList&lt;ExecutionLocation&gt;, )</ID>
@@ -244,11 +273,14 @@
     <ID>LongParameterList:OreDeployReview.kt$OreDeployReview$( signer: ByteArray, roundId: Long, totalLamports: Long, mask: Int, recentBlockhash: ByteArray, balanceLamports: Long?, spentTodayLamports: Long, dailyLimitLamports: Long, cluster: String = OreDeployNetwork.CLUSTER, )</ID>
     <ID>LongParameterList:OreScreen.kt$( ore: OreState, advisor: AdvisorState, advisorBackend: String?, nowMs: Long, onRefresh: () -&gt; Unit, onSetRpc: (String) -&gt; Unit, onAsk: (String) -&gt; Unit, onClear: () -&gt; Unit, initialPro: Boolean = true, compact: Boolean = false, )</ID>
     <ID>LongParameterList:Receipts.kt$( count: Int, firstSeq: Long, lastSeq: Long, lastSha: String, bundle: String, exportedAt: String, )</ID>
+    <ID>LongParameterList:RoundProof.kt$RoundProof$( roundAddress: String, roundBytes: ByteArray, readSlot: Long, rpc: String, minerAddress: String?, minerBytes: ByteArray?, configBytes: ByteArray? = null, )</ID>
     <ID>LongParameterList:StorageController.kt$StorageController$( private val vault: LocalVault, private val jobs: BackupJobStore, private val provider: BackupProvider, private val audit: StorageAudit? = null, private val onEvent: suspend (StorageEvent) -&gt; Unit = {}, private val io: CoroutineDispatcher = Dispatchers.IO, private val newId: () -&gt; String = { java.util.UUID .randomUUID() .toString() }, )</ID>
     <ID>LongParameterList:Theme.kt$EdgePalette$( val light: Boolean, val background: Color, val surface: Color, val surfaceRaised: Color, val surfacePressed: Color, val surfaceInset: Color, val mint: Color, val mintSoft: Color, val copper: Color, val copperDeep: Color, val mainnetWarning: Color, val textPrimary: Color, val textMuted: Color, val textTertiary: Color, val border: Color, val success: Color, val warning: Color, val danger: Color, val disabledSurface: Color, val disabledText: Color, val onAction: Color, val ambientTop: Color, val markEnd: Color, val copperEnd: Color, )</ID>
     <ID>LongParameterList:TransferReview.kt$TransferReview$( from: ByteArray, toAddress: String, amountSol: String, recentBlockhash: ByteArray, spentTodayLamports: Long, dailyLimitLamports: Long, )</ID>
     <ID>LoopWithTooManyJumpStatements:ContributionSession.kt$ContributionSession$while</ID>
+    <ID>LoopWithTooManyJumpStatements:Crew.kt$Crew$while</ID>
     <ID>LoopWithTooManyJumpStatements:DeviceMeters.kt$DiskSample.Companion$for</ID>
+    <ID>LoopWithTooManyJumpStatements:EdgeOreViewModel.kt$EdgeOreViewModel$for</ID>
     <ID>LoopWithTooManyJumpStatements:Markdown.kt$while</ID>
     <ID>LoopWithTooManyJumpStatements:Receipts.kt$ReceiptVerifier$for</ID>
     <ID>MagicNumber:AccountReader.kt$ReadOnlyAccountRpc$10</ID>
@@ -269,7 +301,6 @@
     <ID>MagicNumber:Clusters.kt$BalanceRpc$512</ID>
     <ID>MagicNumber:Clusters.kt$BalanceRpc$9</ID>
     <ID>MagicNumber:Clusters.kt$TokenRegistry$11</ID>
-    <ID>MagicNumber:Clusters.kt$TokenRegistry$6</ID>
     <ID>MagicNumber:Components.kt$0.12f</ID>
     <ID>MagicNumber:Components.kt$0.2f</ID>
     <ID>MagicNumber:Components.kt$0.72f</ID>
@@ -279,6 +310,10 @@
     <ID>MagicNumber:ContributionSession.kt$ContributionSession$1_000_000</ID>
     <ID>MagicNumber:ContributionSession.kt$ContributionSession$60_000</ID>
     <ID>MagicNumber:CpuBudget.kt$CpuBudget$1000</ID>
+    <ID>MagicNumber:Crew.kt$Crew$16_000</ID>
+    <ID>MagicNumber:Crew.kt$Crew$25</ID>
+    <ID>MagicNumber:Crew.kt$Crew$6</ID>
+    <ID>MagicNumber:Crew.kt$Crew$8</ID>
     <ID>MagicNumber:DesignKit.kt$14</ID>
     <ID>MagicNumber:DesignKit.kt$99</ID>
     <ID>MagicNumber:DeviceMeters.kt$1000</ID>
@@ -297,6 +332,14 @@
     <ID>MagicNumber:Ed25519.kt$Ed25519$32</ID>
     <ID>MagicNumber:Ed25519.kt$Ed25519$64</ID>
     <ID>MagicNumber:Ed25519.kt$Ed25519.KeyPair$32</ID>
+    <ID>MagicNumber:EdgeInsights.kt$PlanningCalculator$25</ID>
+    <ID>MagicNumber:EdgeInsights.kt$PlanningCalculator$25.0</ID>
+    <ID>MagicNumber:EdgeInsights.kt$RoundExplainer$3</ID>
+    <ID>MagicNumber:EdgeInsights.kt$RoundExplainer$9</ID>
+    <ID>MagicNumber:EdgeInsights.kt$StrategyPreset$3</ID>
+    <ID>MagicNumber:EdgeInsights.kt$TileInsight$0.75</ID>
+    <ID>MagicNumber:EdgeInsights.kt$TileInsight$1.5</ID>
+    <ID>MagicNumber:EdgeInsights.kt$TileInsight$100</ID>
     <ID>MagicNumber:EdgeOreApp.kt$1.5f</ID>
     <ID>MagicNumber:EdgeOreCore.kt$EdgeOreCore$25</ID>
     <ID>MagicNumber:EdgeOreCore.kt$EdgeOreCore$63</ID>
@@ -309,12 +352,14 @@
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$126</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$15_000</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$16</ID>
+    <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$20</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$200</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$2048</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$256</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$32</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$32000</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$33</ID>
+    <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$40</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$4_000_000</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$5</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$500</ID>
@@ -322,6 +367,14 @@
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$8000</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$8192</ID>
     <ID>MagicNumber:EdgeOreViewModel.kt$EdgeOreViewModel$90</ID>
+    <ID>MagicNumber:EdgePanels.kt$11</ID>
+    <ID>MagicNumber:EdgePanels.kt$16</ID>
+    <ID>MagicNumber:EdgePanels.kt$25</ID>
+    <ID>MagicNumber:EdgePanels.kt$3</ID>
+    <ID>MagicNumber:EdgePanels.kt$4</ID>
+    <ID>MagicNumber:EdgePanels.kt$5</ID>
+    <ID>MagicNumber:EdgePanels.kt$6</ID>
+    <ID>MagicNumber:EdgePanels.kt$64</ID>
     <ID>MagicNumber:Format.kt$Format$1000</ID>
     <ID>MagicNumber:Format.kt$Format$1_000_000L</ID>
     <ID>MagicNumber:Format.kt$Format$1_000_000_000L</ID>
@@ -464,6 +517,13 @@
     <ID>MagicNumber:OreDeployMessage.kt$OreDeployMessage$9</ID>
     <ID>MagicNumber:OreHomeStrip.kt$1000</ID>
     <ID>MagicNumber:OreHomeStrip.kt$50</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$0xff</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$101</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$152</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$25</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$64</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$72</ID>
+    <ID>MagicNumber:OreProofV0.kt$OreProofV0$8</ID>
     <ID>MagicNumber:OreReminders.kt$OreReminders$10</ID>
     <ID>MagicNumber:OreReminders.kt$OreReminders$20</ID>
     <ID>MagicNumber:OreReminders.kt$OreReminders$24</ID>
@@ -514,6 +574,12 @@
     <ID>MagicNumber:PlainError.kt$PlainError$140</ID>
     <ID>MagicNumber:PlainLanguage.kt$PlainLanguage$4</ID>
     <ID>MagicNumber:PlainLanguage.kt$PlainLanguage$9</ID>
+    <ID>MagicNumber:ProtocolGuard.kt$ProtocolGuard$12</ID>
+    <ID>MagicNumber:ProtocolGuard.kt$ProtocolGuard$13</ID>
+    <ID>MagicNumber:ProtocolGuard.kt$ProtocolGuard$3</ID>
+    <ID>MagicNumber:ProtocolGuard.kt$ProtocolGuard$36</ID>
+    <ID>MagicNumber:ProtocolGuard.kt$ProtocolGuard$4</ID>
+    <ID>MagicNumber:ProtocolGuard.kt$ProtocolGuard$45</ID>
     <ID>MagicNumber:QrScanActivity.kt$QrScanActivity$16</ID>
     <ID>MagicNumber:QrScanActivity.kt$QrScanActivity$16f</ID>
     <ID>MagicNumber:QrScanActivity.kt$QrScanActivity$32</ID>
@@ -543,6 +609,19 @@
     <ID>MagicNumber:ReviewScreen.kt$6f</ID>
     <ID>MagicNumber:ReviewScreen.kt$7f</ID>
     <ID>MagicNumber:ReviewScreen.kt$8f</ID>
+    <ID>MagicNumber:RoundAlertNotifier.kt$RoundAlertNotifier$100</ID>
+    <ID>MagicNumber:RoundProof.kt$RoundProof$3</ID>
+    <ID>MagicNumber:RoundProof.kt$RoundProof$4</ID>
+    <ID>MagicNumber:RoundProof.kt$RoundProof$5</ID>
+    <ID>MagicNumber:RoundProof.kt$RoundProof$6</ID>
+    <ID>MagicNumber:RoundProof.kt$RoundProof$7</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$0xff</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$10</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$100</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$256</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$32</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$500L</ID>
+    <ID>MagicNumber:RoundRules.kt$RoundRules$8</ID>
     <ID>MagicNumber:SafeFiles.kt$AtomicFiles$8</ID>
     <ID>MagicNumber:SafeFiles.kt$BoundedInput$1024</ID>
     <ID>MagicNumber:SafeFiles.kt$BoundedInput$64L</ID>
@@ -641,6 +720,7 @@
     <ID>MatchingDeclarationName:Charts.kt$Domain</ID>
     <ID>MatchingDeclarationName:DesignKit.kt$PillTone</ID>
     <ID>MatchingDeclarationName:Icons.kt$EdgeIcons</ID>
+    <ID>MaxLineLength:AccountReader.kt$AccountReader$)</ID>
     <ID>MaxLineLength:AccountReader.kt$ReadOnlyAccountRpc$runCatching { parsePerformanceSample(http.call("getRecentPerformanceSamples", JSONArray().put(1))) }.getOrNull()</ID>
     <ID>MaxLineLength:AddressQr.kt$AddressQr$"The link needs a reference account added to the transaction. EdgeORE cannot build that, so it will not pretend to."</ID>
     <ID>MaxLineLength:AddressQr.kt$AddressQr$"This is a Solana Pay transaction request (a server builds the transaction). EdgeORE only builds and reviews its own devnet SOL transfer."</ID>
@@ -766,6 +846,18 @@
     <ID>MaxLineLength:ControlEffectsTest.kt$ControlEffectsTest$private val controlCall = Regex("""^\s*(Switch|Slider|ResourceControl|LabeledSlider|PrivacySwitch)\(""", RegexOption.MULTILINE)</ID>
     <ID>MaxLineLength:ControlEffectsTest.kt$ControlEffectsTest$private val helperDef = Regex("""private fun (LabeledSlider|PrivacySwitch)\(.*?\n}\n""", RegexOption.DOT_MATCHES_ALL)</ID>
     <ID>MaxLineLength:CpuBudget.kt$CpuBudget$fun storedBudgetLabel(percent: Int): String</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$"EdgeORE never holds funds. There is no deposit and no shared wallet: each member deploys their own share from "</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$)</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$*</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$Signed(plan, j.getString("scheme"), j.getString("signature"), if (j.isNull("key")) null else j.getString("key"))</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$return LINK_PREFIX + Base64.getUrlEncoder().withoutPadding().encodeToString(j.toString().toByteArray(Charsets.UTF_8))</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$return Stats(last?.coverageMask?.let(Integer::bitCount) ?: 0, plans.map { it.roundId }.toSet().size, wins, last?.members?.size ?: 0)</ID>
+    <ID>MaxLineLength:Crew.kt$Crew$val spki = s.keySpkiB64?.let { runCatching { Base64.getDecoder().decode(it) }.getOrNull() } ?: return Check.INVALID</ID>
+    <ID>MaxLineLength:Crew.kt$Crew.Signed$/** For keystore-p256: the SPKI of the signing key (base64). For the wallet scheme the creator address is the key. */</ID>
+    <ID>MaxLineLength:Crew.kt$Crew.Signed$/** Scheme "ed25519-wallet": creator's wallet signed the canonical bytes (signMessage). "keystore-p256": local Keystore. */</ID>
+    <ID>MaxLineLength:CrewTest.kt$CrewTest$// a deployed 3M got 0 back; b deployed 6M got 9M back. Net +0 overall -&gt; fair net 0 each... use concrete numbers.</ID>
+    <ID>MaxLineLength:CrewTest.kt$CrewTest$Crew.Plan("c1", "Night crew", 439200, creator, listOf(Crew.Member(a, 0b111, 1_000_000), Crew.Member(b, 0b111000, 2_000_000)))</ID>
+    <ID>MaxLineLength:CrewTest.kt$CrewTest$assertTrue(Crew.problems(plan().copy(members = listOf(Crew.Member(a, 1, 1), Crew.Member(a, 2, 1)))).isNotEmpty())</ID>
     <ID>MaxLineLength:DailyCheckIn.kt$DailyCheckIn$return Result.Started(s.copy(slotStarts = s.slotStarts + now, streakDays = streak, lastDay = today, points = s.points + 1))</ID>
     <ID>MaxLineLength:DefaultStateWalkTest.kt$DefaultStateWalkTest$)</ID>
     <ID>MaxLineLength:DesignKit.kt$/* * Small shared pieces: status pill, count badge, icon tile, stat cell, divider and the "fact card" layout * (icon tile + title/subtitle + status pill header, a content block, a muted footer line). * * Adapted from OptimAI Agentic for Android (MIT License, Copyright (c) 2026 OptimAI Agentic contributors; see NOTICE): * DSBadge, CountBadge, DSIconTile and DSDivider from ui/components/Components.kt, StatCell from ui/agent/AgentChatScreen.kt * and the header/content/footer layout of TechnicalCard from ui/agent/TechnicalCards.kt. Changes for EdgeORE: EdgeORE * colours, text is never below 12 sp, a pill always carries text (and optionally an icon) so status never relies on * colour alone, and the content is whatever real state the caller passes; nothing here has sample values. */</ID>
@@ -784,9 +876,28 @@
     <ID>MaxLineLength:DeviceResources.kt$ReadingFreshness$State.NOT_READ -&gt; if (lastReadFailed) "Device readings unavailable: the read failed" else "Device readings not taken yet"</ID>
     <ID>MaxLineLength:DurableSpendTest.kt$DurableSpendTest$)</ID>
     <ID>MaxLineLength:DurableSpendTest.kt$DurableSpendTest$val results = (1..40).map { i -&gt; async(Dispatchers.Default) { reserve(s, "A", 30 + (i % 3).toLong()) } }.awaitAll()</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$EdgeDifferentiatorsTest$// Winner: 250M * (1e9 - 1e7) / 1e9 = 247.5M. Loser sq 3: admin 5M, protocol 49.5M, returned 445.5M -&gt; 100M*445.5/500 = 89.1M.</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$EdgeDifferentiatorsTest$assertEquals(TileInsight.Crowding.EMPTY, TileInsight.tiles(List(25) { 0L }, List(25) { 0L }, 1, 1, 0)[3].crowding)</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$EdgeDifferentiatorsTest$for (bad in listOf("APR", "yield", "profit", "guarantee", "official", "income")) assertFalse(bad, text.contains(bad, true))</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$EdgeDifferentiatorsTest$val round = RoundRules.decodeRound(RoundBytes.round(5, deployed, RoundBytes.hashFor(r), topMiner = ByteArray(32)))</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$EdgeDifferentiatorsTest$val text = RoundExplainer.tile(t) + RoundExplainer.round(9, List(25) { 5_000_000L }, "00:30") + RoundExplainer.NOT_CONFIGURED</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$ProtocolGuardTest$JSONObject(javaClass.classLoader!!.getResource("ore/mainnet-protocol-capture.json").readText()).getJSONObject("accounts")</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$ProtocolGuardTest$val head = b("programdataHead").also { ByteBuffer.wrap(it).order(ByteOrder.LITTLE_ENDIAN).putLong(4, 460_000_000L) }</ID>
+    <ID>MaxLineLength:EdgeDifferentiatorsTest.kt$RoundBytes$topMiner ?: if (w != null &amp;&amp; !RoundRules.isSolo(id, w)) Base58.decodePublicKey(RoundRules.SPLIT_ADDRESS) else ByteArray(32)</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$RoundAlerts$out += Alert(Kind.YOU_WON, round.id, "Your squares won ORE in round #${round.id}. Open Round Proof to check it.")</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$RoundExplainer$TileInsight.Crowding.CROWDED -&gt; "It is more crowded than average, so a win here is shared among more SOL. "</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$RoundExplainer$TileInsight.Crowding.EMPTY -&gt; "Nobody is on it yet, so any ORE it wins would be shared with fewer people. "</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$RoundExplainer$append("On average about ${TileInsight.pct(TileInsight.expectedSolCostFraction())} of deployed SOL goes to fees. ")</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$RoundExplainer$append("Round #$id: ${sol(deployed.sum())} SOL deployed across ${deployed.count { it &gt; 0 }} of 25 squares. ")</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$RoundExplainer$append("When it ends, one square is chosen from the round's on-chain entropy; that square's miners share the ORE. ")</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$StrategyPreset$SKIP_CROWDED -&gt; tiles.filter { it.crowding != TileInsight.Crowding.CROWDED }.fold(0) { m, t -&gt; m or (1 shl t.square) }</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$StrategyPreset$SOLO -&gt; tiles.sortedWith(compareBy({ it.deployedLamports }, { it.square })).take(3).fold(0) { m, t -&gt; m or (1 shl t.square) }</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$TileInsight$*</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$TileInsight$/** Admin fee 1% on every square; non-winning squares also pay 10% of the remainder (calculate_fees / checkpoint.rs). */</ID>
+    <ID>MaxLineLength:EdgeInsights.kt$TileInsight.Tile$/** Estimated SOL kept for [stakeLamports] on this square (same for every square; fees do not depend on the pick). */</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$"Around 10:00 local time; quiet hours 21:00–09:00. At most one per day. Delivery may be delayed by Android."</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$"EdgeORE ${BuildConfigInfo.VERSION} (${AppClock.buildStamp()}) · transfers use Solana devnet; ORE Deploy is devnet by default with an opt-in mainnet option, capped at 0.01 SOL per deploy and signed in your wallet. Hackathon build 0.1.0-clockin; no rewards or income."</ID>
-    <ID>MaxLineLength:EdgeOreApp.kt$"Hackathon build 0.1.0-clockin. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token."</ID>
+    <ID>MaxLineLength:EdgeOreApp.kt$"Hackathon build 0.1.0-clockin. No ORE rewards, payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token."</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$"Node session: ${session.phase.name.lowercase()}. ${session.failure ?: session.note ?: "Inspect each worker before starting. Configure your node in Nodes and gateway in Storage."}"</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$"ORE: the 5×5 board reads mainnet. ORE Deploy (Mine) is reviewed and signed by you in your wallet; mainnet deploys are capped at 0.01 SOL and risk that SOL. No reward campaign is configured. AI conversation is available separately in AI using your configured owned host or local model."</ID>
     <ID>MaxLineLength:EdgeOreApp.kt$"Receipts: ${receipts.size} stored. Verification checks signed contents; it does not independently confirm payment."</ID>
@@ -807,20 +918,27 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$"Node did not acknowledge revocation; its session stays valid until expiry (≤24 h) or owner SIGUSR1."</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$"Owned host refused at send time: ${(decision as EndpointPolicy.Decision.Refused).reason}. Nothing was sent."</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$"Returned message bytes identical to reviewed bytes; Ed25519 signature valid for connected account"</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$"Round and Miner account bytes read once from ${_ore.value.rpc}; results re-derived on device per regolith-labs/ore@48c203bd. "</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$"TLS certificate matched pinned SHA-256; node accepted Ed25519-signed single-use challenge"</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$"Wallet bytes rejected: ${v.reason} (returned transaction SHA-256 ${Sha256.hex(result.signedTransaction)})"</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$)</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$.</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** An unsigned draft that is edited or reset releases its reservation. Signed bytes are kept until observed or discarded. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Builds the exact Deploy message and hands it to the same review as a transfer. Nothing is signed or sent here. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Closes the socket so this phone stops waiting at once. The host is not asked to stop and does not acknowledge. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Lamports counted against today's budget (UTC day) for the connected account: each operation once, plus legacy receipts. */</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Plain-words explanation. The AI never signs; with no model configured the rule-based text is shown and says so. */</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Pre-fills the square mask only. The exact-message review, MWA signature, cap, risk tick and Rounds=1 are unchanged. */</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Shareable bundle: the receipt export plus the proof JSON, checkable offline with tools/receipt-checker --round-proof. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Start Mining: turns Edge Mode on if it was paused, then starts one session (refused with a reason if a gate fails). */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Used only for an owner-switched, owner-signed ORE v3 Deploy on mainnet (capped at 0.01 SOL). Transfers never use it. */</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$/** Which AI path the advisor would use, or null ("Not configured"). The owned host is preferred when a model is chosen. */</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// ---------- EdgeORE differentiators: tile insight, presets, alerts, history, explainer, Round Proof (read-only; nothing signs) ----------</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// ---------- ORE v3 Deploy: devnet by default, owner-switched mainnet capped at 0.01 SOL; each deploy reviewed, signed in the wallet and submitted separately ----------</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// Cap first: an over-cap mainnet amount is refused here, before a blockhash is fetched or any message or wallet request exists.</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// Durable wallet operations. A damaged store fails closed: transfers are disabled, never reset to "nothing pending".</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$// Keystore first. If it is unavailable, a persisted (weaker, labelled) software key keeps the same identity across restarts.</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$JSONObject(r.body).optJSONObject("digests")?.optString(com.edgeore.app.edge.RoundProof.DIGEST_KEY)?.let { it to r.id }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$NodeState(ops = _node.value.ops, status = "Session already revoked on node. Local key destroyed.")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$StorageController(fileVault, backupJobs, NotConfiguredBackupProvider, storageAudit, onEvent = { recordStorage(it) })</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_advisor.update { it.copy(busy = true, error = null, messages = it.messages + AdvisorMessage(true, q, System.currentTimeMillis())) }</ID>
@@ -835,6 +953,7 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_node.value = NodeState(record = rec, ops = _node.value.ops, status = "Paired. Read health to observe the node.")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_observation.value = ObservationAttempt(at, false, "No wallet address to observe. Nothing was broadcast.")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_oreDeploy.update { if (it.mainnet != mainnet) it else it.copy(availability = a, mainnetBalanceLamports = bal) }</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_oreDeploy.value.totalLamports ?: com.edgeore.app.solana.OreDeployLimits.MAINNET_CAP_LAMPORTS</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_receiptDamage.value = listOf(DamagedLine(0, "Receipt log could not be read: ${e.message ?: e.javaClass.simpleName}"))</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a $cluster blockhash: ${e.message}") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_review.update { it.copy(phase = ReviewPhase.EDITING, message = "Could not fetch a devnet blockhash: ${e.message}") }</ID>
@@ -842,18 +961,27 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_storage.update { it.copy(quotaMb = v, note = "Daily quota stored as $v MB. Usage is not metered in this build.") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$_verify.value = VerifyOutcome(false, "No receipts yet: create one first, then run the tamper test.", emptyList())</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$com.edgeore.app.edge.RoundAlerts.roundEnding(snap.round.id, secs, edgePrefs.getLong("endingFor", -1).takeIf { it &gt;= 0 })</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$com.edgeore.app.ore.OreClock.at(snap.board, snap.boardSlot, System.currentTimeMillis() - snap.observedAtMs, snap.slotRate)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$digests = mapOf("commandPayloadSha256" to (r.payloadSha256 ?: ""), "nodeFingerprint" to rec.fingerprint)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$digests = mapOf("nodeFingerprint" to challenge.fingerprint, "tlsCertificateSha256" to rec.certSha256)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$e.observation + ". App-record integrity evidence; not proof of provider storage or physical deletion."</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$edgePrefs.edit().putString("pending", com.edgeore.app.edge.PendingRounds.encode(m.toSortedMap().toList().takeLast(20).toMap())).apply()</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$else -&gt; cm.getNetworkCapabilities(cm.activeNetwork)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$g.check(head.accounts[0]?.data, head.accounts[1]?.data, cfg?.takeIf { it.owner == com.edgeore.app.ore.OreV3.PROGRAM_ID }?.data)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (_edge.value.alertsOn) alerts.forEach { com.edgeore.app.notifications.RoundAlertNotifier.post(getApplication(), it) }</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (_edge.value.protocol != null &amp;&amp; _edge.value.protocol !is com.edgeore.app.edge.ProtocolGuard.Result.Unknown) return</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (a.selectedModel != null &amp;&amp; a.endpoint.isNotBlank()) return "${a.selectedModel} on your owned host (${a.location ?: a.endpoint})"</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (edgeJob?.isActive != true) edgeJob = viewModelScope.launch { runCatching { edgeAfterRead(snap) } }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$if (offline) "Runtime answered in-process; no active network before or after the run" else "Runtime answered in-process; a network was active, so offline is not claimed"</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$is BoundedInput.TextResult.Refused -&gt; _ai.update { it.copy(statusDetail = "Document not attached: ${read.reason}") }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$is EndpointPolicy.Decision.Refused -&gt; _ai.update { it.copy(status = AiStatus.NO_ENDPOINT, statusDetail = decision.reason) }</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$it.copy(alertsOn = v, alertsMessage = if (on &amp;&amp; !allowed) "Notifications are not allowed for EdgeORE, so alerts stay off." else null)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$it.copy(phase = ReviewPhase.PREPARING, message = null, draft = null, verified = null, operationId = null, operation = null)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$local = Evidence("CHECKED", "Send attempt recorded before the network call; no acknowledgement observed")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$local: Evidence = Evidence("CHECKED", "Durable operation ${op.state}; exact reviewed message digest recorded")</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$localObservation = Evidence("CHECKED", "Round account owner, discriminator, size and PDA checked; rules re-derived")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$mints.firstOrNull { it.symbol == "ORE" }?.let { m -&gt; read(prev?.ore) { rpcClient.token(owner, m, now) } }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$mints.firstOrNull { it.symbol == "SKR" }?.let { m -&gt; read(prev?.skr) { rpcClient.token(owner, m, now) } }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$note = if (on) "Consent recorded. No sharing protocol is running, so no bytes were sent." else "Sharing is off. Nothing is being sent."</ID>
@@ -865,17 +993,60 @@
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$providerAcknowledgement = e.providerObservation?.let { Evidence("OBSERVED", it) } ?: Evidence.NOT_AVAILABLE</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$r as? com.edgeore.app.solana.BalanceRead.Value ?: (r as? com.edgeore.app.solana.BalanceRead.Failed)?.last</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$r.message + if (action == "revoke") " · Revocation pending" else " · showing last known data"</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$reader.accountsHead(listOf(com.edgeore.app.ore.OreV3.PROGRAM_ID, g.PROGRAM_DATA), g.PROGRAMDATA_HEAD + 0)</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$require(token.length &gt;= 32 &amp;&amp; token.all { it.code in 33..126 }) { "The token must be at least 32 printable characters" }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$st.messages + AdvisorMessage(false, OreAdvisor.check(answer, prompt).text, System.currentTimeMillis())</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$statusDetail = "Endpoint refused at send time: ${(decision as EndpointPolicy.Decision.Refused).reason}. Nothing was sent."</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$statusDetail = if (models.isEmpty()) "Host reachable but reports no installed models" else "${models.size} model(s) on your host. Choose one explicitly."</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$storageController.import(name, _storage.value.allocationMb * 1024L * 1024L) { resolver.openInputStream(uri) }</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val at = reader.accounts(listOfNotNull(roundAddr, com.edgeore.app.edge.OreProofV0.CONFIG_ADDRESS, minerAddr))</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val bal = if (mainnet) _wallet.value.address?.let { (mainnetRpc.balance(it) as? RpcObservation.Fresh)?.lamports } else null</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val cfg = at.accounts.getOrNull(1)?.takeIf { it.owner == com.edgeore.app.ore.OreV3.PROGRAM_ID }?.data</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val clock = OreClock.label(OreClock.at(snap.board, snap.roundSlot, System.currentTimeMillis() - snap.observedAtMs, snap.slotRate))</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val cm = runCatching { getApplication&lt;Application&gt;().getSystemService(ConnectivityManager::class.java) }.getOrNull()</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val deploy = log.all().firstOrNull { it.id == deployId } ?: error("The deploy receipt for this Round Proof is missing")</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val device = withContext(Dispatchers.IO) { runCatching { DeviceResourcesReader.read(getApplication()) }.getOrNull() }</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val minerBytes = ma?.data?.takeIf { runCatching { com.edgeore.app.edge.RoundRules.decodeMiner(it).roundId == roundId }.getOrDefault(false) }</ID>
     <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel$val userContent = if (doc != null) "Private document \"${st.documentName}\":\n&lt;&lt;&lt;\n$doc\n&gt;&gt;&gt;\n\nQuestion: $prompt" else prompt</ID>
+    <ID>MaxLineLength:EdgeOreViewModel.kt$EdgeOreViewModel.CrewState$// ---------- Crew Pool (non-custodial): signed plans only; each member deploys their own share via the normal review ----------</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"${m.wallet.take(4)}…${m.wallet.takeLast(4)} · squares $sq · ${OreFormat.sol(m.totalLamports)} SOL"</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"(chosen by SOL weight); other 15 tiles split it by SOL. Set by distribution_mask(round id) in ORE v3. "</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Break-even ORE price: " + (r.breakEvenOrePriceSol?.let { "${f(it)} SOL per ORE" } ?: "none (no ORE share)")</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Crowding and expected value per square from the live round. ${TileInsight.LABEL.replaceFirstChar { it.uppercase() }}."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Ignores the motherlode, later deploys that dilute your share, and price changes. Single rounds vary widely. Not advice."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Light = less SOL than average · Crowded = more than 1.5× · ★ solo tile: if it wins, one miner on it takes the round's ORE "</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Members ${stats.members} · squares covered ${stats.coveredSquares} · rounds ${stats.rounds} · rounds a crew square won ${stats.wins}"</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Opens the normal review for your share only. You sign in your wallet; nothing is sent automatically."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Presets only pick squares. You still review the exact message and sign each deploy in your wallet. Mainnet cap 0.01 SOL, Rounds 1."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Round ending, motherlode hit, your squares won. Local notifications from read-only polls while EdgeORE is open. No server."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"Square ${t.square + 1}: ${OreFormat.sol(t.deployedLamports)} SOL · ${t.miners} miners · ${crowdWord(t.crowding)}"</ID>
+    <ID>MaxLineLength:EdgePanels.kt$"The checker verifies the integrity of signed receipt contents, then re-derives these results offline."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$.</ID>
+    <ID>MaxLineLength:EdgePanels.kt$ExplainerCard(edge.explanation, edge.explainerBackend, { vm.explain(null) }, selected?.let { s -&gt; { vm.explain(s) } })</ID>
+    <ID>MaxLineLength:EdgePanels.kt$PrimaryAction("Review my share", Modifier.fillMaxWidth().testTag("crew-review"), onClick = onReviewMyShare)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$SecondaryAction</ID>
+    <ID>MaxLineLength:EdgePanels.kt$SectionTitle("Round Proof", "Settled rounds re-derived from the Round account, attached to your signed receipts.")</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("${p.name} · round #${p.roundId}", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Average ORE share per round: ${f(r.expectedOrePerRound)} ORE", color = EdgeColors.textPrimary, fontSize = 13.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Coverage: ${Integer.bitCount(p.coverageMask)} of 25 squares", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Crew stats (from your receipts)", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Nothing to settle, or no verified member receipts yet.", color = EdgeColors.textMuted, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("ORE credited by the rules: ${OreFormat.ore(t.oreGrams)}", color = EdgeColors.textMuted, fontSize = 13.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("SOL deployed (settled): ${OreFormat.sol(t.deployedLamports)}", color = EdgeColors.textMuted, fontSize = 13.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("SOL returned by the rules: ${OreFormat.sol(t.solBackLamports)}", color = EdgeColors.textMuted, fontSize = 13.sp)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text("Strategy presets · pre-fill the review only", color = EdgeColors.textPrimary, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$Text(com.edgeore.app.edge.ProtocolGuard.BANNER, color = EdgeColors.mainnetWarning, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:EdgePanels.kt$com.edgeore.app.edge.Crew.Check.VALID_KEYSTORE -&gt; "Plan signed by the creator's device key. Not tampered."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$com.edgeore.app.edge.Crew.Check.VALID_WALLET -&gt; "Plan signed by the creator's wallet. Not tampered."</ID>
+    <ID>MaxLineLength:EdgePanels.kt$if (proofs.isEmpty()) Notice("No Round Proofs yet. One is made after a round you deployed in settles, while EdgeORE is open.")</ID>
+    <ID>MaxLineLength:EdgePanels.kt$if (text != null) Text(text, color = EdgeColors.textPrimary, fontSize = 13.sp, modifier = Modifier.testTag("explainer-text"))</ID>
+    <ID>MaxLineLength:EdgePanels.kt$modifier = Modifier.align(Alignment.TopEnd).padding(end = 3.dp).testTag("solo-${t.square}")</ID>
+    <ID>MaxLineLength:EdgePanelsRenderTest.kt$EdgePanelsRenderTest$assertEquals(10, (0 until 25).count { runCatching { rule.onNodeWithTag("solo-$it", true).assertExists() }.isSuccess })</ID>
+    <ID>MaxLineLength:EdgePanelsRenderTest.kt$EdgePanelsRenderTest$val tiles = TileInsight.tiles(round.deployed, round.count, 10_000_000, com.edgeore.app.ore.OreV3.GRAMS_PER_ORE, 0)</ID>
     <ID>MaxLineLength:EdgePolicy.kt$EdgePolicy$t.ordinal &gt;= ThermalLevel.MODERATE.ordinal -&gt; Gate("Thermal guard", false, "Thermal status ${t.label}")</ID>
+    <ID>MaxLineLength:EdgeState.kt$PendingRounds$.</ID>
+    <ID>MaxLineLength:EdgeState.kt$PendingRounds$/** Pending rounds waiting to settle: roundId -&gt; deploy receipt id (or message sha when the receipt is not yet known). */</ID>
+    <ID>MaxLineLength:EdgeState.kt$RoundProofStore$.</ID>
     <ID>MaxLineLength:FixedDeviceReadings.kt$FixedDeviceReadings$DeviceResourcesReader.testSource = { UNOBSERVED.copy(observedAtElapsedMs = android.os.SystemClock.elapsedRealtime()) }</ID>
     <ID>MaxLineLength:Format.kt$Format$/** Decimal units (1 GB = 10^9 bytes), matching how Hugging Face lists file sizes. Exact bytes are shown alongside. */</ID>
     <ID>MaxLineLength:Format.kt$Format$fun sol(lamports: Long): String</ID>
@@ -1139,11 +1310,28 @@
     <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val d = OreDeployReview.prepare(signer, roundId, OreDeployLimits.MAINNET_CAP_LAMPORTS, all, bh, rich, 0, 1_000_000_000, mainnet)</ID>
     <ID>MaxLineLength:OreMainnetCapTest.kt$OreMainnetCapTest$val ui = OreDeployUi(availability = available(), mainnet = true, totalLamports = 5_000_000, mainnetBalanceLamports = rich)</ID>
     <ID>MaxLineLength:OreMiningCardRestyleTest.kt$OreMiningCardRestyleTest$OreDeployUi(availability = avail, mainnet = true, riskAcknowledged = true, mainnetBalanceLamports = 5_000_000_000)</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$!cfgOk -&gt; c("P4", "SOL accounting", Verdict.FAIL, "Config fee rates differ from the rates the program applies")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$"source" to "Config account $CONFIG_ADDRESS (read); round.rs calculate_fees applies the program rates"</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$/** The rates calculate_fees() applies (round.rs, hardcoded): admin 1% of each square, protocol 10% of the rest on losing squares. */</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$/** api/src/state/config.rs: disc(8), admin {authority, fee_collector, fee_rate}, protocol {authority, fee_collector, fee_rate}. */</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$body.optJSONObject("digests")?.optString("messageSha256") != dig || rc.optString("intent_digest") != dig</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$c("P0", "file", Verdict.FAIL, if (canonicalOk) "unknown format" else "not canonical JSON (keys sorted, no whitespace)")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$deploy == null -&gt; c("P1", "intent", Verdict.FAIL, "message is not the exact ORE v3 Deploy for round $roundId")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$else -&gt; c("P1", "intent", Verdict.PASS, "receipt signed; digest, Deploy message and wallet signature agree")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$if</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$if (cfg == null) "; Config account not captured" else "; Config rates ${cfg.adminBps}/${cfg.protocolBps} bps"</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$if (data.size &lt; 152 || (data[0].toInt() and 0xff) != 101) throw RoundRules.RuleException("Not an ORE v3 Config account")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$if (r != null) "recomputed from Round.slot_hash (round.rs rng % 25)" else "unavailable: slot_hash empty"</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$listOf("P2" to "winner", "P3" to "split/solo", "P4" to "SOL accounting", "P5" to "ORE share")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$val msg = rc.optString("message_base64").takeIf { it.isNotEmpty() &amp;&amp; it != "null" }?.let { Base64.getDecoder().decode(it) }</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$val okSig = walletSigsVerified &gt; 0 &amp;&amp; body.optJSONObject("wallet")?.optString("signer") == rc.optString("wallet")</ID>
+    <ID>MaxLineLength:OreProofV0.kt$OreProofV0$val signedDigests = verifiedBodies.values.mapNotNull { it.optJSONObject("digests")?.optString(RoundProof.DIGEST_KEY) }</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$*</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$/** Owner decision 2026-10-12: mainnet ORE Deploy is enabled, capped at 0.01 SOL, behind an explicit switch, devnet by default. */</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$assertEquals(setOf("solana/OreDeployMessage.kt", "ore/OreV3.kt"), builders)</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$for (chip in listOf("\"+0.01\"", "\"+0.1\"", "\"+1\"", "\"MAX\"", "\"ALL\"")) assertFalse(chip, ui.contains(chip))</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$for (m in public) assertFalse(m, Regex("send|sign|transfer|deploy|stake|trade", RegexOption.IGNORE_CASE).containsMatchIn(m))</ID>
+    <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$val allowed = setOf("accounts", "accountsHead", "slotRate", "getEndpoint") // accountsHead: getMultipleAccounts with dataSlice (protocol guardrail)</ID>
     <ID>MaxLineLength:OreReadOnlyArchitectureTest.kt$OreReadOnlyArchitectureTest$val fn = vm.substring(vm.indexOf("fun prepareOreDeploy()"), vm.indexOf("/** Which AI path the advisor would use"))</ID>
     <ID>MaxLineLength:OreReminders.kt$OreReminders$ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED</ID>
     <ID>MaxLineLength:OreReminders.kt$OreReminders$if (!permitted(context) || !canDeliver(p.getBoolean("enabled", false), now.hour, day, p.getString("lastDay", null))) return false</ID>
@@ -1167,6 +1355,7 @@
     <ID>MaxLineLength:OreScreenTest.kt$OreScreenTest$assertEquals(0, rule.onAllNodesWithContentDescription("Square 1: 0.261 SOL, 122 miners").fetchSemanticsNodes().size)</ID>
     <ID>MaxLineLength:OreScreenTest.kt$OreScreenTest$for (chip in listOf("+0.01", "+0.1", "+1", "MAX")) assertEquals(chip, 0, rule.onAllNodesWithText(chip).fetchSemanticsNodes().size)</ID>
     <ID>MaxLineLength:OreV3.kt$OreV3$*</ID>
+    <ID>MaxLineLength:OreV3.kt$OreV3$/** miner_pda(authority): seeds ["miner", authority] under the program id. Read-only address helper (Round Proof). */</ID>
     <ID>MaxLineLength:OreV3.kt$OreV3$b.position(b.position() + 32 + SQUARES * 8 + 8 + 8)</ID>
     <ID>MaxLineLength:OreV3.kt$OreV3$if (deployed.any { it &lt; 0 } || count.any { it &lt; 0 }) throw DecodeException("Round has an out-of-range value")</ID>
     <ID>MaxLineLength:OreV3.kt$Pda$/** Solana find_program_address: the first bump from 255 down whose SHA-256 hash is not a point on the edwards25519 curve. */</ID>
@@ -1211,6 +1400,10 @@
     <ID>MaxLineLength:PolicyAndEndpointTest.kt$PolicyAndEndpointTest$assertTrue(EndpointPolicy.check("https://api.example.com", ip("93.184.216.34")) is EndpointPolicy.Decision.Refused)</ID>
     <ID>MaxLineLength:PolicyAndEndpointTest.kt$PolicyAndEndpointTest$val chargeOnlyOff = EdgePolicy.evaluate(ResourceSettings(edgeModeResumed = true, chargeOnly = false), good.copy(charging = false))</ID>
     <ID>MaxLineLength:PolicyAndEndpointTest.kt$PolicyAndEndpointTest$val hot = EdgePolicy.evaluate(ResourceSettings(edgeModeResumed = true), good.copy(thermal = ThermalLevel.SEVERE))</ID>
+    <ID>MaxLineLength:ProtocolGuard.kt$ProtocolGuard$/** [program]: the 36-byte program account; [programDataHead]: first 45 bytes of ProgramData; [config]: Config account. */</ID>
+    <ID>MaxLineLength:ProtocolGuard.kt$ProtocolGuard$if (program == null || programDataHead == null || config == null) return Result.Unknown("Protocol accounts not readable")</ID>
+    <ID>MaxLineLength:ProtocolGuard.kt$ProtocolGuard$if (slot != EXPECTED_DEPLOY_SLOT) why += "program redeployed at slot $slot (built for $EXPECTED_DEPLOY_SLOT)"</ID>
+    <ID>MaxLineLength:ProtocolGuard.kt$ProtocolGuard$val auth = if (programDataHead[12].toInt() == 1) Base58.encode(programDataHead.copyOfRange(13, 45)) else "none"</ID>
     <ID>MaxLineLength:QrDecoder.kt$QrDecoder$/** [data] is a Y (luminance) plane with [rowStride] bytes per row, as delivered by an ImageReader YUV_420_888 frame. */</ID>
     <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$addView(cancel, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply { setMargins(32, 0, 32, 48) })</ID>
     <ID>MaxLineLength:QrScanActivity.kt$QrScanActivity$if (!com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)</ID>
@@ -1218,11 +1411,29 @@
     <ID>MaxLineLength:ReceiptActivity.kt$ReceiptActivity.Series$"$total receipt${if (total == 1) "" else "s"} in the last ${days.size} days, most on one day: ${counts.max()}."</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$"Not covered by any signature (legacy export without envelope, descriptive only): $UNSIGNED_EXPORT_FIELDS"</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$"Receipt signatures: v3 (descriptive fields bound in the signature) ${report.v3Receipts}, legacy digest-only (v1/v2) ${report.legacyReceipts}"</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$(0 until a.length()).associate { i -&gt; org.json.JSONObject(a.getJSONObject(i).getString("body")).let { it.getString("id") to it } }</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$*</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$/** Export fields outside every receipt-body and checkpoint signature; only the optional envelope covers them (docs/hardening-backlog.md H4). */</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$// Hardening backlog H4: exports since integration 0.2.9 sign these fields in an "envelope"; older (or stripped) ones do not.</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$const</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$else -&gt; out.println("Not covered by any signature (descriptive only, no signed envelope): $UNSIGNED_EXPORT_FIELDS")</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$out.println("Not verified by any claim: that the RPC returned what the chain held; how slot_hash was produced; any fairness property beyond these rules.")</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$v["P1"] == com.edgeore.app.edge.OreProofV0.Verdict.PASS</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$val c = com.edgeore.app.edge.RoundProof.check(doc.getString("proofJson"), digests, com.edgeore.app.ore.OreV3::roundAddress)</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$val claims = com.edgeore.app.edge.OreProofV0.check(text, report.accepted, report.walletSignaturesVerified, bodies, com.edgeore.app.ore.OreV3::roundAddress)</ID>
     <ID>MaxLineLength:ReceiptChecker.kt$val key = if (args.size == 3) File(args[2]).inputStream().use { BoundedInput.readAtMost(it, 16 * 1024) } else null</ID>
+    <ID>MaxLineLength:ReceiptChecker.kt$when</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$assertFalse(Regex("\\d\\.\\d").containsMatchIn(JSONObject(t).getJSONObject("chain").toString().substringBefore("round_proof_json")))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$b.put(if (solo) ByteArray(32) else com.edgeore.app.crypto.Base58.decodePublicKey(com.edgeore.app.edge.RoundRules.SPLIT_ADDRESS))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$digests = mapOf(com.edgeore.app.edge.RoundProof.DIGEST_KEY to com.edgeore.app.edge.RoundProof.digest(proof))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$for (p in listOf("P1 intent: PASS", "P2 winner: PASS", "P3 split/solo: PASS", "P4 SOL accounting: PASS", "P5 ORE share: PASS")) assertTrue(out, out.contains(p))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$private fun le()</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$val b = java.nio.ByteBuffer.allocate(com.edgeore.app.edge.RoundRules.MINER_PREFIX).order(java.nio.ByteOrder.LITTLE_ENDIAN)</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$val gen = org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator().apply { init(org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters(java.security.SecureRandom())) }</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$val msg = com.edgeore.app.solana.OreDeployMessage.build(com.edgeore.app.solana.OreDeployMessage.Deploy(pub, 42, 100_000_000L, 1 shl 7, ByteArray(32) { 9 }))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$val sig = org.bouncycastle.crypto.signers.Ed25519Signer().run { init(true, kp.private); update(msg, 0, msg.size); generateSignature() }</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$val text = com.edgeore.app.edge.OreProofV0.build(deploy.id, deploy.body, log.export(), proof, mapOf("note" to "ignored"))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$OreProofV0CheckerTest$wallet = WalletEvidence(java.util.Base64.getEncoder().encodeToString(msg), com.edgeore.app.crypto.Base58.encode(pub), com.edgeore.app.crypto.Base58.encode(sig))</ID>
     <ID>MaxLineLength:ReceiptCheckerTest.kt$ReceiptCheckerTest$"Not covered by any signature (legacy export without envelope, descriptive only): top-level note, exclusions, payment, location, exportedAt"</ID>
     <ID>MaxLineLength:ReceiptCheckerTest.kt$ReceiptCheckerTest$// A pre-envelope export has neither envelope nor envelopeRequired: it still verifies, labelled legacy and unsigned.</ID>
     <ID>MaxLineLength:ReceiptCheckerTest.kt$ReceiptCheckerTest$// Correctly signed, so only the schema rule can reject it: a storage/backup record is never a payment observation.</ID>
@@ -1230,6 +1441,10 @@
     <ID>MaxLineLength:ReceiptCheckerTest.kt$ReceiptCheckerTest$ReceiptLog(logFile, signer).append(ReceiptDraft(ReceiptKind.POLICY, "REFUSED", "Fixture", "Synthetic test only", "unit test"))</ID>
     <ID>MaxLineLength:ReceiptCheckerTest.kt$ReceiptCheckerTest$log.append(ReceiptDraft(ReceiptKind.STORAGE, "PINNED", "Pinned", "Fixture", "EdgeORE local vault", payment = "OBSERVED fixture"))</ID>
     <ID>MaxLineLength:ReceiptCheckerTest.kt$ReceiptCheckerTest$val body = JSONObject(JSONObject(logFile.readText().trim()).getString("body")).put("schema", ReceiptLog.SCHEMA_V2).toString()</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$RoundProofCheckerTest$b.put(if (solo) ByteArray(32) else com.edgeore.app.crypto.Base58.decodePublicKey(com.edgeore.app.edge.RoundRules.SPLIT_ADDRESS))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$RoundProofCheckerTest$digests = mapOf(com.edgeore.app.edge.RoundProof.DIGEST_KEY to com.edgeore.app.edge.RoundProof.digest(proof))</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$RoundProofCheckerTest$val b = java.nio.ByteBuffer.allocate(com.edgeore.app.edge.RoundRules.ROUND_SIZE).order(java.nio.ByteOrder.LITTLE_ENDIAN)</ID>
+    <ID>MaxLineLength:ReceiptCheckerTest.kt$RoundProofCheckerTest$val proof = com.edgeore.app.edge.RoundProof.build(com.edgeore.app.ore.OreV3.roundAddress(42), roundBytes(), 1, "test", null, null)</ID>
     <ID>MaxLineLength:ReceiptTamperTest.kt$ReceiptTamperTest$d.getJSONObject("deviceKey").put("publicKeySpkiBase64", Base64.getEncoder().encodeToString(attacker.publicKeySpki()))</ID>
     <ID>MaxLineLength:ReceiptTamperTest.kt$ReceiptTamperTest$d.put("bundleSha256", bundleDigest((0 until arr.length()).map { arr.getJSONObject(it).getString("sha256") }))</ID>
     <ID>MaxLineLength:ReceiptTamperTest.kt$ReceiptTamperTest$log.append(ReceiptDraft(ReceiptKind.REVIEW, "REFUSED", "Review refused", "user", "review", "devnet", lamports = 1000))</ID>
@@ -1311,6 +1526,20 @@
     <ID>MaxLineLength:ReviewScreen.kt$if (st.feeKnown) "${st.feeLamports} lamports (RPC getFeeForMessage)" else "Unknown · RPC could not price this message"</ID>
     <ID>MaxLineLength:ReviewScreen.kt$op.lastObservation?.let { KeyValue("Last observation", it + (op.lastObservedAt?.let { t -&gt; " · $t" } ?: "")) }</ID>
     <ID>MaxLineLength:ReviewScreen.kt$plain.points.forEach { Text("• $it", style = MaterialTheme.typography.bodyMedium, color = EdgeColors.textPrimary) }</ID>
+    <ID>MaxLineLength:RoundAlertNotifier.kt$RoundAlertNotifier$manager.createNotificationChannel(NotificationChannel(CHANNEL, "ORE round alerts", NotificationManager.IMPORTANCE_DEFAULT))</ID>
+    <ID>MaxLineLength:RoundProof.kt$RoundProof$"How the program produced slot_hash (entropy source used by reset.rs); only the steps after slot_hash are re-derived."</ID>
+    <ID>MaxLineLength:RoundProof.kt$RoundProof$"Losing-square fees: Round.total_vaulted and total_returned_sol equal calculate_fees() (buyback vault accounting)"</ID>
+    <ID>MaxLineLength:RoundProof.kt$RoundProof$"That these account bytes are what the chain held at the read slot (single RPC read; compare with another RPC or an explorer)."</ID>
+    <ID>MaxLineLength:RoundProof.kt$RoundProof$"What the buyback later does with the vaulted SOL (burn/staker split happens in other instructions, not read here)."</ID>
+    <ID>MaxLineLength:RoundProof.kt$RoundProof$if (p.optString("sourceCommit") != RoundRules.SOURCE_COMMIT) bad += "Proof was derived against a different ORE source commit"</ID>
+    <ID>MaxLineLength:RoundProof.kt$RoundProof$if (solo == !again.getBoolean("split")) ok += VERIFIED_STEPS[6] else bad += "Split marker disagrees with distribution_mask"</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$)</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$*</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$/** Miner prefix this file reads: disc(8) + authority(32) + auto_return + checkpoint_id + checkpoint_fee + 3x[u64;25] + round_id. */</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$/** api/src/consts.rs SPLIT_ADDRESS = SpLiT11111111111111111111111111111111111112 (decoded bytes are checked in tests). */</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$/** round.rs rng(): None for an all-zero or all-0xFF slot_hash; otherwise XOR of the four little-endian u64 words. */</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$if (data.size != ROUND_SIZE) throw RuleException("Round has ${data.size} bytes; the pinned layout has $ROUND_SIZE")</ID>
+    <ID>MaxLineLength:RoundRules.kt$RoundRules$if (data.size &lt; MINER_PREFIX) throw RuleException("Miner has ${data.size} bytes; at least $MINER_PREFIX expected")</ID>
     <ID>MaxLineLength:SafeFiles.kt$AtomicFiles$fun</ID>
     <ID>MaxLineLength:SafeFiles.kt$BoundedInput$return if (text.length &gt; maxChars) TextResult.Ok(text.take(maxChars), bytes, true) else TextResult.Ok(text, bytes, false)</ID>
     <ID>MaxLineLength:SecureWindow.kt$SecureWindowCount$if (n == 1 &amp;&amp; !com.edgeore.app.BuildConfig.SCREEN_CAPTURE_ALLOWED) a.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)</ID>
@@ -1321,7 +1550,7 @@
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$report(Measurement("Sent to your gateway", sentBefore + n, "bytes", "counted by this phone as written to the TLS stream"))</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$require(got == b.ciphertextBytes &amp;&amp; Sha256.hex(back) == b.ciphertextSha256) { "Downloaded bytes do not match what was stored" }</ID>
     <ID>MaxLineLength:SessionParts.kt$GatewayRoundTripPart$val detail = "One ${b.ciphertextBytes}-byte encrypted chunk stored; $trips verified round trip${if (trips == 1) "" else "s"}: $sent bytes sent in $upMs ms and $received bytes read back in $downMs ms"</ID>
-    <ID>MaxLineLength:SessionParts.kt$NodeProofPart$"$detail. The node agent does not report CPU time, so none is shown. The jobs prove a fixed sample relation and have no value to anyone; nothing is paid: no ORE, SKR, points or payment."</ID>
+    <ID>MaxLineLength:SessionParts.kt$NodeProofPart$"$detail. The node agent does not report CPU time, so none is shown. The jobs prove a fixed sample relation and have no value to anyone; nothing is paid: no ORE, points or payment."</ID>
     <ID>MaxLineLength:SessionParts.kt$NodeProofPart$"Ed25519 signature over every result payload checked against the paired node key ${n.fingerprint.take(16)}…"</ID>
     <ID>MaxLineLength:SessionParts.kt$NodeProofPart$"Round trips measured on the phone's monotonic clock; commitment is SHA-256 over each signed result payload's SHA-256 in order"</ID>
     <ID>MaxLineLength:SessionParts.kt$NodeProofPart$*</ID>
@@ -1464,6 +1693,7 @@
     <ID>NestedBlockDepth:ContributionPolicyTest.kt$ContributionPolicyTest$@Test fun qualificationGateMeansNothingRuns()</ID>
     <ID>NestedBlockDepth:ModelDownloader.kt$ModelDownloader.Companion$fun copyVerified( input: InputStream, expectedSize: Long, expectedSha256: String, part: File, dest: File, progress: (Long, Long) -&gt; Unit, cancelled: () -&gt; Boolean, ): Result</ID>
     <ID>NestedBlockDepth:OwnedHostModel.kt$OwnedHostModelClient$private fun request( method: String, path: String, body: String?, ): String</ID>
+    <ID>NestedBlockDepth:RoundRules.kt$RoundRules$fun minerOutcome( round: FullRound, miner: MinerRound, splitAddress: ByteArray, ): MinerOutcome</ID>
     <ID>ReturnCount:AccountReader.kt$ReadOnlyAccountRpc.Companion$fun parsePerformanceSample(response: JSONObject): SlotRate?</ID>
     <ID>ReturnCount:AddressQr.kt$AddressQr$fun parse(raw: String?): Result</ID>
     <ID>ReturnCount:Backup.kt$BackupCoordinator$suspend fun restore( jobId: String, allowanceBytes: Long = 0, ): RestoreOutcome</ID>
@@ -1471,6 +1701,7 @@
     <ID>ReturnCount:ContributionPolicy.kt$ContributionPolicy$fun view( s: ResourceSettings, snapshot: DeviceSnapshot?, observed: ConstraintObservation, job: JobState, qualifiedWorkload: Boolean = EdgePolicy.QUALIFIED_WORKLOAD_AVAILABLE &amp;&amp; REGISTERED_WORKLOADS &gt; 0, ): SchedulerView</ID>
     <ID>ReturnCount:ContributionWork.kt$ContributionScheduling$fun jobState(infos: List&lt;WorkInfo&gt;?): JobState</ID>
     <ID>ReturnCount:ContributionWork.kt$LastRunStore$fun read(prefs: SharedPreferences): LastRun?</ID>
+    <ID>ReturnCount:Crew.kt$Crew$fun verify(s: Signed): Check</ID>
     <ID>ReturnCount:DailyCheckIn.kt$DailyCheckIn$fun checkIn( s0: CheckInState, now: Long, ): Result</ID>
     <ID>ReturnCount:DeviceMeters.kt$CpuRateTracker$@Synchronized fun observe(sample: CpuSample?): Int?</ID>
     <ID>ReturnCount:DeviceMeters.kt$CpuSample.Companion$fun parse(line: String?): CpuSample?</ID>
@@ -1478,6 +1709,7 @@
     <ID>ReturnCount:DeviceResources.kt$BatteryDrain$fun percentPerHour( currentMicroamps: Int, chargeCounterUah: Int, capacityPercent: Int, charging: Boolean?, ): Int?</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$fun advisorBackend(): String?</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$fun askAdvisor(question: String)</ID>
+    <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$fun reviewMyCrewShare(): Boolean</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$private fun metered(): Boolean</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$private fun networkUp(): Boolean</ID>
     <ID>ReturnCount:EdgeOreViewModel.kt$EdgeOreViewModel$private fun sessionBlocker(): String?</ID>
@@ -1493,12 +1725,15 @@
     <ID>ReturnCount:OreBoard.kt$OreClock$fun at( board: OreV3.Board, observedSlot: Long, elapsedMs: Long, rate: SlotRate?, ): RoundClock</ID>
     <ID>ReturnCount:OreBot.kt$OreBot$fun remindIfAvailable( ctx: Context, now: Long = System.currentTimeMillis(), ): Boolean</ID>
     <ID>ReturnCount:OreDeployReview.kt$OreDeployReview$fun prepare( signer: ByteArray, roundId: Long, totalLamports: Long, mask: Int, recentBlockhash: ByteArray, balanceLamports: Long?, spentTodayLamports: Long, dailyLimitLamports: Long, cluster: String = OreDeployNetwork.CLUSTER, ): TransferReview.Draft</ID>
+    <ID>ReturnCount:OreProofV0.kt$OreProofV0$fun check( text: String, exportAccepted: Boolean, walletSigsVerified: Int, verifiedBodies: Map&lt;String, JSONObject&gt;, roundAddressFor: (Long) -&gt; String, ): List&lt;Claim&gt;</ID>
     <ID>ReturnCount:OreReminders.kt$OreReminders$fun deliver(context: Context): Boolean</ID>
     <ID>ReturnCount:OreV3.kt$Pda$fun onCurve(b: ByteArray): Boolean</ID>
     <ID>ReturnCount:OwnedHostModel.kt$EndpointPolicy$fun checkAll( endpoint: String, resolveAll: (String) -&gt; List&lt;InetAddress&gt;, ): Decision</ID>
     <ID>ReturnCount:PlainError.kt$PlainError$fun isPlain(text: String?): Boolean</ID>
     <ID>ReturnCount:PlainLanguage.kt$PlainLanguage$fun explain( draft: TransferReview.Draft, feeKnown: Boolean, feeLamports: Long?, cluster: String = SolanaRpc.CLUSTER, ): Explanation</ID>
+    <ID>ReturnCount:ReceiptChecker.kt$fun checkOreProof( path: String, out: PrintStream, err: PrintStream, ): Int</ID>
     <ID>ReturnCount:ReceiptChecker.kt$fun checkReceipt( args: Array&lt;String&gt;, out: PrintStream = System.out, err: PrintStream = System.err, ): Int</ID>
+    <ID>ReturnCount:ReceiptChecker.kt$fun checkRoundProof( path: String, out: PrintStream, err: PrintStream, ): Int</ID>
     <ID>ReturnCount:Receipts.kt$ReceiptLog$@Synchronized fun read(): ReceiptReadResult</ID>
     <ID>ReturnCount:Receipts.kt$ReceiptVerifier$fun verify( exportJson: String, trustedKeys: Collection&lt;ByteArray&gt;?, local: List&lt;StoredReceipt&gt;, ): Report</ID>
     <ID>ReturnCount:Receipts.kt$ReceiptVerifier$private fun checkpointFinding( doc: JSONObject, list: List&lt;StoredReceipt?&gt;, shas: List&lt;String&gt;, keys: Map&lt;String, PublicKey&gt;, ): String?</ID>
@@ -1507,6 +1742,8 @@
     <ID>ReturnCount:Receipts.kt$ReceiptVerifier$private fun schemaFinding(b: JSONObject): String?</ID>
     <ID>ReturnCount:Receipts.kt$ReceiptVerifier$private fun walletCheck(b: JSONObject): WalletCheck</ID>
     <ID>ReturnCount:ReviewInput.kt$ReviewInput$fun amount(v: String): Check</ID>
+    <ID>ReturnCount:RoundAlertNotifier.kt$RoundAlertNotifier$fun post( context: Context, alert: RoundAlerts.Alert, ): Boolean</ID>
+    <ID>ReturnCount:RoundProof.kt$RoundProof$fun check( proofJson: String, signedDigests: Collection&lt;String&gt;, roundAddressFor: (Long) -&gt; String, ): Check</ID>
     <ID>ReturnCount:SafeFiles.kt$BoundedInput$fun readUtf8Text( stream: InputStream, maxBytes: Long, maxChars: Int, ): TextResult</ID>
     <ID>ReturnCount:SessionParts.kt$GatewayRoundTripPart$override fun receipt(sessionId: String): ReceiptDraft?</ID>
     <ID>ReturnCount:SessionParts.kt$NodeProofPart$override fun receipt(sessionId: String): ReceiptDraft?</ID>
@@ -1550,6 +1787,7 @@
     <ID>ThrowsCount:OreBoard.kt$OreObserver$suspend fun read(): OreSnapshot</ID>
     <ID>ThrowsCount:OreV3.kt$OreV3$private fun body( owner: String, data: ByteArray, disc: Int, size: Int, what: String, ): ByteBuffer</ID>
     <ID>ThrowsCount:OwnedHostModel.kt$OwnedHostModelClient$private fun request( method: String, path: String, body: String?, ): String</ID>
+    <ID>ThrowsCount:RoundRules.kt$RoundRules$fun decodeRound(data: ByteArray): FullRound</ID>
     <ID>ThrowsCount:SafeFiles.kt$AtomicFiles$fun write( target: File, writer: (FileOutputStream) -&gt; Unit, )</ID>
     <ID>ThrowsCount:StorageController.kt$StorageController$suspend fun import( displayName: String?, allowanceBytes: Long, open: () -&gt; InputStream?, ): ImportOutcome</ID>
     <ID>TooGenericExceptionCaught:Backup.kt$BackupCoordinator$e: Exception</ID>
@@ -1558,6 +1796,7 @@
     <ID>TooGenericExceptionCaught:EdgeOreViewModel.kt$EdgeOreViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:LocalVault.kt$LocalVault$e: Exception</ID>
     <ID>TooGenericExceptionCaught:MainActivity.kt$MainActivity$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MainActivity.kt$MainActivity.&lt;no name provided&gt;$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ModelDownloader.kt$ModelDownloader$e: Exception</ID>
     <ID>TooGenericExceptionCaught:NodeAgentClient.kt$NodeAgentClient$e: Exception</ID>
     <ID>TooGenericExceptionCaught:OnDeviceAiController.kt$OnDeviceAiController$e: Exception</ID>
@@ -1567,6 +1806,7 @@
     <ID>TooGenericExceptionCaught:OreDeployAvailability.kt$OreDeployCheck$e: Exception</ID>
     <ID>TooGenericExceptionCaught:QrScanActivity.kt$QrScanActivity$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ReceiptChecker.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:RoundProof.kt$RoundProof$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SafeFiles.kt$AtomicFiles$e: Throwable</ID>
     <ID>TooGenericExceptionCaught:SolanaMessage.kt$SolanaMessage$e: Exception</ID>
     <ID>TooGenericExceptionCaught:SolanaRpc.kt$SolanaRpc$e: Exception</ID>
@@ -1577,6 +1817,7 @@
     <ID>TooManyFunctions:Components.kt$com.edgeore.app.ui.components.Components.kt</ID>
     <ID>TooManyFunctions:ContributionSession.kt$ContributionSession</ID>
     <ID>TooManyFunctions:EdgeOreViewModel.kt$EdgeOreViewModel : AndroidViewModel</ID>
+    <ID>TooManyFunctions:EdgePanels.kt$com.edgeore.app.ui.screens.EdgePanels.kt</ID>
     <ID>TooManyFunctions:LocalVault.kt$LocalVault</ID>
     <ID>TooManyFunctions:MineDeploy.kt$com.edgeore.app.ui.screens.MineDeploy.kt</ID>
     <ID>TooManyFunctions:MineHolo.kt$com.edgeore.app.ui.screens.MineHolo.kt</ID>
@@ -1584,6 +1825,7 @@
     <ID>TooManyFunctions:OnDeviceAiController.kt$OnDeviceAiController</ID>
     <ID>TooManyFunctions:Operations.kt$OperationStore</ID>
     <ID>TooManyFunctions:OwnedGatewayBackupProvider.kt$OwnedGatewayBackupProvider : BackupProvider</ID>
+    <ID>TooManyFunctions:RoundRules.kt$RoundRules</ID>
     <ID>TooManyFunctions:SolanaMessage.kt$SolanaMessage</ID>
     <ID>TooManyFunctions:StorageScreen.kt$com.edgeore.app.ui.screens.StorageScreen.kt</ID>
     <ID>TooManyFunctions:TransferCoordinator.kt$TransferCoordinator</ID>

@@ -599,6 +599,9 @@ class EdgeOreViewModel(
         oreJob =
             viewModelScope.launch {
                 val r = runCatching { OreObserver(ReadOnlyAccountRpc(rpc)).read() }
+                r.getOrNull()?.let { snap ->
+                    if (edgeJob?.isActive != true) edgeJob = viewModelScope.launch { runCatching { edgeAfterRead(snap) } }
+                }
                 _ore.update { st ->
                     r.fold({
                         st.copy(snapshot = it, loading = false, error = null)
@@ -617,6 +620,323 @@ class EdgeOreViewModel(
         prefs.edit().putString("ore.rpc", u).apply()
         _ore.update { OreState(rpc = u) }
         refreshOre()
+    }
+
+    // ---------- EdgeORE differentiators: tile insight, presets, alerts, history, explainer, Round Proof (read-only; nothing signs) ----------
+    private var edgeJob: Job? = null
+    private val edgePrefs = app.getSharedPreferences("edgeore.edge", 0)
+    private val proofStore = com.edgeore.app.edge.RoundProofStore(File(app.filesDir, "round-proofs"))
+    private val _edge =
+        MutableStateFlow(
+            com.edgeore.app.edge
+                .EdgeState(alertsOn = edgePrefs.getBoolean("alerts", false)),
+        )
+    val edge: StateFlow<com.edgeore.app.edge.EdgeState> = _edge.asStateFlow()
+
+    /** Pre-fills the square mask only. The exact-message review, MWA signature, cap, risk tick and Rounds=1 are unchanged. */
+    fun applyPreset(p: com.edgeore.app.edge.StrategyPreset) {
+        val mask = p.mask(_ore.value.snapshot?.round?.deployedLamports)
+        if (mask == 0) {
+            _oreDeploy.update { it.copy(message = "${p.title} needs a live board read first; nothing was changed") }
+            return
+        }
+        editOreDeploy { it.copy(pro = true, proMask = mask) }
+    }
+
+    /** Tile tap: pre-fill one square and open the normal review. Never deploys by itself. */
+    fun reviewSquare(i: Int) {
+        editOreDeploy { it.copy(pro = true, proMask = 1 shl i) }
+        prepareOreDeploy()
+    }
+
+    /** Plain-words explanation. The AI never signs; with no model configured the rule-based text is shown and says so. */
+    fun explain(square: Int?) {
+        val snap = _ore.value.snapshot
+        val backend = advisorBackend()
+        val text =
+            when {
+                snap == null -> "No board read yet. Refresh the live board first."
+                square == null ->
+                    com.edgeore.app.edge.RoundExplainer.round(
+                        snap.round.id,
+                        snap.round.deployedLamports,
+                        com.edgeore.app.ore.OreClock.label(
+                            com.edgeore.app.ore.OreClock.at(snap.board, snap.boardSlot, System.currentTimeMillis() - snap.observedAtMs, snap.slotRate),
+                        ),
+                    )
+                else ->
+                    com.edgeore.app.edge.RoundExplainer.tile(
+                        com.edgeore.app.edge.TileInsight.tiles(
+                            snap.round.deployedLamports,
+                            snap.round.count,
+                            _oreDeploy.value.totalLamports ?: com.edgeore.app.solana.OreDeployLimits.MAINNET_CAP_LAMPORTS,
+                            com.edgeore.app.ore.OreV3.GRAMS_PER_ORE,
+                            snap.treasury.motherlodeGrams,
+                        )[square],
+                    )
+            }
+        _edge.update { it.copy(explanation = text, explainerBackend = backend) }
+    }
+
+    fun setRoundAlerts(on: Boolean) {
+        val allowed =
+            com.edgeore.app.notifications.OreReminders
+                .permitted(getApplication())
+        val v = on && allowed
+        edgePrefs.edit().putBoolean("alerts", v).apply()
+        _edge.update {
+            it.copy(alertsOn = v, alertsMessage = if (on && !allowed) "Notifications are not allowed for EdgeORE, so alerts stay off." else null)
+        }
+    }
+
+    private fun rememberDeployRound(
+        messageSha: String,
+        roundId: Long,
+    ) {
+        val m = com.edgeore.app.edge.PendingRounds.decode(edgePrefs.getString("pending", null)).toMutableMap()
+        m[roundId] = messageSha
+        edgePrefs.edit().putString("pending", com.edgeore.app.edge.PendingRounds.encode(m.toSortedMap().toList().takeLast(20).toMap())).apply()
+    }
+
+    fun refreshProofs() =
+        viewModelScope.launch {
+            val list =
+                withContext(Dispatchers.IO) {
+                    val signed =
+                        log.all().mapNotNull { r ->
+                            runCatching {
+                                JSONObject(r.body).optJSONObject("digests")?.optString(com.edgeore.app.edge.RoundProof.DIGEST_KEY)?.let { it to r.id }
+                            }.getOrNull()
+                        }.toMap()
+                    proofStore.all().map { (sha, json) ->
+                        val c =
+                            com.edgeore.app.edge.RoundProof
+                                .check(json, signed.keys, com.edgeore.app.ore.OreV3::roundAddress)
+                        com.edgeore.app.edge.StoredProof(sha, JSONObject(json).optLong("roundId"), signed[sha], json, c)
+                    }
+                }
+            _edge.update { it.copy(proofs = list) }
+        }
+
+    /** History rows: ORE deploy receipts (matched by reviewed-message digest) joined with Round Proof results. */
+    fun historyRows(): List<com.edgeore.app.edge.History.Row> {
+        val pending = com.edgeore.app.edge.PendingRounds.decode(edgePrefs.getString("pending", null))
+        val done = com.edgeore.app.edge.PendingRounds.decode(edgePrefs.getString("settled", null))
+        val bySha = (pending + done).entries.associate { it.value to it.key }
+        val proofs = _edge.value.proofs.associateBy { it.roundId }
+        return _receipts.value
+            .filter { it.kind == ReceiptKind.REVIEW.name }
+            .mapNotNull { r ->
+                val b = runCatching { JSONObject(r.body) }.getOrNull() ?: return@mapNotNull null
+                val sha = b.optJSONObject("digests")?.optString("messageSha256") ?: return@mapNotNull null
+                val round = bySha[sha] ?: return@mapNotNull null
+                if (b.isNull("solanaSignature")) return@mapNotNull null
+                val p = proofs[round]
+                val m = p?.let { JSONObject(it.proofJson).optJSONObject("derived")?.optJSONObject("miner") }
+                com.edgeore.app.edge.History.Row(
+                    round,
+                    b.optString("solanaSignature"),
+                    b.optLong("lamports"),
+                    m?.optLong("solBackLamports"),
+                    m?.let { it.optLong("oreGrams") + it.optLong("motherlodeGrams") },
+                    when {
+                        p == null -> "Not settled or not read yet"
+                        !p.check.accepted -> "Proof did not re-derive"
+                        m == null -> "Settled; your Miner account was not readable for this round"
+                        else -> "Proof re-derived"
+                    },
+                )
+            }.distinctBy { it.signature }
+    }
+
+    /** Once per app start: compare the live ORE program and Config with what this build was written for. */
+    private suspend fun checkProtocolOnce() {
+        if (_edge.value.protocol != null && _edge.value.protocol !is com.edgeore.app.edge.ProtocolGuard.Result.Unknown) return
+        val res =
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    val reader = ReadOnlyAccountRpc(_ore.value.rpc)
+                    val g = com.edgeore.app.edge.ProtocolGuard
+                    val head =
+                        reader.accountsHead(listOf(com.edgeore.app.ore.OreV3.PROGRAM_ID, g.PROGRAM_DATA), g.PROGRAMDATA_HEAD + 0)
+                    val cfg = reader.accounts(listOf(com.edgeore.app.edge.OreProofV0.CONFIG_ADDRESS)).accounts[0]
+                    g.check(head.accounts[0]?.data, head.accounts[1]?.data, cfg?.takeIf { it.owner == com.edgeore.app.ore.OreV3.PROGRAM_ID }?.data)
+                }
+            }.getOrElse { com.edgeore.app.edge.ProtocolGuard.Result.Unknown(it.message ?: "read failed") }
+        _edge.update { it.copy(protocol = res) }
+    }
+
+    /** Called after each successful live read: alerts and Round Proofs for rounds this wallet deployed in. */
+    private suspend fun edgeAfterRead(snap: com.edgeore.app.ore.OreSnapshot) {
+        checkProtocolOnce()
+        val alerts = mutableListOf<com.edgeore.app.edge.RoundAlerts.Alert>()
+        val clock = com.edgeore.app.ore.OreClock.at(snap.board, snap.boardSlot, 0, snap.slotRate)
+        val secs = (clock as? com.edgeore.app.ore.RoundClock.Live)?.secondsLeft
+        com.edgeore.app.edge.RoundAlerts.roundEnding(snap.round.id, secs, edgePrefs.getLong("endingFor", -1).takeIf { it >= 0 })?.let {
+            alerts += it
+            edgePrefs.edit().putLong("endingFor", snap.round.id).apply()
+        }
+        val pending = com.edgeore.app.edge.PendingRounds.decode(edgePrefs.getString("pending", null)).toMutableMap()
+        val settled = com.edgeore.app.edge.PendingRounds.decode(edgePrefs.getString("settled", null)).toMutableMap()
+        for ((roundId, sha) in pending.toMap()) {
+            if (roundId >= snap.board.roundId) continue
+            val deploy =
+                _receipts.value.firstOrNull { r ->
+                    runCatching {
+                        val b = JSONObject(r.body)
+                        b.optJSONObject("digests")?.optString("messageSha256") == sha && !b.isNull("solanaSignature")
+                    }.getOrDefault(false)
+                }
+            if (deploy == null) {
+                pending.remove(roundId) // reviewed but never signed/submitted: nothing to prove
+                continue
+            }
+            val signer = runCatching { JSONObject(deploy.body).getJSONObject("wallet").getString("signer") }.getOrNull()
+            val made =
+                runCatching {
+                    withContext(Dispatchers.IO) {
+                        val reader = ReadOnlyAccountRpc(_ore.value.rpc)
+                        val roundAddr = com.edgeore.app.ore.OreV3.roundAddress(roundId)
+                        val minerAddr =
+                            signer?.let {
+                                com.edgeore.app.ore.OreV3
+                                    .minerAddress(it)
+                            }
+                        val at = reader.accounts(listOfNotNull(roundAddr, com.edgeore.app.edge.OreProofV0.CONFIG_ADDRESS, minerAddr))
+                        val ra = at.accounts[0] ?: error("Round $roundId account is closed or missing")
+                        require(ra.owner == com.edgeore.app.ore.OreV3.PROGRAM_ID) { "Round is not owned by ORE v3" }
+                        val round = com.edgeore.app.edge.RoundRules.decodeRound(ra.data)
+                        if (com.edgeore.app.edge.RoundRules.rng(round.slotHash) == null) error("not settled yet")
+                        val cfg = at.accounts.getOrNull(1)?.takeIf { it.owner == com.edgeore.app.ore.OreV3.PROGRAM_ID }?.data
+                        val ma = at.accounts.getOrNull(2)?.takeIf { it.owner == com.edgeore.app.ore.OreV3.PROGRAM_ID }
+                        val minerBytes = ma?.data?.takeIf { runCatching { com.edgeore.app.edge.RoundRules.decodeMiner(it).roundId == roundId }.getOrDefault(false) }
+                        val json =
+                            com.edgeore.app.edge.RoundProof
+                                .build(roundAddr, ra.data, at.slot, reader.endpoint, minerAddr.takeIf { minerBytes != null }, minerBytes, cfg)
+                        Triple(json, round, minerBytes?.let { com.edgeore.app.edge.RoundRules.decodeMiner(it) })
+                    }
+                }
+            made.onSuccess { (json, round, miner) ->
+                val proofSha = withContext(Dispatchers.IO) { proofStore.save(json) }
+                record(
+                    ReceiptDraft(
+                        ReceiptKind.POLICY,
+                        "ROUND_PROOF_RECORDED",
+                        "Round Proof #$roundId",
+                        "Round and Miner account bytes read once from ${_ore.value.rpc}; results re-derived on device per regolith-labs/ore@48c203bd. " +
+                            "Not verified: that the RPC returned what the chain held, and how slot_hash was produced.",
+                        "EdgeORE Round Proof",
+                        "mainnet-beta",
+                        digests = mapOf(com.edgeore.app.edge.RoundProof.DIGEST_KEY to proofSha),
+                        relatesTo = deploy.id,
+                        localObservation = Evidence("CHECKED", "Round account owner, discriminator, size and PDA checked; rules re-derived"),
+                    ),
+                )
+                val outcome =
+                    miner?.let {
+                        com.edgeore.app.edge.RoundRules
+                            .minerOutcome(round, it, Base58.decodePublicKey(com.edgeore.app.edge.RoundRules.SPLIT_ADDRESS))
+                    }
+                alerts += com.edgeore.app.edge.RoundAlerts.settled(round, outcome)
+                pending.remove(roundId)
+                settled[roundId] = sha
+            }.onFailure { e ->
+                if (e.message?.contains("closed") == true) pending.remove(roundId)
+            }
+        }
+        edgePrefs
+            .edit()
+            .putString("pending", com.edgeore.app.edge.PendingRounds.encode(pending))
+            .putString("settled", com.edgeore.app.edge.PendingRounds.encode(settled.toSortedMap().toList().takeLast(200).toMap()))
+            .apply()
+        if (alerts.isNotEmpty()) {
+            if (_edge.value.alertsOn) alerts.forEach { com.edgeore.app.notifications.RoundAlertNotifier.post(getApplication(), it) }
+            _edge.update { it.copy(lastAlerts = alerts) }
+        }
+        refreshProofs()
+    }
+
+    /** Shareable bundle: the receipt export plus the proof JSON, checkable offline with tools/receipt-checker --round-proof. */
+    suspend fun exportRoundProof(p: com.edgeore.app.edge.StoredProof): File =
+        withContext(Dispatchers.IO) {
+            val export = log.export()
+            val proofReceipt = log.all().firstOrNull { it.id == p.receiptId }
+            val deployId = proofReceipt?.let { runCatching { JSONObject(it.body).optString("relatesTo") }.getOrNull() }
+            val deploy = log.all().firstOrNull { it.id == deployId } ?: error("The deploy receipt for this Round Proof is missing")
+            val text =
+                com.edgeore.app.edge.OreProofV0
+                    .build(deploy.id, deploy.body, export, p.proofJson)
+            val dir = File(getApplication<Application>().cacheDir, "exports").apply { mkdirs() }
+            File(dir, "edgeore-round-${p.roundId}.oreproof").apply { writeText(text, Charsets.UTF_8) }
+        }
+
+    // ---------- Crew Pool (non-custodial): signed plans only; each member deploys their own share via the normal review ----------
+    data class CrewState(
+        val signed: com.edgeore.app.edge.Crew.Signed? = null,
+        val check: com.edgeore.app.edge.Crew.Check? = null,
+        val link: String? = null,
+        val message: String? = null,
+    )
+
+    private val _crew = MutableStateFlow(CrewState())
+    val crew: StateFlow<CrewState> = _crew.asStateFlow()
+
+    fun importCrew(link: String) {
+        val s = com.edgeore.app.edge.Crew.decode(link.trim())
+        if (s == null) {
+            _crew.update { it.copy(message = "Not an EdgeORE crew link") }
+            return
+        }
+        _crew.value = CrewState(s, com.edgeore.app.edge.Crew.verify(s), link.trim())
+    }
+
+    /** Signs the plan with this install's Keystore receipt key (wallet message-signing is not wired yet). */
+    fun createCrew(
+        name: String,
+        roundId: Long,
+        members: List<com.edgeore.app.edge.Crew.Member>,
+    ) {
+        val me = _wallet.value.address
+        if (me == null) {
+            _crew.update { it.copy(message = "Connect a wallet first: the creator address goes into the plan") }
+            return
+        }
+        val plan =
+            com.edgeore.app.edge.Crew.Plan(
+                java.util.UUID
+                    .randomUUID()
+                    .toString(),
+                name.trim().take(40),
+                roundId,
+                me,
+                members,
+            )
+        val bad = com.edgeore.app.edge.Crew.problems(plan)
+        if (bad.isNotEmpty()) {
+            _crew.update { it.copy(message = bad.joinToString("; ")) }
+            return
+        }
+        val s = com.edgeore.app.edge.Crew.signWithKeystore(plan, signer)
+        _crew.value = CrewState(s, com.edgeore.app.edge.Crew.verify(s), com.edgeore.app.edge.Crew.encode(s))
+    }
+
+    /** Pre-fills only this wallet's own share and opens the normal review. Cap, risk tick and Rounds=1 still apply. */
+    fun reviewMyCrewShare(): Boolean {
+        val st = _crew.value
+        val s = st.signed ?: return false
+        if (st.check != com.edgeore.app.edge.Crew.Check.VALID_KEYSTORE && st.check != com.edgeore.app.edge.Crew.Check.VALID_WALLET) {
+            _crew.update { it.copy(message = "The plan signature does not verify; nothing was pre-filled") }
+            return false
+        }
+        val me = _wallet.value.address
+        val m = s.plan.members.firstOrNull { it.wallet == me }
+        if (m == null) {
+            _crew.update { it.copy(message = "Your connected wallet is not in this plan") }
+            return false
+        }
+        editOreDeploy { it.copy(pro = true, proMask = m.mask, totalLamports = m.totalLamports) }
+        prepareOreDeploy()
+        return true
     }
 
     // ---------- ORE v3 Deploy: devnet by default, owner-switched mainnet capped at 0.01 SOL; each deploy reviewed, signed in the wallet and submitted separately ----------
@@ -727,6 +1047,9 @@ class EdgeOreViewModel(
                         cluster,
                     )
                 val fee = if (draft.message.isNotEmpty()) net.feeForMessage(draft.message) else null
+                if (draft.approvable && draft.message.isNotEmpty()) {
+                    rememberDeployRound(draft.messageSha256, avail.roundId)
+                }
                 if (!draft.approvable) {
                     _review.update {
                         it.copy(
@@ -786,7 +1109,7 @@ class EdgeOreViewModel(
             }
         }
 
-    // ---------- Cluster selector and live SOL / ORE / SKR balances (read-only) ----------
+    // ---------- Cluster selector and live SOL / ORE balances (read-only) ----------
     private val _cluster =
         MutableStateFlow(
             com.edgeore.app.solana.Cluster
@@ -2387,5 +2710,10 @@ class EdgeOreViewModel(
         val online = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         val unmetered = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
         return online && !unmetered
+    }
+
+    /** Creator only: re-sign a suggested plan without the members who dropped out. Nothing is deployed. */
+    fun applyCrewReassign(active: Set<String>) {
+        _crew.value = reassignedCrewState(_crew.value, active, _wallet.value.address, signer)
     }
 }

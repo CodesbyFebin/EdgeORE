@@ -13,7 +13,9 @@ sourceSets.main {
     kotlin.srcDir("../../app/src/main/java")
     kotlin.include("ReceiptChecker.kt", "com/edgeore/app/receipts/Receipts.kt",
         "com/edgeore/app/crypto/Bytes.kt", "com/edgeore/app/crypto/Ed25519.kt",
-        "com/edgeore/app/io/SafeFiles.kt")
+        "com/edgeore/app/io/SafeFiles.kt",
+        "com/edgeore/app/edge/RoundRules.kt", "com/edgeore/app/edge/RoundProof.kt", "com/edgeore/app/ore/OreV3.kt",
+        "com/edgeore/app/edge/OreProofV0.kt", "com/edgeore/app/solana/OreDeployMessage.kt", "com/edgeore/app/solana/SolanaMessage.kt")
 }
 dependencies {
     implementation("org.json:json:20260814")

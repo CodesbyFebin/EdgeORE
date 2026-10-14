@@ -114,6 +114,10 @@ object OreV3 {
             Round(id, deployed, count, expiresAt, motherlode, totalMiners)
         }
 
+    /** miner_pda(authority): seeds ["miner", authority] under the program id. Read-only address helper (Round Proof). */
+    fun minerAddress(authority: String): String =
+        Pda.find(listOf("miner".toByteArray(), Base58.decodePublicKey(authority)), PROGRAM_ID).first
+
     /** round_pda(id): seeds ["round", id.to_le_bytes()] under the program id. */
     fun roundAddress(id: Long): String =
         Pda

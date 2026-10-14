@@ -164,7 +164,7 @@ class NodeProofPart(
             ReceiptKind.NODE,
             "PROOF_JOBS_VERIFIED",
             "Proof jobs on your node",
-            "$detail. The node agent does not report CPU time, so none is shown. The jobs prove a fixed sample relation and have no value to anyone; nothing is paid: no ORE, SKR, points or payment.",
+            "$detail. The node agent does not report CPU time, so none is shown. The jobs prove a fixed sample relation and have no value to anyone; nothing is paid: no ORE, points or payment.",
             n.endpoint,
             operationId = lastOperation,
             digests =

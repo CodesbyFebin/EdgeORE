@@ -91,6 +91,11 @@ enum class Destination(
 interface PlatformActions {
     fun setReminders(enabled: Boolean) {}
 
+    /** Opt-in round alerts; asks for POST_NOTIFICATIONS on Android 13+ first. */
+    fun setRoundAlerts(enabled: Boolean) {}
+
+    fun exportRoundProof(proof: com.edgeore.app.edge.StoredProof) {}
+
     fun connectWallet()
 
     fun disconnectWallet()
@@ -302,6 +307,12 @@ fun EdgeOreApp(
                             onScanQr = actions::scanAddressQr,
                             onPickQrImage = actions::pickQrImage,
                         )
+                    r == "crew" -> com.edgeore.app.ui.screens.CrewScreen(vm) { route = "review" }
+                    r == "history" -> com.edgeore.app.ui.screens.HistoryView(vm.historyRows())
+                    r == "proofs" -> {
+                        val edgeState by vm.edge.collectAsStateWithLifecycle()
+                        com.edgeore.app.ui.screens.RoundProofView(edgeState.proofs, actions::exportRoundProof)
+                    }
                     r == "preview" -> ConceptPreviewScreen()
                     r == "browser" -> BrowserScreen()
                     r == "ore" || r == "ore:pro" ->
@@ -335,6 +346,10 @@ fun EdgeOreApp(
                                     if (pro) "ore:pro" else "ore:lite"
                             },
                             onSettings = { about = true },
+                            onHistory = { route = "history" },
+                            onProofs = { route = "proofs" },
+                            onCrew = { route = "crew" },
+                            onAlerts = actions::setRoundAlerts,
                         )
                     tab == Destination.AI -> {
                         com.edgeore.app.ui.screens
@@ -376,7 +391,7 @@ fun EdgeOreApp(
                         .IconAction(EdgeIcons.Bell, "Notification inbox", onClick = { inbox = true })
                 }
                 Text(
-                    "Built by CodesbyFebin · ORE × SKR research scope · no token issuance",
+                    "Built by CodesbyFebin · ORE v3 client · no token issuance",
                     style = MaterialTheme.typography.labelSmall,
                     color = EdgeColors.textMuted,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -415,7 +430,7 @@ fun EdgeOreApp(
                         })
                     if (signerDetails) Text(vm.receiptSignerProtection, style = MaterialTheme.typography.bodySmall)
                     Text(
-                        "Hackathon build 0.1.0-clockin. No ORE rewards, SKR payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.",
+                        "Hackathon build 0.1.0-clockin. No ORE rewards, payments, token issuance or mining income are implemented or implied. \$EdgeORE is a product name, not a token.",
                     )
                 }
             },

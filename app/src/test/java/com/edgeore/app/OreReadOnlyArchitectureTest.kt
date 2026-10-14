@@ -43,7 +43,7 @@ class OreReadOnlyArchitectureTest {
     }
 
     @Test fun theReaderTypesExposeOnlyReads() {
-        val allowed = setOf("accounts", "slotRate", "getEndpoint")
+        val allowed = setOf("accounts", "accountsHead", "slotRate", "getEndpoint") // accountsHead: getMultipleAccounts with dataSlice (protocol guardrail)
         assertEquals(
             allowed,
             AccountReader::class.java.declaredMethods

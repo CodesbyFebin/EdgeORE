@@ -380,6 +380,13 @@ fun OreMiningCard(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.testTag("ore-mainnet-disclaimer"),
                 )
+                Text(
+                    DEPLOY_WALLET_TIP,
+                    color = EdgeColors.textMuted,
+                    style = MaterialTheme.typography.labelSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.testTag("ore-deploy-wallet-tip"),
+                )
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -911,3 +918,6 @@ fun boardSyncLabel(
 }
 
 private const val MS_PER_S = 1000L
+
+/** One-line key-safety tip; see README "Key safety". */
+const val DEPLOY_WALLET_TIP = "Tip: use a small deploy wallet; keep the rest elsewhere."

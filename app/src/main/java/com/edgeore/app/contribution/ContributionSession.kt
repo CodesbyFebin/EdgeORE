@@ -375,7 +375,7 @@ class ContributionSession(
                     ReceiptKind.POLICY,
                     outcome,
                     title,
-                    "$lines. Nothing was earned; no ORE, SKR or payment is involved.",
+                    "$lines. Nothing was earned; no ORE or payment is involved.",
                     "this phone",
                     operationId = id,
                     digests = mapOf("sessionId" to id),
