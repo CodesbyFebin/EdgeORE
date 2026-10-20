@@ -161,7 +161,16 @@ class OreV3Test {
                     455913778,
                 )
             val s = OreObserver(reader) { 42L }.read()
-            assertEquals(listOf(listOf(OreV3.BOARD_ADDRESS, OreV3.TREASURY_ADDRESS), listOf(f1.roundAddress)), reader.asked)
+            // Third read: ORE Config for round timing (optional; absent here, so timing is null, not invented).
+            assertEquals(
+                listOf(
+                    listOf(OreV3.BOARD_ADDRESS, OreV3.TREASURY_ADDRESS),
+                    listOf(f1.roundAddress),
+                    listOf(OreV3.CONFIG_ADDRESS),
+                ),
+                reader.asked,
+            )
+            assertEquals(null, s.config)
             assertEquals(437127, s.round.id)
             assertEquals(42L, s.observedAtMs)
             assertNull(s.slotRate)

@@ -12,7 +12,7 @@ Each preset only pre-fills the review. You still review the exact message and si
 | **Round timing.** `Board.end_slot` is `u64::MAX` until the first deploy; then `end_slot = start_slot + Config.round_slots`. Deploy needs `start_slot ≤ slot < end_slot`. Reset can run from `end_slot + intermission_slots`. | `api/src/state/board.rs`; `api/src/state/config.rs`; `program/src/deploy.rs`; `program/src/reset.rs` | Board round 440348: `end_slot − start_slot = 240`. `Config.round_slots = 240`, `intermission_slots = 48`. | **Verified** |
 | **Losing-square refund vs fees.** `calculate_fees`: on every square with SOL, the admin fee is `max(deployed/100, 1)`. On non-winning squares there is also a protocol fee `max((deployed − admin)/10, 1)`. Checkpoint returns the rest of a losing square to its miners, pro rata, and 99% of the winning square. | `api/src/state/round.rs` `calculate_fees`; `program/src/checkpoint.rs`; `program/src/reset.rs` | `Round.total_vaulted == protocol_fee` and `total_returned_sol == total − admin − protocol` in **10/10** rounds. | **Verified** |
 
-So losing-square SOL is mostly refunded, not lost outright: about 10.9% of it is taken as fees (1% admin plus 10% of the remainder). See [`tile-insight-ev.md`](tile-insight-ev.md).
+So losing-square SOL is refunded minus a 10% fee, plus a 1% admin fee: about 10.9% of it is taken as fees. See [`tile-insight-ev.md`](tile-insight-ev.md).
 
 ## Presets
 

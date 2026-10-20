@@ -71,7 +71,7 @@ enum class Destination(
     val icon: ImageVector,
     val inNav: Boolean = true,
 ) {
-    Mine("Home", EdgeIcons.Home),
+    Mine("Mine", EdgeIcons.Home),
     AI("AI", EdgeIcons.Ai),
     Zk("ZK Proof", EdgeIcons.Proof),
     Settings("Settings", EdgeIcons.Settings),

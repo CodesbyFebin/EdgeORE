@@ -13,6 +13,8 @@ data class OreSnapshot(
     val roundSlot: Long,
     val observedAtMs: Long,
     val slotRate: SlotRate?,
+    /** ORE Config as read with the round; null when it could not be read (then round length is shown as unknown). */
+    val config: OreV3.Config? = null,
 )
 
 /** Where the current round stands, from Board.start_slot / end_slot and the RPC's slot. */
@@ -103,7 +105,26 @@ class OreObserver(
         ) {
             throw OreV3.DecodeException("Round account id ${round.id} does not match Board.round_id ${board.roundId}")
         }
-        return OreSnapshot(reader.endpoint, board, first.slot, treasury, round, second.slot, nowMs(), reader.slotRate())
+        // Round length lives in ORE Config (deploy.rs, reset.rs). A failed read hides timing; it never invents it.
+        val config =
+            runCatching {
+                reader
+                    .accounts(listOf(OreV3.CONFIG_ADDRESS))
+                    .accounts
+                    .firstOrNull()
+                    ?.let { OreV3.decodeConfig(it.owner, it.data) }
+            }.getOrNull()
+        return OreSnapshot(
+            reader.endpoint,
+            board,
+            first.slot,
+            treasury,
+            round,
+            second.slot,
+            nowMs(),
+            reader.slotRate(),
+            config,
+        )
     }
 }
 

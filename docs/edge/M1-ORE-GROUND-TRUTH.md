@@ -17,7 +17,7 @@ nor its Cargo metadata uses the name "ORE Supply", so EdgeORE does not use it.
 | Round | 8 + 1,096 bytes, disc 109 | `round.rs`; live size matches |
 | Config `9c9X7aDR…S4Awy` | disc 101; admin.fee_rate = **100**, protocol.fee_rate = **1000** (bps) | Live read |
 | Fees actually applied | 1% admin on every square, plus 10% of the remainder on losing squares, **hardcoded** in `calculate_fees` / `checkpoint.rs`. Config fee_rate is not read by deploy/reset/checkpoint at this commit | Source. On five live rounds `total_vaulted` equals the formula exactly |
-| Losing-square SOL | **Not refunded**: about 89.1% comes back, 10.9% goes in fees | Source and live totals |
+| Losing-square SOL | **Refunded minus a 10% fee, plus a 1% admin fee**: about 89.1% comes back, 10.9% goes in fees | Source and live totals |
 | Split vs solo | `distribution_mask(round_id)` gives 10 solo and 15 split tiles, knowable before the round ends | Source; split marker matched on all five live rounds |
 | Emission per round | `rewards[0] = min(1 ORE, MAX_SUPPLY − supply)` and +0.2 ORE to the motherlode pool | `reset.rs`; `rewards[0]` = 1 ORE on all five live rounds |
 | ORE decimals | 11 (`TOKEN_DECIMALS`), so 10^11 base units per ORE | `consts.rs` |

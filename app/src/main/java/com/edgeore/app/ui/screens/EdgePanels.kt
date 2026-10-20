@@ -119,7 +119,7 @@ fun TileInsightPanel(
                 "Light = less SOL than average · Crowded = more than 1.5×" +
                     " · ★ solo tile: if it wins, one miner on it takes the round's ORE " +
                     "(chosen by SOL weight); other 15 tiles split it by SOL. Set by distribution_mask(round id) in ORE v3. " +
-                    "Losing tiles keep about 89.1% of their SOL (1% admin + 10% protocol fee).",
+                    com.edgeore.app.edge.FeeMath.LOSING,
                 color = EdgeColors.textMuted,
                 fontSize = 11.sp,
             )

@@ -2,14 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>FunctionNaming:StrategyPanels.kt$@Composable fun StrategiesSection( vm: EdgeOreViewModel, snap: OreSnapshot?, onOpenReview: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:StrategyPanels.kt$@Composable fun StrategyCards( snap: OreSnapshot?, thresholdOre: String, onThreshold: (String) -&gt; Unit, context: StrategyPlaybook.Inputs, onApply: (Strategy) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:StrategyPanels.kt$@Composable private fun LateLookBanner( snap: OreSnapshot?, now: Long, onStop: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:StrategyPanels.kt$@Composable private fun StrategyCard( s: Strategy, plan: StrategyPlan, thresholdOre: String, onThreshold: (String) -&gt; Unit, onApply: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorAnswer(text: String)</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorExplainButton( modifier: Modifier = Modifier, onClick: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun ReviewExplainSection(vm: EdgeOreViewModel)</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundProofView( proofs: List&lt;StoredProof&gt;, onExport: (StoredProof) -&gt; Unit, onExplain: ((StoredProof) -&gt; Unit)? = null, explanation: String? = null, )</ID>
     <ID>ComplexCondition:CpuBudget.kt$CpuBudget$first == null || second == null || elapsedMillis &lt;= 0 || second &lt; first</ID>
     <ID>ComplexCondition:OreDeployReview.kt$OreDeployReview$decoded == null || !decoded.signer.contentEquals(signer) || decoded.amountPerSquareLamports != per || decoded.mask != mask</ID>
     <ID>ComplexCondition:OwnedHostModel.kt$EndpointPolicy$!uri.rawPath.isNullOrEmpty() || uri.rawQuery != null || uri.userInfo != null || uri.rawFragment != null</ID>
@@ -103,15 +95,19 @@
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatCell( label: String, value: String?, modifier: Modifier = Modifier, missing: String = "Not observed", mono: Boolean = false, )</ID>
     <ID>FunctionNaming:DesignKit.kt$@Composable fun StatusPill( text: String, modifier: Modifier = Modifier, tone: PillTone = PillTone.NEUTRAL, icon: ImageVector? = null, )</ID>
     <ID>FunctionNaming:EdgeOreApp.kt$@Composable fun EdgeOreApp( vm: EdgeOreViewModel, actions: PlatformActions, )</ID>
-    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewScreen( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorAnswer(text: String)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun AdvisorExplainButton( modifier: Modifier = Modifier, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewReassignCard( plan: com.edgeore.app.edge.Crew.Plan, onReassign: (Set&lt;String&gt;) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewScreen( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun CrewView( signed: com.edgeore.app.edge.Crew.Signed?, check: com.edgeore.app.edge.Crew.Check?, link: String?, message: String?, myWallet: String?, stats: com.edgeore.app.edge.Crew.Stats, split: List&lt;com.edgeore.app.edge.Crew.Transfer&gt;, onImport: (String) -&gt; Unit, onCreate: (String, List&lt;com.edgeore.app.edge.Crew.Member&gt;) -&gt; Unit, onReviewMyShare: () -&gt; Unit, onReassign: (Set&lt;String&gt;) -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun EdgeInsightsSection( vm: EdgeOreViewModel, onOpenReview: () -&gt; Unit, onHistory: () -&gt; Unit, onProofs: () -&gt; Unit, onAlerts: (Boolean) -&gt; Unit, onCrew: () -&gt; Unit = {}, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun ExplainerCard( text: String?, backend: String?, onRound: () -&gt; Unit, onTile: (() -&gt; Unit)?, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun HistoryView(rows: List&lt;History.Row&gt;)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun PlanningCalculatorCard(initial: com.edgeore.app.edge.PlanningCalculator.Inputs? = null)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun ProtocolBanner(r: com.edgeore.app.edge.ProtocolGuard.Result?)</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun ReviewExplainSection(vm: EdgeOreViewModel)</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundAlertsCard( on: Boolean, message: String?, onToggle: (Boolean) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:EdgePanels.kt$@Composable fun RoundProofView( proofs: List&lt;StoredProof&gt;, onExport: (StoredProof) -&gt; Unit, onExplain: ((StoredProof) -&gt; Unit)? = null, explanation: String? = null, )</ID>
     <ID>FunctionNaming:EdgePanels.kt$@Composable fun TileInsightPanel( tiles: List&lt;TileInsight.Tile&gt;?, soloMask: Int? = null, selected: Int?, onSelect: (Int) -&gt; Unit, onReview: (Int) -&gt; Unit, onPreset: (StrategyPreset) -&gt; Unit, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun CopperButton( text: String, icon: ImageVector?, tag: String, onClick: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:FourScreens.kt$@Composable fun Hero( art: Int, title: String, subtitle: String, pill: String, pillOn: Boolean, tag: String, )</ID>
@@ -157,6 +153,9 @@
     <ID>FunctionNaming:MineScreen.kt$@Composable private fun RowScope.MetricTile( icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, )</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable private fun SessionPartRow(p: PartView)</ID>
     <ID>FunctionNaming:MineScreen.kt$@Composable private fun StatusRow( icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String, attention: Boolean, onClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MinerHome.kt$@Composable fun MinerClaimCard( onReceipts: () -&gt; Unit, receiptCount: Int, )</ID>
+    <ID>FunctionNaming:MinerHome.kt$@Composable fun MinerRoundBoard( snap: OreSnapshot?, nowMs: Long, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:MinerHome.kt$@Composable private fun BoardGrid(snap: OreSnapshot)</ID>
     <ID>FunctionNaming:MiningAnimation.kt$@Composable fun MiningAnimation( phase: SessionPhase, modifier: Modifier = Modifier, reducedMotion: Boolean = rememberReducedMotion(), )</ID>
     <ID>FunctionNaming:NodesScreen.kt$@Composable fun NodesScreen(vm: EdgeOreViewModel)</ID>
     <ID>FunctionNaming:NodesScreen.kt$@Composable private fun PairingForm( vm: EdgeOreViewModel, busy: Boolean, )</ID>
@@ -189,6 +188,10 @@
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun FileRow( f: VaultFileView, onExport: () -&gt; Unit, onInspect: () -&gt; Unit, onDelete: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun StateLine( key: String, value: String, color: Color, )</ID>
     <ID>FunctionNaming:StorageScreen.kt$@Composable private fun UsageRing(fraction: Float)</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable fun StrategiesSection( vm: EdgeOreViewModel, snap: OreSnapshot?, onOpenReview: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable fun StrategyCards( snap: OreSnapshot?, thresholdOre: String, onThreshold: (String) -&gt; Unit, context: StrategyPlaybook.Inputs, onApply: (Strategy) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable private fun LateLookBanner( snap: OreSnapshot?, now: Long, onStop: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StrategyPanels.kt$@Composable private fun StrategyCard( s: Strategy, plan: StrategyPlan, thresholdOre: String, onThreshold: (String) -&gt; Unit, onApply: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:Theme.kt$@Composable fun EdgeOreTheme( mode: ThemeMode = ThemeState.mode, content: @Composable () -&gt; Unit, )</ID>
     <ID>FunctionNaming:ThemeSwitch.kt$@Composable fun ThemeSwitch( mode: ThemeMode, onSelect: (ThemeMode) -&gt; Unit, )</ID>
     <ID>FunctionNaming:WalletConnectSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WalletConnectSheet( onDismiss: () -&gt; Unit, onConnect: () -&gt; Unit, )</ID>
@@ -1021,7 +1024,6 @@
     <ID>MaxLineLength:EdgePanels.kt$"Break-even ORE price: " + (r.breakEvenOrePriceSol?.let { "${f(it)} SOL per ORE" } ?: "none (no ORE share)")</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Crowding and expected value per square from the live round. ${TileInsight.LABEL.replaceFirstChar { it.uppercase() }}."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Ignores the motherlode, later deploys that dilute your share, and price changes. Single rounds vary widely. Not advice."</ID>
-    <ID>MaxLineLength:EdgePanels.kt$"Light = less SOL than average · Crowded = more than 1.5× · ★ solo tile: if it wins, one miner on it takes the round's ORE "</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Members ${stats.members} · squares covered ${stats.coveredSquares} · rounds ${stats.rounds} · rounds a crew square won ${stats.wins}"</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Opens the normal review for your share only. You sign in your wallet; nothing is sent automatically."</ID>
     <ID>MaxLineLength:EdgePanels.kt$"Presets only pick squares. You still review the exact message and sign each deploy in your wallet. Mainnet cap 0.01 SOL, Rounds 1."</ID>
@@ -1164,6 +1166,7 @@
     <ID>MaxLineLength:MineScreen.kt$if (storage.files.isEmpty()) "Empty · encrypt a file in Storage" else "${storage.files.size} encrypted file${if (storage.files.size == 1) "" else "s"}"</ID>
     <ID>MaxLineLength:MineScreen.kt$var net by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(com.edgeore.app.device.NetActivity.UNAVAILABLE) }</ID>
     <ID>MaxLineLength:MineScreen.kt$var now by androidx.compose.runtime.remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }</ID>
+    <ID>MaxLineLength:MinerHome.kt$MinerHome$fun motherlode(grams: Long): String</ID>
     <ID>MaxLineLength:MiningAnimation.kt$MiningFrames$/** Frames of the rock-and-pickaxe loop (res/drawable-nodpi/mine_frame_NN.webp, cut from the user's GIF; see docs/design/mine-animation.md). */</ID>
     <ID>MaxLineLength:MiningAnimation.kt$MiningMotion$MiningPose.STILL_ON -&gt; "Pickaxe against the rock, not moving because animations are off: a contribution session is running. Nothing is earned."</ID>
     <ID>MaxLineLength:MiningAnimation.kt$MiningMotion$MiningPose.SWINGING -&gt; "Pickaxe striking the rock: a contribution session is running on your own node and storage gateway. Nothing is earned."</ID>
@@ -1835,6 +1838,7 @@
     <ID>TooManyFunctions:RoundRules.kt$RoundRules</ID>
     <ID>TooManyFunctions:SolanaMessage.kt$SolanaMessage</ID>
     <ID>TooManyFunctions:StorageScreen.kt$com.edgeore.app.ui.screens.StorageScreen.kt</ID>
+    <ID>TooManyFunctions:StrategyPlaybook.kt$StrategyPlaybook</ID>
     <ID>TooManyFunctions:TransferCoordinator.kt$TransferCoordinator</ID>
     <ID>UnusedParameter:MineDeploy.kt$onNetwork: (mainnet: Boolean) -&gt; Unit = {}</ID>
     <ID>UnusedParameter:MineHolo.kt$connected: Boolean</ID>

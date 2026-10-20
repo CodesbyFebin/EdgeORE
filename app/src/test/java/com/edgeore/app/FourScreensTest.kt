@@ -52,7 +52,7 @@ class FourScreensTest {
     }
 
     @Test fun bottomNavHasTheFourDestinations() {
-        assertEquals(listOf("Home", "AI", "ZK Proof", "Settings"), Destination.nav.map { it.label })
+        assertEquals(listOf("Mine", "AI", "ZK Proof", "Settings"), Destination.nav.map { it.label })
         rule.onNodeWithTag("ore-mining").assertExists() // ORE stays on Home
     }
 

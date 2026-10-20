@@ -185,18 +185,8 @@ fun MineScreen(
         }
     }
     BalanceRow(bal, now, wallet.address != null, if (cluster == com.edgeore.app.solana.Cluster.MAINNET) "ORE" else "Test ORE")
-    EdgeNodeCard(sessionView, settings.edgeModeResumed, eval.headline, vm::startSession, vm::stopSession) {
-        vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
-    }
-    Text("Device metrics", color = EdgeColors.textPrimary, style = MaterialTheme.typography.titleSmall)
-    ResourceGrid(
-        hw.first,
-        hw.second,
-        diskReading,
-        net,
-        com.edgeore.app.ui.components
-            .rememberReducedMotion(),
-    )
+    // Miner-first: the live round, strategies, deploy review, claim and receipts come before everything else.
+    MinerRoundBoard(ore.snapshot.takeIf { cluster == com.edgeore.app.solana.Cluster.MAINNET }, now)
     OreMiningCard(
         deploy,
         wallet.address != null,
@@ -214,6 +204,20 @@ fun MineScreen(
         },
     )
     EdgeInsightsSection(vm, onOpenReview, onHistory, onProofs, onAlerts, onCrew)
+    MinerClaimCard(onReceipts = { onOpenTab(com.edgeore.app.ui.Destination.Receipts) }, receiptCount = receipts.size)
+    Text("Edge node & device", color = EdgeColors.textPrimary, style = MaterialTheme.typography.titleSmall)
+    EdgeNodeCard(sessionView, settings.edgeModeResumed, eval.headline, vm::startSession, vm::stopSession) {
+        vm.updateSettings { it.copy(edgeModeResumed = !it.edgeModeResumed) }
+    }
+    Text("Device metrics", color = EdgeColors.textPrimary, style = MaterialTheme.typography.titleSmall)
+    ResourceGrid(
+        hw.first,
+        hw.second,
+        diskReading,
+        net,
+        com.edgeore.app.ui.components
+            .rememberReducedMotion(),
+    )
     ContributionToggles(
         settings.chargeOnly,
         settings.thermalGuard,

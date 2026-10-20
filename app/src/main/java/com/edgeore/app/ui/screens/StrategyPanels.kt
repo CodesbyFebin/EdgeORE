@@ -74,6 +74,7 @@ private fun LateLookBanner(
         snap?.let {
             StrategyPlaybook.lateLook(
                 StrategyPlaybook.clock(it, now),
+                StrategyPlaybook.lateLookSlots(it.config),
             )
         } as? StrategyPlan.Remind
     EdgeCard(Modifier.testTag("late-look")) {

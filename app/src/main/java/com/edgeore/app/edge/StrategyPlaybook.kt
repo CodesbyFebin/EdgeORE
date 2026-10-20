@@ -56,7 +56,7 @@ enum class Strategy(
     CREW_BLANKET(
         "Crew Blanket",
         "Your crew covers all 25 squares with no overlap. Each member reviews and signs only their own share; " +
-            "about 10.9% of SOL on the 24 losing squares still goes to fees.",
+            "on the 24 losing squares the SOL is refunded minus a 10% fee, plus a 1% admin fee.",
         listOf(StrategyRules.Rule.CREW, StrategyRules.Rule.FEES),
     ),
     LATE_LOOK(
@@ -104,6 +104,8 @@ sealed interface StrategyPlan {
 
 object StrategyPlaybook {
     const val LATE_LOOK_SLOTS = 40L
+    private const val LATE_LOOK_PERCENT = 15L
+    private const val PERCENT = 100L
     private const val SPLIT_TILES = 15
     private const val QUIET = 3
     private const val ALL = (1 shl RoundRules.SQUARES) - 1
@@ -118,6 +120,8 @@ object StrategyPlaybook {
         /** Members' masks of a verified crew plan, or null. */
         val crewMasks: List<Int>? = null,
         val nowMs: Long = System.currentTimeMillis(),
+        /** Upper motherlode limit (like the autominer's max_motherlode). Null or 0 means not set = unlimited. */
+        val motherlodeLimitGrams: Long? = null,
     )
 
     /** [snap] is the real board read (null before the first read); nothing is invented without it. */
@@ -143,8 +147,9 @@ object StrategyPlaybook {
             Strategy.SOLO_HUNTER -> StrategyPlan.Fill(solo, null)
             Strategy.QUIET_SQUARES -> StrategyPlan.Fill(quietest(snap.round.deployedLamports), null)
             Strategy.SPLIT_SWEEP -> splitSweep(ALL and solo.inv(), inp.capLamports)
-            Strategy.MOTHERLODE_WATCH -> motherlode(snap.treasury.motherlodeGrams, inp.motherlodeThresholdGrams)
-            Strategy.LATE_LOOK -> lateLook(clock(snap, inp.nowMs))
+            Strategy.MOTHERLODE_WATCH ->
+                motherlode(snap.treasury.motherlodeGrams, inp.motherlodeThresholdGrams, inp.motherlodeLimitGrams)
+            Strategy.LATE_LOOK -> lateLook(clock(snap, inp.nowMs), lateLookSlots(snap.config))
             Strategy.CREW_BLANKET -> crew(inp.crewMasks)
         }
     }
@@ -187,20 +192,34 @@ object StrategyPlaybook {
     fun motherlode(
         poolGrams: Long,
         thresholdGrams: Long,
+        limitGrams: Long? = null,
     ): StrategyPlan =
-        if (poolGrams >= thresholdGrams && thresholdGrams > 0) {
+        // An unset (null) or zero limit means unlimited, never "0 ORE" (the ORE motherlode-default bug).
+        if (limitGrams != null && limitGrams > 0 && poolGrams > limitGrams) {
+            StrategyPlan.Gate(false, "Sit out: the motherlode pool is above your limit.")
+        } else if (poolGrams >= thresholdGrams && thresholdGrams > 0) {
             StrategyPlan.Gate(true, "Motherlode pool is at or above your threshold. You can open the review.")
         } else {
             StrategyPlan.Gate(false, "Sit out: the motherlode pool is below your threshold.")
         }
 
-    fun lateLook(c: RoundClock): StrategyPlan =
+    /**
+     * The Late Look window: the last 15% of Config.round_slots as read from chain. [LATE_LOOK_SLOTS] is used only when
+     * the Config account could not be read.
+     */
+    fun lateLookSlots(config: com.edgeore.app.ore.OreV3.Config?): Long =
+        config?.let { maxOf(1L, it.roundSlots * LATE_LOOK_PERCENT / PERCENT) } ?: LATE_LOOK_SLOTS
+
+    fun lateLook(
+        c: RoundClock,
+        window: Long = LATE_LOOK_SLOTS,
+    ): StrategyPlan =
         when (c) {
             is RoundClock.Live ->
-                if (c.slotsLeft <= LATE_LOOK_SLOTS) {
+                if (c.slotsLeft <= window) {
                     StrategyPlan.Remind(true, "Late Look: about ${OreClock.label(c)} left. $RECHECK")
                 } else {
-                    StrategyPlan.Remind(false, "Late Look reminds you in the app at about $LATE_LOOK_SLOTS slots left.")
+                    StrategyPlan.Remind(false, "Late Look reminds you in the app at about $window slots left.")
                 }
             RoundClock.WaitingForFirstDeploy -> StrategyPlan.Remind(false, "The round starts with its first deploy.")
             is RoundClock.Ended -> StrategyPlan.Remind(false, "This round has ended; wait for the next one.")

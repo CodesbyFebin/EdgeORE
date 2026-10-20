@@ -30,6 +30,22 @@ object OreV3 {
     /** Board.end_slot while a round waits for its first deploy (reset.rs, u64::MAX). */
     const val END_SLOT_WAITING = -1L // u64::MAX read as a signed Long
 
+    /** api/src/consts.rs CONFIG_ADDRESS (seed "config"). Round and intermission length live here, not in code. */
+    const val CONFIG_ADDRESS = "9c9X7aDRAF41faiDs94ELjT19UrGnn72wBW9hPsS4Awy"
+    const val DISC_CONFIG = 101
+
+    /** Config = AdminConfig (32+32+8) + ProtocolConfig (32+32+8+8+8+32+32), api/src/state/config.rs. */
+    const val CONFIG_SIZE = 8 + 72 + 152
+    private const val CONFIG_ADMIN_FEE_OFFSET = 8 + 64
+    private const val CONFIG_PROTOCOL_FEE_OFFSET = 8 + 72 + 64
+
+    /**
+     * The round-length commit this build was checked against: regolith-labs/ore b17202e ("bump slot times") set
+     * ONE_MINUTE_SLOTS = 200 / INTERMISSION_SLOTS = 45 in consts.rs; it is an ancestor of [SOURCE_COMMIT], where the program
+     * instead reads Config.protocol.round_slots (deploy.rs) and intermission_slots (reset.rs). The app reads those from chain.
+     */
+    const val TIMING_COMMIT = "b17202e63d69638b2bf1e0a6b8a67ca9b6da7943"
+
     const val DISC_TREASURY = 104
     const val DISC_BOARD = 105
     const val DISC_ROUND = 109
@@ -42,6 +58,14 @@ object OreV3 {
         val startSlot: Long,
         val endSlot: Long,
         val productionCostEma: Long,
+    )
+
+    /** Config fields the miner home shows. Fee rates are basis points as stored; calculate_fees() hardcodes 1%/10%. */
+    data class Config(
+        val adminFeeBps: Long,
+        val protocolFeeBps: Long,
+        val intermissionSlots: Long,
+        val roundSlots: Long,
     )
 
     data class Treasury(
@@ -86,6 +110,21 @@ object OreV3 {
     ): Board =
         body(owner, data, DISC_BOARD, BOARD_SIZE, "Board").let { b ->
             Board(b.long, b.long, b.long, b.long)
+        }
+
+    fun decodeConfig(
+        owner: String,
+        data: ByteArray,
+    ): Config =
+        body(owner, data, DISC_CONFIG, CONFIG_SIZE, "Config").let { b ->
+            b.position(CONFIG_ADMIN_FEE_OFFSET)
+            val admin = b.long
+            b.position(CONFIG_PROTOCOL_FEE_OFFSET)
+            val protocol = b.long
+            val intermission = b.long
+            val round = b.long
+            if (round <= 0 || intermission < 0) throw DecodeException("Config has an out-of-range round length")
+            Config(admin, protocol, intermission, round)
         }
 
     fun decodeTreasury(
