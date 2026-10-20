@@ -107,7 +107,17 @@ class OreObserver(
         }
         val config =
             second.accounts.getOrNull(1)?.let { c -> runCatching { OreV3.decodeConfig(c.owner, c.data) }.getOrNull() }
-        return OreSnapshot(reader.endpoint, board, first.slot, treasury, round, second.slot, nowMs(), reader.slotRate(), config)
+        return OreSnapshot(
+            reader.endpoint,
+            board,
+            first.slot,
+            treasury,
+            round,
+            second.slot,
+            nowMs(),
+            reader.slotRate(),
+            config,
+        )
     }
 }
 

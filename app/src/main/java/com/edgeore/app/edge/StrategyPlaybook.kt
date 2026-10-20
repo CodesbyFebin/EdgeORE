@@ -104,6 +104,8 @@ sealed interface StrategyPlan {
 
 object StrategyPlaybook {
     const val LATE_LOOK_SLOTS = 40L
+    private const val LATE_LOOK_PERCENT = 15L
+    private const val PERCENT = 100L
     private const val SPLIT_TILES = 15
     private const val QUIET = 3
     private const val ALL = (1 shl RoundRules.SQUARES) - 1
@@ -115,11 +117,11 @@ object StrategyPlaybook {
     data class Inputs(
         val capLamports: Long,
         val motherlodeThresholdGrams: Long = 0,
-        /** Upper motherlode limit (like the autominer's max_motherlode). Null or 0 means not set = unlimited. */
-        val motherlodeLimitGrams: Long? = null,
         /** Members' masks of a verified crew plan, or null. */
         val crewMasks: List<Int>? = null,
         val nowMs: Long = System.currentTimeMillis(),
+        /** Upper motherlode limit (like the autominer's max_motherlode). Null or 0 means not set = unlimited. */
+        val motherlodeLimitGrams: Long? = null,
     )
 
     /** [snap] is the real board read (null before the first read); nothing is invented without it. */
@@ -145,7 +147,8 @@ object StrategyPlaybook {
             Strategy.SOLO_HUNTER -> StrategyPlan.Fill(solo, null)
             Strategy.QUIET_SQUARES -> StrategyPlan.Fill(quietest(snap.round.deployedLamports), null)
             Strategy.SPLIT_SWEEP -> splitSweep(ALL and solo.inv(), inp.capLamports)
-            Strategy.MOTHERLODE_WATCH -> motherlode(snap.treasury.motherlodeGrams, inp.motherlodeThresholdGrams, inp.motherlodeLimitGrams)
+            Strategy.MOTHERLODE_WATCH ->
+                motherlode(snap.treasury.motherlodeGrams, inp.motherlodeThresholdGrams, inp.motherlodeLimitGrams)
             Strategy.LATE_LOOK -> lateLook(clock(snap, inp.nowMs), lateLookSlots(snap.config))
             Strategy.CREW_BLANKET -> crew(inp.crewMasks)
         }
@@ -186,15 +189,13 @@ object StrategyPlaybook {
         return if (per <= 0) StrategyPlan.Disabled("Cap too small to split.") else StrategyPlan.Fill(splitMask, per * n)
     }
 
-    /** An unset (null) or zero limit means unlimited, never "0 ORE" (the ORE motherlode-default bug). */
-    fun limitSet(limitGrams: Long?): Boolean = limitGrams != null && limitGrams > 0
-
     fun motherlode(
         poolGrams: Long,
         thresholdGrams: Long,
         limitGrams: Long? = null,
     ): StrategyPlan =
-        if (limitSet(limitGrams) && poolGrams > limitGrams!!) {
+        // An unset (null) or zero limit means unlimited, never "0 ORE" (the ORE motherlode-default bug).
+        if (limitGrams != null && limitGrams > 0 && poolGrams > limitGrams) {
             StrategyPlan.Gate(false, "Sit out: the motherlode pool is above your limit.")
         } else if (poolGrams >= thresholdGrams && thresholdGrams > 0) {
             StrategyPlan.Gate(true, "Motherlode pool is at or above your threshold. You can open the review.")
@@ -207,7 +208,7 @@ object StrategyPlaybook {
      * the Config account could not be read.
      */
     fun lateLookSlots(config: com.edgeore.app.ore.OreV3.Config?): Long =
-        config?.let { maxOf(1L, it.roundSlots * 15 / 100) } ?: LATE_LOOK_SLOTS
+        config?.let { maxOf(1L, it.roundSlots * LATE_LOOK_PERCENT / PERCENT) } ?: LATE_LOOK_SLOTS
 
     fun lateLook(
         c: RoundClock,

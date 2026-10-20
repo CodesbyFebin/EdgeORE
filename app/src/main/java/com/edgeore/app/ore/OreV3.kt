@@ -36,6 +36,8 @@ object OreV3 {
 
     /** Config = AdminConfig (32+32+8) + ProtocolConfig (32+32+8+8+8+32+32), api/src/state/config.rs. */
     const val CONFIG_SIZE = 8 + 72 + 152
+    private const val CONFIG_ADMIN_FEE_OFFSET = 8 + 64
+    private const val CONFIG_PROTOCOL_FEE_OFFSET = 8 + 72 + 64
 
     /**
      * The round-length commit this build was checked against: regolith-labs/ore b17202e ("bump slot times") set
@@ -58,7 +60,7 @@ object OreV3 {
         val productionCostEma: Long,
     )
 
-    /** Config fields the miner home shows. Fee rates are in basis points as stored; calculate_fees() itself is hardcoded 1% / 10%. */
+    /** Config fields the miner home shows. Fee rates are basis points as stored; calculate_fees() hardcodes 1%/10%. */
     data class Config(
         val adminFeeBps: Long,
         val protocolFeeBps: Long,
@@ -115,9 +117,9 @@ object OreV3 {
         data: ByteArray,
     ): Config =
         body(owner, data, DISC_CONFIG, CONFIG_SIZE, "Config").let { b ->
-            b.position(8 + 64)
+            b.position(CONFIG_ADMIN_FEE_OFFSET)
             val admin = b.long
-            b.position(8 + 72 + 64)
+            b.position(CONFIG_PROTOCOL_FEE_OFFSET)
             val protocol = b.long
             val intermission = b.long
             val round = b.long

@@ -106,7 +106,8 @@ class EdgeDifferentiatorsTest {
             val round = RoundRules.decodeRound(Base64.getDecoder().decode(v.getJSONObject(i).getString("dataBase64")))
             val w = RoundRules.winningSquare(RoundRules.rng(round.slotHash)!!)
             assertEquals("round ${round.id}", !RoundRules.isSolo(round.id, w), round.topMiner.contentEquals(split))
-            // Live accounts: losing squares are refunded minus the 10% protocol fee and 1% admin fee; totals match calculate_fees exactly.
+            // Live accounts: losing squares are refunded minus the 10% protocol fee and 1% admin fee;
+            // totals match calculate_fees exactly.
             val (adm, prot) = RoundRules.fees(round.deployed, w)
             assertEquals(prot, round.totalVaulted)
             assertEquals(round.totalDeployed - adm - prot, round.totalReturnedSol)

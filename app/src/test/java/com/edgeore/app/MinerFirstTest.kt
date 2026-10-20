@@ -37,20 +37,24 @@ class MinerFirstTest {
     @Test fun configDecoderRefusesWrongShape() {
         val bad = runCatching { OreV3.decodeConfig(OreV3.PROGRAM_ID, ByteArray(10)) }
         assertTrue(bad.isFailure)
-        val wrongOwner = runCatching { OreV3.decodeConfig("11111111111111111111111111111111", ByteArray(OreV3.CONFIG_SIZE)) }
+        val wrongOwner =
+            runCatching { OreV3.decodeConfig("11111111111111111111111111111111", ByteArray(OreV3.CONFIG_SIZE)) }
         assertTrue(wrongOwner.isFailure)
     }
 
     @Test fun lateLookWindowFollowsConfig() {
         assertEquals(45L, StrategyPlaybook.lateLookSlots(cfg))
         assertEquals(StrategyPlaybook.LATE_LOOK_SLOTS, StrategyPlaybook.lateLookSlots(null))
-        val p = StrategyPlaybook.lateLook(RoundClock.Live(44, null), StrategyPlaybook.lateLookSlots(cfg)) as StrategyPlan.Remind
+        val window = StrategyPlaybook.lateLookSlots(cfg)
+        val p = StrategyPlaybook.lateLook(RoundClock.Live(44, null), window) as StrategyPlan.Remind
         assertTrue(p.now)
     }
 
     @Test fun noHardcodedRoundLengthInMinerHome() {
         val src = File("src/main/java/com/edgeore/app/ui/screens/MinerHome.kt").readText()
-        listOf("150", "200", "240", "300").forEach { assertFalse("hardcoded $it", Regex("\\b$it\\b").containsMatchIn(src)) }
+        listOf("150", "200", "240", "300").forEach {
+            assertFalse("hardcoded $it", Regex("\\b$it\\b").containsMatchIn(src))
+        }
     }
 
     @Test fun losingSquareRefundMinusFees() {
@@ -70,13 +74,13 @@ class MinerFirstTest {
         assertTrue((StrategyPlaybook.motherlode(big, 1, 0) as StrategyPlan.Gate).open)
         assertFalse((StrategyPlaybook.motherlode(big, 1, big - 1) as StrategyPlan.Gate).open)
         assertTrue((StrategyPlaybook.motherlode(big, 1, big) as StrategyPlan.Gate).open)
-        assertFalse(StrategyPlaybook.limitSet(null))
-        assertFalse(StrategyPlaybook.limitSet(0))
     }
 
     @Test fun noYieldOrSigningLanguageOnMinerHome() {
         val src = File("src/main/java/com/edgeore/app/ui/screens/MinerHome.kt").readText().lowercase()
-        listOf("apr", "apy", "yield", "income", "profit", "guaranteed").forEach { assertFalse(it, Regex("\\b$it\\b").containsMatchIn(src)) }
+        listOf("apr", "apy", "yield", "income", "profit", "guaranteed").forEach {
+            assertFalse(it, Regex("\\b$it\\b").containsMatchIn(src))
+        }
         assertTrue(src.contains("not affiliated"))
         assertFalse(src.contains("signtransaction") || src.contains("signandsend"))
     }

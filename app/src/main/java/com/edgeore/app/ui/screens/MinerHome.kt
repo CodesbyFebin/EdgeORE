@@ -36,15 +36,16 @@ import com.edgeore.app.ui.theme.EdgeColors
  * Miner-first home: the live ORE v3 round board. Read-only. Every number comes from [snap] (a real chain read);
  * without one nothing is shown in its place. Deploys still go through the exact-message review and the wallet.
  */
-object MinerHomeText {
+object MinerHome {
     const val TITLE = "Mine · ORE round"
     const val SIGN_EVERY_ROUND = "You review and sign every round in your wallet. Nothing deploys on its own."
     const val NO_BOARD = "No live board read yet. Switch to Mainnet to read the ORE v3 board (read-only)."
     const val NOT_AFFILIATED = "ORE is by Regolith Labs. EdgeORE is not affiliated with Regolith Labs or ORE."
 
     fun timing(c: OreV3.Config?): String =
-        c?.let { "Round ${it.roundSlots} slots · break ${it.intermissionSlots} slots (ORE Config, read from chain)" }
-            ?: "Round length: Config not read, so it is not shown"
+        c?.let {
+            "Round ${it.roundSlots} slots · break ${it.intermissionSlots} slots (ORE Config, read from chain)"
+        } ?: "Round length: Config not read, so it is not shown"
 
     fun motherlode(grams: Long): String = "Motherlode pool ${OreFormat.ore(grams)} ORE · hits 1 in 500 rounds (program rule)"
 }
@@ -56,9 +57,13 @@ fun MinerRoundBoard(
     modifier: Modifier = Modifier,
 ) {
     EdgeCard(modifier.testTag("miner-board")) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
-                MinerHomeText.TITLE,
+                MinerHome.TITLE,
                 style = MaterialTheme.typography.titleMedium,
                 color = EdgeColors.textPrimary,
                 modifier = Modifier.semantics { heading() },
@@ -73,59 +78,76 @@ fun MinerRoundBoard(
             }
         }
         if (snap == null) {
-            Text(MinerHomeText.NO_BOARD, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
+            Text(MinerHome.NO_BOARD, color = EdgeColors.textMuted, style = MaterialTheme.typography.bodyMedium)
         } else {
             Text(
-                "Round ${snap.round.id} · ${OreFormat.sol(snap.round.totalDeployedLamports)} SOL deployed · ${snap.round.totalMiners} miners",
+                "Round ${snap.round.id} · ${OreFormat.sol(snap.round.totalDeployedLamports)} SOL deployed · " +
+                    "${snap.round.totalMiners} miners",
                 color = EdgeColors.textMuted,
                 style = MaterialTheme.typography.labelSmall,
             )
-            val solo = RoundRules.distributionMask(snap.round.id)
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                for (row in 0 until 5) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        for (col in 0 until 5) {
-                            val i = row * 5 + col
-                            val isSolo = solo and (1 shl i) != 0
-                            val sol = OreFormat.sol(snap.round.deployedLamports[i])
-                            Box(
-                                Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1.1f)
-                                    .background(EdgeColors.surfaceInset, RoundedCornerShape(8.dp))
-                                    .border(1.dp, if (isSolo) EdgeColors.copper else EdgeColors.border, RoundedCornerShape(8.dp))
-                                    .testTag("miner-square-$i")
-                                    .semantics { contentDescription = "Square $i, $sol SOL${if (isSolo) ", solo" else ""}" },
-                            ) {
-                                Text(
-                                    "$i${if (isSolo) " ★" else ""}",
-                                    color = EdgeColors.textMuted,
-                                    fontSize = 10.sp,
-                                    modifier = Modifier.align(Alignment.TopStart).padding(4.dp),
-                                )
-                                Text(
-                                    sol,
-                                    color = EdgeColors.textPrimary,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier.align(Alignment.Center),
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            BoardGrid(snap)
             Text("SOL per square · squares 0–24 · ★ solo square", color = EdgeColors.textMuted, fontSize = 11.sp)
             Text(
-                MinerHomeText.motherlode(snap.treasury.motherlodeGrams),
+                MinerHome.motherlode(snap.treasury.motherlodeGrams),
                 color = EdgeColors.copper,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.testTag("miner-motherlode"),
             )
-            Text(MinerHomeText.timing(snap.config), color = EdgeColors.textMuted, fontSize = 11.sp, modifier = Modifier.testTag("miner-timing"))
+            Text(
+                MinerHome.timing(snap.config),
+                color = EdgeColors.textMuted,
+                fontSize = 11.sp,
+                modifier = Modifier.testTag("miner-timing"),
+            )
         }
         Text(FeeMath.LOSING, color = EdgeColors.textMuted, fontSize = 11.sp, modifier = Modifier.testTag("miner-fees"))
-        Text(MinerHomeText.SIGN_EVERY_ROUND, color = EdgeColors.textMuted, fontSize = 11.sp)
+        Text(MinerHome.SIGN_EVERY_ROUND, color = EdgeColors.textMuted, fontSize = 11.sp)
+    }
+}
+
+private const val SIDE = 5
+private const val SQUARE_RATIO = 1.1f
+
+@Composable
+private fun BoardGrid(snap: OreSnapshot) {
+    val solo = RoundRules.distributionMask(snap.round.id)
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        for (row in 0 until SIDE) {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                for (col in 0 until SIDE) {
+                    val i = row * SIDE + col
+                    val isSolo = solo and (1 shl i) != 0
+                    val sol = OreFormat.sol(snap.round.deployedLamports[i])
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .aspectRatio(SQUARE_RATIO)
+                            .background(EdgeColors.surfaceInset, RoundedCornerShape(8.dp))
+                            .border(
+                                1.dp,
+                                if (isSolo) EdgeColors.copper else EdgeColors.border,
+                                RoundedCornerShape(8.dp),
+                            ).testTag("miner-square-$i")
+                            .semantics { contentDescription = "Square $i, $sol SOL${if (isSolo) ", solo" else ""}" },
+                    ) {
+                        Text(
+                            "$i${if (isSolo) " ★" else ""}",
+                            color = EdgeColors.textMuted,
+                            fontSize = 10.sp,
+                            modifier = Modifier.align(Alignment.TopStart).padding(4.dp),
+                        )
+                        Text(
+                            sol,
+                            color = EdgeColors.textPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.align(Alignment.Center),
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -134,12 +156,15 @@ fun MinerRoundBoard(
  * decoder yet, so the app shows no claimable amount and builds no claim message (a placeholder never supplies values).
  */
 @Composable
-fun MinerClaimCard(onReceipts: () -> Unit, receiptCount: Int) {
+fun MinerClaimCard(
+    onReceipts: () -> Unit,
+    receiptCount: Int,
+) {
     EdgeCard(Modifier.testTag("miner-claim")) {
         Text("Claim & receipts", style = MaterialTheme.typography.titleMedium, color = EdgeColors.textPrimary)
         Text(
-            "Claim review is not in this build: EdgeORE does not decode ClaimSOL or ClaimORE yet, so it shows no claimable " +
-                "amount and builds no claim message. Claim from a wallet or app you trust.",
+            "Claim review is not in this build: EdgeORE does not decode ClaimSOL or ClaimORE yet, " +
+                "so it shows no claimable amount and builds no claim message. Claim from a wallet or app you trust.",
             color = EdgeColors.textMuted,
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -148,6 +173,6 @@ fun MinerClaimCard(onReceipts: () -> Unit, receiptCount: Int) {
             Modifier.fillMaxWidth().testTag("miner-receipts"),
             onClick = onReceipts,
         )
-        Text(MinerHomeText.NOT_AFFILIATED, color = EdgeColors.textMuted, fontSize = 11.sp)
+        Text(MinerHome.NOT_AFFILIATED, color = EdgeColors.textMuted, fontSize = 11.sp)
     }
 }
