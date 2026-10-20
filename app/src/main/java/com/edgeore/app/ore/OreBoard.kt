@@ -97,7 +97,7 @@ class OreObserver(
         val t = first.accounts[1] ?: throw OreV3.DecodeException("Treasury account not found on this RPC's cluster")
         val board = OreV3.decodeBoard(b.owner, b.data)
         val treasury = OreV3.decodeTreasury(t.owner, t.data)
-        val second = reader.accounts(listOf(OreV3.roundAddress(board.roundId), OreV3.CONFIG_ADDRESS))
+        val second = reader.accounts(listOf(OreV3.roundAddress(board.roundId)))
         val r = second.accounts[0] ?: throw OreV3.DecodeException("Round ${board.roundId} account not found")
         val round = OreV3.decodeRound(r.owner, r.data)
         if (round.id !=
@@ -105,8 +105,15 @@ class OreObserver(
         ) {
             throw OreV3.DecodeException("Round account id ${round.id} does not match Board.round_id ${board.roundId}")
         }
+        // Round length lives in ORE Config (deploy.rs, reset.rs). A failed read hides timing; it never invents it.
         val config =
-            second.accounts.getOrNull(1)?.let { c -> runCatching { OreV3.decodeConfig(c.owner, c.data) }.getOrNull() }
+            runCatching {
+                reader
+                    .accounts(listOf(OreV3.CONFIG_ADDRESS))
+                    .accounts
+                    .firstOrNull()
+                    ?.let { OreV3.decodeConfig(it.owner, it.data) }
+            }.getOrNull()
         return OreSnapshot(
             reader.endpoint,
             board,
