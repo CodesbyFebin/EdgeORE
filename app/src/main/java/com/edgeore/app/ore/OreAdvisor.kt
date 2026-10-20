@@ -18,7 +18,7 @@ object OreAdvisor {
         - The board has 25 squares. Players deploy SOL to squares during a round (program/src/deploy.rs).
         - A round runs from Board.start_slot to Board.end_slot. After a reset, end_slot is unset until the first deploy starts the round.
         - At reset one winning square is picked from the round's entropy: rng % 25 (api/src/state/round.rs, winning_square).
-        - Each miner's SOL comes back minus fees (program/src/checkpoint.rs): on the winning square about 1% is kept as an admin fee; on every other square about 1% admin fee plus 10% of the rest go to the protocol, so SOL on a non-winning square loses about 11%.
+        - Each miner's SOL comes back minus fees (program/src/checkpoint.rs): on the winning square about 1% is kept as an admin fee; on every losing square the SOL is refunded minus a 10% fee, plus a 1% admin fee (about 89.1% comes back).
         - Each round mints up to 1 ORE to the winning square's miners; on 15 of the 25 squares it is split among them in proportion to SOL, on the other 10 it goes to one miner chosen in proportion to SOL (round.rs, distribution_mask, is_split_reward).
         - Each round adds up to 0.2 ORE to the motherlode pool (Treasury.motherlode). In a round with a 1 in 500 chance the whole pool is paid to the winning square's miners in proportion to their SOL (round.rs, did_hit_motherlode; checkpoint.rs).
         - Outcomes are random. Past rounds do not predict the next winning square.

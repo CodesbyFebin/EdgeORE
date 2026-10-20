@@ -13,6 +13,8 @@ data class OreSnapshot(
     val roundSlot: Long,
     val observedAtMs: Long,
     val slotRate: SlotRate?,
+    /** ORE Config as read with the round; null when it could not be read (then round length is shown as unknown). */
+    val config: OreV3.Config? = null,
 )
 
 /** Where the current round stands, from Board.start_slot / end_slot and the RPC's slot. */
@@ -95,7 +97,7 @@ class OreObserver(
         val t = first.accounts[1] ?: throw OreV3.DecodeException("Treasury account not found on this RPC's cluster")
         val board = OreV3.decodeBoard(b.owner, b.data)
         val treasury = OreV3.decodeTreasury(t.owner, t.data)
-        val second = reader.accounts(listOf(OreV3.roundAddress(board.roundId)))
+        val second = reader.accounts(listOf(OreV3.roundAddress(board.roundId), OreV3.CONFIG_ADDRESS))
         val r = second.accounts[0] ?: throw OreV3.DecodeException("Round ${board.roundId} account not found")
         val round = OreV3.decodeRound(r.owner, r.data)
         if (round.id !=
@@ -103,7 +105,9 @@ class OreObserver(
         ) {
             throw OreV3.DecodeException("Round account id ${round.id} does not match Board.round_id ${board.roundId}")
         }
-        return OreSnapshot(reader.endpoint, board, first.slot, treasury, round, second.slot, nowMs(), reader.slotRate())
+        val config =
+            second.accounts.getOrNull(1)?.let { c -> runCatching { OreV3.decodeConfig(c.owner, c.data) }.getOrNull() }
+        return OreSnapshot(reader.endpoint, board, first.slot, treasury, round, second.slot, nowMs(), reader.slotRate(), config)
     }
 }
 

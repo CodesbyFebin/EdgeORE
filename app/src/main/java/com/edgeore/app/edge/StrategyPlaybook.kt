@@ -56,7 +56,7 @@ enum class Strategy(
     CREW_BLANKET(
         "Crew Blanket",
         "Your crew covers all 25 squares with no overlap. Each member reviews and signs only their own share; " +
-            "about 10.9% of SOL on the 24 losing squares still goes to fees.",
+            "on the 24 losing squares the SOL is refunded minus a 10% fee, plus a 1% admin fee.",
         listOf(StrategyRules.Rule.CREW, StrategyRules.Rule.FEES),
     ),
     LATE_LOOK(
@@ -115,6 +115,8 @@ object StrategyPlaybook {
     data class Inputs(
         val capLamports: Long,
         val motherlodeThresholdGrams: Long = 0,
+        /** Upper motherlode limit (like the autominer's max_motherlode). Null or 0 means not set = unlimited. */
+        val motherlodeLimitGrams: Long? = null,
         /** Members' masks of a verified crew plan, or null. */
         val crewMasks: List<Int>? = null,
         val nowMs: Long = System.currentTimeMillis(),
@@ -143,8 +145,8 @@ object StrategyPlaybook {
             Strategy.SOLO_HUNTER -> StrategyPlan.Fill(solo, null)
             Strategy.QUIET_SQUARES -> StrategyPlan.Fill(quietest(snap.round.deployedLamports), null)
             Strategy.SPLIT_SWEEP -> splitSweep(ALL and solo.inv(), inp.capLamports)
-            Strategy.MOTHERLODE_WATCH -> motherlode(snap.treasury.motherlodeGrams, inp.motherlodeThresholdGrams)
-            Strategy.LATE_LOOK -> lateLook(clock(snap, inp.nowMs))
+            Strategy.MOTHERLODE_WATCH -> motherlode(snap.treasury.motherlodeGrams, inp.motherlodeThresholdGrams, inp.motherlodeLimitGrams)
+            Strategy.LATE_LOOK -> lateLook(clock(snap, inp.nowMs), lateLookSlots(snap.config))
             Strategy.CREW_BLANKET -> crew(inp.crewMasks)
         }
     }
@@ -184,23 +186,39 @@ object StrategyPlaybook {
         return if (per <= 0) StrategyPlan.Disabled("Cap too small to split.") else StrategyPlan.Fill(splitMask, per * n)
     }
 
+    /** An unset (null) or zero limit means unlimited, never "0 ORE" (the ORE motherlode-default bug). */
+    fun limitSet(limitGrams: Long?): Boolean = limitGrams != null && limitGrams > 0
+
     fun motherlode(
         poolGrams: Long,
         thresholdGrams: Long,
+        limitGrams: Long? = null,
     ): StrategyPlan =
-        if (poolGrams >= thresholdGrams && thresholdGrams > 0) {
+        if (limitSet(limitGrams) && poolGrams > limitGrams!!) {
+            StrategyPlan.Gate(false, "Sit out: the motherlode pool is above your limit.")
+        } else if (poolGrams >= thresholdGrams && thresholdGrams > 0) {
             StrategyPlan.Gate(true, "Motherlode pool is at or above your threshold. You can open the review.")
         } else {
             StrategyPlan.Gate(false, "Sit out: the motherlode pool is below your threshold.")
         }
 
-    fun lateLook(c: RoundClock): StrategyPlan =
+    /**
+     * The Late Look window: the last 15% of Config.round_slots as read from chain. [LATE_LOOK_SLOTS] is used only when
+     * the Config account could not be read.
+     */
+    fun lateLookSlots(config: com.edgeore.app.ore.OreV3.Config?): Long =
+        config?.let { maxOf(1L, it.roundSlots * 15 / 100) } ?: LATE_LOOK_SLOTS
+
+    fun lateLook(
+        c: RoundClock,
+        window: Long = LATE_LOOK_SLOTS,
+    ): StrategyPlan =
         when (c) {
             is RoundClock.Live ->
-                if (c.slotsLeft <= LATE_LOOK_SLOTS) {
+                if (c.slotsLeft <= window) {
                     StrategyPlan.Remind(true, "Late Look: about ${OreClock.label(c)} left. $RECHECK")
                 } else {
-                    StrategyPlan.Remind(false, "Late Look reminds you in the app at about $LATE_LOOK_SLOTS slots left.")
+                    StrategyPlan.Remind(false, "Late Look reminds you in the app at about $window slots left.")
                 }
             RoundClock.WaitingForFirstDeploy -> StrategyPlan.Remind(false, "The round starts with its first deploy.")
             is RoundClock.Ended -> StrategyPlan.Remind(false, "This round has ended; wait for the next one.")

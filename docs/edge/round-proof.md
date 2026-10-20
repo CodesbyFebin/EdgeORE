@@ -46,8 +46,10 @@ receipt, and re-derives every result from the bytes.
 
 - regolith-labs/ore `master` is still `48c203bd`, so the program source has not changed since the pin. EdgeORE's Deploy
   (instruction 6, 12 accounts, 13-byte data) is unchanged.
-- **"SOL on losing squares is returned": false for the live program.** On five live settled rounds (439108–439115),
-  `total_vaulted` equals exactly the 10% protocol fee on losing squares (after the 1% admin fee) from `calculate_fees()`.
+- **"SOL on losing squares is returned": only minus fees.** `checkpoint.rs` refunds losing-square SOL minus a 10% fee,
+  plus a 1% admin fee (`calculate_fees()`, about 89.1% comes back). On five live settled rounds (439108–439115),
+  `total_vaulted` equals exactly that 10% protocol fee on losing squares (after the 1% admin fee). *(Corrected 20 Oct 2026:
+  this line used to read "false", which overstated the loss.)*
 - **15 split + 10 solo tiles known before the round ends: true.** `distribution_mask` depends only on the round id. The
   split marker matched it on all five live rounds. The board shows ★ on solo tiles.
 - **Per-round reward:** `Round.rewards[0]` = 1 ORE on all five live rounds, so minting continued on those rounds.
