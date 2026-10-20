@@ -65,7 +65,7 @@ class DefaultStateWalkTest {
         viaSettings("settings-receipts")
         exists("No receipts yet.")
 
-        rule.onNodeWithText("Home", substring = false).performClick()
+        rule.onNodeWithText("Mine", substring = false).performClick()
         rule.onNodeWithText("Review deployment", substring = false).performScrollTo().assertIsNotEnabled()
     }
 }
